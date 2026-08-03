@@ -1,0 +1,12 @@
+vendor/
+node_modules/
+.env
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+public/assets/uploads/
+logs/
+*.log
+/tmp/
+cache/

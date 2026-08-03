@@ -1,0 +1,4 @@
+-- Placeholder SQL dump
+-- Run the appropriate mysqldump command to generate the real dump.
+-- Example:
+-- mysqldump -h localhost -u root -p";jk'" phatthalun_newwebci4 > db/webphatthalung.sql

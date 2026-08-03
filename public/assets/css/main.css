@@ -1,0 +1,994 @@
+/* ==========================================================================
+   Modern Web Application Design System & Tokens
+   Framework: Vanilla CSS compatible with Bootstrap 5 / Tailwind CSS
+   Features: Glassmorphism, Dark/Light Mode variables, Micro-animations
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Prompt:wght@300;400;500;600;700&display=swap');
+
+:root {
+    /* --- Light Mode Tokens (Default) --- */
+    --bg-primary: #f8fafc;
+    --bg-secondary: #f1f5f9;
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --text-muted: #94a3b8;
+    
+    /* Vibrant Accent Palette (Modern HSL tones) */
+    --accent-primary: #3b82f6;
+    --accent-secondary: #6366f1;
+    --accent-success: #10b981;
+    --accent-warning: #f59e0b;
+    --accent-danger: #ef4444;
+    --gradient-hero: linear-gradient(135deg, #3b82f6 0%, #6366f1 50%, #8b5cf6 100%);
+    
+    /* Glassmorphism Tokens (Light) */
+    --glass-bg: rgba(255, 255, 255, 0.75);
+    --glass-border: rgba(255, 255, 255, 0.6);
+    --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.12);
+    --glass-navbar-bg: rgba(255, 255, 255, 0.82);
+    
+    /* UI Element Radius */
+    --radius-sm: 8px;
+    --radius-md: 16px;
+    --radius-lg: 24px;
+    --radius-full: 9999px;
+    
+    /* Transitions */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+[data-theme="dark"] {
+    /* --- Dark Mode Tokens --- */
+    --bg-primary: #0f172a;
+    --bg-secondary: #1e293b;
+    --text-primary: #f8fafc;
+    --text-secondary: #cbd5e1;
+    --text-muted: #64748b;
+    
+    /* Vibrant Accent Palette (Dark optimized) */
+    --accent-primary: #60a5fa;
+    --accent-secondary: #818cf8;
+    --accent-success: #34d399;
+    --accent-warning: #fbbf24;
+    --accent-danger: #f87171;
+    --gradient-hero: linear-gradient(135deg, #60a5fa 0%, #818cf8 50%, #a78bfa 100%);
+    
+    /* Glassmorphism Tokens (Dark) */
+    --glass-bg: rgba(30, 41, 59, 0.65);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    --glass-navbar-bg: rgba(15, 23, 42, 0.85);
+}
+
+/* --- Global Base Styles --- */
+body {
+    font-family: 'Prompt', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    transition: background-color 0.4s ease, color 0.4s ease;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+    margin: 0;
+}
+
+/* Animated Ambient Background Glow */
+.ambient-glow {
+    position: fixed;
+    top: -15%;
+    right: -10%;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, rgba(0,0,0,0) 70%);
+    z-index: 0;
+    pointer-events: none;
+    filter: blur(50px);
+}
+
+.ambient-glow-2 {
+    position: fixed;
+    bottom: -10%;
+    left: -5%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.12) 0%, rgba(0,0,0,0) 70%);
+    z-index: 0;
+    pointer-events: none;
+    filter: blur(40px);
+}
+
+.content-wrapper {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+}
+
+/* --- Glassmorphism UI Classes --- */
+.glass-navbar {
+    background: var(--glass-navbar-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--glass-border);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    transition: var(--transition-smooth);
+}
+
+.glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    border-radius: var(--radius-md);
+    padding: 1.75rem;
+    transition: var(--transition-smooth);
+}
+
+.glass-badge {
+    background: rgba(99, 102, 241, 0.12);
+    color: var(--accent-secondary);
+    border: 1px solid rgba(99, 102, 241, 0.25);
+    border-radius: var(--radius-full);
+    padding: 0.35rem 0.85rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* --- Micro-Animations & Hover Effects --- */
+.hover-lift {
+    transition: var(--transition-smooth);
+}
+.hover-lift:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.15);
+}
+
+.hover-glow:hover {
+    box-shadow: 0 0 25px rgba(99, 102, 241, 0.4);
+}
+
+.btn-modern {
+    background: var(--gradient-hero);
+    color: #ffffff !important;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 0.65rem 1.4rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
+}
+.btn-modern:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
+    opacity: 0.95;
+}
+
+.btn-modern-outline {
+    background: transparent;
+    color: var(--text-primary) !important;
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-sm);
+    padding: 0.65rem 1.4rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+}
+.btn-modern-outline:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--accent-primary);
+}
+
+.gradient-text {
+    background: var(--gradient-hero);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+}
+
+/* Theme Toggle Button */
+.theme-toggle-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-full);
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    cursor: pointer;
+    transition: var(--transition-bounce);
+}
+.theme-toggle-btn:hover {
+    transform: rotate(25deg) scale(1.08);
+    border-color: var(--accent-warning);
+}
+
+/* --- Toast Notification Container --- */
+#toast-container {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.modern-toast {
+    background: var(--glass-navbar-bg);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    color: var(--text-primary);
+    padding: 1rem 1.25rem;
+    border-radius: var(--radius-sm);
+    min-width: 280px;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    animation: slideInRight 0.35s cubic-bezier(0.21, 1.02, 0.73, 1) forwards;
+}
+
+@keyframes slideInRight {
+    from { transform: translateX(120%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+@keyframes fadeOut {
+    to { opacity: 0; transform: translateY(-10px); }
+}
+
+/* Responsive utilities */
+@media (max-width: 768px) {
+    .glass-card {
+        padding: 1.25rem;
+    }
+}
+
+/* ==========================================================================
+   Admin Portal & Glassmorphic Sidebar Design System
+   ========================================================================== */
+.admin-wrapper {
+    display: flex;
+    min-height: 100vh;
+    width: 100%;
+    overflow-x: hidden;
+    background: var(--bg-primary);
+}
+
+/* Glassmorphic Floating Sidebar */
+.admin-sidebar {
+    width: 270px;
+    background: var(--glass-navbar-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-right: 1px solid var(--glass-border);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1050;
+    transition: var(--transition-smooth);
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.04);
+}
+
+.sidebar-header {
+    padding: 1.5rem 1.25rem;
+    border-bottom: 1px solid var(--glass-border);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: var(--text-primary);
+    text-decoration: none;
+}
+
+.sidebar-profile {
+    padding: 1.25rem;
+    margin: 1rem;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.avatar-badge {
+    width: 42px;
+    height: 42px;
+    border-radius: var(--radius-full);
+    background: var(--gradient-hero);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 1.1rem;
+    box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
+}
+
+.sidebar-menu-list {
+    list-style: none;
+    padding: 0 1rem;
+    margin: 0;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.sidebar-menu-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+    padding: 1rem 0.5rem 0.5rem;
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.75rem 1rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+    border-radius: var(--radius-sm);
+    font-weight: 500;
+    transition: var(--transition-smooth);
+    margin-bottom: 0.35rem;
+}
+
+.sidebar-link i {
+    font-size: 1.15rem;
+    width: 24px;
+    text-align: center;
+    color: var(--text-muted);
+    transition: var(--transition-smooth);
+}
+
+.sidebar-link:hover {
+    background: rgba(99, 102, 241, 0.08);
+    color: var(--accent-secondary);
+    transform: translateX(4px);
+}
+.sidebar-link:hover i {
+    color: var(--accent-secondary);
+}
+
+.sidebar-link.active {
+    background: var(--gradient-hero);
+    color: #ffffff;
+    box-shadow: 0 6px 18px rgba(99, 102, 241, 0.35);
+}
+.sidebar-link.active i {
+    color: #ffffff;
+}
+
+.sidebar-footer {
+    padding: 1rem;
+    border-top: 1px solid var(--glass-border);
+}
+
+/* Main Content Workspace */
+.admin-main {
+    flex: 1;
+    margin-left: 270px;
+    display: flex;
+    flex-direction: column;
+    transition: var(--transition-smooth);
+}
+
+.admin-topbar {
+    background: var(--glass-navbar-bg);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--glass-border);
+    padding: 0.85rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 1040;
+}
+
+.admin-content {
+    padding: 2rem;
+    flex: 1;
+}
+
+/* Responsive Modern Table for Dashboard & Admin Lists */
+.table-modern {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 8px;
+    color: var(--text-primary);
+}
+
+.table-modern th {
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 0.75rem 1rem;
+    border: none;
+}
+
+.table-modern tbody tr {
+    background: var(--glass-bg);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+    transition: var(--transition-smooth);
+}
+
+.table-modern tbody tr:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+    background: rgba(99, 102, 241, 0.05);
+}
+
+.table-modern td {
+    padding: 1rem;
+    border: 1px solid var(--glass-border);
+    border-left: none;
+    border-right: none;
+    vertical-align: middle;
+}
+
+.table-modern td:first-child {
+    border-left: 1px solid var(--glass-border);
+    border-top-left-radius: var(--radius-sm);
+    border-bottom-left-radius: var(--radius-sm);
+}
+
+.table-modern td:last-child {
+    border-right: 1px solid var(--glass-border);
+    border-top-right-radius: var(--radius-sm);
+    border-bottom-right-radius: var(--radius-sm);
+}
+
+/* Mobile Sidebar behavior */
+@media (max-width: 992px) {
+    .admin-sidebar {
+        transform: translateX(-100%);
+    }
+    .admin-sidebar.show {
+        transform: translateX(0);
+    }
+    .admin-main {
+        margin-left: 0;
+    }
+    .admin-topbar, .admin-content {
+        padding-left: 1.25rem;
+        padding-right: 1.25rem;
+    }
+}
+
+/* ==========================================================================
+   Phase 3: Public Portal UI Tokens (Tabs, Skeleton Loaders, Custom Form Inputs)
+   ========================================================================== */
+.tab-pill {
+    background: transparent;
+    color: var(--text-secondary);
+    border: none;
+    border-radius: var(--radius-full);
+    padding: 0.5rem 1.2rem;
+    font-weight: 500;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+}
+
+.tab-pill:hover {
+    background: rgba(99, 102, 241, 0.1);
+    color: var(--accent-primary);
+}
+
+.tab-pill.active {
+    background: var(--gradient-hero);
+    color: white;
+    box-shadow: 0 4px 14px rgba(99, 102, 241, 0.3);
+}
+
+/* Skeleton Loading Box */
+.skeleton-box {
+    width: 100%;
+    background: linear-gradient(90deg, rgba(148, 163, 184, 0.12) 25%, rgba(148, 163, 184, 0.25) 50%, rgba(148, 163, 184, 0.12) 75%);
+    background-size: 200% 100%;
+    border-radius: var(--radius-md);
+    animation: skeletonLoading 1.5s infinite;
+    border: 1px solid var(--glass-border);
+}
+
+@keyframes skeletonLoading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* Custom Form Input for Glass Modal */
+.custom-input {
+    background: var(--bg-secondary) !important;
+    border: 1px solid var(--glass-border) !important;
+    color: var(--text-primary) !important;
+    border-radius: var(--radius-sm) !important;
+    padding: 0.65rem 0.85rem !important;
+    transition: var(--transition-smooth) !important;
+}
+
+.custom-input:focus {
+    border-color: var(--accent-primary) !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2) !important;
+    outline: none !important;
+}
+
+/* ==========================================================================
+   MUNICIPAL GOVERNMENT RIBBON NAVBAR (อารยสถาปัตย์แถบเมนูหัวราชการ)
+   ========================================================================== */
+.gov-header-wrapper {
+    background: linear-gradient(90deg, #1f6479 0%, #154c5e 50%, #103c4a 100%);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    position: sticky;
+    top: 0;
+    z-index: 1040;
+    width: 100%;
+    overflow: visible;
+}
+
+.gov-navbar {
+    display: flex;
+    align-items: stretch;
+    justify-content: space-between;
+    min-height: 75px;
+    padding: 0;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Left Diagonal Mint Ribbon (ตราสัญลักษณ์ & ชื่อหน่วยงาน) */
+.gov-brand-ribbon {
+    background: linear-gradient(135deg, #6fd3c6 0%, #4db2a3 100%);
+    color: #0b3948;
+    padding: 0.6rem 3.2rem 0.6rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    text-decoration: none !important;
+    position: relative;
+    clip-path: polygon(0 0, 89% 0, 100% 100%, 0 100%);
+    transition: filter 0.3s ease;
+    flex-shrink: 0;
+    min-width: 320px;
+}
+
+.gov-brand-ribbon:hover {
+    filter: brightness(1.05);
+}
+
+.gov-logo-circle {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.95);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+    overflow: hidden;
+    padding: 4px;
+    border: 2px solid #ffffff;
+    flex-shrink: 0;
+}
+
+.gov-logo-img {
+    max-height: 46px;
+    max-width: 46px;
+    object-fit: contain;
+}
+
+.gov-title-stack {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.15;
+}
+
+.gov-title-main {
+    font-size: 1.45rem;
+    font-weight: 700;
+    color: #ffffff;
+    text-shadow: 1px 1px 4px rgba(0,0,0,0.25);
+    letter-spacing: 0.5px;
+}
+
+.gov-title-sub {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: #0d3b4a;
+    margin-top: 2px;
+}
+
+/* Center Navigation List */
+.gov-nav-list {
+    display: flex;
+    align-items: stretch;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    flex: 1;
+    justify-content: center;
+}
+
+.gov-nav-item {
+    display: flex;
+    align-items: stretch;
+    position: relative;
+}
+
+.gov-nav-link {
+    color: #ffffff !important;
+    font-weight: 500;
+    font-size: 1.05rem;
+    text-decoration: none;
+    padding: 0 1.4rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: all 0.2s ease;
+    border-bottom: 4px solid transparent;
+    cursor: pointer;
+}
+
+.gov-nav-link:hover, .gov-nav-link:focus, .gov-nav-item:hover > .gov-nav-link {
+    background-color: rgba(255, 255, 255, 0.12);
+    color: #6fd3c6 !important;
+    border-bottom-color: #6fd3c6;
+}
+
+/* Dropdown styling */
+.gov-dropdown-menu {
+    border-radius: var(--radius-md);
+    background: var(--bg-primary);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+    border: 1px solid var(--glass-border) !important;
+    min-width: 240px;
+    padding: 0.5rem;
+    margin-top: 0 !important;
+}
+
+/* Utility Station (ขวามือสุด) */
+.gov-utility-station {
+    display: flex;
+    align-items: stretch;
+    background: #ffffff;
+    color: #154c5e;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+    box-shadow: -6px 0 20px rgba(0,0,0,0.15);
+}
+
+.gov-util-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 0.35rem 0.9rem;
+    width: 100%;
+}
+
+.gov-util-row-top {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    padding-bottom: 0.25rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.gov-util-row-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    background: #185a70;
+    color: #ffffff;
+    padding: 0.25rem 0.6rem;
+    border-radius: 4px;
+    margin-top: 3px;
+    font-size: 0.82rem;
+    font-weight: 600;
+}
+
+.font-btn {
+    border: 1px solid rgba(0,0,0,0.1);
+    background: #ffffff;
+    color: #185a70;
+    font-weight: 700;
+    border-radius: 4px;
+    padding: 2px 7px;
+    cursor: pointer;
+    transition: all 0.2s;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 24px;
+    min-width: 24px;
+}
+
+.font-btn:hover, .font-btn.active-font {
+    background: #6fd3c6;
+    color: #0b323f;
+    transform: scale(1.08);
+}
+
+.font-btn.font-small { font-size: 0.75rem; }
+.font-btn.font-medium { font-size: 0.88rem; }
+.font-btn.font-large { font-size: 1.02rem; }
+
+/* Responsive adjustments */
+@media (max-width: 1199px) {
+    .gov-navbar {
+        flex-direction: column;
+        min-height: auto;
+    }
+    .gov-brand-ribbon {
+        clip-path: none;
+        width: 100%;
+        justify-content: space-between;
+        padding: 0.8rem 1.5rem;
+    }
+    .gov-utility-station {
+        width: 100%;
+        justify-content: center;
+        box-shadow: none;
+        border-top: 1px solid #cbd5e1;
+    }
+    .gov-nav-list {
+        width: 100%;
+        flex-direction: column;
+        background: #154c5e;
+    }
+    .gov-nav-link {
+        padding: 0.8rem 1.5rem;
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+}
+
+/* ==========================================================================
+   MULTI-LAYERED KINETIC HERO SLIDER (สไลด์ประกอบแอนิเมชันเมืองอัจฉริยะ)
+   ========================================================================== */
+.smart-slider-box {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.22);
+    height: 480px;
+    background: #0f3542;
+    margin-bottom: 2.5rem;
+    border: 1px solid var(--glass-border);
+}
+
+.smart-slide-item {
+    height: 480px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Background Atmosphere layers */
+.slide-bg-living {
+    background: radial-gradient(circle at 70% 30%, #20879e 0%, #0d3846 65%, #071f28 100%);
+}
+.slide-bg-tourism {
+    background: radial-gradient(circle at 30% 20%, #2e9e62 0%, #104e38 60%, #08261b 100%);
+}
+.slide-bg-governance {
+    background: radial-gradient(circle at 60% 40%, #2d55b4 0%, #11265e 65%, #091330 100%);
+}
+
+/* Decorative Diagonal Geometry Frames (ลวดลายเฉียงสไตล์ภาครัฐ) */
+.slide-geo-left {
+    position: absolute;
+    top: 0;
+    left: -10%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+    transform: skewX(-25deg);
+    z-index: 1;
+    pointer-events: none;
+}
+
+.slide-geo-right-orange {
+    position: absolute;
+    bottom: -60px;
+    right: -40px;
+    width: 420px;
+    height: 220px;
+    background: linear-gradient(135deg, #ff7800 0%, #ff5000 100%);
+    transform: rotate(-15deg) skewX(-20deg);
+    z-index: 1;
+    box-shadow: -5px -5px 30px rgba(0,0,0,0.25);
+    border-top: 8px solid #ffffff;
+    pointer-events: none;
+}
+
+/* Kinetic Animation Triggers (ทำงานเมื่อ .carousel-item.active ปรากฏ) */
+.carousel-item.active .anim-from-left {
+    animation: slideInFromLeft 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.carousel-item.active .anim-from-right {
+    animation: slideInFromRight 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.carousel-item.active .anim-from-bottom {
+    animation: slideInFromBottom 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.carousel-item.active .anim-zoom-pop {
+    animation: popInScale 0.7s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
+}
+
+/* Animation Delays for Staggered Composition Effect */
+.delay-1 { animation-delay: 0.15s !important; opacity: 0; }
+.delay-2 { animation-delay: 0.3s !important; opacity: 0; }
+.delay-3 { animation-delay: 0.45s !important; opacity: 0; }
+.delay-4 { animation-delay: 0.6s !important; opacity: 0; }
+.delay-5 { animation-delay: 0.75s !important; opacity: 0; }
+
+@keyframes slideInFromLeft {
+    0% { opacity: 0; transform: translate3d(-80px, 0, 0); }
+    100% { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@keyframes slideInFromRight {
+    0% { opacity: 0; transform: translate3d(80px, 0, 0); }
+    100% { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@keyframes slideInFromBottom {
+    0% { opacity: 0; transform: translate3d(0, 80px, 0); }
+    100% { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@keyframes popInScale {
+    0% { opacity: 0; transform: scale(0.65) translateY(20px); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* Continuous Floating Micro-Animations */
+.floating-node-1 { animation: floatSlow 3.8s ease-in-out infinite; }
+.floating-node-2 { animation: floatSlow 4.5s ease-in-out infinite 0.7s; }
+.floating-node-3 { animation: floatSlow 4.1s ease-in-out infinite 1.4s; }
+
+@keyframes floatSlow {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-12px); }
+}
+
+/* Hexagon Tech Nodes */
+.tech-hex-node {
+    width: 62px;
+    height: 62px;
+    background: rgba(255, 255, 255, 0.95);
+    color: #114e60;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25), 0 0 15px rgba(111, 211, 198, 0.5);
+    border: 2px solid #6fd3c6;
+    position: absolute;
+    z-index: 10;
+}
+
+.tech-line-connector {
+    position: absolute;
+    border-top: 2px dashed rgba(255, 255, 255, 0.45);
+    transform-origin: left center;
+    z-index: 5;
+    pointer-events: none;
+}
+
+/* Smart Pole Visual Component */
+.smart-pole-visual {
+    position: absolute;
+    left: 12%;
+    bottom: -20px;
+    width: 90px;
+    height: 400px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 8;
+    pointer-events: none;
+}
+.pole-top-light {
+    width: 120px;
+    height: 12px;
+    background: #00d2ff;
+    box-shadow: 0 0 20px #00d2ff, 0 0 40px #00d2ff;
+    border-radius: 6px;
+    margin-bottom: 2px;
+}
+.pole-shaft {
+    width: 18px;
+    height: 100%;
+    background: linear-gradient(90deg, #2b3a42 0%, #4f6b7a 50%, #1b252b 100%);
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 40px;
+    gap: 30px;
+}
+.pole-sensor-box {
+    width: 44px;
+    height: 54px;
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #0d3846;
+    font-size: 1.2rem;
+    border: 2px solid #6fd3c6;
+}
+
+/* Typography & Info Card */
+.slide-title-banner {
+    font-size: 3.2rem;
+    font-weight: 800;
+    text-shadow: 2px 4px 15px rgba(0,0,0,0.4);
+    line-height: 1.1;
+    letter-spacing: 1px;
+}
+
+.text-gradient-orange {
+    background: linear-gradient(135deg, #ff9600 0%, #ff5000 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.slide-info-card {
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(15px);
+    border-radius: var(--radius-md);
+    padding: 1.35rem;
+    border-left: 6px solid #ff7800;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+    max-width: 500px;
+    color: #0b323f;
+}
+
+/* Responsive adjustment for Kinetic Slider */
+@media (max-width: 991px) {
+    .smart-slider-box, .smart-slide-item {
+        height: auto;
+        min-height: 480px;
+    }
+    .slide-title-banner {
+        font-size: 2.2rem;
+    }
+    .smart-pole-visual {
+        opacity: 0.35;
+        left: -10px;
+    }
+}
+
+
