@@ -56,10 +56,55 @@
     --gradient-hero: linear-gradient(135deg, #60a5fa 0%, #818cf8 50%, #a78bfa 100%);
     
     /* Glassmorphism Tokens (Dark) */
-    --glass-bg: rgba(30, 41, 59, 0.65);
-    --glass-border: rgba(255, 255, 255, 0.08);
-    --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-    --glass-navbar-bg: rgba(15, 23, 42, 0.85);
+    --glass-bg: rgba(30, 41, 59, 0.75);
+    --glass-border: rgba(255, 255, 255, 0.12);
+    --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.45);
+    --glass-navbar-bg: rgba(15, 23, 42, 0.9);
+}
+
+/* --- Executive Deep Dark Command Center Theme (Admin Portal Dark Mode) --- */
+[data-theme="dark"] .admin-wrapper {
+    background: radial-gradient(circle at 10% 20%, #0d1628 0%, #060911 90%) !important;
+    color: #f1f5f9 !important;
+}
+[data-theme="dark"] .admin-sidebar {
+    background: rgba(11, 18, 34, 0.95) !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 12px 0 40px rgba(0, 0, 0, 0.65) !important;
+}
+[data-theme="dark"] .admin-topbar {
+    background: rgba(11, 18, 34, 0.88) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5) !important;
+}
+[data-theme="dark"] .admin-main .glass-card {
+    background: rgba(19, 29, 50, 0.82) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    box-shadow: 0 15px 38px rgba(0, 0, 0, 0.45) !important;
+    backdrop-filter: blur(20px);
+}
+[data-theme="dark"] .admin-main .form-control,
+[data-theme="dark"] .admin-main .form-select,
+[data-theme="dark"] .admin-main textarea {
+    background-color: #0c1628 !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    color: #ffffff !important;
+}
+[data-theme="dark"] .admin-main .form-control:focus,
+[data-theme="dark"] .admin-main .form-select:focus,
+[data-theme="dark"] .admin-main textarea:focus {
+    border-color: #60a5fa !important;
+    box-shadow: 0 0 14px rgba(96, 165, 250, 0.4) !important;
+    background-color: #0e192e !important;
+}
+[data-theme="dark"] .admin-sidebar .sidebar-profile {
+    background: linear-gradient(135deg, rgba(30, 41, 62, 0.9) 0%, rgba(13, 22, 40, 0.95) 100%) !important;
+    border: 1px solid rgba(96, 165, 250, 0.35) !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5) !important;
+}
+[data-theme="dark"] .admin-sidebar .sidebar-link:hover {
+    background: rgba(96, 165, 250, 0.15) !important;
+    color: #60a5fa !important;
 }
 
 /* --- Global Base Styles --- */
@@ -535,6 +580,50 @@ body {
     outline: none !important;
 }
 
+/* --- Universal Smart Omni-Search Modal Styles --- */
+.btn-omni-trigger:hover {
+    background: rgba(14, 165, 233, 0.25) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3) !important;
+}
+
+#omniSearchModal .modal-content {
+    border-radius: 20px !important;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7) !important;
+}
+
+#omniSearchInput::placeholder {
+    color: #64748b !important;
+    opacity: 0.85;
+}
+
+.omni-result-card {
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+}
+
+.omni-result-card:hover {
+    background: rgba(255, 255, 255, 0.12) !important;
+    border-color: rgba(96, 165, 250, 0.5) !important;
+    transform: translateX(6px) scale(1.01);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+}
+
+.omni-result-card:hover .btn-outline-info {
+    background: #0ea5e9;
+    color: #ffffff !important;
+    box-shadow: 0 0 15px rgba(14, 165, 233, 0.6);
+}
+
+@keyframes voiceGlow {
+    0%, 100% { box-shadow: 0 0 5px #f87171; }
+    50% { box-shadow: 0 0 25px #f87171, 0 0 45px #f87171; }
+}
+
+#btnVoiceSearch.bg-danger {
+    animation: voiceGlow 1s infinite !important;
+}
+
 /* ==========================================================================
    MUNICIPAL GOVERNMENT RIBBON NAVBAR (อารยสถาปัตย์แถบเมนูหัวราชการ)
    ========================================================================== */
@@ -743,50 +832,157 @@ body {
         flex-direction: column;
         min-height: auto;
     }
+    .gov-brand-bar {
+        width: 100%;
+        background: linear-gradient(135deg, #6fd3c6 0%, #4db2a3 100%);
+        flex-shrink: 0;
+    }
     .gov-brand-ribbon {
         clip-path: none;
-        width: 100%;
-        justify-content: space-between;
-        padding: 0.8rem 1.5rem;
+        width: auto;
+        min-width: 0 !important;
+        flex-grow: 1;
+        justify-content: flex-start;
+        padding: 0.7rem 1rem;
+        background: transparent !important;
     }
     .gov-utility-station {
         width: 100%;
         justify-content: center;
         box-shadow: none;
-        border-top: 1px solid #cbd5e1;
+        border-top: 1px solid rgba(255,255,255,0.15);
+        padding: 0.5rem 0;
     }
     .gov-nav-list {
         width: 100%;
         flex-direction: column;
-        background: #154c5e;
+        background: #124050;
+        display: none !important;
+        max-height: 70vh;
+        overflow-y: auto;
+        box-shadow: inset 0 3px 8px rgba(0,0,0,0.25);
+    }
+    .gov-nav-list.show-mobile {
+        display: flex !important;
     }
     .gov-nav-link {
-        padding: 0.8rem 1.5rem;
+        padding: 0.85rem 1.5rem;
         border-bottom: 1px solid rgba(255,255,255,0.08);
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .gov-dropdown-menu {
+        position: static !important;
+        float: none !important;
+        width: 100% !important;
+        background: #0d2d3a !important;
+        border: none !important;
+        box-shadow: inset 0 2px 5px rgba(0,0,0,0.2) !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border-radius: 0 !important;
+    }
+    .gov-dropdown-menu .dropdown-item {
+        color: #e2e8f0 !important;
+        padding: 0.7rem 1.5rem 0.7rem 2.5rem !important;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .gov-dropdown-menu .dropdown-item:hover, .gov-dropdown-menu .dropdown-item:focus {
+        background: rgba(255,255,255,0.08) !important;
+        color: #6fd3c6 !important;
     }
 }
 
 /* ==========================================================================
-   MULTI-LAYERED KINETIC HERO SLIDER (สไลด์ประกอบแอนิเมชันเมืองอัจฉริยะ)
+   MULTI-LAYERED KINETIC HERO SLIDER (สไลด์ประกอบแอนิเมชันเมืองอัจฉริยะแบบ Hybrid Widescreen)
    ========================================================================== */
 .smart-slider-box {
     position: relative;
     overflow: hidden;
-    border-radius: var(--radius-lg);
-    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.22);
-    height: 480px;
-    background: #0f3542;
-    margin-bottom: 2.5rem;
-    border: 1px solid var(--glass-border);
+    width: 100% !important;
+    border-radius: 0 !important;
+    box-shadow: 0 25px 55px rgba(0, 0, 0, 0.35);
+    height: 540px;
+    background: #081d26;
+    margin-bottom: 0 !important;
+    border: none !important;
+    border-bottom: 3px solid #6fd3c6 !important;
 }
 
 .smart-slide-item {
-    height: 480px;
+    height: 540px;
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+}
+
+/* Background Atmosphere & Multi-Layer Composition layers */
+.slide-bg-sane-muanglung {
+    background: #081720;
     position: relative;
     overflow: hidden;
 }
+.kenburns-bg {
+    position: absolute;
+    top: -2%;
+    left: -2%;
+    width: 104%;
+    height: 104%;
+    background-size: cover !important;
+    background-position: center center !important;
+    animation: kenburnsBreathe 16s ease-in-out infinite alternate;
+    z-index: 1;
+}
+@keyframes kenburnsBreathe {
+    0% { transform: scale(1.0) translate3d(0, 0, 0); }
+    100% { transform: scale(1.07) translate3d(-15px, 8px, 0); }
+}
+.cinematic-vignette {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, rgba(0,0,0,0.1) 45%, rgba(5, 20, 30, 0.75) 100%),
+                linear-gradient(180deg, rgba(5, 25, 38, 0.45) 0%, rgba(0,0,0,0) 30%, rgba(0,0,0,0) 60%, rgba(8, 30, 42, 0.85) 100%);
+    z-index: 2;
+    pointer-events: none;
+}
+.badge-glass-glow {
+    background: rgba(255, 255, 255, 0.18);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    color: #ffffff;
+    padding: 0.55rem 1.3rem;
+    border-radius: 50px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35), 0 0 20px rgba(255, 183, 3, 0.35);
+    text-shadow: 0 2px 5px rgba(0,0,0,0.6);
+}
+.weather-glass-node {
+    background: rgba(11, 35, 48, 0.78);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(111, 211, 198, 0.45);
+    border-radius: 18px;
+    padding: 0.8rem 1.3rem;
+    display: flex;
+    align-items: center;
+    color: #ffffff;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.45);
+    max-width: 310px;
+    transition: transform 0.3s ease;
+}
+.weather-glass-node:hover {
+    transform: scale(1.03);
+}
 
-/* Background Atmosphere layers */
 .slide-bg-living {
     background: radial-gradient(circle at 70% 30%, #20879e 0%, #0d3846 65%, #071f28 100%);
 }
@@ -976,7 +1172,7 @@ body {
     color: #0b323f;
 }
 
-/* Responsive adjustment for Kinetic Slider */
+/* Responsive adjustment for Kinetic Slider and Mobile Simulation */
 @media (max-width: 991px) {
     .smart-slider-box, .smart-slide-item {
         height: auto;
@@ -991,4 +1187,300 @@ body {
     }
 }
 
+@media (max-width: 575.98px) {
+    .gov-logo-circle {
+        width: 44px;
+        height: 44px;
+    }
+    .gov-logo-img {
+        max-height: 36px;
+        max-width: 36px;
+    }
+    .gov-title-main {
+        font-size: 1.15rem;
+    }
+    .gov-title-sub {
+        font-size: 0.8rem;
+    }
+    .smart-slider-box, .smart-slide-item {
+        height: auto;
+        min-height: 420px;
+    }
+    .slide-title-banner {
+        font-size: 1.65rem !important;
+        line-height: 1.2;
+    }
+    .slide-info-card {
+        padding: 1rem;
+    }
+    .gov-utility-station {
+        padding: 0.5rem;
+    }
+    .gov-util-row-top, .gov-util-row-bottom {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.3rem;
+    }
+}
 
+/* ==========================================================================
+   News Cards & Article Reading Room (Light/Dark Mode Adaptive Styles)
+   ========================================================================== */
+
+/* --- News Category Filter Pills (.news-cat-btn) --- */
+.news-cat-btn {
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    font-weight: 600 !important;
+    border-radius: var(--radius-full) !important;
+    text-decoration: none !important;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+.news-cat-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+.news-cat-btn.active {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+    color: #ffffff !important;
+    border: 1px solid transparent !important;
+    box-shadow: 0 6px 18px rgba(37, 99, 235, 0.35) !important;
+}
+
+/* Light Mode Pills */
+:root .news-cat-btn:not(.active),
+body:not([data-theme="dark"]) .news-cat-btn:not(.active) {
+    background: #f1f5f9 !important;
+    color: #1e293b !important;
+    border: 1px solid #cbd5e1 !important;
+}
+:root .news-cat-btn:not(.active):hover,
+body:not([data-theme="dark"]) .news-cat-btn:not(.active):hover {
+    background: #e2e8f0 !important;
+    color: #0284c7 !important;
+    border-color: #94a3b8 !important;
+}
+
+/* Dark Mode Pills */
+[data-theme="dark"] .news-cat-btn:not(.active) {
+    background: rgba(30, 41, 59, 0.75) !important;
+    color: #f8fafc !important;
+    border: 1px solid rgba(255, 255, 255, 0.18) !important;
+    backdrop-filter: blur(8px);
+}
+[data-theme="dark"] .news-cat-btn:not(.active):hover {
+    background: rgba(51, 65, 85, 0.85) !important;
+    color: #38bdf8 !important;
+    border-color: rgba(56, 189, 248, 0.45) !important;
+}
+
+/* --- News Showcase Card --- */
+.news-showcase-card {
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+}
+.news-showcase-card:hover {
+    transform: translateY(-6px);
+}
+
+/* Light Mode Card (Default & :root) */
+:root .news-showcase-card,
+body:not([data-theme="dark"]) .news-showcase-card {
+    background: #ffffff !important;
+    border: 1px solid #cbd5e1 !important;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.04) !important;
+}
+:root .news-showcase-card .news-card-title,
+:root .news-showcase-card .news-card-title a,
+body:not([data-theme="dark"]) .news-showcase-card .news-card-title,
+body:not([data-theme="dark"]) .news-showcase-card .news-card-title a {
+    color: #0f172a !important;
+    font-weight: 700 !important;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+:root .news-showcase-card .news-card-title a:hover,
+body:not([data-theme="dark"]) .news-showcase-card .news-card-title a:hover {
+    color: #2563eb !important;
+}
+:root .news-showcase-card .news-card-meta,
+body:not([data-theme="dark"]) .news-showcase-card .news-card-meta {
+    color: #64748b !important;
+    font-weight: 500;
+}
+:root .news-showcase-card .news-card-footer,
+body:not([data-theme="dark"]) .news-showcase-card .news-card-footer {
+    border-top: 1px solid #e2e8f0 !important;
+}
+:root .news-showcase-card .news-card-btn,
+body:not([data-theme="dark"]) .news-showcase-card .news-card-btn {
+    background: linear-gradient(135deg, #0284c7, #02b2e9) !important;
+    color: #ffffff !important;
+    border: none !important;
+    box-shadow: 0 4px 10px rgba(2, 132, 199, 0.25) !important;
+}
+:root .news-showcase-card .news-card-btn:hover,
+body:not([data-theme="dark"]) .news-showcase-card .news-card-btn:hover {
+    background: linear-gradient(135deg, #0369a1, #0284c7) !important;
+    color: #ffffff !important;
+}
+
+/* Minimal Read More Link */
+.news-read-more-link {
+    color: #2563eb;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.news-read-more-link:hover {
+    color: #1d4ed8;
+    transform: translateX(4px);
+}
+
+/* Dark Mode Card */
+[data-theme="dark"] .news-showcase-card {
+    background: rgba(30, 41, 59, 0.65) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.45) !important;
+}
+[data-theme="dark"] .news-showcase-card .news-card-title,
+[data-theme="dark"] .news-showcase-card .news-card-title a {
+    color: #f8fafc !important;
+    font-weight: 700 !important;
+    text-decoration: none;
+}
+[data-theme="dark"] .news-showcase-card .news-card-title a:hover {
+    color: #fbbf24 !important;
+}
+[data-theme="dark"] .news-showcase-card .news-card-meta {
+    color: #94a3b8 !important;
+    font-weight: 500;
+}
+[data-theme="dark"] .news-showcase-card .news-card-footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.12) !important;
+}
+[data-theme="dark"] .news-showcase-card .news-card-btn {
+    background: transparent !important;
+    border: 2px solid #38bdf8 !important;
+    color: #38bdf8 !important;
+}
+[data-theme="dark"] .news-showcase-card .news-card-btn:hover {
+    background: #38bdf8 !important;
+    color: #0f172a !important;
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.4) !important;
+}
+[data-theme="dark"] .news-read-more-link {
+    color: #38bdf8 !important;
+}
+[data-theme="dark"] .news-read-more-link:hover {
+    color: #7dd3fc !important;
+}
+
+/* --- Article Full Reading Room --- */
+:root .article-reading-card,
+body:not([data-theme="dark"]) .article-reading-card {
+    background: #ffffff !important;
+    border: 1px solid #cbd5e1 !important;
+    box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.08) !important;
+}
+:root .article-reading-card .article-title,
+body:not([data-theme="dark"]) .article-reading-card .article-title {
+    color: #0f172a !important;
+}
+:root .article-reading-card .article-body,
+body:not([data-theme="dark"]) .article-reading-card .article-body {
+    color: #1e293b !important;
+}
+:root .article-reading-card .article-meta-info,
+body:not([data-theme="dark"]) .article-reading-card .article-meta-info {
+    color: #0284c7 !important;
+    font-weight: 600;
+}
+
+[data-theme="dark"] .article-reading-card {
+    background: rgba(30, 41, 59, 0.65) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5) !important;
+}
+[data-theme="dark"] .article-reading-card .article-title {
+    color: #ffffff !important;
+}
+[data-theme="dark"] .article-reading-card .article-body {
+    color: #f1f5f9 !important;
+}
+[data-theme="dark"] .article-reading-card .article-meta-info {
+    color: #38bdf8 !important;
+}
+
+/* --- Government Procurement (e-GP) Section Styles --- */
+.procurement-panel-mid {
+    background: #153c5e !important;
+}
+.procurement-panel-right {
+    background: #eef6fc !important;
+    color: #0f172a !important;
+}
+.procurement-panel-right h4, 
+.procurement-panel-right .proc-link {
+    color: #0f172a !important;
+    transition: color 0.2s ease;
+}
+.procurement-panel-right .proc-link:hover {
+    color: #0284c7 !important;
+}
+
+/* Nav tabs */
+.procurement-nav-item {
+    background: transparent;
+    color: #ffffff !important;
+    cursor: pointer;
+    border-left: 4px solid transparent;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    padding: 1.25rem 1.5rem;
+    font-weight: 500;
+    text-decoration: none !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.procurement-nav-item:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: #38bdf8 !important;
+}
+.procurement-nav-item.active {
+    background: #eef6fc !important;
+    color: #0f172a !important;
+    font-weight: 700 !important;
+    border-left: 6px solid #f59e0b;
+}
+
+/* Dark mode overrides */
+[data-theme="dark"] .procurement-panel-mid {
+    background: #0f172a !important;
+}
+[data-theme="dark"] .procurement-panel-right {
+    background: #1e293b !important;
+    color: #f8fafc !important;
+    border-left: 1px solid rgba(255,255,255,0.1);
+}
+[data-theme="dark"] .procurement-panel-right h4, 
+[data-theme="dark"] .procurement-panel-right .proc-link {
+    color: #f8fafc !important;
+}
+[data-theme="dark"] .procurement-panel-right .proc-link:hover {
+    color: #38bdf8 !important;
+}
+[data-theme="dark"] .procurement-nav-item.active {
+    background: #1e293b !important;
+    color: #f8fafc !important;
+    border-left: 6px solid #fbbf24;
+}

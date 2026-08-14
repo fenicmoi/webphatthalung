@@ -55,6 +55,24 @@ $routes->group('admin', ['namespace' => 'App\Controllers\Admin', 'filter' => 'au
     $routes->get('menu', 'MenuManager::index');
     $routes->post('menu/save', 'MenuManager::save');
     $routes->post('menu/reset', 'MenuManager::reset');
+
+    // Banner & Widescreen Layout Management Routes
+    $routes->get('banners', 'BannerManager::index');
+    $routes->post('banners/save', 'BannerManager::save');
+    $routes->post('banners/reset', 'BannerManager::reset');
+    $routes->post('banners/upload', 'BannerManager::upload');
+
+    // e-Services Banner & Custom Link Management Routes
+    $routes->get('service-banners', 'ServiceBannerManager::index');
+    $routes->post('service-banners/save', 'ServiceBannerManager::save');
+    $routes->post('service-banners/reset', 'ServiceBannerManager::reset');
+    $routes->post('service-banners/upload', 'ServiceBannerManager::upload');
+
+    // Government Procurement & e-GP Management Routes
+    $routes->get('procurement', 'ProcurementManager::index');
+    $routes->get('procurement/get-inline/(:any)', 'ProcurementManager::getInline/$1');
+    $routes->post('procurement/save-inline', 'ProcurementManager::saveInline');
+    $routes->post('procurement/delete-inline/(:any)', 'ProcurementManager::deleteInline/$1');
 });
 
 /*
@@ -65,8 +83,142 @@ $routes->group('admin', ['namespace' => 'App\Controllers\Admin', 'filter' => 'au
 $routes->group('api', ['namespace' => 'App\Controllers\Api'], static function($routes) {
     $routes->get('news', 'PublicData::getNews');
     $routes->post('submit-request', 'PublicData::submitRequest');
+    
+    // Universal Omni-Search Engine Routes
+    $routes->get('search', 'Search::query');
+    $routes->get('search/trending', 'Search::trending');
 });
 
+/*
+ * --------------------------------------------------------------------
+ * News & PR On-Page Management & Reading Rooms (Frontend CMS)
+ * --------------------------------------------------------------------
+ */
+$routes->get('news', 'News::index');
+$routes->get('news/detail/(:any)', 'News::detail/$1');
+$routes->get('news/get-json/(:any)', 'News::getJson/$1');
+$routes->post('news/save', 'News::save');
+$routes->post('news/delete/(:any)', 'News::delete/$1');
+$routes->post('news/delete', 'News::delete');
+$routes->post('news/upload-image', 'News::uploadImage');
+$routes->post('news/upload-doc', 'News::uploadDoc');
+$routes->post('news/save-category', 'News::saveCategory');
+$routes->post('news/resize-cover', 'News::resizeCover');
+
+/*
+ * --------------------------------------------------------------------
+ * e-Service Banner & Link On-Page Studio Routes
+ * --------------------------------------------------------------------
+ */
+$routes->get('service-banners/get-all-json', 'Admin\ServiceBannerManager::getAllJson');
+$routes->post('service-banners/save-inline', 'Admin\ServiceBannerManager::saveInline');
+$routes->post('service-banners/delete/(:any)', 'Admin\ServiceBannerManager::deleteById/$1');
+$routes->post('service-banners/upload-image', 'Admin\ServiceBannerManager::upload');
+
+/*
+ * --------------------------------------------------------------------
+ * Government Procurement & e-GP Public & Inline Studio Routes
+ * --------------------------------------------------------------------
+ */
+$routes->get('procurement', 'Procurement::index');
+$routes->get('procurement/category/(:any)', 'Procurement::index/$1');
+$routes->get('admin/procurement/get-inline/(:any)', 'Admin\ProcurementManager::getInline/$1');
+$routes->post('admin/procurement/save-inline', 'Admin\ProcurementManager::saveInline');
+$routes->post('admin/procurement/delete-inline/(:any)', 'Admin\ProcurementManager::deleteInline/$1');
+
+/*
+ * --------------------------------------------------------------------
+ * Provincial Activity Photo Gallery & Studio Routes
+ * --------------------------------------------------------------------
+ */
+$routes->get('gallery', 'Gallery::index');
+$routes->get('gallery/category/(:any)', 'Gallery::index/$1');
+$routes->get('gallery/album/(:any)', 'Gallery::viewAlbum/$1');
+
+$routes->get('admin/gallery/get-item/(:any)', 'Admin\GalleryManager::getItem/$1');
+$routes->post('admin/gallery/save-item', 'Admin\GalleryManager::saveItem');
+$routes->post('admin/gallery/delete-item/(:any)', 'Admin\GalleryManager::deleteItem/$1');
+$routes->post('admin/gallery/delete-photo', 'Admin\GalleryManager::deletePhoto');
+
+/*
+ * --------------------------------------------------------------------
+ * Provincial Event Calendar Routes (Unified News Integration)
+ * --------------------------------------------------------------------
+ */
+$routes->get('calendar', 'EventCalendar::index');
+$routes->get('calendar/get-json', 'EventCalendar::getJson');
+
+/*
+ * --------------------------------------------------------------------
+ * Phatthalung Web TV & YouTube Video Showcase Routes
+ * --------------------------------------------------------------------
+ */
+$routes->get('videos', 'Video::index');
+$routes->get('videos/category/(:any)', 'Video::index/$1');
+$routes->post('videos/count-view/(:any)', 'Video::countView/$1');
+
+$routes->get('admin/videos/get-item/(:any)', 'Admin\VideoManager::getItem/$1');
+$routes->post('admin/videos/save-item', 'Admin\VideoManager::saveItem');
+$routes->post('admin/videos/delete-item/(:any)', 'Admin\VideoManager::deleteItem/$1');
+
+/*
+ * --------------------------------------------------------------------
+ * Smart Digital Document Archive & Download Hub Routes
+ * --------------------------------------------------------------------
+ */
+$routes->get('documents', 'Document::index');
+$routes->get('documents/category/(:any)', 'Document::index/$1');
+$routes->post('documents/count-download/(:any)', 'Document::countDownload/$1');
+
+$routes->get('admin/documents/get-item/(:any)', 'Admin\DocumentManager::getItem/$1');
+$routes->post('admin/documents/save-item', 'Admin\DocumentManager::saveItem');
+$routes->post('admin/documents/delete-item/(:any)', 'Admin\DocumentManager::deleteItem/$1');
+
+/*
+ * --------------------------------------------------------------------
+ * Executive Leadership Directory & Vision Center Routes
+ * --------------------------------------------------------------------
+ */
+$routes->get('executives', 'Executive::index');
+$routes->get('executives/category/(:any)', 'Executive::index/$1');
+$routes->get('admin/executives/get-item/(:any)', 'Admin\ExecutiveManager::getItem/$1');
+$routes->post('admin/executives/save-item', 'Admin\ExecutiveManager::saveItem');
+$routes->post('admin/executives/delete-item/(:any)', 'Admin\ExecutiveManager::deleteItem/$1');
+
+/*
+ * --------------------------------------------------------------------
+ * ITA / OIT Transparency Assessment & Open Data Hub Routes
+ * --------------------------------------------------------------------
+ */
+$routes->get('ita', 'Ita::index');
+$routes->get('ita/category/(:any)', 'Ita::index/$1');
+$routes->post('ita/count-download/(:any)', 'Ita::countDownload/$1');
+
+$routes->get('admin/ita/get-item/(:any)', 'Admin\ItaManager::getItem/$1');
+$routes->post('admin/ita/save-item', 'Admin\ItaManager::saveItem');
+$routes->post('admin/ita/delete-item/(:any)', 'Admin\ItaManager::deleteItem/$1');
+$routes->post('admin/ita/save-scorecard', 'Admin\ItaManager::saveScorecard');
+
+/*
+ * --------------------------------------------------------------------
+ * "น้องโนรา AI Assistant" 24/7 Citizen Service Chatbot Routes
+ * --------------------------------------------------------------------
+ */
+$routes->post('api/nora-ai/chat', 'Api\NoraAi::chat');
+$routes->get('api/nora-ai/settings', 'Api\NoraAi::getSettings');
+
+$routes->get('admin/nora-ai/list', 'Admin\NoraAiManager::getKnowledgeList');
+$routes->post('admin/nora-ai/save-qa', 'Admin\NoraAiManager::saveQaItem');
+$routes->post('admin/nora-ai/delete-qa/(:any)', 'Admin\NoraAiManager::deleteQaItem/$1');
+$routes->post('admin/nora-ai/save-settings', 'Admin\NoraAiManager::saveSettings');
+
+/*
+ * --------------------------------------------------------------------
+ * Emergency & Disaster Early Warning System Routes
+ * --------------------------------------------------------------------
+ */
+$routes->get('admin/emergency/get-alert', 'Admin\EmergencyManager::getAlert');
+$routes->post('admin/emergency/save-alert', 'Admin\EmergencyManager::saveAlert');
 
 /*
  * --------------------------------------------------------------------

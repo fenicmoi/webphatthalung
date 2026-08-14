@@ -1,0 +1,62 @@
+[
+    {
+        "id": "doc-101",
+        "title": "ประกาศสำนักงานส่งเสริมการปกครองท้องถิ่นจังหวัดพัทลุง เรื่อง นโยบายการต่อต้านการทุจริตประจำปีงบประมาณ 2569",
+        "category": "ธรรมาภิบาล ความโปร่งใส และ ITA",
+        "sub_tag": "ประกาศ OIT \/ ITA",
+        "file_type": "pdf",
+        "file_url": "https:\/\/www.w3.org\/WAI\/ER\/tests\/xhtml\/testfiles\/resources\/pdf\/dummy.pdf",
+        "file_size": "2.8 MB",
+        "downloads": 343,
+        "date": "2026-08-02",
+        "active": true
+    },
+    {
+        "id": "doc-102",
+        "title": "หนังสือเวียนสั่งการ แนวทางและมาตรการเบิกจ่ายงบประมาณและการจัดซื้อจัดจ้างภาครัฐ 2569",
+        "category": "กฎหมาย ระเบียบ และหนังสือราชการ",
+        "sub_tag": "หนังสือเวียน",
+        "file_type": "pdf",
+        "file_url": "https:\/\/www.w3.org\/WAI\/ER\/tests\/xhtml\/testfiles\/resources\/pdf\/dummy.pdf",
+        "file_size": "1.5 MB",
+        "downloads": 890,
+        "date": "2026-08-01",
+        "active": true
+    },
+    {
+        "id": "doc-103",
+        "title": "แผนปฏิบัติราชการประจำปีของกลุ่มจังหวัดภาคใต้ฝั่งอ่าวไทย (พัทลุง-สงขลา-นครศรีธรรมราช)",
+        "category": "ยุทธศาสตร์ แผนงาน และรายงานผล",
+        "sub_tag": "แผนยุทธศาสตร์จังหวัด",
+        "file_type": "doc",
+        "file_url": "#",
+        "file_size": "4.2 MB",
+        "downloads": 125,
+        "date": "2026-07-28",
+        "active": true
+    },
+    {
+        "id": "doc-104",
+        "title": "รายงานผลวิเคราะห์ข้อมูลสถิติเศรษฐกิจ การเกษตรมูลค่าสูง และการท่องเที่ยวเมืองรองจังหวัดพัทลุง",
+        "category": "คลังความรู้ สถิติ และงานวิจัย",
+        "sub_tag": "ข้อมูลสถิติ & งานวิจัย",
+        "file_type": "xls",
+        "file_url": "#",
+        "file_size": "3.1 MB",
+        "downloads": 210,
+        "date": "2026-07-25",
+        "active": true
+    },
+    {
+        "id": "doc-105",
+        "title": "คู่มือมาตรฐานความมั่นคงปลอดภัยทางไซเบอร์ และแนวทางการปฏิบัติตาม พ.ร.บ. คุ้มครองข้อมูลส่วนบุคคล (PDPA)",
+        "category": "คู่มือ นโยบายดิจิทัล และ ICT",
+        "sub_tag": "คู่มือระบบ ICT \/ PDPA",
+        "file_type": "pdf",
+        "file_url": "https:\/\/www.w3.org\/WAI\/ER\/tests\/xhtml\/testfiles\/resources\/pdf\/dummy.pdf",
+        "file_size": "5.0 MB",
+        "downloads": 560,
+        "date": "2026-07-20",
+        "active": true
+    }
+]

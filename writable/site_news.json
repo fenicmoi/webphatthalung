@@ -1,0 +1,100 @@
+[
+    {
+        "id": "news-104",
+        "title": "งานแสดงสินค้าและสุดยอดของดีเมืองพัทลุง (Phatthalung Best Trade Expo 2026)",
+        "category": "ข่าวกิจกรรมจังหวัด",
+        "summary": "ร่วมชมร้านค้า OTOP ระดับพรีเมียม สัมผัสวัฒนธรรมพื้นบ้าน มโนราห์และหนังตะลุง พร้อมเสวนาโอกาสทางการค้าและการท่องเที่ยวยั่งยืน",
+        "content": "<p>สำนักงานพาณิชย์จังหวัดพัทลุง ร่วมกับภาคีเอกชนและเกษตรกรท้องถิ่น จัดงานแสดงสินค้าและสุดยอดของดีเมืองพัทลุง ประจำปี 2569 (Phatthalung Best Trade Expo 2026)<\/p><p>พบกับการจัดจำหน่ายสินค้า OTOP 5 ดาว ข้าวสังข์หยดเมืองลุง ปลากัดและสมุนไพรพื้นถิ่น รวมถึงการแสดงศิลปวัฒนธรรม มโนราห์และหนังตะลุงประยุกต์ตลอด 3 วัน 3 คืน<\/p>",
+        "cover_image": "assets\/images\/slider\/sane_muanglung.png",
+        "cover_fit": "cover",
+        "is_event": true,
+        "event_start_date": "2026-08-08",
+        "event_end_date": "2026-08-10",
+        "event_location": "ลานกิจกรรมหน้าศาลากลางจังหวัดพัทลุง (ถนนไชยบุรี)",
+        "event_coordinates": "7.6167, 100.0833",
+        "images_gallery": [
+            "assets\/images\/slider\/sane_muanglung.png"
+        ],
+        "attachments": [],
+        "views": 413,
+        "created_at": "2026-08-05 10:00:00",
+        "active": true
+    },
+    {
+        "id": "news-101",
+        "title": "จังหวัดพัทลุงเปิดตัว \"พอร์ตัลบริการดิจิทัลเบ็ดเสร็จ\" ร้องทุกข์และติดตามเอกสารตลอด 24 ชั่วโมง",
+        "category": "ข่าวกิจกรรมจังหวัด",
+        "summary": "ประชาชนสามารถเข้าสู่บริการออนไลน์ ยื่นคำร้อง PDPA ชำระภาษีที่ดินท้องถิ่น และติดตามสถานะเอกสารได้รวดเร็วทันใจผ่านเทคโนโลยี AI Search ไม่ต้องเดินทาง",
+        "content": "<p>จังหวัดพัทลุงตอกย้ำภาพลักษณ์องค์กรปกครองส่วนท้องถิ่นยุคใหม่ ดำเนินการยกระดับศูนย์บริการประชาชน (e-Services) อย่างรอบด้าน โดยประชาชนในทุกอำเภอสามารถยื่นเรื่องร้องทุกข์ ติดตามผลคำร้องผ่านหมายเลขติดตาม 13 หลัก และดาวน์โหลดแบบฟอร์มเอกสารทางราชการผ่านช่องทางดิจิทัลได้ตลอด 24 ชั่วโมง<\/p><p><img src=\"http:\/\/localhost\/webphatthalung\/public\/assets\/images\/slider\/sane_muanglung.png\"><\/p><p><br><\/p><p>นอกจากนี้ยังนำระบบ <strong>Universal Omni-Search<\/strong> มาช่วยเหลือประชาชนค้นหาบริการที่เหมาะสม ด้วยระบบสั่งงานด้วยเสียงภาษาไทย (Voice AI) เพื่อการเข้าถึงบริการที่เท่าเทียมและมีประสิทธิภาพสูงสุด<\/p>",
+        "cover_image": "uploads\/news\/news_1785827976_5286.png",
+        "cover_fit": "cover",
+        "is_event": false,
+        "event_start_date": "",
+        "event_end_date": "",
+        "event_location": "",
+        "event_coordinates": "",
+        "images_gallery": [
+            "assets\/images\/slider\/sane_muanglung.png",
+            "uploads\/news\/news_1785827976_5286.png",
+            "uploads\/news\/news_1785827976_2431.jpeg",
+            "uploads\/news\/news_1785827976_3901.jpeg"
+        ],
+        "attachments": [
+            {
+                "name": "ปะหน้า ปรับปรุงทำเนียบ จังหวัด พท.pdf",
+                "path": "uploads\/docs\/doc_1785827964_153.pdf",
+                "url": "http:\/\/localhost\/webphatthalung\/public\/uploads\/docs\/doc_1785827964_153.pdf",
+                "size": "600.7 KB",
+                "icon": "fa-solid fa-file-pdf text-danger"
+            }
+        ],
+        "views": 1288,
+        "created_at": "2026-08-03 07:19:42",
+        "updated_at": "2026-08-04 07:59:23",
+        "active": true
+    },
+    {
+        "id": "news-102",
+        "title": "เชิญเที่ยวงานประเพณี \"ตักบาตรเทโว ดอยเขาน้อย\" มรดกวัฒนธรรมและธรรมชาติเมืองพัทลุง",
+        "category": "ส่งเสริมการท่องเที่ยว",
+        "summary": "ร่วมสืบสานวิถีท้องถิ่น สัมผัสมนต์เสน่ห์เมืองลุง \"เขา ป่า นา เล\" พร้อมชมความงดงามของแสงอาทิตย์ยามเช้าเหนือบึงทะเลน้อยและฝูงควายน้ำมรดกเกษตรโลก (GIAHS)",
+        "content": "<p>สำนักงานการท่องเที่ยวและวัฒนธรรมจังหวัดพัทลุง ขอเชิญชวนประชาชนและนักท่องเที่ยวทั้งชาวไทยและต่างชาติ ร่วมสัมผัสสุนทรียภาพแห่งความงดงามในฤดูกาลท่องเที่ยวท้องถิ่น <strong>\"เขา ป่า นา เล\"<\/strong> พร้อมเรียนรู้วิถีเชิงอนุรักษ์ระบบนิเวศการเลี้ยงควายน้ำทะเลน้อย มรดกทางการเกษตรระดับโลก<\/p>",
+        "cover_image": "uploads\/news\/news_1785830346_2016.jpg",
+        "cover_fit": "cover",
+        "is_event": true,
+        "event_start_date": "2026-08-12",
+        "event_end_date": "2026-08-14",
+        "event_location": "ดอยเขาน้อย และทะเลน้อย อำเภอควายน้ำร้อยปี",
+        "event_coordinates": "7.7833, 100.1333",
+        "images_gallery": [
+            "assets\/images\/slider\/sane_muanglung.png",
+            "uploads\/news\/news_1785830147_6767.jpeg",
+            "uploads\/news\/news_1785830346_2016.jpg"
+        ],
+        "attachments": [],
+        "views": 843,
+        "created_at": "2026-08-01 07:19:42",
+        "updated_at": "2026-08-04 07:59:11",
+        "active": true
+    },
+    {
+        "id": "news-103",
+        "title": "ประกาศการเปิดเสวนา \"SMART PHATTHALUNG 2026\" สร้างเครือข่าย WiFi สาธารณะและกล้อง CCTV อัจฉริยะ",
+        "category": "ข่าวกิจกรรมจังหวัด",
+        "summary": "ระดมความคิดภาคประชาสังคม ขยายเสาอัจฉริยะ Smart Pole พร้อมระบบเซ็นเซอร์ฝุ่น PM2.5 และความปลอดภัยแบบเรียลไทม์ ครอบคลุมพื้นที่เศรษฐกิจ",
+        "content": "<p>จังหวัดพัทลุงเดินหน้าโครงการ Smart City 2026 อย่างต่อเนื่อง เตรียมพร้อมขยายโครงข่ายเสาอัจฉริยะมัลติฟังก์ชัน (Smart Pole) เพื่อส่งมอบสัญญานอินเทอร์เน็ต WiFi สาธารณะและระบบตรวจสอบความปลอดภัย CCTV ที่ควบคุมโดยเทคโนโลยี AI ในชุมชนหลัก<\/p>",
+        "cover_image": "assets\/images\/slider\/sane_muanglung.png",
+        "is_event": true,
+        "event_start_date": "2026-08-20",
+        "event_end_date": "2026-08-20",
+        "event_location": "หอประชุมอัจฉริยะ ศาลากลางจังหวัดพัทลุง",
+        "event_coordinates": "7.6167, 100.0833",
+        "images_gallery": [
+            "assets\/images\/slider\/sane_muanglung.png"
+        ],
+        "attachments": [],
+        "views": 594,
+        "created_at": "2026-07-30 07:19:42",
+        "active": true
+    }
+]

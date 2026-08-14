@@ -220,41 +220,11 @@ $cfg = function_exists('get_site_settings') ? get_site_settings() : [];
     </div>
 </section>
 
-<!-- 3. INTERACTIVE NEWS & ANNOUNCEMENTS BOARD (NO-RELOAD SPA) -->
-<section id="news" class="my-5 py-4">
-    <div class="glass-card p-4 p-md-5" style="border-radius: 28px;">
-        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
-            <div>
-                <h3 class="fw-bold mb-1"><i class="fa-solid fa-bullhorn text-warning me-2"></i>ประกาศและประชาสัมพันธ์ล่าสุด</h3>
-                <p style="color: var(--text-secondary); margin: 0; font-size: 0.95rem;">
-                    กดสลับแท็บเพื่อดูรายการประกาศในหมวดหมู่อื่นๆ <span class="badge bg-success ms-1">No-Reload Async API</span>
-                </p>
-            </div>
+<!-- 3. NEWS & MEDIA HUB (ศูนย์รวมข่าวสารและสื่อมัลติมีเดีย) -->
+<?= $this->include('components/news_media_hub') ?>
 
-            <!-- Tab Switch Buttons -->
-            <div class="d-flex flex-wrap gap-2 p-1" style="background: var(--bg-primary); border-radius: var(--radius-full); border: 1px solid var(--glass-border);">
-                <button class="tab-pill active" id="tab-general" onclick="switchNewsTab('general')">
-                    <i class="fa-solid fa-newspaper me-1"></i> ข่าวทั่วไป
-                </button>
-                <button class="tab-pill" id="tab-procurement" onclick="switchNewsTab('procurement')">
-                    <i class="fa-solid fa-gavel me-1"></i> ประกวดราคา
-                </button>
-                <button class="tab-pill" id="tab-tourism" onclick="switchNewsTab('tourism')">
-                    <i class="fa-solid fa-camera me-1"></i> ท่องเที่ยว & กิจกรรม
-                </button>
-            </div>
-        </div>
-
-        <!-- Dynamic News Items Container -->
-        <div id="newsContainer" class="row g-4 pt-2">
-            <!-- News content will be injected by app-interactive script -->
-            <div class="col-12 text-center py-5">
-                <i class="fa-solid fa-circle-notch fa-spin text-primary" style="font-size: 2.5rem;"></i>
-                <p class="mt-2 text-secondary">กำลังโหลดรายการประกาศจากเซิร์ฟเวอร์ด้วย CodeIgniter 4 API...</p>
-            </div>
-        </div>
-    </div>
-</section>
+<!-- 4. GOVERNANCE & TRANSPARENCY HUB (ศูนย์ข้อมูลความโปร่งใสและจัดซื้อจัดจ้าง) -->
+<?= $this->include('components/governance_hub') ?>
 
 <!-- 4. GLASSMORPHIC CITIZEN REQUEST MODAL -->
 <div class="modal fade" id="citizenRequestModal" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
@@ -317,67 +287,7 @@ $cfg = function_exists('get_site_settings') ? get_site_settings() : [];
 <script>
 let modalInstance = null;
 
-// 1. ฟังก์ชันโหลดประกาศตามแท็บ (No-Reload Fetch API)
-async function switchNewsTab(category, scrollToSection = false) {
-    if (scrollToSection) {
-        document.getElementById('news')?.scrollIntoView({ behavior: 'smooth' });
-    }
-    
-    // อัปเดตสถานะปุ่ม Tab Active
-    document.querySelectorAll('.tab-pill').forEach(btn => btn.classList.remove('active'));
-    document.getElementById(`tab-${category}`)?.classList.add('active');
-
-    const container = document.getElementById('newsContainer');
-    
-    // แสดง Skeleton Loaders ขณะดึงข้อมูล
-    container.innerHTML = `
-        <div class="col-md-6 col-xl-4"><div class="skeleton-box" style="height: 180px;"></div></div>
-        <div class="col-md-6 col-xl-4"><div class="skeleton-box" style="height: 180px;"></div></div>
-        <div class="col-md-6 col-xl-4"><div class="skeleton-box" style="height: 180px;"></div></div>
-    `;
-
-    try {
-        // เรียกใช้งาน Fetch Helper จาก app.js
-        const res = await App.fetch(`<?= base_url('api/news?category=') ?>${category}`);
-        if (res && res.data) {
-            renderNewsItems(res.data);
-        }
-    } catch (err) {
-        container.innerHTML = `<div class="col-12 text-center py-4 text-danger">ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ประกาศข่าวได้: ${err.message}</div>`;
-    }
-}
-
-// 2. ฟังก์ชันวาดหน้าจอข่าวหลังจากดึงข้อมูลเสร็จสิ้น
-function renderNewsItems(items) {
-    const container = document.getElementById('newsContainer');
-    if (!items || items.length === 0) {
-        container.innerHTML = '<div class="col-12 text-center text-muted py-4">ไม่พบข้อมูลในหมวดหมู่ที่เลือก</div>';
-        return;
-    }
-
-    let html = '';
-    items.forEach(item => {
-        html += `
-            <div class="col-md-6 col-xl-4">
-                <div class="glass-card h-100 d-flex flex-column justify-content-between hover-lift p-4" style="background: var(--glass-bg);">
-                    <div>
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <span class="badge" style="background: ${item.badge_color}; font-weight: 500; border-radius: 8px;">${item.category_label}</span>
-                            <small style="color: var(--text-muted);"><i class="fa-regular fa-calendar me-1"></i>${item.date}</small>
-                        </div>
-                        <h6 class="fw-bold my-2" style="line-height: 1.4; color: var(--text-primary);">${item.title}</h6>
-                        <p style="color: var(--text-secondary); font-size: 0.85rem;">${item.excerpt}</p>
-                    </div>
-                    <div class="border-top pt-2 mt-3 d-flex align-items-center justify-content-between" style="border-color: var(--glass-border) !important;">
-                        <span style="font-size: 0.8rem; color: var(--text-muted);"><i class="fa-regular fa-eye me-1"></i>อ่านแล้ว ${item.views} ครั้ง</span>
-                        <a href="#read" onclick="App.toast('เปิดอ่านรายละเอียดประกาศ: ${item.id}', 'info'); return false;" style="font-size: 0.85rem; font-weight: 600; color: var(--accent-primary); text-decoration: none;">อ่านต่อ &gt;</a>
-                    </div>
-                </div>
-            </div>
-        `;
-    });
-    container.innerHTML = html;
-}
+// 1. ฟังก์ชันโหลดประกาศตามแท็บและปฏิทินย้ายไปอยู่ใน components/news_media_hub.php แล้ว
 
 // 3. ฟังก์ชันเปิดหน้าต่างรับคำร้องบริการประชาชน
 function openRequestModal(serviceTitle) {
@@ -433,10 +343,7 @@ function verifyTrackingCode() {
     App.toast(`🟢 รหัส [${val}]: คำร้องของท่านอยู่ในขั้นตอนการดำเนินการของศูนย์เจ้าหน้าที่ พัทลุงดิจิทัลพอร์ทัล`, 'success');
 }
 
-// รันดาวน์โหลดข่าวสารหมวดทั่วไปทันทีที่เปิดหน้าเว็บเสร็จสิ้น
-document.addEventListener('DOMContentLoaded', function() {
-    switchNewsTab('general');
-});
+
 </script>
 
 <!-- 5. DYNAMIC FOOTER & AGENCY CREDENTIALS -->

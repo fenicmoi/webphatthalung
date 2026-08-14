@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="th" data-theme="light">
+<html lang="th" data-theme="dark" class="admin-dark-mode">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,6 +9,14 @@
     <meta name="X-CSRF-HEADER" content="<?= csrf_header() ?>">
     <meta name="X-CSRF-TOKEN" content="<?= csrf_hash() ?>">
     
+    <!-- Force Dark Mode Theme as default for Admin Portal -->
+    <script>
+        if (!localStorage.getItem('app_theme') || localStorage.getItem('app_theme') === 'light') {
+            localStorage.setItem('app_theme', 'dark');
+        }
+        document.documentElement.setAttribute('data-theme', 'dark');
+    </script>
+
     <!-- Bootstrap 5.3 & FontAwesome -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -58,21 +66,21 @@
 
                 <div class="sidebar-menu-title">บริหารจัดการข้อมูล (CONTENT)</div>
                 <li>
-                    <a href="#news" onclick="App.toast('เปิดระบบจัดการข่าวสารและกิจกรรม', 'info')" class="sidebar-link <?= ($activeMenu ?? '') === 'news' ? 'active' : '' ?>">
-                        <i class="fa-solid fa-newspaper"></i>
-                        <span>ข่าวประชาสัมพันธ์</span>
+                    <a href="<?= base_url('news') ?>" class="sidebar-link <?= ($activeMenu ?? '') === 'news' ? 'active' : '' ?>" title="ไปจัดการข่าวสารที่หน้าเว็บสาธารณะ (On-Page CMS)">
+                        <i class="fa-solid fa-newspaper text-warning"></i>
+                        <span>ข่าวประชาสัมพันธ์ <small class="badge bg-warning text-dark ms-1" style="font-size:0.6rem;">หน้าบ้าน</small></span>
                     </a>
                 </li>
                 <li>
-                    <a href="#services" onclick="App.toast('เปิดระบบจัดการบริการออนไลน์ประชาชน', 'info')" class="sidebar-link <?= ($activeMenu ?? '') === 'services' ? 'active' : '' ?>">
-                        <i class="fa-solid fa-hand-holding-heart"></i>
-                        <span>บริการประชาชน</span>
+                    <a href="<?= base_url('admin/service-banners') ?>" class="sidebar-link <?= ($activeMenu ?? '') === 'services' ? 'active' : '' ?>">
+                        <i class="fa-solid fa-hand-holding-heart text-success"></i>
+                        <span>บริการ & แบนเนอร์ลิงก์</span>
                     </a>
                 </li>
                 <li>
-                    <a href="#banners" onclick="App.toast('เปิดระบบจัดการแบนเนอร์และภาพโฆษณา', 'info')" class="sidebar-link">
+                    <a href="<?= base_url('admin/banners') ?>" class="sidebar-link <?= ($activeMenu ?? '') === 'banners' ? 'active' : '' ?>">
                         <i class="fa-solid fa-images"></i>
-                        <span>แบนเนอร์ / หน้าเว็บ</span>
+                        <span>แบนเนอร์ & เลย์เอาต์เว็บ</span>
                     </a>
                 </li>
 

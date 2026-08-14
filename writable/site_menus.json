@@ -1,0 +1,105 @@
+[
+    {
+        "id": "menu_6a7172486e6b1",
+        "title": "หน้าแรก",
+        "url": "http:\/\/localhost\/webphatthalung\/public\/",
+        "icon": "fa-solid fa-house",
+        "target": "_self",
+        "children": []
+    },
+    {
+        "id": "menu_6a7172486e727",
+        "title": "เกี่ยวกับจังหวัด",
+        "url": "#about",
+        "icon": "fa-solid fa-landmark",
+        "target": "_self",
+        "children": [
+            {
+                "id": "sub_6a7172486e728",
+                "title": "ประวัติความเป็นมาและคำขวัญ",
+                "url": "#history",
+                "target": "_self"
+            },
+            {
+                "id": "sub_6a7172486e729",
+                "title": "ทำเนียบผู้ว่าราชการและผู้บริหาร",
+                "url": "#executives",
+                "target": "_self"
+            },
+            {
+                "id": "sub_6a7172486e72a",
+                "title": "สัญลักษณ์และอัตลักษณ์ประจำเมือง",
+                "url": "#symbols",
+                "target": "_self"
+            },
+            {
+                "id": "sub_6a7172486e72b",
+                "title": "แผนยุทธศาสตร์การพัฒนาพัทลุง 2026",
+                "url": "#strategy",
+                "target": "_self"
+            }
+        ]
+    },
+    {
+        "id": "menu_6a7172486e72c",
+        "title": "บริการประชาชน e-Service",
+        "url": "#services",
+        "icon": "fa-solid fa-laptop-file",
+        "target": "_self",
+        "children": [
+            {
+                "id": "sub_6a7172486e72d",
+                "title": "ยื่นเรื่องร้องเรียน ศูนย์ดำรงธรรม",
+                "url": "#damrongtham",
+                "target": "_self"
+            },
+            {
+                "id": "sub_6a7172486e72e",
+                "title": "ระบบตรวจสอบรหัสสถานะคำร้อง",
+                "url": "#tracking",
+                "target": "_self"
+            },
+            {
+                "id": "sub_6a7172486e72f",
+                "title": "คลังดาวน์โหลดแบบฟอร์มประชาชน",
+                "url": "#forms",
+                "target": "_self"
+            }
+        ]
+    },
+    {
+        "id": "menu_6a7172486e730",
+        "title": "ข่าวประชาสัมพันธ์",
+        "url": "#news",
+        "icon": "fa-solid fa-bullhorn",
+        "target": "_self",
+        "children": [
+            {
+                "id": "sub_6a7172486e731",
+                "title": "ข่าวประกาศทั่วไปจากศาลากลาง",
+                "url": "#news-general",
+                "target": "_self"
+            },
+            {
+                "id": "sub_6a7172486e732",
+                "title": "ประกาศจัดซื้อจัดจ้างภาครัฐ (e-Bidding)",
+                "url": "#news-procurement",
+                "target": "_self"
+            },
+            {
+                "id": "sub_6a7172486e733",
+                "title": "ท่องเที่ยวและวัฒนธรรมเมืองหนังโนราห์",
+                "url": "#news-tourism",
+                "target": "_self"
+            }
+        ]
+    },
+    {
+        "id": "menu_6a7172486e734",
+        "title": "ติดต่อเรา",
+        "url": "#contact",
+        "icon": "fa-solid fa-phone-volume",
+        "target": "_self",
+        "children": []
+    }
+]

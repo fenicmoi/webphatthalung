@@ -1,0 +1,8 @@
+{
+    "layout_mode": "hybrid_widescreen",
+    "banner_height": "540",
+    "auto_play": "0",
+    "interval_ms": "7500",
+    "show_weather": "1",
+    "show_giahs": "1"
+}

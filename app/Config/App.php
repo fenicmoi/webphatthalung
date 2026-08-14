@@ -19,6 +19,23 @@ class App extends BaseConfig
      */
     public string $baseURL = 'http://localhost:8080/';
 
+    public function __construct()
+    {
+        parent::__construct();
+
+        // Dynamic BaseURL auto-detection for mobile simulation, LAN IP, and varied hosts
+        if (!empty($_SERVER['HTTP_HOST'])) {
+            $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || ($_SERVER['SERVER_PORT'] ?? '') == 443) ? 'https://' : 'http://';
+            $host = $_SERVER['HTTP_HOST'];
+            $scriptPath = $_SERVER['SCRIPT_NAME'] ?? '';
+            $dir = str_replace('\\', '/', dirname($scriptPath));
+            if ($dir === '.' || $dir === '/') {
+                $dir = '';
+            }
+            $this->baseURL = rtrim($protocol . $host . $dir, '/') . '/';
+        }
+    }
+
     /**
      * Allowed Hostnames in the Site URL other than the hostname in the baseURL.
      * If you want to accept multiple Hostnames, set this.
