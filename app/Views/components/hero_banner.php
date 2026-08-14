@@ -35,7 +35,7 @@ if (empty($banners)) {
             
             <!-- Background Image Layer -->
             <?php if (!empty($imgPath)): ?>
-                <div class="kenburns-bg" style="background: url('<?= $imgPath ?>') no-repeat center center; background-size: cover;"></div>
+                <div class="kenburns-bg" style="background-image: url('<?= $imgPath ?>');"></div>
                 <div class="cinematic-vignette"></div>
             <?php else: ?>
                 <div class="slide-geo-left"></div>

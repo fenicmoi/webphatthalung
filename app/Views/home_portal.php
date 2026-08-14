@@ -1,180 +1,60 @@
 <?= $this->extend('layouts/main') ?>
 
-<?= $this->section('content') ?>
 <?php 
 $services = $services ?? [];
 $cfg = function_exists('get_site_settings') ? get_site_settings() : [];
+$layoutMode = $cfg['layout_mode'] ?? 'hybrid_widescreen';
 ?>
 
-<!-- 1. SMART MUNICIPALITY KINETIC HERO BANNER (สไลด์ประกอบแอนิเมชันเลเยอร์อัจฉริยะ) -->
-<section id="smartCityCarousel" class="carousel slide smart-slider-box mb-4" data-bs-ride="carousel" data-bs-interval="7500">
-    <!-- Carousel Indicators -->
-    <div class="carousel-indicators" style="z-index: 20; margin-bottom: 1.2rem;">
-        <button type="button" data-bs-target="#smartCityCarousel" data-bs-slide-to="0" class="active" aria-current="true" style="width: 38px; height: 6px; border-radius: 4px; background: #ffffff; box-shadow: 0 2px 6px rgba(0,0,0,0.6);"></button>
-        <button type="button" data-bs-target="#smartCityCarousel" data-bs-slide-to="1" style="width: 38px; height: 6px; border-radius: 4px; background: #ffffff; box-shadow: 0 2px 6px rgba(0,0,0,0.6);"></button>
-        <button type="button" data-bs-target="#smartCityCarousel" data-bs-slide-to="2" style="width: 38px; height: 6px; border-radius: 4px; background: #ffffff; box-shadow: 0 2px 6px rgba(0,0,0,0.6);"></button>
-    </div>
+<?php if ($layoutMode === 'hybrid_widescreen'): ?>
+    <?php $this->section('hero_banner') ?>
+        <?= $this->include('components/hero_banner') ?>
+    <?php $this->endSection() ?>
+<?php endif; ?>
 
-    <!-- Carousel Inner (Slide Content) -->
-    <div class="carousel-inner h-100">
-        <!-- ================= SLIDE 1: SMART LIVING (เมืองอัจฉริยะ คุณภาพชีวิตสากล) ================= -->
-        <div class="carousel-item active smart-slide-item slide-bg-living h-100 p-4 p-lg-5">
-            <div class="slide-geo-left"></div>
-            <div class="slide-geo-right-orange"></div>
+<?= $this->section('content') ?>
 
-            <!-- Layer 1: Smart Pole Visual (เสาไฟ & กล้อง AI อัจฉริยะ) -->
-            <div class="smart-pole-visual d-none d-lg-flex anim-from-bottom delay-1">
-                <div class="pole-top-light"></div>
-                <div class="pole-shaft">
-                    <div class="pole-sensor-box" title="กล้อง AI CCTV 24 ชม."><i class="fa-solid fa-video text-danger animate-pulse"></i></div>
-                    <div class="pole-sensor-box" title="เซ็นเซอร์มลภาวะ PM 2.5"><i class="fa-solid fa-wind text-primary"></i></div>
-                    <div class="pole-sensor-box" title="ปล่อยสัญญาณ Public WiFi"><i class="fa-solid fa-wifi text-success"></i></div>
-                </div>
+<?php if ($layoutMode !== 'hybrid_widescreen'): ?>
+    <?= $this->include('components/hero_banner') ?>
+<?php endif; ?>
+
+<!-- 1.1 GLOBAL SMART SEARCH DOCK -->
+<section class="mb-5 position-relative z-3">
+    <div class="glass-card p-4 hover-lift" style="border-radius: 24px; background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.05) 0%, rgba(255,255,255,0.1) 100%); border: 1px solid rgba(var(--primary-rgb), 0.2); box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-4 text-center text-lg-start">
+                <h4 class="fw-bold mb-2" style="color: var(--primary-color); text-shadow: 0 2px 10px rgba(var(--primary-rgb), 0.2);">
+                    <i class="fa-solid fa-magnifying-glass-location me-2 pulse-animation"></i>ระบบค้นหาอัจฉริยะ
+                </h4>
+                <p class="text-muted mb-0" style="font-size: 0.95rem;">ค้นหาประกาศจัดซื้อฯ, ข่าวสาร, บุคลากร หรือข้อมูลหน่วยงานได้ในที่เดียว</p>
             </div>
-
-            <!-- Layer 2: Floating Tech Network Nodes (ไอคอนหกเหลี่ยมประกอบร่าง) -->
-            <div class="d-none d-lg-block">
-                <div class="tech-hex-node anim-zoom-pop delay-2 floating-node-1" style="left: 24%; top: 25%;"><i class="fa-solid fa-cloud-arrow-up text-primary"></i></div>
-                <div class="tech-hex-node anim-zoom-pop delay-3 floating-node-2" style="left: 33%; top: 18%;"><i class="fa-solid fa-shield-halved text-success"></i></div>
-                <div class="tech-hex-node anim-zoom-pop delay-4 floating-node-3" style="left: 38%; top: 48%;"><i class="fa-solid fa-gears text-warning"></i></div>
-                <div class="tech-hex-node anim-zoom-pop delay-3 floating-node-1" style="left: 26%; top: 65%;"><i class="fa-solid fa-signal text-info"></i></div>
-            </div>
-
-            <!-- Layer 3: Main Headline & Glass Info Card -->
-            <div class="row h-100 align-items-center position-relative" style="z-index: 15;">
-                <div class="col-lg-7 offset-lg-5 text-center text-lg-start ps-lg-5">
-                    <div class="anim-from-right delay-2">
-                        <span class="badge px-3 py-2 text-white fw-bold mb-3" style="background: rgba(255, 120, 0, 0.95); font-size: 0.95rem; border-radius: 30px; box-shadow: 0 5px 15px rgba(255, 120, 0, 0.4);">
-                            <i class="fa-solid fa-globe me-1"></i> SMART PHATTHALUNG 2026
-                        </span>
-                        <h2 class="slide-title-banner text-white mb-2">
-                            SMART <span class="text-gradient-orange">LIVING</span>
-                        </h2>
-                        <h4 class="fw-bold text-white-50 mb-4">การสร้างชีวิตอัจฉริยะ เพื่อประชาชน</h4>
+            <div class="col-lg-8 position-relative">
+                <div class="search-container d-flex align-items-center p-2 shadow-lg transition-all" 
+                     style="background: var(--bg-primary); border: 2px solid rgba(var(--primary-rgb), 0.3); border-radius: 50px; transition: all 0.3s ease;"
+                     onmouseover="this.style.borderColor='var(--primary-color)'; this.style.boxShadow='0 0 20px rgba(var(--primary-rgb), 0.2)';"
+                     onmouseout="this.style.borderColor='rgba(var(--primary-rgb), 0.3)'; this.style.boxShadow='0 10px 15px -3px rgba(0, 0, 0, 0.1)';">
+                    
+                    <div class="search-icon-wrapper d-flex align-items-center justify-content-center bg-primary text-white rounded-circle ms-1 shadow-sm" style="width: 45px; height: 45px; flex-shrink: 0;">
+                        <i class="fa-solid fa-search" style="font-size: 1.2rem;"></i>
                     </div>
                     
-                    <div class="slide-info-card anim-from-bottom delay-3 mx-auto mx-lg-0">
-                        <h6 class="fw-bold mb-2 text-dark"><i class="fa-solid fa-circle-check text-success me-2"></i>ยกระดับเมืองด้วยเทคโนโลยีดิจิทัล</h6>
-                        <p class="mb-3 text-secondary" style="font-size: 0.95rem; line-height: 1.6;">
-                            เชื่อมต่อระบบกล้อง AI อัจฉริยะ พร้อมเครือข่าย WiFi สาธารณะความเร็วสูง ครอบคลุมทุกพื้นที่ เพื่อสวัสดิภาพและความปลอดภัยสูงสุดตลอด 24 ชั่วโมง
-                        </p>
-                        <div class="d-flex align-items-center justify-content-between pt-2 border-top">
-                            <small class="text-muted"><i class="fa-solid fa-broadcast-tower text-primary me-1"></i> สถานะโครงข่าย: <strong class="text-success">ออนไลน์ 100%</strong></small>
-                            <a href="#services" class="btn btn-sm btn-primary px-3 rounded-pill fw-bold">เข้าใช้บริการ e-Service <i class="fa-solid fa-arrow-right ms-1"></i></a>
-                        </div>
+                    <input type="text" id="globalSearchInput" placeholder="พิมพ์สิ่งที่คุณต้องการค้นหา (เช่น e-bidding, ทะเลน้อย, ผู้ว่า)..." 
+                           class="flex-grow-1 px-3"
+                           style="border: none; background: transparent; color: var(--text-primary); outline: none; font-size: 1.1rem; font-weight: 500;" autocomplete="off">
+                    
+                    <!-- Search Spinner (Hidden by default) -->
+                    <div id="searchSpinner" class="spinner-border text-primary spinner-border-sm mx-3 d-none" role="status" style="width: 1.5rem; height: 1.5rem;">
+                        <span class="visually-hidden">Loading...</span>
                     </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ================= SLIDE 2: SMART TOURISM & ECO-PARADISE (ท่องเที่ยวทะเลน้อย สวรรค์ดิจิทัล) ================= -->
-        <div class="carousel-item smart-slide-item slide-bg-tourism h-100 p-4 p-lg-5">
-            <div class="slide-geo-left" style="background: linear-gradient(135deg, rgba(46, 158, 98, 0.35) 0%, rgba(0,0,0,0) 80%);"></div>
-            <div class="slide-geo-right-orange" style="background: linear-gradient(135deg, #00b09b, #96c93d);"></div>
-
-            <!-- Floating Tourism Elements -->
-            <div class="d-none d-lg-block">
-                <div class="tech-hex-node anim-zoom-pop delay-2 floating-node-2" style="left: 16%; top: 30%; border-color: #96c93d;"><i class="fa-solid fa-crow text-success"></i></div>
-                <div class="tech-hex-node anim-zoom-pop delay-3 floating-node-1" style="left: 26%; top: 56%; border-color: #96c93d;"><i class="fa-solid fa-leaf text-success"></i></div>
-                <div class="tech-hex-node anim-zoom-pop delay-4 floating-node-3" style="left: 36%; top: 26%; border-color: #96c93d;"><i class="fa-solid fa-camera-retro text-warning"></i></div>
-            </div>
-
-            <div class="row h-100 align-items-center position-relative" style="z-index: 15;">
-                <div class="col-lg-7 offset-lg-5 text-center text-lg-start ps-lg-5">
-                    <div class="anim-from-right delay-1">
-                        <span class="badge bg-success px-3 py-2 text-white fw-bold mb-3" style="font-size: 0.95rem; border-radius: 30px; box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);">
-                            <i class="fa-solid fa-tree me-1"></i> ECO & HERITAGE CITY
-                        </span>
-                        <h2 class="slide-title-banner text-white mb-2">
-                            SMART <span style="color: #4dee94;">TOURISM</span>
-                        </h2>
-                        <h4 class="fw-bold text-white-50 mb-4">สวรรค์ท่องเที่ยวธรรมชาติ ทะเลน้อย มรดกเกษตรโลก</h4>
-                    </div>
-
-                    <div class="slide-info-card anim-from-bottom delay-3 mx-auto mx-lg-0" style="border-left-color: #10b981;">
-                        <h6 class="fw-bold mb-2 text-dark"><i class="fa-solid fa-map-location-dot text-success me-2"></i>นำเที่ยวด้วยระบบ VR 360 & GPS อัจฉริยะ</h6>
-                        <p class="mb-3 text-secondary" style="font-size: 0.95rem; line-height: 1.6;">
-                            สัมผัสประสบการณ์ท่องเที่ยวมิติดิจิทัล เช็คความปลอดภัย ลานจอดรถ และจองบริการท่องเที่ยวชุมชนผ่านแพลตฟอร์มไร้รอยต่อ
-                        </p>
-                        <div class="d-flex align-items-center justify-content-between pt-2 border-top">
-                            <small class="text-muted"><i class="fa-solid fa-vr-cardboard text-success me-1"></i> รองรับระบบ Virtual Tour 360°</small>
-                            <button onclick="App.toast('เปิดแผนที่นำเที่ยวดิจิทัล 360 องศา...', 'success')" class="btn btn-sm btn-success px-3 rounded-pill fw-bold text-white">เปิดโลกท่องเที่ยว <i class="fa-solid fa-compass ms-1"></i></button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ================= SLIDE 3: SMART GOVERNANCE (บริการราชการออนไลน์ 24 ชม.) ================= -->
-        <div class="carousel-item smart-slide-item slide-bg-governance h-100 p-4 p-lg-5">
-            <div class="slide-geo-left"></div>
-            <div class="slide-geo-right-orange" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);"></div>
-
-            <!-- Floating Gov Elements -->
-            <div class="d-none d-lg-block">
-                <div class="tech-hex-node anim-zoom-pop delay-2 floating-node-3" style="left: 18%; top: 25%; border-color: #60a5fa;"><i class="fa-solid fa-file-contract text-primary"></i></div>
-                <div class="tech-hex-node anim-zoom-pop delay-3 floating-node-2" style="left: 30%; top: 52%; border-color: #60a5fa;"><i class="fa-solid fa-stamp text-info"></i></div>
-                <div class="tech-hex-node anim-zoom-pop delay-4 floating-node-1" style="left: 37%; top: 20%; border-color: #60a5fa;"><i class="fa-solid fa-building-columns text-warning"></i></div>
-            </div>
-
-            <div class="row h-100 align-items-center position-relative" style="z-index: 15;">
-                <div class="col-lg-7 offset-lg-5 text-center text-lg-start ps-lg-5">
-                    <div class="anim-from-right delay-1">
-                        <span class="badge bg-primary px-3 py-2 text-white fw-bold mb-3" style="font-size: 0.95rem; border-radius: 30px; box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);">
-                            <i class="fa-solid fa-landmark me-1"></i> DIGITAL GOVERNANCE
-                        </span>
-                        <h2 class="slide-title-banner text-white mb-2">
-                            SMART <span style="color: #60a5fa;">GOVERNANCE</span>
-                        </h2>
-                        <h4 class="fw-bold text-white-50 mb-4">ภาครัฐโปร่งใส รวดเร็ว ตรวจสอบได้ทุกขั้นตอน</h4>
-                    </div>
-
-                    <div class="slide-info-card anim-from-bottom delay-3 mx-auto mx-lg-0" style="border-left-color: #3b82f6;">
-                        <h6 class="fw-bold mb-2 text-dark"><i class="fa-solid fa-shield-halved text-primary me-2"></i>บริการประชาชน One-Stop Service 24 ชม.</h6>
-                        <p class="mb-3 text-secondary" style="font-size: 0.95rem; line-height: 1.6;">
-                            ยื่นเรื่องร้องทุกข์ ติดตามผลการดำเนินงาน และดาวน์โหลดแบบฟอร์มหนังสือราชการผ่านเว็บพอร์ตัล ลดขั้นตอน สะดวกสบาย โดยไม่ต้องเดินทาง
-                        </p>
-                        <div class="d-flex align-items-center justify-content-between pt-2 border-top">
-                            <small class="text-muted"><i class="fa-solid fa-lock text-success me-1"></i> ความปลอดภัยข้อมูล PDPA</small>
-                            <a href="#pdpa" class="btn btn-sm btn-primary px-3 rounded-pill fw-bold">ยื่นคำร้องออนไลน์ <i class="fa-solid fa-paper-plane ms-1"></i></a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Navigation Arrows -->
-    <button class="carousel-control-prev" type="button" data-bs-target="#smartCityCarousel" data-bs-slide="prev" style="width: 60px; z-index: 25;">
-        <span class="d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background: rgba(0,0,0,0.5); border-radius: 50%; border: 1px solid rgba(255,255,255,0.3); transition: transform 0.2s;">
-            <i class="fa-solid fa-chevron-left text-white fs-5"></i>
-        </span>
-        <span class="visually-hidden">Previous</span>
-    </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#smartCityCarousel" data-bs-slide="next" style="width: 60px; z-index: 25;">
-        <span class="d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background: rgba(0,0,0,0.5); border-radius: 50%; border: 1px solid rgba(255,255,255,0.3); transition: transform 0.2s;">
-            <i class="fa-solid fa-chevron-right text-white fs-5"></i>
-        </span>
-        <span class="visually-hidden">Next</span>
-    </button>
-</section>
-
-<!-- 1.1 INTERACTIVE CITIZEN TRACKING DOCK -->
-<section class="mb-5">
-    <div class="glass-card p-4 hover-lift" style="border-radius: 20px; background: linear-gradient(135deg, var(--glass-bg) 0%, rgba(255,255,255,0.08) 100%); border: 1px solid var(--glass-border);">
-        <div class="row align-items-center g-3">
-            <div class="col-lg-5">
-                <h5 class="fw-bold mb-1" style="color: var(--text-primary);"><i class="fa-solid fa-magnifying-glass-location text-primary me-2"></i>ติดตามคำร้องและตรวจสอบสถานะเอกสาร</h5>
-                <p class="text-muted mb-0" style="font-size: 0.9rem;">บริการประชาชน 24 ชม. ตรวจสอบความคืบหน้ารวดเร็ว ฉับไว</p>
-            </div>
-            <div class="col-lg-7">
-                <div class="d-flex align-items-center p-2 shadow-sm" style="background: var(--bg-primary); border: 2px solid var(--glass-border); border-radius: var(--radius-md);">
-                    <i class="fa-solid fa-barcode mx-3 text-primary" style="font-size: 1.4rem;"></i>
-                    <input type="text" id="trackingInput" placeholder="กรอกรหัสคำร้อง 13 หลัก หรือรหัสติดตาม (เช่น PHAT-84321)..." 
-                           style="border: none; background: transparent; color: var(--text-primary); outline: none; width: 100%; font-size: 1rem;">
-                    <button class="btn-modern px-4 py-2 m-1" style="white-space: nowrap; border-radius: var(--radius-sm); font-weight: 600;" onclick="verifyTrackingCode()">
-                        <i class="fa-solid fa-bolt me-1"></i> ตรวจสอบทันที
+                    
+                    <button class="btn btn-primary rounded-pill px-4 py-2 me-1 fw-bold text-white shadow-sm" style="background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); border: none; white-space: nowrap;" onclick="document.getElementById('globalSearchInput').focus()">
+                        ค้นหาเลย
                     </button>
+                </div>
+                
+                <!-- Search Results Dropdown -->
+                <div id="searchResultsDropdown" class="dropdown-menu w-100 mt-3 p-0" style="border-radius: 16px; max-height: 450px; overflow-y: auto; display: none; position: absolute; z-index: 1050; background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--glass-border); box-shadow: 0 20px 40px rgba(0,0,0,0.15);">
+                    <!-- Results will be injected here via JS -->
                 </div>
             </div>
         </div>
@@ -333,17 +213,97 @@ async function handleAsyncSubmit(event) {
     }
 }
 
-// 5. ตรวจสอบรหัสติดตาม
-function verifyTrackingCode() {
-    const val = document.getElementById('trackingInput').value.trim();
-    if (!val) {
-        App.toast('กรุณากรอกรหัสติดตามเรื่อง (เช่น PHAT-84321) ก่อนกดปุ่มติดตามครับ', 'error');
-        return;
-    }
-    App.toast(`🟢 รหัส [${val}]: คำร้องของท่านอยู่ในขั้นตอนการดำเนินการของศูนย์เจ้าหน้าที่ พัทลุงดิจิทัลพอร์ทัล`, 'success');
+// 5. Global Smart Search (Live Search)
+let searchTimeout = null;
+const searchInput = document.getElementById('globalSearchInput');
+const searchDropdown = document.getElementById('searchResultsDropdown');
+const searchSpinner = document.getElementById('searchSpinner');
+
+if (searchInput) {
+    // ซ่อน Dropdown เมื่อคลิกที่อื่น
+    document.addEventListener('click', function(e) {
+        if (!searchInput.contains(e.target) && !searchDropdown.contains(e.target)) {
+            searchDropdown.style.display = 'none';
+        }
+    });
+    
+    // โชว์ Dropdown ถ้ามีค่าเมื่อคลิก input
+    searchInput.addEventListener('focus', function() {
+        if (this.value.trim().length > 0 && searchDropdown.innerHTML.trim() !== '') {
+            searchDropdown.style.display = 'block';
+        }
+    });
+
+    searchInput.addEventListener('input', function() {
+        const query = this.value.trim();
+        
+        clearTimeout(searchTimeout);
+        
+        if (query.length === 0) {
+            searchDropdown.style.display = 'none';
+            searchSpinner.classList.add('d-none');
+            return;
+        }
+        
+        searchSpinner.classList.remove('d-none');
+        
+        searchTimeout = setTimeout(async () => {
+            try {
+                const res = await fetch(`<?= base_url("search") ?>?q=${encodeURIComponent(query)}`);
+                const json = await res.json();
+                
+                searchSpinner.classList.add('d-none');
+                
+                if (json.success && json.data) {
+                    renderSearchResults(json.data, query);
+                }
+            } catch (err) {
+                console.error("Search Error:", err);
+                searchSpinner.classList.add('d-none');
+            }
+        }, 400); // delay 400ms
+    });
 }
 
-
+function renderSearchResults(results, query) {
+    if (results.length === 0) {
+        searchDropdown.innerHTML = `<div class="p-4 text-center text-muted">ไม่พบข้อมูลที่ตรงกับ "${query}"</div>`;
+    } else {
+        let html = '<div class="list-group list-group-flush" style="border-radius: 12px; overflow: hidden;">';
+        results.forEach(item => {
+            // ถ้ามี URL ให้เป็นลิงก์ ถ้าไม่มีให้เป็น javascript:void(0)
+            const link = item.url && item.url !== '#' ? item.url : 'javascript:void(0)';
+            
+            html += `
+            <a href="${link}" class="list-group-item list-group-item-action d-flex align-items-start gap-3 p-3" style="background: transparent; border-bottom: 1px solid var(--glass-border); transition: all 0.2s;">
+                <div class="mt-1">
+                    <span class="badge ${item.ui_badge_color} rounded-circle p-2 shadow-sm" style="width: 38px; height: 38px; display: flex; align-items: center; justify-content: center;">
+                        <i class="${item.ui_icon}" style="font-size: 1.1rem;"></i>
+                    </span>
+                </div>
+                <div class="flex-grow-1 overflow-hidden">
+                    <div class="d-flex w-100 justify-content-between align-items-center mb-1">
+                        <h6 class="mb-0 fw-bold text-truncate" style="color: var(--text-primary); max-width: 75%;">${item.title}</h6>
+                        <span class="badge ${item.ui_badge_color} bg-opacity-75" style="font-size: 0.7rem;">${item.ui_badge_text}</span>
+                    </div>
+                    <p class="mb-0 text-muted text-truncate" style="font-size: 0.85rem;">${item.description || '-'}</p>
+                </div>
+            </a>
+            `;
+        });
+        html += '</div>';
+        
+        // Add footer for all results link if needed
+        html += `
+        <div class="p-2 text-center border-top" style="border-color: var(--glass-border) !important; background: rgba(0,0,0,0.02);">
+            <small class="text-muted"><i class="fa-solid fa-circle-info me-1"></i> แสดงผลลัพธ์ ${results.length} รายการที่ตรงกัน</small>
+        </div>
+        `;
+        
+        searchDropdown.innerHTML = html;
+    }
+    searchDropdown.style.display = 'block';
+}
 </script>
 
 <!-- 5. DYNAMIC FOOTER & AGENCY CREDENTIALS -->

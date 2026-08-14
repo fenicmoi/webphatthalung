@@ -88,7 +88,7 @@ class Search extends ResourceController
 
         // --- 3. ดึงข้อมูลข่าวประชาสัมพันธ์จริง (Live News) ---
         if (function_exists('get_site_news')) {
-            $newsList = get_site_news(null, 15);
+            $newsList = get_site_news(100); // Changed to limit 100, no category
             foreach ($newsList as $news) {
                 if (($news['category'] ?? '') === 'event') continue; // Skip event in news list if desired
                 $index[] = [

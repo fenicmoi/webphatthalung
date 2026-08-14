@@ -38,8 +38,8 @@
     <div class="ambient-glow-2"></div>
 
     <div class="content-wrapper">
-        <!-- Emergency & Disaster Early Warning Marquee Banner -->
-        <?= $this->include('components/emergency_alert_banner') ?>
+        <!-- Emergency & Disaster Early Warning Marquee Banner (Removed as requested) -->
+        <?php // echo $this->include('components/emergency_alert_banner') ?>
 
         <!-- Municipal Government Ribbon Header (แถบเมนูหัวราชการมาตรฐานใหม่) -->
         <header class="gov-header-wrapper">
@@ -121,12 +121,14 @@
 
                 <!-- 3. Right Utility Station (Streamlined & Clean) -->
                 <div class="gov-utility-station d-flex align-items-center pe-3">
-                    <!-- Universal Smart Omni-Search Trigger -->
+                    <!-- Universal Smart Omni-Search Trigger (Removed as requested) -->
+                    <!--
                     <button type="button" onclick="OmniSearch.open()" class="btn btn-sm btn-omni-trigger d-flex align-items-center gap-2 px-3 py-2 border rounded-pill shadow-sm m-0 text-decoration-none transition-transform hover-scale" style="background: rgba(14, 165, 233, 0.15); border: 1px solid rgba(14, 165, 233, 0.45) !important; color: var(--text-primary);">
                         <i class="fa-solid fa-wand-magic-sparkles text-warning fs-6"></i>
                         <span class="d-none d-md-inline fw-bold" style="font-size: 0.88rem;">ค้นหาอัจฉริยะ</span>
                         <span class="badge bg-primary text-white rounded-pill px-2 py-0 ms-1" style="font-size: 0.72rem;">Ctrl+K</span>
                     </button>
+                    -->
                 </div>
             </div>
         </header>
