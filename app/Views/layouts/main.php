@@ -20,31 +20,24 @@
     <!-- FontAwesome 6 CDN (for Modern Icons) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
-    <!-- Custom Modern Glassmorphism Stylesheet -->
-    <link rel="stylesheet" href="<?= base_url('assets/css/main.css') ?>">
+    <!-- Custom Modern Stylesheet -->
+    <link rel="stylesheet" href="<?= base_url('assets/css/main.css?v=' . time()) ?>">
     
     <?php if (!empty($siteConfig['theme_accent'])): ?>
     <style>
         :root {
             --accent-primary: <?= htmlspecialchars($siteConfig['theme_accent']) ?> !important;
-            --gradient-hero: linear-gradient(135deg, <?= htmlspecialchars($siteConfig['theme_accent']) ?> 0%, #3b82f6 50%, #06b6d4 100%) !important;
+            --gradient-hero: linear-gradient(135deg, <?= htmlspecialchars($siteConfig['theme_accent']) ?> 0%, #1e3a8a 100%) !important;
         }
     </style>
     <?php endif; ?>
 </head>
 <body>
-    <!-- Ambient Background Lighting Glow -->
-    <div class="ambient-glow"></div>
-    <div class="ambient-glow-2"></div>
-
     <div class="content-wrapper">
-        <!-- Emergency & Disaster Early Warning Marquee Banner (Removed as requested) -->
-        <?php // echo $this->include('components/emergency_alert_banner') ?>
-
-        <!-- Municipal Government Ribbon Header (แถบเมนูหัวราชการมาตรฐานใหม่) -->
+        <!-- Municipal Government Header -->
         <header class="gov-header-wrapper">
             <div class="gov-navbar">
-                <!-- 1. Left Slanted Brand Ribbon & Mobile Toggler -->
+                <!-- 1. Left Brand Identity -->
                 <div class="gov-brand-bar d-flex align-items-center justify-content-between">
                     <a href="<?= base_url() ?>" class="gov-brand-ribbon">
                         <div class="gov-logo-circle">
@@ -52,17 +45,17 @@
                             <?php if (!empty($siteLogo)): ?>
                                 <img src="<?= htmlspecialchars($siteLogo) ?>" alt="Logo" class="gov-logo-img">
                             <?php else: ?>
-                                <i class="fa-solid fa-building-columns text-success" style="font-size: 1.8rem;"></i>
+                                <i class="fa-solid fa-building-columns text-primary" style="font-size: 1.5rem;"></i>
                             <?php endif; ?>
                         </div>
                         <div class="gov-title-stack">
                             <span class="gov-title-main"><?= htmlspecialchars($siteConfig['site_title_th'] ?? 'จังหวัดพัทลุง') ?></span>
-                            <span class="gov-title-sub"><?= htmlspecialchars($siteConfig['site_title_en'] ?? $siteConfig['slogan'] ?? 'พัทลุงเมืองน่าอยู่ มุ่งสู่ดิจิทัลสากล') ?></span>
+                            <span class="gov-title-sub"><?= htmlspecialchars($siteConfig['site_title_en'] ?? $siteConfig['slogan'] ?? 'Phatthalung Provincial Digital Portal') ?></span>
                         </div>
                     </a>
 
-                    <button class="navbar-toggler d-xl-none border-0 p-3 me-2 text-white" type="button" onclick="toggleGovMobileNav()" aria-label="Toggle navigation">
-                        <i class="fa-solid fa-bars-staggered fa-xl" style="color: #6fd3c6;"></i>
+                    <button class="navbar-toggler d-xl-none border-0 p-2 me-2 text-white" type="button" onclick="toggleGovMobileNav()" aria-label="Toggle navigation">
+                        <i class="fa-solid fa-bars-staggered fa-lg" style="color: #60a5fa;"></i>
                     </button>
                 </div>
 
@@ -78,11 +71,11 @@
                                 <a class="gov-nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     <span><?= htmlspecialchars($nav['title'] ?? '') ?></span>
                                 </a>
-                                <ul class="dropdown-menu gov-dropdown-menu shadow-lg border-0">
+                                <ul class="dropdown-menu gov-dropdown-menu shadow border-0">
                                     <?php foreach($nav['children'] as $sub): ?>
                                     <li>
-                                        <a class="dropdown-item py-2 d-flex align-items-center gap-2 text-decoration-none transition-all" href="<?= htmlspecialchars($sub['url'] ?? '#') ?>" target="<?= htmlspecialchars($sub['target'] ?? '_self') ?>" style="font-size: 0.95rem; font-weight: 500;">
-                                            <i class="fa-solid fa-chevron-right text-primary" style="font-size: 0.75rem;"></i>
+                                        <a class="dropdown-item py-2 d-flex align-items-center gap-2 text-decoration-none" href="<?= htmlspecialchars($sub['url'] ?? '#') ?>" target="<?= htmlspecialchars($sub['target'] ?? '_self') ?>">
+                                            <i class="fa-solid fa-chevron-right text-primary" style="font-size: 0.7rem;"></i>
                                             <span><?= htmlspecialchars($sub['title'] ?? '') ?></span>
                                         </a>
                                     </li>
@@ -103,7 +96,7 @@
                             <a class="gov-nav-link dropdown-toggle text-warning" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="fa-solid fa-circle-user me-1"></i> <?= mb_substr(session()->get('full_name') ?? 'เจ้าหน้าที่', 0, 15) ?>
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-end gov-dropdown-menu shadow-lg border-0">
+                            <ul class="dropdown-menu dropdown-menu-end gov-dropdown-menu shadow border-0">
                                 <li class="px-3 py-2 border-bottom"><small class="text-muted">สถานะ: เจ้าหน้าที่ระบบ</small></li>
                                 <li><a class="dropdown-item py-2 text-primary fw-bold" href="<?= base_url('admin/dashboard') ?>"><i class="fa-solid fa-gauge me-2"></i>หลังบ้าน Admin</a></li>
                                 <li><hr class="dropdown-divider"></li>
@@ -112,28 +105,16 @@
                         </li>
                     <?php else: ?>
                         <li class="gov-nav-item">
-                            <a class="gov-nav-link text-warning" href="<?= base_url('login') ?>" title="สำหรับเจ้าหน้าที่">
+                            <a class="gov-nav-link text-white-50" href="<?= base_url('login') ?>" title="สำหรับเจ้าหน้าที่">
                                 <i class="fa-solid fa-lock"></i>
                             </a>
                         </li>
                     <?php endif; ?>
                 </ul>
-
-                <!-- 3. Right Utility Station (Streamlined & Clean) -->
-                <div class="gov-utility-station d-flex align-items-center pe-3">
-                    <!-- Universal Smart Omni-Search Trigger (Removed as requested) -->
-                    <!--
-                    <button type="button" onclick="OmniSearch.open()" class="btn btn-sm btn-omni-trigger d-flex align-items-center gap-2 px-3 py-2 border rounded-pill shadow-sm m-0 text-decoration-none transition-transform hover-scale" style="background: rgba(14, 165, 233, 0.15); border: 1px solid rgba(14, 165, 233, 0.45) !important; color: var(--text-primary);">
-                        <i class="fa-solid fa-wand-magic-sparkles text-warning fs-6"></i>
-                        <span class="d-none d-md-inline fw-bold" style="font-size: 0.88rem;">ค้นหาอัจฉริยะ</span>
-                        <span class="badge bg-primary text-white rounded-pill px-2 py-0 ms-1" style="font-size: 0.72rem;">Ctrl+K</span>
-                    </button>
-                    -->
-                </div>
             </div>
         </header>
 
-        <!-- Widescreen Full-Width Edge-to-Edge Hero Banner Section (Hybrid Widescreen) -->
+        <!-- Widescreen Hero Banner Section -->
         <?= $this->renderSection('hero_banner') ?>
 
         <!-- Main Page Content Section -->
@@ -141,27 +122,63 @@
             <?= $this->renderSection('content') ?>
         </main>
 
-        <!-- Minimalist Footer -->
-        <footer class="py-5 mt-5" style="border-top: 1px solid var(--glass-border); background: var(--glass-navbar-bg);">
-            <div class="container text-center text-md-start">
-                <div class="row align-items-center">
-                    <div class="col-md-6 mb-3 mb-md-0">
-                        <h6 style="color: var(--text-primary); font-weight: 600; margin-bottom: 0.25rem;">
-                            จังหวัดพัทลุง | Phatthalung Province Modern Portal
-                        </h6>
-                        <small style="color: var(--text-muted);">
-                            ขับเคลื่อนด้วย <strong>CodeIgniter <?= \CodeIgniter\CodeIgniter::CI_VERSION ?></strong> บนโครงสร้างเซิร์ฟเวอร์ร่วมสมัย (PHP 7.4+ Supported)
-                        </small>
+        <!-- Official Elegant Footer -->
+        <footer class="py-5 mt-5" style="background: #0f172a; color: #94a3b8; border-top: 3px solid #2563eb;">
+            <div class="container">
+                <div class="row g-4">
+                    <div class="col-lg-5">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div style="width: 44px; height: 44px; border-radius: 10px; background: #ffffff; display: flex; align-items: center; justify-content: center;">
+                                <i class="fa-solid fa-building-columns text-primary" style="font-size: 1.3rem;"></i>
+                            </div>
+                            <div>
+                                <h5 class="fw-bold text-white mb-0"><?= htmlspecialchars($siteConfig['site_title_th'] ?? 'จังหวัดพัทลุง') ?></h5>
+                                <small class="text-white-50"><?= htmlspecialchars($siteConfig['site_title_en'] ?? 'Phatthalung Provincial Portal') ?></small>
+                            </div>
+                        </div>
+                        <p class="small mb-3" style="line-height: 1.7; color: #cbd5e1;">
+                            <?= htmlspecialchars($siteConfig['address'] ?? 'ศาลากลางจังหวัดพัทลุง ถนนราเมศวร์ ตำบลคูหาสวรรค์ อำเภอเมืองพัทลุง 93000') ?>
+                        </p>
+                        <div class="d-flex flex-column gap-1 small text-white-50">
+                            <div><i class="fa-solid fa-phone text-primary me-2"></i> โทรศัพท์: <?= htmlspecialchars($siteConfig['contact_phone'] ?? '074-613409') ?></div>
+                            <div><i class="fa-solid fa-envelope text-primary me-2"></i> อีเมล: <?= htmlspecialchars($siteConfig['contact_email'] ?? 'contact@phatthalung.go.th') ?></div>
+                        </div>
                     </div>
-                    <div class="col-md-6 text-md-end">
-                        <span class="glass-badge">
-                            <i class="fa-solid fa-circle-check text-success" style="color: #10b981;"></i> 
-                            ระบบพร้อมให้บริการ 100%
-                        </span>
+
+                    <div class="col-sm-6 col-lg-3">
+                        <h6 class="text-white fw-bold mb-3"><i class="fa-solid fa-link text-primary me-2"></i>ลิงก์บริการด่วน</h6>
+                        <ul class="list-unstyled d-flex flex-column gap-2 small">
+                            <li><a href="<?= base_url('news') ?>" class="text-decoration-none text-light opacity-75 hover-opacity-100"><i class="fa-solid fa-chevron-right me-1" style="font-size:0.7rem;"></i> ข่าวประชาสัมพันธ์</a></li>
+                            <li><a href="<?= base_url('procurement') ?>" class="text-decoration-none text-light opacity-75 hover-opacity-100"><i class="fa-solid fa-chevron-right me-1" style="font-size:0.7rem;"></i> ประกาศจัดซื้อจัดจ้าง</a></li>
+                            <li><a href="<?= base_url('gallery') ?>" class="text-decoration-none text-light opacity-75 hover-opacity-100"><i class="fa-solid fa-chevron-right me-1" style="font-size:0.7rem;"></i> ภาพกิจกรรมและคลังสื่อ</a></li>
+                            <li><a href="<?= base_url('ita') ?>" class="text-decoration-none text-light opacity-75 hover-opacity-100"><i class="fa-solid fa-chevron-right me-1" style="font-size:0.7rem;"></i> ศูนย์ข้อมูลความโปร่งใส (ITA)</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="col-sm-6 col-lg-4">
+                        <h6 class="text-white fw-bold mb-3"><i class="fa-solid fa-shield-check text-success me-2"></i>มาตรฐานและการเข้าถึง</h6>
+                        <p class="small text-white-50 mb-3" style="line-height: 1.6;">
+                            เว็บไซต์นี้รองรับมาตรฐานการเข้าถึงข้อมูลภาครัฐ (W3C WCAG AAA) พร้อมระบบอ่านออกเสียงสำหรับผู้พิการและผู้สูงอายุ
+                        </p>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 rounded-pill" style="font-size: 0.82rem;">
+                                <i class="fa-solid fa-circle-check me-1"></i> ระบบออนไลน์พร้อมใช้งาน 100%
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-3 border-top d-flex flex-wrap align-items-center justify-content-between text-white-50 small" style="border-color: rgba(255,255,255,0.08) !important;">
+                    <div>
+                        สงวนลิขสิทธิ์ &copy; <?= date('Y') + 543 ?> <?= htmlspecialchars($siteConfig['site_title_th'] ?? 'จังหวัดพัทลุง') ?>. All rights reserved.
+                    </div>
+                    <div>
+                        <a href="<?= base_url('login') ?>" class="text-decoration-none text-white-50 hover-text-white"><i class="fa-solid fa-user-lock me-1"></i> สำหรับเจ้าหน้าที่</a>
                     </div>
                 </div>
             </div>
         </footer>
+    </div>
     </div>
 
     <!-- Bootstrap 5.3 JS Bundle CDN -->

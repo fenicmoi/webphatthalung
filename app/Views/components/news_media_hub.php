@@ -13,37 +13,97 @@ $isOfficer = session()->get('isLoggedIn');
 
 <style>
 /* CSS styles for the News & Media Hub */
+/* 1. Main Tabs (ประเภทหลัก) - Underline Style */
+.nav-underline-custom {
+    gap: 1rem;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 1px;
+}
+.nav-underline-custom::-webkit-scrollbar {
+    height: 4px;
+}
+.nav-underline-custom::-webkit-scrollbar-thumb {
+    background-color: rgba(0,0,0,0.1);
+    border-radius: 4px;
+}
 .news-media-tab-trigger {
-    color: var(--text-secondary) !important;
+    color: #64748b !important;
     background: transparent !important;
     border: none !important;
-    padding: 10px 22px !important;
-    font-weight: 700 !important;
-    font-size: 0.95rem;
+    padding: 12px 4px !important;
+    margin-right: 1.5rem !important;
+    font-weight: 600 !important;
+    font-size: 1.05rem;
     transition: all 0.25s ease !important;
-    border-radius: 50px !important;
+    border-radius: 0 !important;
+    border-bottom: 3px solid transparent !important;
+    white-space: nowrap;
+}
+.news-media-tab-trigger:hover {
+    color: #1e3a8a !important;
+    border-bottom-color: rgba(30, 58, 138, 0.3) !important;
 }
 .news-media-tab-trigger.active {
-    color: #ffffff !important;
-    background: linear-gradient(135deg, #0284c7, #0369a1) !important;
-    box-shadow: 0 4px 15px rgba(2, 132, 199, 0.35) !important;
+    color: #1e3a8a !important;
+    border-bottom: 3px solid #1e3a8a !important;
+    box-shadow: none !important;
+    font-weight: 700 !important;
+}
+
+[data-theme="dark"] .news-media-tab-trigger {
+    color: #94a3b8 !important;
+}
+[data-theme="dark"] .news-media-tab-trigger:hover {
+    color: #60a5fa !important;
+    border-bottom-color: rgba(96, 165, 250, 0.3) !important;
 }
 [data-theme="dark"] .news-media-tab-trigger.active {
-    color: #ffffff !important;
+    color: #60a5fa !important;
+    border-bottom-color: #60a5fa !important;
 }
+
+/* 2. Category Sub-tabs (ประเภทย่อย) - Filter Chips */
 .news-cat-btn {
+    border: 1px solid #e2e8f0 !important;
+    background: #ffffff;
+    color: #475569 !important;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    padding: 6px 16px !important;
+    font-size: 0.85rem !important;
+    border-radius: 30px !important;
+}
+.news-cat-btn:hover {
+    background: #f1f5f9 !important;
+    color: #1e3a8a !important;
+    border-color: #cbd5e1 !important;
+}
+.news-cat-btn.active {
+    background: #eff6ff !important;
+    color: #1e3a8a !important;
+    font-weight: 700;
+    border-color: #3b82f6 !important;
+    box-shadow: none !important;
+}
+
+[data-theme="dark"] .news-cat-btn {
     border: 1px solid rgba(255, 255, 255, 0.15) !important;
     background: rgba(255, 255, 255, 0.05);
-    color: var(--text-secondary) !important;
-    transition: all 0.2s ease;
 }
-.news-cat-btn:hover, .news-cat-btn.active {
-    background: var(--accent-primary) !important;
-    color: #0f172a !important;
-    font-weight: 700;
+[data-theme="dark"] .news-cat-btn:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: #60a5fa !important;
+    border-color: rgba(96, 165, 250, 0.4) !important;
+}
+[data-theme="dark"] .news-cat-btn.active {
+    background: rgba(37, 99, 235, 0.2) !important;
+    color: #60a5fa !important;
+    border-color: #60a5fa !important;
 }
 .news-read-more-link {
-    color: var(--accent-primary) !important;
+    color: #2563eb !important;
     font-weight: 600;
     text-decoration: none;
     transition: transform 0.2s ease;
@@ -54,25 +114,27 @@ $isOfficer = session()->get('isLoggedIn');
 </style>
 
 <section id="news-media-hub" class="my-5 py-4">
-    <div class="glass-card p-4 p-md-5" style="border-radius: 28px; border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow);">
+    <div class="glass-card p-4 p-md-5" style="border-radius: 28px; border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow); background: var(--card-bg, #ffffff);">
         
         <!-- Hub Header & Segmented Switcher -->
-        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4 pb-3 border-bottom" style="border-color: var(--glass-border) !important;">
-            <div>
-                <h3 class="fw-bold mb-1 d-flex align-items-center gap-2" style="color: var(--text-primary);">
-                    <i class="fa-solid fa-bullhorn text-warning"></i>
-                    <span>ศาลาประชาสัมพันธ์และข่าวสารจังหวัด</span>
-                    <?php if ($isOfficer): ?>
-                        <span class="badge bg-success text-dark px-2 py-1 fs-6"><i class="fa-solid fa-user-shield me-1"></i>แอดมิน</span>
-                    <?php endif; ?>
-                </h3>
-                <p style="color: var(--text-secondary); margin: 0; font-size: 0.92rem;">
-                    จุดศูนย์รวมการประกาศข่าวสาร ปฏิทินตารางงาน คลังภาพ และรายการวิดีทัศน์ประชาสัมพันธ์จังหวัดพัทลุง
-                </p>
+        <div class="mb-4">
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+                <div>
+                    <h3 class="fw-bold mb-1 d-flex align-items-center gap-2" style="color: var(--text-primary);">
+                        <i class="fa-solid fa-bullhorn text-warning"></i>
+                        <span>ศาลาประชาสัมพันธ์และข่าวสารจังหวัด</span>
+                        <?php if ($isOfficer): ?>
+                            <span class="badge bg-success text-dark px-2 py-1 fs-6"><i class="fa-solid fa-user-shield me-1"></i>แอดมิน</span>
+                        <?php endif; ?>
+                    </h3>
+                    <p style="color: var(--text-secondary); margin: 0; font-size: 0.92rem;">
+                        จุดศูนย์รวมการประกาศข่าวสาร ปฏิทินตารางงาน คลังภาพ และรายการวิดีทัศน์ประชาสัมพันธ์จังหวัดพัทลุง
+                    </p>
+                </div>
             </div>
 
-            <!-- Tab Navigation Pills -->
-            <ul class="nav nav-pills rounded-pill p-1 bg-light border d-inline-flex align-items-center gap-1" id="newsMediaHubTabs" role="tablist" style="background: rgba(255, 255, 255, 0.06) !important; border-color: var(--glass-border) !important;">
+            <!-- Tab Navigation Pills -> Underline Style -->
+            <ul class="nav nav-underline-custom border-bottom" id="newsMediaHubTabs" role="tablist" style="border-color: rgba(0,0,0,0.08) !important;">
                 <li class="nav-item" role="presentation">
                     <button class="nav-link active news-media-tab-trigger" id="tab-pr-news-trigger" data-bs-toggle="pill" data-bs-target="#tab-pr-news" type="button" role="tab" aria-controls="tab-pr-news" aria-selected="true">
                         📰 ข่าวประชาสัมพันธ์

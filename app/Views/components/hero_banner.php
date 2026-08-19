@@ -42,49 +42,16 @@ if (empty($banners)) {
                 <div class="slide-geo-right-orange" style="background: linear-gradient(135deg, <?= $idx === 2 ? '#00b09b, #96c93d' : ($idx === 3 ? '#3b82f6, #1d4ed8' : '#ff9600, #ff5e62') ?>);"></div>
             <?php endif; ?>
 
-            <!-- Floating Kinetic Multi-Layer Graphics -->
+            <!-- Floating Custom Layer if uploaded by user -->
             <?php if ($bgType === 'custom_layer' && !empty($slide['floating_img_path'])): 
                 $fPos = $slide['floating_pos'] ?? 'left_center';
-                $fAnim = $slide['floating_anim'] ?? 'float_bounce';
                 $posCss = "left: 8%; top: 50%; transform: translateY(-50%);";
                 if ($fPos === 'right_center') $posCss = "right: 8%; top: 50%; transform: translateY(-50%);";
                 elseif ($fPos === 'top_center') $posCss = "left: 50%; top: 18%; transform: translateX(-50%);";
                 elseif ($fPos === 'bottom_left') $posCss = "left: 6%; bottom: 8%;";
-                
-                $animClass = ($fAnim === 'pulse_glow') ? 'animate-pulse' : (($fAnim === 'slide_left') ? 'anim-from-left delay-1' : 'floating-node-1');
             ?>
-                <!-- Custom User-Uploaded Floating Graphic Layer -->
-                <div class="position-absolute d-none d-md-block <?= $animClass ?>" style="<?= $posCss ?> z-index: 12; pointer-events: none; max-width: 420px;">
-                    <img src="<?= base_url($slide['floating_img_path']) ?>" alt="Floating Layer" class="img-fluid" style="max-height: 380px; filter: drop-shadow(0 20px 35px rgba(0, 0, 0, 0.55));">
-                </div>
-            <?php elseif ($bgType === 'kinetic_pole' || $styleClass === 'slide-bg-living'): ?>
-                <!-- Smart Pole & Cyber Nodes -->
-                <div class="smart-pole-visual d-none d-lg-flex anim-from-bottom delay-1" style="left: 8%;">
-                    <div class="pole-top-light"></div>
-                    <div class="pole-shaft">
-                        <div class="pole-sensor-box" title="กล้อง AI CCTV 24 ชม."><i class="fa-solid fa-video text-danger animate-pulse"></i></div>
-                        <div class="pole-sensor-box" title="เซ็นเซอร์มลภาวะ PM 2.5"><i class="fa-solid fa-wind text-primary"></i></div>
-                        <div class="pole-sensor-box" title="ปล่อยสัญญาณ Public WiFi"><i class="fa-solid fa-wifi text-success"></i></div>
-                    </div>
-                </div>
-                <div class="d-none d-lg-block">
-                    <div class="tech-hex-node anim-zoom-pop delay-2 floating-node-1" style="left: 20%; top: 25%;"><i class="fa-solid fa-cloud-arrow-up text-primary"></i></div>
-                    <div class="tech-hex-node anim-zoom-pop delay-3 floating-node-2" style="left: 29%; top: 18%;"><i class="fa-solid fa-shield-halved text-success"></i></div>
-                    <div class="tech-hex-node anim-zoom-pop delay-4 floating-node-3" style="left: 34%; top: 48%;"><i class="fa-solid fa-gears text-warning"></i></div>
-                </div>
-            <?php elseif ($bgType === 'kinetic_nature' || $styleClass === 'slide-bg-tourism'): ?>
-                <!-- Eco-Tourism Nature Nodes -->
-                <div class="d-none d-lg-block">
-                    <div class="tech-hex-node anim-zoom-pop delay-2 floating-node-2" style="left: 14%; top: 30%; border-color: #96c93d;"><i class="fa-solid fa-crow text-success"></i></div>
-                    <div class="tech-hex-node anim-zoom-pop delay-3 floating-node-1" style="left: 24%; top: 56%; border-color: #96c93d;"><i class="fa-solid fa-leaf text-success"></i></div>
-                    <div class="tech-hex-node anim-zoom-pop delay-4 floating-node-3" style="left: 34%; top: 26%; border-color: #96c93d;"><i class="fa-solid fa-camera-retro text-warning"></i></div>
-                </div>
-            <?php elseif ($bgType === 'kinetic_gov' || $styleClass === 'slide-bg-governance'): ?>
-                <!-- Governance & Security Nodes -->
-                <div class="d-none d-lg-block">
-                    <div class="tech-hex-node anim-zoom-pop delay-2 floating-node-3" style="left: 16%; top: 25%; border-color: #60a5fa;"><i class="fa-solid fa-file-contract text-primary"></i></div>
-                    <div class="tech-hex-node anim-zoom-pop delay-3 floating-node-2" style="left: 28%; top: 52%; border-color: #60a5fa;"><i class="fa-solid fa-stamp text-info"></i></div>
-                    <div class="tech-hex-node anim-zoom-pop delay-4 floating-node-1" style="left: 35%; top: 20%; border-color: #60a5fa;"><i class="fa-solid fa-building-columns text-warning"></i></div>
+                <div class="position-absolute d-none d-md-block" style="<?= $posCss ?> z-index: 12; pointer-events: none; max-width: 420px;">
+                    <img src="<?= base_url($slide['floating_img_path']) ?>" alt="Floating Layer" class="img-fluid" style="max-height: 380px; filter: drop-shadow(0 20px 35px rgba(0, 0, 0, 0.45));">
                 </div>
             <?php endif; ?>
 

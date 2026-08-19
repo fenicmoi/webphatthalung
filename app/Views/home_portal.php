@@ -20,46 +20,49 @@ $layoutMode = $cfg['layout_mode'] ?? 'hybrid_widescreen';
 
 <!-- 1.1 GLOBAL SMART SEARCH DOCK -->
 <section class="mb-5 position-relative z-3">
-    <div class="glass-card p-4 hover-lift" style="border-radius: 24px; background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.05) 0%, rgba(255,255,255,0.1) 100%); border: 1px solid rgba(var(--primary-rgb), 0.2); box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
+    <div class="card border-0 p-4 hover-lift" style="border-radius: 24px; background: var(--card-bg, #ffffff); box-shadow: 0 8px 30px rgba(0,0,0,0.04);">
         <div class="row align-items-center g-4">
             <div class="col-lg-4 text-center text-lg-start">
-                <h4 class="fw-bold mb-2" style="color: var(--primary-color); text-shadow: 0 2px 10px rgba(var(--primary-rgb), 0.2);">
-                    <i class="fa-solid fa-magnifying-glass-location me-2 pulse-animation"></i>ระบบค้นหาอัจฉริยะ
+                <h4 class="fw-bold mb-2" style="color: var(--primary-color);">
+                    <i class="fa-solid fa-magnifying-glass-location me-2"></i>ระบบค้นหาอัจฉริยะ
                 </h4>
                 <p class="text-muted mb-0" style="font-size: 0.95rem;">ค้นหาประกาศจัดซื้อฯ, ข่าวสาร, บุคลากร หรือข้อมูลหน่วยงานได้ในที่เดียว</p>
             </div>
             <div class="col-lg-8 position-relative">
-                <div class="search-container d-flex align-items-center p-2 shadow-lg transition-all" 
-                     style="background: var(--bg-primary); border: 2px solid rgba(var(--primary-rgb), 0.3); border-radius: 50px; transition: all 0.3s ease;"
-                     onmouseover="this.style.borderColor='var(--primary-color)'; this.style.boxShadow='0 0 20px rgba(var(--primary-rgb), 0.2)';"
-                     onmouseout="this.style.borderColor='rgba(var(--primary-rgb), 0.3)'; this.style.boxShadow='0 10px 15px -3px rgba(0, 0, 0, 0.1)';">
+                <div class="search-container d-flex align-items-center p-2 transition-all" 
+                     style="background: var(--bg-body, #f8fafc); border: 1px solid rgba(0,0,0,0.08); border-radius: 50px; transition: all 0.3s ease;"
+                     onmouseover="this.style.borderColor='rgba(var(--primary-rgb), 0.4)'; this.style.boxShadow='0 4px 15px rgba(0, 0, 0, 0.05)';"
+                     onmouseout="this.style.borderColor='rgba(0,0,0,0.08)'; this.style.boxShadow='none';">
                     
-                    <div class="search-icon-wrapper d-flex align-items-center justify-content-center bg-primary text-white rounded-circle ms-1 shadow-sm" style="width: 45px; height: 45px; flex-shrink: 0;">
-                        <i class="fa-solid fa-search" style="font-size: 1.2rem;"></i>
+                    <div class="search-icon-wrapper d-flex align-items-center justify-content-center text-muted rounded-circle ms-2" style="width: 40px; height: 40px; flex-shrink: 0;">
+                        <i class="fa-solid fa-search" style="font-size: 1.1rem;"></i>
                     </div>
                     
                     <input type="text" id="globalSearchInput" placeholder="พิมพ์สิ่งที่คุณต้องการค้นหา (เช่น e-bidding, ทะเลน้อย, ผู้ว่า)..." 
                            class="flex-grow-1 px-3"
-                           style="border: none; background: transparent; color: var(--text-primary); outline: none; font-size: 1.1rem; font-weight: 500;" autocomplete="off">
+                           style="border: none; background: transparent; color: var(--text-primary); outline: none; font-size: 1.05rem;" autocomplete="off">
                     
                     <!-- Search Spinner (Hidden by default) -->
                     <div id="searchSpinner" class="spinner-border text-primary spinner-border-sm mx-3 d-none" role="status" style="width: 1.5rem; height: 1.5rem;">
                         <span class="visually-hidden">Loading...</span>
                     </div>
                     
-                    <button class="btn btn-primary rounded-pill px-4 py-2 me-1 fw-bold text-white shadow-sm" style="background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); border: none; white-space: nowrap;" onclick="document.getElementById('globalSearchInput').focus()">
-                        ค้นหาเลย
+                    <button class="btn btn-primary rounded-pill px-4 py-2 me-1 fw-bold text-white shadow-sm transition-all hover-scale" style="background: var(--primary-color); border: none; white-space: nowrap;" onclick="document.getElementById('globalSearchInput').focus()">
+                        ค้นหา
                     </button>
                 </div>
                 
                 <!-- Search Results Dropdown -->
-                <div id="searchResultsDropdown" class="dropdown-menu w-100 mt-3 p-0" style="border-radius: 16px; max-height: 450px; overflow-y: auto; display: none; position: absolute; z-index: 1050; background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--glass-border); box-shadow: 0 20px 40px rgba(0,0,0,0.15);">
+                <div id="searchResultsDropdown" class="dropdown-menu w-100 mt-3 p-0 border-0" style="border-radius: 16px; max-height: 450px; overflow-y: auto; display: none; position: absolute; z-index: 1050; background: var(--card-bg, #ffffff); box-shadow: 0 15px 35px rgba(0,0,0,0.1);">
                     <!-- Results will be injected here via JS -->
                 </div>
             </div>
         </div>
     </div>
 </section>
+
+<!-- 3. NEWS & MEDIA HUB (ศูนย์รวมข่าวสารและสื่อมัลติมีเดีย) -->
+<?= $this->include('components/news_media_hub') ?>
 
 <!-- 2. PUBLIC e-SERVICES GRID -->
 <section id="services" class="my-5 py-2">
@@ -74,25 +77,28 @@ $layoutMode = $cfg['layout_mode'] ?? 'hybrid_widescreen';
     <div class="row g-4">
         <?php foreach ($services as $srv): ?>
         <div class="col-md-6 col-lg-4">
-            <div class="glass-card h-100 hover-lift d-flex flex-column justify-content-between p-4" 
-                 style="cursor: pointer; border-radius: 20px;" onclick="<?= $srv['action'] ?>">
+            <div class="card border-0 h-100 hover-lift d-flex flex-column justify-content-between p-4" 
+                 style="cursor: pointer; border-radius: 20px; background: var(--card-bg, #ffffff); box-shadow: 0 4px 15px rgba(0,0,0,0.03); transition: all 0.3s ease;" 
+                 onclick="<?= $srv['action'] ?>"
+                 onmouseover="this.style.boxShadow='0 10px 25px rgba(0,0,0,0.08)';"
+                 onmouseout="this.style.boxShadow='0 4px 15px rgba(0,0,0,0.03)';">
                 <div>
                     <div class="d-flex align-items-center justify-content-between mb-3">
-                        <div style="width: 54px; height: 54px; border-radius: 16px; background: rgba(255, 255, 255, 0.1); border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: center; font-size: 1.6rem; color: <?= $srv['color'] ?>;">
+                        <div style="width: 54px; height: 54px; border-radius: 16px; background: <?= $srv['color'] ?>15; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; color: <?= $srv['color'] ?>;">
                             <i class="<?= $srv['icon'] ?>"></i>
                         </div>
-                        <span style="color: var(--text-muted); font-size: 0.8rem;"><i class="fa-solid fa-arrow-right-to-bracket"></i> กดเข้าถึง</span>
+                        <span style="color: var(--text-muted); font-size: 0.8rem; background: #f8fafc; padding: 4px 10px; border-radius: 30px;"><i class="fa-solid fa-arrow-right-to-bracket"></i> กดเข้าถึง</span>
                     </div>
-                    <h5 class="fw-bold mb-2"><?= $srv['title'] ?></h5>
+                    <h5 class="fw-bold mb-2 text-dark"><?= $srv['title'] ?></h5>
                     <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5; margin-bottom: 0;">
                         <?= $srv['desc'] ?>
                     </p>
                 </div>
-                <div class="mt-3 pt-2 border-top d-flex align-items-center justify-content-between" style="border-color: var(--glass-border) !important;">
-                    <span style="font-size: 0.8rem; color: <?= $srv['color'] ?>; font-weight: 500;">
+                <div class="mt-4 pt-3 border-top d-flex align-items-center justify-content-between" style="border-color: rgba(0,0,0,0.05) !important;">
+                    <span style="font-size: 0.8rem; color: <?= $srv['color'] ?>; font-weight: 600;">
                         <i class="fa-regular fa-circle-check me-1"></i> บริการออนไลน์
                     </span>
-                    <span style="font-size: 0.8rem; color: var(--text-muted);">อ่านคู่มือ &gt;</span>
+                    <span class="text-primary fw-bold" style="font-size: 0.8rem;">อ่านคู่มือ <i class="fa-solid fa-chevron-right ms-1" style="font-size: 0.7rem;"></i></span>
                 </div>
             </div>
         </div>
@@ -100,11 +106,11 @@ $layoutMode = $cfg['layout_mode'] ?? 'hybrid_widescreen';
     </div>
 </section>
 
-<!-- 3. NEWS & MEDIA HUB (ศูนย์รวมข่าวสารและสื่อมัลติมีเดีย) -->
-<?= $this->include('components/news_media_hub') ?>
+<!-- NEWS & MEDIA HUB moved up -->
 
 <!-- 4. GOVERNANCE & TRANSPARENCY HUB (ศูนย์ข้อมูลความโปร่งใสและจัดซื้อจัดจ้าง) -->
-<?= $this->include('components/governance_hub') ?>
+<!-- ย้ายไปเข้าผ่านเมนูด้านบนแทนการแสดงผลหน้าหลัก -->
+<?php // echo $this->include('components/governance_hub'); ?>
 
 <!-- 4. GLASSMORPHIC CITIZEN REQUEST MODAL -->
 <div class="modal fade" id="citizenRequestModal" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">

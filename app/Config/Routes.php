@@ -223,6 +223,24 @@ $routes->post('admin/emergency/save-alert', 'Admin\EmergencyManager::saveAlert')
 
 /*
  * --------------------------------------------------------------------
+ * Static Page Management & Routing
+ * --------------------------------------------------------------------
+ */
+$routes->get('page/(:any)', 'Page::view/$1');
+
+$routes->group('admin', ['namespace' => 'App\Controllers\Admin', 'filter' => 'auth'], static function($routes) {
+    // Other Admin routes remain defined above, but we append Pages here.
+    // However, it's better to add the specific page routes into the existing group, or just define them here as long as we use the auth filter.
+});
+
+// Since we already have an 'admin' group, we can just define the routes directly with the filter and namespace:
+$routes->get('admin/pages', 'Admin\PageManager::index', ['filter' => 'auth']);
+$routes->get('admin/pages/get-item/(:any)', 'Admin\PageManager::getItem/$1', ['filter' => 'auth']);
+$routes->post('admin/pages/save-item', 'Admin\PageManager::saveItem', ['filter' => 'auth']);
+$routes->post('admin/pages/delete-item/(:any)', 'Admin\PageManager::deleteItem/$1', ['filter' => 'auth']);
+
+/*
+ * --------------------------------------------------------------------
  * Additional Routing
  * --------------------------------------------------------------------
  *

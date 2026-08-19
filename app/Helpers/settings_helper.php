@@ -51,6 +51,42 @@ if (!function_exists('get_site_settings')) {
     }
 }
 
+if (!function_exists('thai_date')) {
+    /**
+     * แปลงวันที่เป็นรูปแบบภาษาไทย พ.ศ.
+     */
+    function thai_date($dateStr, $format = 'full', $showTime = false)
+    {
+        if (empty($dateStr)) return '';
+        $timestamp = is_numeric($dateStr) ? (int)$dateStr : strtotime($dateStr);
+        if (!$timestamp) return $dateStr;
+
+        $thaiMonthsShort = ['', 'ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+        $thaiMonthsFull  = ['', 'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
+        $thaiDaysFull    = ['อาทิตย์', 'จันทร์', 'อังคาร', 'พุธ', 'พฤหัสบดี', 'ศุกร์', 'เสาร์'];
+
+        $day   = (int)date('j', $timestamp);
+        $month = (int)date('n', $timestamp);
+        $year  = (int)date('Y', $timestamp) + 543;
+        $time  = date('H:i', $timestamp) . ' น.';
+
+        if ($format === 'short') {
+            $res = "$day " . $thaiMonthsShort[$month] . " $year";
+        } elseif ($format === 'day_full') {
+            $w = (int)date('w', $timestamp);
+            $res = "วัน" . $thaiDaysFull[$w] . "ที่ $day " . $thaiMonthsFull[$month] . " พ.ศ. $year";
+        } else { // 'full' or default
+            $res = "$day " . $thaiMonthsFull[$month] . " พ.ศ. $year";
+        }
+
+        if ($showTime) {
+            $res .= " เวลา $time";
+        }
+
+        return $res;
+    }
+}
+
 if (!function_exists('get_site_logo')) {
     /**
      * ดึง URL ของโลโก้หน่วยงาน (หากมีอัปโหลดหรือตั้งค่าไว้)

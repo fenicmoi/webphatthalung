@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="th" data-theme="dark" class="admin-dark-mode">
+<html lang="th" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,48 +8,42 @@
     <!-- CSRF Meta -->
     <meta name="X-CSRF-HEADER" content="<?= csrf_header() ?>">
     <meta name="X-CSRF-TOKEN" content="<?= csrf_hash() ?>">
-    
-    <!-- Force Dark Mode Theme as default for Admin Portal -->
-    <script>
-        if (!localStorage.getItem('app_theme') || localStorage.getItem('app_theme') === 'light') {
-            localStorage.setItem('app_theme', 'dark');
-        }
-        document.documentElement.setAttribute('data-theme', 'dark');
-    </script>
 
     <!-- Bootstrap 5.3 & FontAwesome -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <!-- Custom Design System -->
-    <link rel="stylesheet" href="<?= base_url('assets/css/main.css') ?>">
+    <link rel="stylesheet" href="<?= base_url('assets/css/main.css?v=' . time()) ?>">
 </head>
-<body>
-    <div class="ambient-glow"></div>
-    <div class="ambient-glow-2"></div>
-
+<body class="admin-body-classic">
     <div class="admin-wrapper">
-        <!-- Ultra-Modern Glassmorphic Sidebar -->
+        <!-- Sidebar -->
         <aside class="admin-sidebar" id="adminSidebar">
             <a href="<?= base_url('admin/dashboard') ?>" class="sidebar-header">
                 <?php $adminLogo = function_exists('get_site_logo') ? get_site_logo() : ''; ?>
                 <?php if (!empty($adminLogo)): ?>
-                    <img src="<?= htmlspecialchars($adminLogo) ?>" alt="Logo" style="height: 38px; width: auto; max-width: 45px; object-fit: contain;">
+                    <img src="<?= htmlspecialchars($adminLogo) ?>" alt="Logo" style="height: 36px; width: auto; max-width: 40px; object-fit: contain;">
                 <?php else: ?>
-                    <i class="fa-solid fa-square-poll-vertical" style="color: var(--accent-primary); font-size: 1.8rem;"></i>
+                    <div style="width: 36px; height: 36px; border-radius: 8px; background: #2563eb; display: flex; align-items: center; justify-content: center; color: #fff;">
+                        <i class="fa-solid fa-layer-group" style="font-size: 1.1rem;"></i>
+                    </div>
                 <?php endif; ?>
-                <span>PHATTHALUNG <span class="gradient-text">ADMIN</span></span>
+                <div class="d-flex flex-column">
+                    <span style="font-size: 1.05rem; font-weight: 700; color: #ffffff; line-height: 1.2;">PHATTHALUNG</span>
+                    <span style="font-size: 0.72rem; font-weight: 600; color: #60a5fa; letter-spacing: 0.08em;">ADMIN PORTAL</span>
+                </div>
             </a>
 
             <!-- User Profile Snippet Card -->
             <div class="sidebar-profile">
                 <div class="avatar-badge"><?= session()->get('avatar_initials') ?? 'AD' ?></div>
-                <div style="overflow: hidden;">
-                    <h6 class="mb-0 fw-bold" style="font-size: 0.95rem; color: var(--text-primary); text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">
-                        <?= session()->get('full_name') ?? 'ผู้ดูแลระบบสูงสุด' ?>
+                <div style="overflow: hidden; flex: 1;">
+                    <h6 class="mb-0 fw-bold" style="text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">
+                        <?= session()->get('full_name') ?? 'ผู้ดูแลระบบ' ?>
                     </h6>
-                    <small style="color: var(--accent-success); font-size: 0.75rem;">
-                        <i class="fa-solid fa-circle me-1" style="font-size: 0.55rem;"></i> <?= session()->get('role') === 'admin' ? 'Admin Authority' : 'Officer Ready' ?>
+                    <small style="color: #94a3b8; font-size: 0.75rem; display: flex; align-items: center;">
+                        <span class="status-dot"></span> <?= session()->get('role') === 'admin' ? 'Super Admin' : 'Officer' ?>
                     </small>
                 </div>
             </div>
@@ -66,9 +60,15 @@
 
                 <div class="sidebar-menu-title">บริหารจัดการข้อมูล (CONTENT)</div>
                 <li>
-                    <a href="<?= base_url('news') ?>" class="sidebar-link <?= ($activeMenu ?? '') === 'news' ? 'active' : '' ?>" title="ไปจัดการข่าวสารที่หน้าเว็บสาธารณะ (On-Page CMS)">
+                    <a href="<?= base_url('news') ?>" class="sidebar-link <?= ($activeMenu ?? '') === 'news' ? 'active' : '' ?>" title="ไปจัดการข่าวสารที่หน้าเว็บสาธารณะ">
                         <i class="fa-solid fa-newspaper text-warning"></i>
-                        <span>ข่าวประชาสัมพันธ์ <small class="badge bg-warning text-dark ms-1" style="font-size:0.6rem;">หน้าบ้าน</small></span>
+                        <span>ข่าวประชาสัมพันธ์</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="<?= base_url('admin/pages') ?>" class="sidebar-link <?= ($activeMenu ?? '') === 'page_manager' ? 'active' : '' ?>">
+                        <i class="fa-solid fa-file-lines text-info"></i>
+                        <span>หน้าเว็บไซต์ (Static Pages)</span>
                     </a>
                 </li>
                 <li>
@@ -79,39 +79,39 @@
                 </li>
                 <li>
                     <a href="<?= base_url('admin/banners') ?>" class="sidebar-link <?= ($activeMenu ?? '') === 'banners' ? 'active' : '' ?>">
-                        <i class="fa-solid fa-images"></i>
+                        <i class="fa-solid fa-images text-purple" style="color: #a855f7;"></i>
                         <span>แบนเนอร์ & เลย์เอาต์เว็บ</span>
                     </a>
                 </li>
 
-                <div class="sidebar-menu-title">ความปลอดภัย & การตั้งค่า (ADMINISTRATIVE)</div>
+                <div class="sidebar-menu-title">การตั้งค่าระบบ (SETTINGS)</div>
                 <li>
-                    <a href="#users" onclick="App.toast('เปิดระบบจัดการเจ้าหน้าที่และผู้ดูแล', 'info')" class="sidebar-link">
-                        <i class="fa-solid fa-users-gear"></i>
-                        <span>เจ้าหน้าที่ระบบ</span>
+                    <a href="<?= base_url('admin/menu') ?>" class="sidebar-link <?= ($activeMenu ?? '') === 'menu_manager' ? 'active' : '' ?>">
+                        <i class="fa-solid fa-compass text-teal" style="color: #14b8a6;"></i>
+                        <span>จัดการเมนูบาร์เว็บ</span>
                     </a>
                 </li>
                 <li>
                     <a href="<?= base_url('admin/settings') ?>" class="sidebar-link <?= ($activeMenu ?? '') === 'settings' ? 'active' : '' ?>">
-                        <i class="fa-solid fa-sliders"></i>
+                        <i class="fa-solid fa-sliders text-indigo" style="color: #818cf8;"></i>
                         <span>ตั้งค่าระบบเว็บไซต์</span>
                     </a>
                 </li>
                 <li>
-                    <a href="<?= base_url('admin/menu') ?>" class="sidebar-link <?= ($activeMenu ?? '') === 'menu_manager' ? 'active' : '' ?>">
-                        <i class="fa-solid fa-compass"></i>
-                        <span>จัดการเมนูบาร์เว็บ</span>
+                    <a href="#users" onclick="App.toast('ระบบจัดการสิทธิ์เจ้าหน้าที่อยู่ในแผนอัปเดตถัดไป', 'info')" class="sidebar-link">
+                        <i class="fa-solid fa-users-gear text-slate" style="color: #94a3b8;"></i>
+                        <span>เจ้าหน้าที่ระบบ</span>
                     </a>
                 </li>
             </ul>
 
             <div class="sidebar-footer">
                 <div class="d-flex flex-column gap-2">
-                    <a href="<?= base_url('logout') ?>" class="btn btn-danger w-100 d-flex align-items-center justify-content-center gap-2 text-decoration-none" style="font-size: 0.9rem; padding: 0.55rem 1rem; border-radius: var(--radius-sm); font-weight: 600;">
-                        <i class="fa-solid fa-power-off"></i> <span>ออกจากระบบ (Logout)</span>
+                    <a href="<?= base_url() ?>" target="_blank" class="btn btn-sm w-100 d-flex align-items-center justify-content-center gap-2 text-decoration-none" style="background: rgba(255, 255, 255, 0.08); color: #e2e8f0; font-size: 0.85rem; border-radius: 8px; padding: 0.45rem 1rem;">
+                        <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 0.8rem;"></i> <span>ดูหน้าเว็บประชาชน</span>
                     </a>
-                    <a href="<?= base_url() ?>" class="btn-modern-outline w-100 d-flex align-items-center justify-content-center gap-2 text-decoration-none" style="font-size: 0.85rem; padding: 0.45rem 1rem;">
-                        <i class="fa-solid fa-house"></i> <span>หน้าเว็บประชาชน</span>
+                    <a href="<?= base_url('logout') ?>" class="btn btn-sm w-100 d-flex align-items-center justify-content-center gap-2 text-decoration-none text-danger" style="background: rgba(239, 68, 68, 0.12); font-size: 0.85rem; border-radius: 8px; padding: 0.45rem 1rem; font-weight: 600;">
+                        <i class="fa-solid fa-power-off"></i> <span>ออกจากระบบ</span>
                     </a>
                 </div>
             </div>
@@ -119,31 +119,27 @@
 
         <!-- Main Content Area -->
         <div class="admin-main">
-            <!-- Glass Topbar -->
+            <!-- Clean Topbar -->
             <header class="admin-topbar">
                 <div class="d-flex align-items-center gap-3">
-                    <button class="btn btn-link p-0 d-lg-none" id="toggleSidebarBtn" style="color: var(--text-primary); font-size: 1.5rem;">
+                    <button class="btn btn-sm p-1 d-lg-none" id="toggleSidebarBtn" style="color: #475569; font-size: 1.25rem; border: none; background: transparent;">
                         <i class="fa-solid fa-bars-staggered"></i>
                     </button>
                     
-                    <div class="d-none d-md-flex align-items-center px-3 py-1" style="background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: var(--radius-full); width: 280px;">
-                        <i class="fa-solid fa-magnifying-glass" style="color: var(--text-muted); font-size: 0.9rem;"></i>
-                        <input type="text" placeholder="ค้นหาเมนูในระบบ..." style="border: none; background: transparent; color: var(--text-primary); outline: none; margin-left: 0.5rem; font-size: 0.9rem; width: 100%;">
+                    <div class="d-none d-md-flex align-items-center admin-search-box">
+                        <i class="fa-solid fa-magnifying-glass" style="color: #94a3b8; font-size: 0.85rem;"></i>
+                        <input type="text" placeholder="ค้นหาเมนูหรือฟังก์ชัน...">
                     </div>
                 </div>
 
-                <div class="d-flex align-items-center gap-3">
-                    <!-- Notification Bell with pulse effect -->
-                    <button class="theme-toggle-btn position-relative" title="การแจ้งเตือน" onclick="App.toast('ยังไม่มีคำร้องใหม่จากระบบบริการประชาชน', 'info')">
-                        <i class="fa-regular fa-bell" style="font-size: 1.15rem;"></i>
-                        <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
-                            <span class="visually-hidden">New alerts</span>
-                        </span>
-                    </button>
-
-                    <!-- Theme Switcher Button -->
-                    <button id="theme-toggle" class="theme-toggle-btn" title="สลับโหมดกลางวัน/กลางคืน">
-                        <i class="fa-solid fa-moon text-indigo-500"></i>
+                <div class="d-flex align-items-center gap-2">
+                    <a href="<?= base_url() ?>" target="_blank" class="btn-modern-outline d-none d-sm-inline-flex align-items-center gap-2 text-decoration-none" style="padding: 0.35rem 0.85rem; font-size: 0.85rem;">
+                        <i class="fa-solid fa-globe text-primary"></i> <span>ไปยังหน้าเว็บไซต์</span>
+                    </a>
+                    
+                    <!-- Notification Bell -->
+                    <button class="btn btn-light rounded-circle position-relative border" style="width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; color: #475569;" title="การแจ้งเตือน" onclick="App.toast('ระบบปกติ ไม่มีการแจ้งเตือนค้าง', 'info')">
+                        <i class="fa-regular fa-bell" style="font-size: 1rem;"></i>
                     </button>
                 </div>
             </header>

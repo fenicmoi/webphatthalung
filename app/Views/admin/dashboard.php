@@ -11,50 +11,50 @@ $stats = $stats ?? [
 ?>
 
 <!-- Header Greeting -->
-<div class="d-flex align-items-center justify-content-between mb-4">
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
     <div>
-        <h3 class="fw-bold mb-1">แผงควบคุมระบบ (Executive Dashboard)</h3>
-        <p style="color: var(--text-secondary); margin: 0; font-size: 0.95rem;">
-            รายงานสถิติสดและบริหารจัดการข้อมูลหน้าเว็บไซต์หลักจังหวัดพัทลุง
+        <h4 class="fw-bold mb-1" style="color: #0f172a;">แผงควบคุมระบบ (Dashboard)</h4>
+        <p class="text-muted mb-0" style="font-size: 0.92rem;">
+            ภาพรวมสถิติและเครื่องมือบริหารจัดการเว็บไซต์จังหวัดพัทลุง
         </p>
     </div>
     <div>
-        <span class="glass-badge">
-            <i class="fa-regular fa-clock"></i> ข้อมูลอัปเดตล่าสุด: <?= date('d/m/Y') ?>
+        <span class="badge bg-white text-dark border px-3 py-2 rounded-pill shadow-sm" style="font-size: 0.85rem; font-weight: 500;">
+            <i class="fa-regular fa-calendar-check text-primary me-2"></i><?= function_exists('thai_date') ? thai_date(date('Y-m-d'), 'full', false) : date('d/m/Y') ?>
         </span>
     </div>
 </div>
 
 <!-- KPI Cards Grid -->
-<div class="row g-4 mb-5">
+<div class="row g-4 mb-4">
     <!-- Card 1: News -->
     <div class="col-sm-6 col-xl-3">
-        <div class="glass-card hover-lift position-relative h-100">
+        <div class="kpi-stat-card">
             <div class="d-flex align-items-center justify-content-between mb-3">
-                <span style="color: var(--text-muted); font-weight: 600; font-size: 0.85rem; text-transform: uppercase;">ข่าวและกิจกรรม</span>
-                <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(59, 130, 246, 0.15); color: var(--accent-primary); display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+                <span class="text-muted fw-bold" style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;">ข่าวและกิจกรรม</span>
+                <div class="kpi-icon-box" style="background: #eff6ff; color: #2563eb;">
                     <i class="fa-solid fa-bullhorn"></i>
                 </div>
             </div>
-            <h2 class="fw-bold mb-2"><?= $stats['news'] ?></h2>
-            <div class="d-flex align-items-center gap-1" style="font-size: 0.85rem; color: #10b981;">
+            <h3 class="fw-bold mb-1" style="color: #0f172a;"><?= $stats['news'] ?></h3>
+            <div class="d-flex align-items-center gap-1" style="font-size: 0.82rem; color: #10b981;">
                 <i class="fa-solid fa-arrow-trend-up"></i>
-                <strong>+12%</strong> <span style="color: var(--text-muted);">จากเดือนที่ผ่านมา</span>
+                <strong>+12%</strong> <span class="text-muted ms-1">จากเดือนที่ผ่านมา</span>
             </div>
         </div>
     </div>
 
     <!-- Card 2: Service Requests -->
     <div class="col-sm-6 col-xl-3">
-        <div class="glass-card hover-lift position-relative h-100">
+        <div class="kpi-stat-card">
             <div class="d-flex align-items-center justify-content-between mb-3">
-                <span style="color: var(--text-muted); font-weight: 600; font-size: 0.85rem; text-transform: uppercase;">คำร้องบริการประชาชน</span>
-                <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(16, 185, 129, 0.15); color: #10b981; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+                <span class="text-muted fw-bold" style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;">บริการประชาชน</span>
+                <div class="kpi-icon-box" style="background: #ecfdf5; color: #059669;">
                     <i class="fa-solid fa-clipboard-check"></i>
                 </div>
             </div>
-            <h2 class="fw-bold mb-2"><?= $stats['services_requests'] ?></h2>
-            <div class="d-flex align-items-center gap-1" style="font-size: 0.85rem; color: #10b981;">
+            <h3 class="fw-bold mb-1" style="color: #0f172a;"><?= $stats['services_requests'] ?></h3>
+            <div class="d-flex align-items-center gap-1" style="font-size: 0.82rem; color: #059669;">
                 <i class="fa-solid fa-check-double"></i>
                 <span>ดำเนินการเสร็จสิ้น 98%</span>
             </div>
@@ -63,15 +63,15 @@ $stats = $stats ?? [
 
     <!-- Card 3: System Users -->
     <div class="col-sm-6 col-xl-3">
-        <div class="glass-card hover-lift position-relative h-100">
+        <div class="kpi-stat-card">
             <div class="d-flex align-items-center justify-content-between mb-3">
-                <span style="color: var(--text-muted); font-weight: 600; font-size: 0.85rem; text-transform: uppercase;">เจ้าหน้าที่ในระบบ</span>
-                <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(99, 102, 241, 0.15); color: var(--accent-secondary); display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+                <span class="text-muted fw-bold" style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;">เจ้าหน้าที่ในระบบ</span>
+                <div class="kpi-icon-box" style="background: #f5f3ff; color: #7c3aed;">
                     <i class="fa-solid fa-user-shield"></i>
                 </div>
             </div>
-            <h2 class="fw-bold mb-2"><?= $stats['users'] ?></h2>
-            <div class="d-flex align-items-center gap-1" style="font-size: 0.85rem; color: var(--text-secondary);">
+            <h3 class="fw-bold mb-1" style="color: #0f172a;"><?= $stats['users'] ?></h3>
+            <div class="d-flex align-items-center gap-1" style="font-size: 0.82rem; color: #64748b;">
                 <i class="fa-solid fa-shield-halved text-primary"></i>
                 <span>สิทธิ์ Admin / Officer</span>
             </div>
@@ -80,41 +80,38 @@ $stats = $stats ?? [
 
     <!-- Card 4: Monthly Visitors -->
     <div class="col-sm-6 col-xl-3">
-        <div class="glass-card hover-lift position-relative h-100">
+        <div class="kpi-stat-card">
             <div class="d-flex align-items-center justify-content-between mb-3">
-                <span style="color: var(--text-muted); font-weight: 600; font-size: 0.85rem; text-transform: uppercase;">การเข้าชมเว็บไซต์ (เดือนนี้)</span>
-                <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(245, 158, 11, 0.15); color: #f59e0b; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+                <span class="text-muted fw-bold" style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;">การเข้าชมเว็บไซต์</span>
+                <div class="kpi-icon-box" style="background: #fffbeb; color: #d97706;">
                     <i class="fa-solid fa-signal"></i>
                 </div>
             </div>
-            <h2 class="fw-bold mb-2"><?= $stats['monthly_visitors'] ?></h2>
-            <div class="d-flex align-items-center gap-1" style="font-size: 0.85rem; color: #10b981;">
+            <h3 class="fw-bold mb-1" style="color: #0f172a;"><?= $stats['monthly_visitors'] ?></h3>
+            <div class="d-flex align-items-center gap-1" style="font-size: 0.82rem; color: #10b981;">
                 <i class="fa-solid fa-arrow-trend-up"></i>
-                <strong>+24.5%</strong> <span style="color: var(--text-muted);">อัตราการเติบโต</span>
+                <strong>+24.5%</strong> <span class="text-muted ms-1">อัตราเติบโต</span>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Recent Content & Interactive Actions Table Section -->
+<!-- Main Section: Recent News & Quick Status -->
 <div class="row g-4">
     <div class="col-xl-8">
-        <div class="glass-card">
-            <div class="d-flex flex-wrap align-items-center justify-content-between mb-4">
+        <div class="admin-card">
+            <div class="admin-card-header d-flex flex-wrap align-items-center justify-content-between gap-2">
                 <div>
-                    <h5 class="fw-bold mb-1"><i class="fa-solid fa-newspaper text-primary me-2"></i>รายการข่าวด้านหน้าที่เพิ่งอัปเดตล่าสุด</h5>
-                    <small style="color: var(--text-muted);">จัดการและควบคุมการแสดงผลข่าวประชาสัมพันธ์</small>
+                    <h6 class="fw-bold mb-0"><i class="fa-solid fa-newspaper text-primary me-2"></i>รายการข่าวสารล่าสุด</h6>
                 </div>
-                <div>
-                    <button class="btn-modern" style="padding: 0.5rem 1rem; font-size: 0.85rem;" onclick="App.toast('เปิดกล่องเพิ่มข้อความข่าวสารใหม่', 'success')">
-                        <i class="fa-solid fa-plus"></i> เพิ่มข่าวใหม่
-                    </button>
-                </div>
+                <a href="<?= base_url('news') ?>" class="btn-modern-outline text-decoration-none" style="padding: 0.35rem 0.85rem; font-size: 0.82rem;">
+                    <i class="fa-solid fa-arrow-up-right-from-square me-1"></i> จัดการข่าวทั้งหมด
+                </a>
             </div>
 
-            <!-- Modern Data Table -->
+            <!-- Table -->
             <div class="table-responsive">
-                <table class="table-modern">
+                <table class="table table-modern mb-0">
                     <thead>
                         <tr>
                             <th style="width: 50%;">หัวเรื่องประกาศ</th>
@@ -126,38 +123,35 @@ $stats = $stats ?? [
                     <tbody>
                         <tr>
                             <td>
-                                <strong>ประกาศโครงการพัฒนาคุณภาพชีวิตประจำปีงบประมาณ</strong>
-                                <br><small style="color: var(--text-muted);">เผยแพร่เมื่อ: 2 ชั่วโมงที่แล้ว</small>
+                                <strong class="text-dark">ประกาศโครงการพัฒนาคุณภาพชีวิตประจำปีงบประมาณ</strong>
+                                <br><small class="text-muted"><i class="fa-regular fa-clock me-1"></i>เผยแพร่เมื่อ: 2 ชั่วโมงที่แล้ว</small>
                             </td>
-                            <td><span class="glass-badge" style="font-size: 0.75rem;">ข่าวประชาสัมพันธ์</span></td>
-                            <td><span style="color: #10b981; font-weight: 500; font-size: 0.85rem;"><i class="fa-solid fa-circle me-1" style="font-size: 0.5rem;"></i>เผยแพร่อยู่</span></td>
+                            <td><span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1 rounded-pill">ข่าวประชาสัมพันธ์</span></td>
+                            <td><span class="text-success fw-medium" style="font-size: 0.85rem;"><i class="fa-solid fa-circle me-1" style="font-size: 0.45rem;"></i>เผยแพร่อยู่</span></td>
                             <td class="text-end">
-                                <button class="btn btn-sm btn-light border-0" title="แก้ไข" onclick="App.toast('โหลดข้อมูลแก้ไขข่าว...', 'info')"><i class="fa-solid fa-pen-to-square text-primary"></i></button>
-                                <button class="btn btn-sm btn-light border-0" title="ลบ" onclick="App.toast('ตรวจสอบการลบข้อมูล (Protected by CSRF)', 'error')"><i class="fa-solid fa-trash text-danger"></i></button>
+                                <a href="<?= base_url('news') ?>" class="btn btn-sm btn-light border" title="ไปจัดการ"><i class="fa-solid fa-pen-to-square text-primary"></i></a>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <strong>รายงานสถานการณ์คุณภาพน้ำและการประปาภูมิภาคจังหวัดพัทลุง</strong>
-                                <br><small style="color: var(--text-muted);">เผยแพร่เมื่อ: เมื่อวานนี้</small>
+                                <strong class="text-dark">รายงานสถานการณ์คุณภาพน้ำและการประปาภูมิภาคจังหวัดพัทลุง</strong>
+                                <br><small class="text-muted"><i class="fa-regular fa-clock me-1"></i>เผยแพร่เมื่อ: เมื่อวานนี้</small>
                             </td>
-                            <td><span class="glass-badge" style="font-size: 0.75rem;">ข่าวด่วน/สาธารณูปโภค</span></td>
-                            <td><span style="color: #10b981; font-weight: 500; font-size: 0.85rem;"><i class="fa-solid fa-circle me-1" style="font-size: 0.5rem;"></i>เผยแพร่อยู่</span></td>
+                            <td><span class="badge bg-info-subtle text-info border border-info-subtle px-2 py-1 rounded-pill">ข่าวด่วน/สาธารณูปโภค</span></td>
+                            <td><span class="text-success fw-medium" style="font-size: 0.85rem;"><i class="fa-solid fa-circle me-1" style="font-size: 0.45rem;"></i>เผยแพร่อยู่</span></td>
                             <td class="text-end">
-                                <button class="btn btn-sm btn-light border-0" title="แก้ไข" onclick="App.toast('โหลดข้อมูลแก้ไขข่าว...', 'info')"><i class="fa-solid fa-pen-to-square text-primary"></i></button>
-                                <button class="btn btn-sm btn-light border-0" title="ลบ" onclick="App.toast('ตรวจสอบการลบข้อมูล (Protected by CSRF)', 'error')"><i class="fa-solid fa-trash text-danger"></i></button>
+                                <a href="<?= base_url('news') ?>" class="btn btn-sm btn-light border" title="ไปจัดการ"><i class="fa-solid fa-pen-to-square text-primary"></i></a>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <strong>กำหนดการรับข้อเสนอโครงการส่งเสริมและสนับสนุนเกษตรกรท้องถิ่น</strong>
-                                <br><small style="color: var(--text-muted);">เผยแพร่เมื่อ: 3 วันที่แล้ว</small>
+                                <strong class="text-dark">กำหนดการรับข้อเสนอโครงการส่งเสริมและสนับสนุนเกษตรกรท้องถิ่น</strong>
+                                <br><small class="text-muted"><i class="fa-regular fa-clock me-1"></i>เผยแพร่เมื่อ: 3 วันที่แล้ว</small>
                             </td>
-                            <td><span class="glass-badge" style="font-size: 0.75rem;">บริการประชาชน</span></td>
-                            <td><span style="color: #f59e0b; font-weight: 500; font-size: 0.85rem;"><i class="fa-solid fa-clock me-1" style="font-size: 0.6rem;"></i>รอตรวจทาน</span></td>
+                            <td><span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 rounded-pill">บริการประชาชน</span></td>
+                            <td><span class="text-warning fw-medium" style="font-size: 0.85rem;"><i class="fa-solid fa-clock me-1" style="font-size: 0.45rem;"></i>รอตรวจทาน</span></td>
                             <td class="text-end">
-                                <button class="btn btn-sm btn-light border-0" title="แก้ไข" onclick="App.toast('โหลดข้อมูลแก้ไขข่าว...', 'info')"><i class="fa-solid fa-pen-to-square text-primary"></i></button>
-                                <button class="btn btn-sm btn-light border-0" title="ลบ" onclick="App.toast('ตรวจสอบการลบข้อมูล (Protected by CSRF)', 'error')"><i class="fa-solid fa-trash text-danger"></i></button>
+                                <a href="<?= base_url('news') ?>" class="btn btn-sm btn-light border" title="ไปจัดการ"><i class="fa-solid fa-pen-to-square text-primary"></i></a>
                             </td>
                         </tr>
                     </tbody>
@@ -167,41 +161,44 @@ $stats = $stats ?? [
     </div>
 
     <div class="col-xl-4">
-        <!-- Quick System Status / Database Verification Card -->
-        <div class="glass-card mb-4" style="border-radius: 24px; border: 1px solid rgba(99, 102, 241, 0.3);">
-            <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
-                <i class="fa-solid fa-database text-warning"></i>
-                <span>สถานะฐานข้อมูล (Database Phase 2)</span>
-            </h5>
-            <p style="color: var(--text-secondary); font-size: 0.9rem;">
-                ตารางข้อมูลโครงสร้างพื้นฐานสำหรับระบบพัทลุงพอร์ทัล ได้รับการดีไซน์และพร้อมรันคำสั่ง Migration
-            </p>
-
-            <ul class="list-unstyled mb-0" style="font-size: 0.9rem;">
-                <li class="py-2 d-flex justify-content-between align-items-center border-bottom" style="border-color: var(--glass-border) !important;">
-                    <span><i class="fa-solid fa-table me-2 text-primary"></i>ตาราง <code>users</code></span>
-                    <span class="glass-badge" style="color: #10b981; font-size: 0.75rem;">Model Ready</span>
-                </li>
-                <li class="py-2 d-flex justify-content-between align-items-center border-bottom" style="border-color: var(--glass-border) !important;">
-                    <span><i class="fa-solid fa-table me-2 text-primary"></i>ตาราง <code>news</code></span>
-                    <span class="glass-badge" style="color: #10b981; font-size: 0.75rem;">Model Ready</span>
-                </li>
-                <li class="py-2 d-flex justify-content-between align-items-center">
-                    <span><i class="fa-solid fa-table me-2 text-primary"></i>ตาราง <code>services</code></span>
-                    <span class="glass-badge" style="color: #10b981; font-size: 0.75rem;">Model Ready</span>
-                </li>
-            </ul>
+        <!-- Quick System Links Card -->
+        <div class="admin-card mb-4">
+            <div class="admin-card-header">
+                <h6 class="fw-bold mb-0"><i class="fa-solid fa-bolt text-warning me-2"></i>เมนูลัด (Quick Shortcuts)</h6>
+            </div>
+            <div class="admin-card-body p-3">
+                <div class="d-grid gap-2">
+                    <a href="<?= base_url('admin/pages') ?>" class="btn btn-light text-start border d-flex align-items-center justify-content-between p-2 rounded-3 text-decoration-none">
+                        <span><i class="fa-solid fa-file-circle-plus text-primary me-2"></i>สร้างหน้าเว็บ Static ใหม่</span>
+                        <i class="fa-solid fa-chevron-right text-muted" style="font-size: 0.75rem;"></i>
+                    </a>
+                    <a href="<?= base_url('admin/menu') ?>" class="btn btn-light text-start border d-flex align-items-center justify-content-between p-2 rounded-3 text-decoration-none">
+                        <span><i class="fa-solid fa-compass text-success me-2"></i>จัดการเมนูบาร์เว็บ</span>
+                        <i class="fa-solid fa-chevron-right text-muted" style="font-size: 0.75rem;"></i>
+                    </a>
+                    <a href="<?= base_url('admin/service-banners') ?>" class="btn btn-light text-start border d-flex align-items-center justify-content-between p-2 rounded-3 text-decoration-none">
+                        <span><i class="fa-solid fa-hand-holding-heart text-info me-2"></i>จัดการแบนเนอร์บริการ</span>
+                        <i class="fa-solid fa-chevron-right text-muted" style="font-size: 0.75rem;"></i>
+                    </a>
+                    <a href="<?= base_url('admin/settings') ?>" class="btn btn-light text-start border d-flex align-items-center justify-content-between p-2 rounded-3 text-decoration-none">
+                        <span><i class="fa-solid fa-sliders text-secondary me-2"></i>ตั้งค่าระบบเว็บไซต์</span>
+                        <i class="fa-solid fa-chevron-right text-muted" style="font-size: 0.75rem;"></i>
+                    </a>
+                </div>
+            </div>
         </div>
 
-        <div class="glass-card text-center" style="background: var(--gradient-hero); color: white !important;">
-            <i class="fa-solid fa-lightbulb-on mb-3" style="font-size: 2.5rem; opacity: 0.9;"></i>
-            <h5 class="fw-bold text-white mb-2">เคล็ดลับระบบ No-Reload Admin</h5>
-            <p style="font-size: 0.9rem; opacity: 0.95; margin-bottom: 1.2rem;">
-                เมื่อคุณแก้ไขข่าวสาร ระบบจะใช้ Async Fetch API ในการบันทึกข้อมูลและแสดง Toast โดยหน้าเว็บจะไม่รันโหลดขาวกวนใจ
+        <!-- System Tip Box -->
+        <div class="card border-0 rounded-4 p-4 text-white shadow-sm" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);">
+            <div class="d-flex align-items-center gap-3 mb-2">
+                <div style="width: 36px; height: 36px; border-radius: 8px; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; color: #60a5fa;">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+                <h6 class="fw-bold mb-0 text-white">ระบบพร้อมใช้งาน</h6>
+            </div>
+            <p class="small text-white-50 mb-0">
+                คุณสามารถจัดการโครงสร้างหน้าเว็บ เมนู และเนื้อหาได้อิสระจากแผงควบคุมนี้ ข้อมูลจะถูกซิงก์สู่หน้าเว็บไซต์หลักทันที
             </p>
-            <button class="btn btn-light fw-bold px-4 rounded-pill" onclick="App.toast('พร้อมเริ่มลุยงานบริการประชาชนแล้วครับ!', 'success')">
-                ตรวจสอบการทำงาน
-            </button>
         </div>
     </div>
 </div>

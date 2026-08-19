@@ -7,104 +7,62 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Prompt:wght@300;400;500;600;700&display=swap');
 
 :root {
-    /* --- Light Mode Tokens (Default) --- */
-    --bg-primary: #f8fafc;
+    /* --- Modern Prestige Provincial Palette (Harmonious & Easy on the Eyes) --- */
+    --primary-color: #1e3a8a;       /* Deep Royal Blue */
+    --secondary-color: #0369a1;     /* Ocean Slate Blue */
+    --accent-gold: #d97706;         /* Royal Amber Gold */
+    --accent-emerald: #059669;      /* Eco Emerald */
+    --accent-primary: #2563eb;      /* Vibrant Action Blue */
+    
+    --bg-primary: #f8fafc;          /* Soft Off-White Canvas */
     --bg-secondary: #f1f5f9;
-    --text-primary: #1e293b;
-    --text-secondary: #64748b;
+    --bg-body: #f8fafc;
+    --card-bg: #ffffff;
+    
+    --text-primary: #0f172a;        /* Deep Slate Text (Crisp readability) */
+    --text-secondary: #475569;
     --text-muted: #94a3b8;
     
-    /* Vibrant Accent Palette (Modern HSL tones) */
-    --accent-primary: #3b82f6;
-    --accent-secondary: #6366f1;
-    --accent-success: #10b981;
-    --accent-warning: #f59e0b;
-    --accent-danger: #ef4444;
-    --gradient-hero: linear-gradient(135deg, #3b82f6 0%, #6366f1 50%, #8b5cf6 100%);
+    --gradient-hero: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #0284c7 100%);
+    --gradient-accent: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
     
-    /* Glassmorphism Tokens (Light) */
-    --glass-bg: rgba(255, 255, 255, 0.75);
-    --glass-border: rgba(255, 255, 255, 0.6);
-    --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.12);
-    --glass-navbar-bg: rgba(255, 255, 255, 0.82);
+    /* Clean UI Border & Soft Shadows */
+    --glass-bg: #ffffff;
+    --glass-border: #e2e8f0;
+    --glass-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+    --glass-navbar-bg: rgba(255, 255, 255, 0.95);
     
     /* UI Element Radius */
     --radius-sm: 8px;
-    --radius-md: 16px;
-    --radius-lg: 24px;
+    --radius-md: 14px;
+    --radius-lg: 20px;
     --radius-full: 9999px;
     
     /* Transitions */
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.35s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
 [data-theme="dark"] {
-    /* --- Dark Mode Tokens --- */
+    /* --- Dark Mode Tokens (Comfortable Dark Slate) --- */
     --bg-primary: #0f172a;
     --bg-secondary: #1e293b;
+    --bg-body: #0f172a;
+    --card-bg: #1e293b;
     --text-primary: #f8fafc;
     --text-secondary: #cbd5e1;
     --text-muted: #64748b;
     
-    /* Vibrant Accent Palette (Dark optimized) */
     --accent-primary: #60a5fa;
     --accent-secondary: #818cf8;
     --accent-success: #34d399;
     --accent-warning: #fbbf24;
     --accent-danger: #f87171;
-    --gradient-hero: linear-gradient(135deg, #60a5fa 0%, #818cf8 50%, #a78bfa 100%);
     
-    /* Glassmorphism Tokens (Dark) */
-    --glass-bg: rgba(30, 41, 59, 0.75);
-    --glass-border: rgba(255, 255, 255, 0.12);
-    --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.45);
-    --glass-navbar-bg: rgba(15, 23, 42, 0.9);
-}
-
-/* --- Executive Deep Dark Command Center Theme (Admin Portal Dark Mode) --- */
-[data-theme="dark"] .admin-wrapper {
-    background: radial-gradient(circle at 10% 20%, #0d1628 0%, #060911 90%) !important;
-    color: #f1f5f9 !important;
-}
-[data-theme="dark"] .admin-sidebar {
-    background: rgba(11, 18, 34, 0.95) !important;
-    border-right: 1px solid rgba(255, 255, 255, 0.1) !important;
-    box-shadow: 12px 0 40px rgba(0, 0, 0, 0.65) !important;
-}
-[data-theme="dark"] .admin-topbar {
-    background: rgba(11, 18, 34, 0.88) !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
-    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5) !important;
-}
-[data-theme="dark"] .admin-main .glass-card {
-    background: rgba(19, 29, 50, 0.82) !important;
-    border: 1px solid rgba(255, 255, 255, 0.12) !important;
-    box-shadow: 0 15px 38px rgba(0, 0, 0, 0.45) !important;
-    backdrop-filter: blur(20px);
-}
-[data-theme="dark"] .admin-main .form-control,
-[data-theme="dark"] .admin-main .form-select,
-[data-theme="dark"] .admin-main textarea {
-    background-color: #0c1628 !important;
-    border: 1px solid rgba(255, 255, 255, 0.2) !important;
-    color: #ffffff !important;
-}
-[data-theme="dark"] .admin-main .form-control:focus,
-[data-theme="dark"] .admin-main .form-select:focus,
-[data-theme="dark"] .admin-main textarea:focus {
-    border-color: #60a5fa !important;
-    box-shadow: 0 0 14px rgba(96, 165, 250, 0.4) !important;
-    background-color: #0e192e !important;
-}
-[data-theme="dark"] .admin-sidebar .sidebar-profile {
-    background: linear-gradient(135deg, rgba(30, 41, 62, 0.9) 0%, rgba(13, 22, 40, 0.95) 100%) !important;
-    border: 1px solid rgba(96, 165, 250, 0.35) !important;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5) !important;
-}
-[data-theme="dark"] .admin-sidebar .sidebar-link:hover {
-    background: rgba(96, 165, 250, 0.15) !important;
-    color: #60a5fa !important;
+    --glass-bg: #1e293b;
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --glass-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+    --glass-navbar-bg: rgba(15, 23, 42, 0.95);
 }
 
 /* --- Global Base Styles --- */
@@ -112,7 +70,7 @@ body {
     font-family: 'Prompt', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     background-color: var(--bg-primary);
     color: var(--text-primary);
-    transition: background-color 0.4s ease, color 0.4s ease;
+    transition: background-color 0.3s ease, color 0.3s ease;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -120,29 +78,10 @@ body {
     margin: 0;
 }
 
-/* Animated Ambient Background Glow */
-.ambient-glow {
-    position: fixed;
-    top: -15%;
-    right: -10%;
-    width: 600px;
-    height: 600px;
-    background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, rgba(0,0,0,0) 70%);
-    z-index: 0;
-    pointer-events: none;
-    filter: blur(50px);
-}
-
+/* ปิดเอฟเฟกต์ไฟนีออนสะท้อนพื้นหลังที่ทำให้ตาลาย */
+.ambient-glow,
 .ambient-glow-2 {
-    position: fixed;
-    bottom: -10%;
-    left: -5%;
-    width: 500px;
-    height: 500px;
-    background: radial-gradient(circle, rgba(59, 130, 246, 0.12) 0%, rgba(0,0,0,0) 70%);
-    z-index: 0;
-    pointer-events: none;
-    filter: blur(40px);
+    display: none !important;
 }
 
 .content-wrapper {
@@ -303,23 +242,27 @@ body {
 }
 
 /* ==========================================================================
-   Admin Portal & Glassmorphic Sidebar Design System
+   Modern Ergonomic Admin Portal (Clean, Beautiful & Comfortable)
    ========================================================================== */
+.admin-body-classic {
+    background-color: #f8fafc !important;
+    color: #1e293b !important;
+    font-family: 'Prompt', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
 .admin-wrapper {
     display: flex;
     min-height: 100vh;
     width: 100%;
     overflow-x: hidden;
-    background: var(--bg-primary);
+    background-color: #f8fafc;
 }
 
-/* Glassmorphic Floating Sidebar */
+/* Elegant Slate Dark Sidebar */
 .admin-sidebar {
-    width: 270px;
-    background: var(--glass-navbar-bg);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-right: 1px solid var(--glass-border);
+    width: 260px;
+    background: #0f172a; /* Deep Navy Slate */
+    color: #94a3b8;
     display: flex;
     flex-direction: column;
     position: fixed;
@@ -327,183 +270,317 @@ body {
     bottom: 0;
     left: 0;
     z-index: 1050;
-    transition: var(--transition-smooth);
-    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.04);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.08);
+    border-right: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .sidebar-header {
-    padding: 1.5rem 1.25rem;
-    border-bottom: 1px solid var(--glass-border);
+    padding: 1.25rem 1.2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     display: flex;
     align-items: center;
     gap: 0.75rem;
     font-weight: 700;
-    font-size: 1.2rem;
-    color: var(--text-primary);
+    font-size: 1.15rem;
+    color: #ffffff;
     text-decoration: none;
+    letter-spacing: 0.02em;
+}
+.sidebar-header:hover {
+    color: #ffffff;
 }
 
 .sidebar-profile {
-    padding: 1.25rem;
-    margin: 1rem;
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    border-radius: var(--radius-md);
+    padding: 0.9rem 1.1rem;
+    margin: 0.85rem 0.85rem 0.25rem;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 12px;
     display: flex;
     align-items: center;
-    gap: 0.85rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    gap: 0.75rem;
+}
+.sidebar-profile h6 {
+    color: #f1f5f9 !important;
+    font-size: 0.9rem;
+}
+.sidebar-profile .status-dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background-color: #10b981;
+    margin-right: 4px;
 }
 
 .avatar-badge {
-    width: 42px;
-    height: 42px;
-    border-radius: var(--radius-full);
-    background: var(--gradient-hero);
-    color: white;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%);
+    color: #ffffff;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 600;
-    font-size: 1.1rem;
-    box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
+    font-size: 0.95rem;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+    flex-shrink: 0;
 }
 
 .sidebar-menu-list {
     list-style: none;
-    padding: 0 1rem;
-    margin: 0;
+    padding: 0 0.75rem;
+    margin: 0.75rem 0 0 0;
     flex: 1;
     overflow-y: auto;
 }
 
 .sidebar-menu-title {
-    font-size: 0.75rem;
-    font-weight: 600;
+    font-size: 0.72rem;
+    font-weight: 700;
     text-transform: uppercase;
-    color: var(--text-muted);
-    letter-spacing: 0.05em;
-    padding: 1rem 0.5rem 0.5rem;
+    color: #64748b;
+    letter-spacing: 0.06em;
+    padding: 0.85rem 0.65rem 0.35rem;
 }
 
 .sidebar-link {
     display: flex;
     align-items: center;
-    gap: 0.85rem;
-    padding: 0.75rem 1rem;
-    color: var(--text-secondary);
+    gap: 0.75rem;
+    padding: 0.6rem 0.85rem;
+    color: #94a3b8;
     text-decoration: none;
-    border-radius: var(--radius-sm);
+    border-radius: 9px;
     font-weight: 500;
-    transition: var(--transition-smooth);
-    margin-bottom: 0.35rem;
+    font-size: 0.92rem;
+    transition: all 0.2s ease;
+    margin-bottom: 0.25rem;
 }
 
 .sidebar-link i {
-    font-size: 1.15rem;
-    width: 24px;
+    font-size: 1.05rem;
+    width: 22px;
     text-align: center;
-    color: var(--text-muted);
-    transition: var(--transition-smooth);
+    color: #64748b;
+    transition: color 0.2s ease;
 }
 
 .sidebar-link:hover {
-    background: rgba(99, 102, 241, 0.08);
-    color: var(--accent-secondary);
-    transform: translateX(4px);
+    background: rgba(255, 255, 255, 0.07);
+    color: #f8fafc;
 }
 .sidebar-link:hover i {
-    color: var(--accent-secondary);
+    color: #60a5fa;
 }
 
 .sidebar-link.active {
-    background: var(--gradient-hero);
+    background-color: #2563eb;
     color: #ffffff;
-    box-shadow: 0 6px 18px rgba(99, 102, 241, 0.35);
+    font-weight: 600;
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
 }
 .sidebar-link.active i {
     color: #ffffff;
 }
 
 .sidebar-footer {
-    padding: 1rem;
-    border-top: 1px solid var(--glass-border);
+    padding: 0.85rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 /* Main Content Workspace */
 .admin-main {
     flex: 1;
-    margin-left: 270px;
+    margin-left: 260px;
     display: flex;
     flex-direction: column;
-    transition: var(--transition-smooth);
+    min-height: 100vh;
+    background-color: #f8fafc;
+    transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* Crisp Clean Topbar */
 .admin-topbar {
-    background: var(--glass-navbar-bg);
-    backdrop-filter: blur(16px);
-    border-bottom: 1px solid var(--glass-border);
-    padding: 0.85rem 2rem;
+    background: #ffffff;
+    border-bottom: 1px solid #e2e8f0;
+    padding: 0.75rem 1.75rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
     position: sticky;
     top: 0;
     z-index: 1040;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+}
+
+.admin-search-box {
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 9999px;
+    padding: 0.4rem 1rem;
+    display: flex;
+    align-items: center;
+    width: 280px;
+    transition: all 0.2s ease;
+}
+.admin-search-box:focus-within {
+    background: #ffffff;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+.admin-search-box input {
+    border: none;
+    background: transparent;
+    color: #1e293b;
+    outline: none;
+    font-size: 0.88rem;
+    width: 100%;
+    margin-left: 0.5rem;
 }
 
 .admin-content {
-    padding: 2rem;
+    padding: 1.75rem 2rem;
     flex: 1;
 }
 
-/* Responsive Modern Table for Dashboard & Admin Lists */
-.table-modern {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0 8px;
-    color: var(--text-primary);
+/* Modern Solid Cards (แทนที่ glass-card ในโหมดแอดมิน) */
+.admin-card, .admin-main .glass-card {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 14px !important;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05) !important;
+    backdrop-filter: none !important;
+    margin-bottom: 1.5rem;
+    transition: all 0.25s ease;
+    overflow: hidden;
 }
 
-.table-modern th {
+.admin-card-header {
+    background-color: #ffffff;
+    border-bottom: 1px solid #f1f5f9;
+    padding: 1rem 1.35rem;
     font-weight: 600;
-    font-size: 0.85rem;
+    color: #0f172a;
+}
+
+.admin-card-body {
+    padding: 1.35rem;
+}
+
+/* Modern Soft KPI Stat Widgets */
+.kpi-stat-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 1.25rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    height: 100%;
+}
+.kpi-stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
+}
+.kpi-icon-box {
+    width: 44px;
+    height: 44px;
+    border-radius: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+}
+
+/* Modern Data Table */
+.table-modern, .admin-main .table {
+    width: 100%;
+    margin-bottom: 0;
+    color: #1e293b;
+    border-collapse: collapse;
+}
+
+.table-modern th, .admin-main .table thead th {
+    background-color: #f8fafc !important;
+    color: #475569 !important;
+    font-size: 0.8rem;
+    font-weight: 600;
     text-transform: uppercase;
-    color: var(--text-muted);
+    letter-spacing: 0.04em;
     padding: 0.75rem 1rem;
-    border: none;
+    border-bottom: 1px solid #e2e8f0 !important;
+    border-top: none !important;
 }
 
-.table-modern tbody tr {
-    background: var(--glass-bg);
-    box-shadow: 0 2px 10px rgba(0,0,0,0.03);
-    transition: var(--transition-smooth);
-}
-
-.table-modern tbody tr:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(0,0,0,0.08);
-    background: rgba(99, 102, 241, 0.05);
-}
-
-.table-modern td {
-    padding: 1rem;
-    border: 1px solid var(--glass-border);
-    border-left: none;
-    border-right: none;
+.table-modern td, .admin-main .table tbody td {
+    padding: 0.85rem 1rem;
     vertical-align: middle;
+    border-bottom: 1px solid #f1f5f9;
+    border-top: none;
+    font-size: 0.92rem;
 }
 
-.table-modern td:first-child {
-    border-left: 1px solid var(--glass-border);
-    border-top-left-radius: var(--radius-sm);
-    border-bottom-left-radius: var(--radius-sm);
+.table-modern tbody tr:hover, .admin-main .table tbody tr:hover {
+    background-color: #f8fafc;
 }
 
-.table-modern td:last-child {
-    border-right: 1px solid var(--glass-border);
-    border-top-right-radius: var(--radius-sm);
-    border-bottom-right-radius: var(--radius-sm);
+/* Modern Clean Buttons */
+.btn-modern, .btn-primary {
+    background-color: #2563eb !important;
+    border-color: #2563eb !important;
+    color: #ffffff !important;
+    border-radius: 8px;
+    padding: 0.5rem 1.15rem;
+    font-weight: 500;
+    font-size: 0.92rem;
+    box-shadow: 0 1px 2px 0 rgba(37, 99, 235, 0.2);
+    transition: all 0.2s ease;
+}
+.btn-modern:hover, .btn-primary:hover {
+    background-color: #1d4ed8 !important;
+    border-color: #1d4ed8 !important;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+}
+
+.btn-modern-outline {
+    color: #475569 !important;
+    border: 1px solid #cbd5e1 !important;
+    background-color: #ffffff !important;
+    border-radius: 8px;
+    padding: 0.45rem 1rem;
+    font-weight: 500;
+    font-size: 0.88rem;
+    transition: all 0.2s ease;
+}
+.btn-modern-outline:hover {
+    background-color: #f1f5f9 !important;
+    border-color: #94a3b8 !important;
+    color: #0f172a !important;
+}
+
+/* Modern Form Controls in Admin */
+.admin-main .form-control,
+.admin-main .form-select,
+.modal .form-control,
+.modal .form-select {
+    background-color: #ffffff !important;
+    border: 1px solid #cbd5e1 !important;
+    color: #0f172a !important;
+    border-radius: 8px !important;
+    padding: 0.55rem 0.85rem !important;
+    font-size: 0.95rem !important;
+    transition: border-color 0.2s, box-shadow 0.2s !important;
+}
+
+.admin-main .form-control:focus,
+.admin-main .form-select:focus,
+.modal .form-control:focus,
+.modal .form-select:focus {
+    border-color: #2563eb !important;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15) !important;
+    outline: none !important;
 }
 
 /* Mobile Sidebar behavior */
@@ -625,88 +702,84 @@ body {
 }
 
 /* ==========================================================================
-   MUNICIPAL GOVERNMENT RIBBON NAVBAR (อารยสถาปัตย์แถบเมนูหัวราชการ)
+   MUNICIPAL GOVERNMENT NAVBAR (Royal Navy & Prestige Gold Theme)
    ========================================================================== */
 .gov-header-wrapper {
-    background: linear-gradient(90deg, #1f6479 0%, #154c5e 50%, #103c4a 100%);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    background: #0f172a; /* Deep Navy Slate */
+    border-bottom: 3px solid #2563eb;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
     position: sticky;
     top: 0;
     z-index: 1040;
     width: 100%;
-    overflow: visible;
 }
 
 .gov-navbar {
     display: flex;
     align-items: stretch;
     justify-content: space-between;
-    min-height: 75px;
-    padding: 0;
-    max-width: 1400px;
+    min-height: 72px;
+    padding: 0 1rem;
+    max-width: 1440px;
     margin: 0 auto;
 }
 
-/* Left Diagonal Mint Ribbon (ตราสัญลักษณ์ & ชื่อหน่วยงาน) */
+/* Brand Identity Box */
 .gov-brand-ribbon {
-    background: linear-gradient(135deg, #6fd3c6 0%, #4db2a3 100%);
-    color: #0b3948;
-    padding: 0.6rem 3.2rem 0.6rem 1.5rem;
+    background: transparent;
+    color: #ffffff;
+    padding: 0.5rem 1rem 0.5rem 0;
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 0.85rem;
     text-decoration: none !important;
-    position: relative;
-    clip-path: polygon(0 0, 89% 0, 100% 100%, 0 100%);
-    transition: filter 0.3s ease;
     flex-shrink: 0;
-    min-width: 320px;
+    min-width: 280px;
 }
 
 .gov-brand-ribbon:hover {
-    filter: brightness(1.05);
+    opacity: 0.95;
 }
 
 .gov-logo-circle {
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.95);
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: #ffffff;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
     overflow: hidden;
-    padding: 4px;
-    border: 2px solid #ffffff;
+    padding: 3px;
+    border: 2px solid #38bdf8;
     flex-shrink: 0;
 }
 
 .gov-logo-img {
-    max-height: 46px;
-    max-width: 46px;
+    max-height: 40px;
+    max-width: 40px;
     object-fit: contain;
 }
 
 .gov-title-stack {
     display: flex;
     flex-direction: column;
-    line-height: 1.15;
+    line-height: 1.2;
 }
 
 .gov-title-main {
-    font-size: 1.45rem;
+    font-size: 1.35rem;
     font-weight: 700;
     color: #ffffff;
-    text-shadow: 1px 1px 4px rgba(0,0,0,0.25);
-    letter-spacing: 0.5px;
+    letter-spacing: 0.3px;
 }
 
 .gov-title-sub {
-    font-size: 0.92rem;
-    font-weight: 600;
-    color: #0d3b4a;
-    margin-top: 2px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: #94a3b8;
+    margin-top: 1px;
 }
 
 /* Center Navigation List */
@@ -727,34 +800,49 @@ body {
 }
 
 .gov-nav-link {
-    color: #ffffff !important;
+    color: #e2e8f0 !important;
     font-weight: 500;
-    font-size: 1.05rem;
+    font-size: 0.98rem;
     text-decoration: none;
-    padding: 0 1.4rem;
+    padding: 0 1.2rem;
     display: flex;
     align-items: center;
-    gap: 0.4rem;
+    gap: 0.35rem;
     transition: all 0.2s ease;
-    border-bottom: 4px solid transparent;
+    border-bottom: 3px solid transparent;
     cursor: pointer;
 }
 
 .gov-nav-link:hover, .gov-nav-link:focus, .gov-nav-item:hover > .gov-nav-link {
-    background-color: rgba(255, 255, 255, 0.12);
-    color: #6fd3c6 !important;
-    border-bottom-color: #6fd3c6;
+    background-color: rgba(255, 255, 255, 0.06);
+    color: #60a5fa !important;
+    border-bottom-color: #60a5fa;
 }
 
 /* Dropdown styling */
 .gov-dropdown-menu {
-    border-radius: var(--radius-md);
-    background: var(--bg-primary);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.18);
-    border: 1px solid var(--glass-border) !important;
+    border-radius: 12px;
+    background: #ffffff;
+    box-shadow: 0 12px 35px rgba(0,0,0,0.15);
+    border: 1px solid #e2e8f0 !important;
     min-width: 240px;
     padding: 0.5rem;
     margin-top: 0 !important;
+}
+
+.gov-dropdown-menu .dropdown-item {
+    color: #1e293b !important;
+    border-radius: 8px;
+    padding: 0.5rem 0.85rem;
+    font-size: 0.92rem;
+    font-weight: 500;
+    transition: all 0.15s ease;
+}
+
+.gov-dropdown-menu .dropdown-item:hover {
+    background-color: #eff6ff;
+    color: #2563eb !important;
+    transform: translateX(3px);
 }
 
 /* Utility Station (ขวามือสุด) */

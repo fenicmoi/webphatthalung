@@ -1,7 +1,7 @@
 [
     {
         "id": "menu_6a7172486e6b1",
-        "title": "หน้าแรก",
+        "title": "หน้าหลัก",
         "url": "http:\/\/localhost\/webphatthalung\/public\/",
         "icon": "fa-solid fa-house",
         "target": "_self",
@@ -9,33 +9,33 @@
     },
     {
         "id": "menu_6a7172486e727",
-        "title": "เกี่ยวกับจังหวัด",
+        "title": "จังหวัดพัทลุง",
         "url": "#about",
         "icon": "fa-solid fa-landmark",
         "target": "_self",
         "children": [
             {
                 "id": "sub_6a7172486e728",
-                "title": "ประวัติความเป็นมาและคำขวัญ",
-                "url": "#history",
-                "target": "_self"
-            },
-            {
-                "id": "sub_6a7172486e729",
-                "title": "ทำเนียบผู้ว่าราชการและผู้บริหาร",
+                "title": "ข้อมูลทั่วไปจังหวัดพัทลุง",
                 "url": "#executives",
                 "target": "_self"
             },
             {
-                "id": "sub_6a7172486e72a",
-                "title": "สัญลักษณ์และอัตลักษณ์ประจำเมือง",
-                "url": "#symbols",
+                "id": "sub_1787114082554",
+                "title": "ผู้บริหารจังหวัด",
+                "url": "#sub-section",
                 "target": "_self"
             },
             {
-                "id": "sub_6a7172486e72b",
-                "title": "แผนยุทธศาสตร์การพัฒนาพัทลุง 2026",
-                "url": "#strategy",
+                "id": "sub_1787114329634",
+                "title": "หัวหน้าส่วนราชการ",
+                "url": "#sub-section",
+                "target": "_self"
+            },
+            {
+                "id": "sub_1787114367626",
+                "title": "ยุทธศาตร์การพัฒนาจังหวัด",
+                "url": "#sub-section",
                 "target": "_self"
             }
         ]
