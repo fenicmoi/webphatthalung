@@ -64,7 +64,8 @@ $layoutMode = $cfg['layout_mode'] ?? 'hybrid_widescreen';
 <!-- 3. NEWS & MEDIA HUB (ศูนย์รวมข่าวสารและสื่อมัลติมีเดีย) -->
 <?= $this->include('components/news_media_hub') ?>
 
-<!-- 2. PUBLIC e-SERVICES GRID -->
+<!-- 2. PUBLIC e-SERVICES GRID (ซ่อนไว้ชั่วคราวตามคำขอ) -->
+<?php /*
 <section id="services" class="my-5 py-2">
     <div class="d-flex flex-wrap align-items-end justify-content-between mb-4">
         <div>
@@ -105,8 +106,10 @@ $layoutMode = $cfg['layout_mode'] ?? 'hybrid_widescreen';
         <?php endforeach; ?>
     </div>
 </section>
+*/ ?>
 
-<!-- NEWS & MEDIA HUB moved up -->
+<!-- 3.1 PR & PARTNER BANNERS SLIDER (แถบแบนเนอร์ประชาสัมพันธ์และหน่วยงานสัมพันธ์) -->
+<?= $this->include('components/pr_banner_carousel') ?>
 
 <!-- 4. GOVERNANCE & TRANSPARENCY HUB (ศูนย์ข้อมูลความโปร่งใสและจัดซื้อจัดจ้าง) -->
 <!-- ย้ายไปเข้าผ่านเมนูด้านบนแทนการแสดงผลหน้าหลัก -->

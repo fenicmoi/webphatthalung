@@ -225,17 +225,19 @@ $documents = $documents ?? [];
                             <i class="<?= $fIcon ?>"></i>
                         </div>
                         <div>
-                            <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
-                                <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-3 py-1" style="font-size: 0.75rem;">
-                                    <i class="fa-solid fa-tag me-1"></i> <?= esc($doc['sub_tag'] ?? 'เอกสารราชการ') ?>
-                                </span>
-                                <span class="text-muted small"><i class="fa-regular fa-calendar me-1"></i> อัปเดต: <?= $docDate ?></span>
-                                <span class="text-muted small"><i class="fa-solid fa-database me-1"></i> ขนาด: <?= esc($doc['file_size'] ?? '1.2 MB') ?></span>
-                                <span class="text-muted small"><i class="fa-solid fa-cloud-arrow-down text-primary me-1"></i> โหลดแล้ว: <strong id="dl_count_<?= $doc['id'] ?>"><?= number_format($doc['downloads'] ?? 0) ?></strong> ครั้ง</span>
-                            </div>
-                            <h6 class="fw-bold m-0 text-dark" style="line-height: 1.4;">
+                            <!-- 1. ชื่อเอกสารแสดงผลด้านบน (Title on Top) -->
+                            <h6 class="fw-bold text-dark mb-1.5" style="font-size: 1.02rem; line-height: 1.45;">
                                 <?= esc($doc['title']) ?>
                             </h6>
+                            <!-- 2. ข้อมูลกำกับและ Metadata แสดงผลด้านล่าง (Metadata Below) -->
+                            <div class="d-flex flex-wrap align-items-center gap-2">
+                                <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-2.5 py-0.5" style="font-size: 0.75rem;">
+                                    <i class="fa-solid fa-tag me-1"></i> <?= esc($doc['sub_tag'] ?? 'เอกสารราชการ') ?>
+                                </span>
+                                <span class="text-muted small"><i class="fa-regular fa-calendar me-1 text-secondary"></i> อัปเดต: <?= $docDate ?></span>
+                                <span class="text-muted small"><i class="fa-solid fa-database me-1 text-secondary"></i> ขนาด: <?= esc($doc['file_size'] ?? '1.2 MB') ?></span>
+                                <span class="text-muted small"><i class="fa-solid fa-cloud-arrow-down text-primary me-1"></i> โหลดแล้ว: <strong id="dl_count_<?= $doc['id'] ?>" class="text-primary"><?= number_format($doc['downloads'] ?? 0) ?></strong> ครั้ง</span>
+                            </div>
                         </div>
                     </div>
 
@@ -321,7 +323,7 @@ $documents = $documents ?? [];
                 </div>
                 <div class="modal-footer border-top pt-3 d-flex justify-content-between">
                     <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">ยกเลิก</button>
-                    <button type="submit" class="btn btn-success rounded-pill px-5 fw-bold text-white shadow-sm d-flex align-items-center gap-2">
+                    <button type="submit" class="btn btn-success rounded-pill px-5 fw-bold text-white shadow-sm d-flex align-items-center gap-2" id="btnSaveDocStudio">
                         <i class="fa-solid fa-cloud-arrow-up"></i>
                         <span>บันทึกและเผยแพร่สู่สาธารณะ</span>
                     </button>
@@ -332,20 +334,28 @@ $documents = $documents ?? [];
 </div>
 
 <script>
+let docStudioModalInstance;
+
 const DocumentStudio = {
     open: function() {
+        var modalEl = document.getElementById('docStudioModal');
+        if (!docStudioModalInstance) {
+            docStudioModalInstance = new bootstrap.Modal(modalEl);
+        }
         document.getElementById('docStudioForm').reset();
         document.getElementById('d_id').value = '';
         document.getElementById('d_date').value = '<?= date('Y-m-d') ?>';
         document.getElementById('docStudioTitle').textContent = 'นำเข้าไฟล์และเอกสารใหม่';
-        var modal = new bootstrap.Modal(document.getElementById('docStudioModal'));
-        modal.show();
+        docStudioModalInstance.show();
     },
-    edit: function(id) {
-        fetch('<?= base_url("admin/documents/get-item") ?>/' + id)
-        .then(r => r.json())
-        .then(res => {
-            if (res.status === 'success') {
+    edit: async function(id) {
+        var modalEl = document.getElementById('docStudioModal');
+        if (!docStudioModalInstance) {
+            docStudioModalInstance = new bootstrap.Modal(modalEl);
+        }
+        try {
+            const res = await App.fetch('<?= base_url("admin/documents/get-item") ?>/' + id);
+            if (res && res.status === 'success') {
                 var d = res.data;
                 document.getElementById('d_id').value = d.id || '';
                 document.getElementById('d_title').value = d.title || '';
@@ -353,80 +363,101 @@ const DocumentStudio = {
                 document.getElementById('d_sub_tag').value = d.sub_tag || '';
                 document.getElementById('d_file_url').value = d.file_url || '';
                 if (d.date) document.getElementById('d_date').value = d.date;
-                document.getElementById('docStudioTitle').textContent = 'แก้ไขข้อมูลไฟล์เอกสาร';
-                var modal = new bootstrap.Modal(document.getElementById('docStudioModal'));
-                modal.show();
+                document.getElementById('docStudioTitle').textContent = 'แก้ไขข้อมูลไฟล์เอกสาร: ' + (d.title || '');
+                docStudioModalInstance.show();
             } else {
-                Swal.fire('Error', res.message || 'ไม่สามารถโหลดข้อมูลได้', 'error');
+                App.toast(res ? res.message : 'ไม่สามารถโหลดข้อมูลได้', 'error');
             }
-        });
+        } catch (err) {
+            App.toast('เกิดข้อผิดพลาดในการโหลดข้อมูลเอกสาร', 'error');
+        }
     },
-    save: function(e) {
+    save: async function(e) {
         e.preventDefault();
         var form = document.getElementById('docStudioForm');
-        var fd = new FormData(form);
         
-        Swal.fire({
-            title: 'กำลังบันทึกและจัดการไฟล์...',
-            allowOutsideClick: false,
-            didOpen: () => { Swal.showLoading(); }
-        });
+        var title = document.getElementById('d_title').value.trim();
+        var category = document.getElementById('d_category').value.trim();
+        var subTag = document.getElementById('d_sub_tag').value.trim();
+        var fileUrl = document.getElementById('d_file_url').value.trim();
+        var date = document.getElementById('d_date').value.trim();
+        var id = document.getElementById('d_id').value.trim();
+        var fileInput = document.getElementById('d_doc_file');
 
-        fetch('<?= base_url("admin/documents/save-item") ?>', {
-            method: 'POST',
-            body: fd
-        })
-        .then(r => r.json())
-        .then(res => {
-            if (res.status === 'success') {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'บันทึกสำเร็จ',
-                    text: res.message,
-                    timer: 1500,
-                    showConfirmButton: false
-                }).then(() => {
+        if (!title) {
+            App.toast('กรุณาระบุชื่อเอกสาร / ประกาศคำสั่ง', 'warning');
+            document.getElementById('d_title').focus();
+            return;
+        }
+
+        if (!category) {
+            App.toast('กรุณาเลือกหมวดหมู่หลัก', 'warning');
+            document.getElementById('d_category').focus();
+            return;
+        }
+
+        var fd = new FormData(form);
+        // รับประกันว่าคีย์ข้อมูลถูกส่งแนบไปอย่างแน่นอน
+        fd.set('id', id);
+        fd.set('title', title);
+        fd.set('category', category);
+        fd.set('sub_tag', subTag);
+        fd.set('file_url', fileUrl);
+        fd.set('date', date);
+
+        var btn = document.getElementById('btnSaveDocStudio');
+        var origText = btn.innerHTML;
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i> กำลังอัปโหลดและบันทึก...';
+        App.toast('กำลังอัปโหลดไฟล์และบันทึกข้อมูล...', 'info');
+
+        try {
+            const res = await App.fetch('<?= base_url("admin/documents/save-item") ?>', {
+                method: 'POST',
+                body: fd
+            });
+
+            if (res && res.status === 'success') {
+                App.toast(res.message, 'success');
+                if (docStudioModalInstance) {
+                    docStudioModalInstance.hide();
+                } else {
+                    bootstrap.Modal.getInstance(document.getElementById('docStudioModal'))?.hide();
+                }
+                setTimeout(() => {
                     location.reload();
-                });
+                }, 800);
             } else {
-                Swal.fire('ข้อผิดพลาด', res.message || 'เกิดข้อผิดพลาดในการบันทึก', 'error');
+                App.toast(res ? res.message : 'เกิดข้อผิดพลาดในการบันทึกเอกสาร', 'error');
+                btn.disabled = false;
+                btn.innerHTML = origText;
             }
-        })
-        .catch(err => {
-            Swal.fire('ข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์', 'error');
-        });
+        } catch (err) {
+            console.error('Doc save error:', err);
+            App.toast('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ หรือไฟล์อาจมีขนาดใหญ่เกินไป', 'error');
+            btn.disabled = false;
+            btn.innerHTML = origText;
+        }
     },
-    delete: function(id, title) {
-        Swal.fire({
-            title: 'ยืนยันการลบไฟล์และเอกสาร?',
-            text: `ต้องการลบรายการ "${title}" ออกจากฐานคลังเอกสารหรือไม่?`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'ลบไฟล์นี้',
-            cancelButtonText: 'ยกเลิก'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                fetch('<?= base_url("admin/documents/delete-item") ?>/' + id, { method: 'POST' })
-                .then(r => r.json())
-                .then(res => {
-                    if (res.status === 'success') {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'ลบสำเร็จ',
-                            text: res.message,
-                            timer: 1500,
-                            showConfirmButton: false
-                        }).then(() => {
-                            location.reload();
-                        });
-                    } else {
-                        Swal.fire('Error', res.message || 'ไม่สามารถลบรายการได้', 'error');
-                    }
+    delete: async function(id, title) {
+        if (confirm(`คุณแน่ใจหรือไม่ที่จะลบเอกสาร "${title}" ออกจากคลังเอกสาร?`)) {
+            try {
+                const res = await App.fetch('<?= base_url("admin/documents/delete-item") ?>/' + id, { 
+                    method: 'POST' 
                 });
+                if (res && res.status === 'success') {
+                    App.toast(res.message, 'success');
+                    setTimeout(() => {
+                        location.reload();
+                    }, 800);
+                } else {
+                    App.toast(res ? res.message : 'ไม่สามารถลบรายการได้', 'error');
+                }
+            } catch (err) {
+                App.toast('เกิดข้อผิดพลาดในการลบเอกสาร', 'error');
             }
-        });
+        }
     }
 };
 </script>

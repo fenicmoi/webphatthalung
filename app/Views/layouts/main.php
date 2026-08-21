@@ -13,7 +13,15 @@
     <script>window.BASE_URL = "<?= rtrim(base_url(), '/') ?>";</script>
     <meta name="X-CSRF-HEADER" content="<?= csrf_header() ?>">
     <meta name="X-CSRF-TOKEN" content="<?= csrf_hash() ?>">
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="<?= base_url('uploads/logo/logo_1787048018.png') ?>">
+    <link rel="apple-touch-icon" href="<?= base_url('uploads/logo/logo_1787048018.png') ?>">
     
+    <!-- Google Fonts Preconnect (High-Speed Non-blocking) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
     <!-- Bootstrap 5.3 CSS CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     
@@ -72,9 +80,11 @@
                                     <span><?= htmlspecialchars($nav['title'] ?? '') ?></span>
                                 </a>
                                 <ul class="dropdown-menu gov-dropdown-menu shadow border-0">
-                                    <?php foreach($nav['children'] as $sub): ?>
+                                    <?php foreach($nav['children'] as $sub): 
+                                        $subUrl = function_exists('format_menu_url') ? format_menu_url($sub['url'] ?? '#') : ($sub['url'] ?? '#');
+                                    ?>
                                     <li>
-                                        <a class="dropdown-item py-2 d-flex align-items-center gap-2 text-decoration-none" href="<?= htmlspecialchars($sub['url'] ?? '#') ?>" target="<?= htmlspecialchars($sub['target'] ?? '_self') ?>">
+                                        <a class="dropdown-item py-2 d-flex align-items-center gap-2 text-decoration-none" href="<?= htmlspecialchars($subUrl) ?>" target="<?= htmlspecialchars($sub['target'] ?? '_self') ?>">
                                             <i class="fa-solid fa-chevron-right text-primary" style="font-size: 0.7rem;"></i>
                                             <span><?= htmlspecialchars($sub['title'] ?? '') ?></span>
                                         </a>
@@ -82,9 +92,11 @@
                                     <?php endforeach; ?>
                                 </ul>
                             </li>
-                        <?php else: ?>
+                        <?php else: 
+                            $mainUrl = function_exists('format_menu_url') ? format_menu_url($nav['url'] ?? '#') : ($nav['url'] ?? '#');
+                        ?>
                             <li class="gov-nav-item">
-                                <a class="gov-nav-link" href="<?= htmlspecialchars($nav['url'] ?? '#') ?>" target="<?= htmlspecialchars($nav['target'] ?? '_self') ?>">
+                                <a class="gov-nav-link" href="<?= htmlspecialchars($mainUrl) ?>" target="<?= htmlspecialchars($nav['target'] ?? '_self') ?>">
                                     <span><?= htmlspecialchars($nav['title'] ?? '') ?></span>
                                 </a>
                             </li>

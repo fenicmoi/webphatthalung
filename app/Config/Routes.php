@@ -129,6 +129,14 @@ $routes->post('admin/procurement/delete-inline/(:any)', 'Admin\ProcurementManage
 
 /*
  * --------------------------------------------------------------------
+ * Phatthalung Interactive GIS & Geographic Portal Routes
+ * --------------------------------------------------------------------
+ */
+$routes->get('gis', 'Gis::index');
+$routes->get('gis/data', 'Gis::getData');
+
+/*
+ * --------------------------------------------------------------------
  * Provincial Activity Photo Gallery & Studio Routes
  * --------------------------------------------------------------------
  */
@@ -158,6 +166,7 @@ $routes->get('videos', 'Video::index');
 $routes->get('videos/category/(:any)', 'Video::index/$1');
 $routes->post('videos/count-view/(:any)', 'Video::countView/$1');
 
+$routes->get('admin/videos', 'Admin\VideoManager::index');
 $routes->get('admin/videos/get-item/(:any)', 'Admin\VideoManager::getItem/$1');
 $routes->post('admin/videos/save-item', 'Admin\VideoManager::saveItem');
 $routes->post('admin/videos/delete-item/(:any)', 'Admin\VideoManager::deleteItem/$1');
@@ -185,6 +194,17 @@ $routes->get('executives/category/(:any)', 'Executive::index/$1');
 $routes->get('admin/executives/get-item/(:any)', 'Admin\ExecutiveManager::getItem/$1');
 $routes->post('admin/executives/save-item', 'Admin\ExecutiveManager::saveItem');
 $routes->post('admin/executives/delete-item/(:any)', 'Admin\ExecutiveManager::deleteItem/$1');
+
+/*
+ * --------------------------------------------------------------------
+ * Hall of Governors (ทำเนียบเจ้าเมืองและผู้ว่าราชการจังหวัดพัทลุง)
+ * --------------------------------------------------------------------
+ */
+$routes->get('governors', 'Governor::index');
+$routes->get('admin/governors', 'Admin\GovernorManager::index');
+$routes->get('admin/governors/get-item/(:any)', 'Admin\GovernorManager::getItem/$1');
+$routes->post('admin/governors/save-item', 'Admin\GovernorManager::saveItem');
+$routes->post('admin/governors/delete-item/(:any)', 'Admin\GovernorManager::deleteItem/$1');
 
 /*
  * --------------------------------------------------------------------
@@ -238,6 +258,7 @@ $routes->get('admin/pages', 'Admin\PageManager::index', ['filter' => 'auth']);
 $routes->get('admin/pages/get-item/(:any)', 'Admin\PageManager::getItem/$1', ['filter' => 'auth']);
 $routes->post('admin/pages/save-item', 'Admin\PageManager::saveItem', ['filter' => 'auth']);
 $routes->post('admin/pages/delete-item/(:any)', 'Admin\PageManager::deleteItem/$1', ['filter' => 'auth']);
+$routes->post('admin/pages/upload-image', 'Admin\PageManager::uploadImage', ['filter' => 'auth']);
 
 /*
  * --------------------------------------------------------------------

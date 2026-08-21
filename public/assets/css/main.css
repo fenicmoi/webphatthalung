@@ -4,8 +4,6 @@
    Features: Glassmorphism, Dark/Light Mode variables, Micro-animations
    ========================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Prompt:wght@300;400;500;600;700&display=swap');
-
 :root {
     /* --- Modern Prestige Provincial Palette (Harmonious & Easy on the Eyes) --- */
     --primary-color: #1e3a8a;       /* Deep Royal Blue */
@@ -1571,4 +1569,21 @@ body:not([data-theme="dark"]) .article-reading-card .article-meta-info {
     background: #1e293b !important;
     color: #f8fafc !important;
     border-left: 6px solid #fbbf24;
+}
+
+/* ==========================================================================
+   PORTRAIT & EXECUTIVE IMAGE OPTIMIZATION (ANTI-CROPPING & FACE PRESERVATION)
+   ========================================================================== */
+.portrait-crop-safe,
+.gov-photo-wrap img,
+.governor-img,
+.exec-grid-img,
+.officer-photo-img {
+    object-fit: cover !important;
+    object-position: top center !important; /* ล็อคโฟกัสที่ศีรษะและใบหน้าด้านบนเสมอ สัดส่วนไม่เพี้ยน และไม่โดนตัดขอบบน */
+}
+
+.portrait-contain-safe {
+    object-fit: contain !important;
+    object-position: center center !important;
 }

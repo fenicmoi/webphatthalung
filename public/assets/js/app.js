@@ -98,14 +98,38 @@ const App = (function() {
                 csrfMeta.content = newCsrf;
             }
 
-            if (!response.ok) {
-                throw new Error(`HTTP Error: ${response.status}`);
+            // ถ้าเซสชันหมดอายุ (HTTP 401)
+            if (response.status === 401) {
+                App.toast('เซสชันหมดอายุ กรุณาเข้าสู่ระบบใหม่อีกครั้ง (กำลังนำท่านไปหน้า Login...)', 'error');
+                setTimeout(() => {
+                    window.location.href = (typeof BASE_URL !== 'undefined' ? BASE_URL : '') + '/login';
+                }, 1500);
+                throw new Error('เซสชันหมดอายุ กรุณาเข้าสู่ระบบใหม่');
             }
 
-            return await response.json();
+            const rawText = await response.text();
+            let data;
+            try {
+                data = JSON.parse(rawText);
+            } catch (jsonErr) {
+                console.warn('Server returned non-JSON response:', rawText);
+                // ตรวจสอบว่าเป็นหน้า Login หรือไม่
+                if (rawText.includes('เข้าสู่ระบบ') || rawText.includes('login/attempt')) {
+                    App.toast('เซสชันหมดอายุ กรุณาเข้าสู่ระบบใหม่', 'error');
+                    setTimeout(() => { window.location.href = '/login'; }, 1500);
+                    throw new Error('เซสชันหมดอายุ');
+                }
+                throw new Error('เซิร์ฟเวอร์ตอบกลับไม่ถูกต้อง (โปรดตรวจสอบการเข้าสู่ระบบ)');
+            }
+
+            if (!response.ok) {
+                throw new Error(data && data.message ? data.message : `HTTP Error: ${response.status}`);
+            }
+
+            return data;
         } catch (error) {
             console.error('Fetch API Error:', error);
-            App.toast('เกิดข้อผิดพลาดในการเชื่อมต่อข้อมูล: ' + error.message, 'error');
+            App.toast('เกิดข้อผิดพลาด: ' + error.message, 'error');
             throw error;
         }
     };

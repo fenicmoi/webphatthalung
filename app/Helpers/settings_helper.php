@@ -185,9 +185,27 @@ if (!function_exists('get_site_banners')) {
                 'button_icon' => 'fa-solid fa-compass',
                 'active' => 1,
                 'style_class' => 'slide-bg-sane-muanglung'
-            ],
-            // ... truncated defaults
+            ]
         ];
+    }
+}
+
+if (!function_exists('format_menu_url')) {
+    /**
+     * แปลงลิงก์เมนูให้เป็น URL ที่ถูกต้องอัตโนมัติ (รองรับทั้ง page/slug, ลิงก์ภายนอก และ anchor)
+     */
+    function format_menu_url($url)
+    {
+        $url = trim((string)$url);
+        if (empty($url) || $url === '#') return '#';
+        if (strpos($url, 'http://') === 0 || strpos($url, 'https://') === 0 || strpos($url, 'javascript:') === 0) {
+            return $url;
+        }
+        if (strpos($url, '#') === 0) {
+            return $url;
+        }
+        $cleaned = ltrim($url, '/');
+        return base_url($cleaned);
     }
 }
 
@@ -1327,4 +1345,197 @@ if (!function_exists('save_emergency_alert')) {
         return file_put_contents($jsonPath, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
     }
 }
+
+if (!function_exists('get_site_governors')) {
+    /**
+     * ดึงข้อมูลทำเนียบผู้ว่าราชการจังหวัดพัทลุง (Hall of Governors)
+     */
+    function get_site_governors($search = null, $era = null)
+    {
+        $writableDir = defined('WRITABLE') ? rtrim(\WRITABLE, '/\\') : realpath(__DIR__ . '/../../writable');
+        $jsonPath = $writableDir . DIRECTORY_SEPARATOR . 'site_governors.json';
+
+        if (is_file($jsonPath)) {
+            $raw = @file_get_contents($jsonPath);
+            $data = @json_decode($raw, true);
+            if (is_array($data)) {
+                // กรองผลลัพธ์
+                if ($search || $era) {
+                    return array_values(array_filter($data, function($g) use ($search, $era) {
+                        if ($era && $era !== 'all' && ($g['era'] ?? '') !== $era) return false;
+                        if ($search) {
+                            $s = mb_strtolower($search);
+                            $name = mb_strtolower($g['name'] ?? '');
+                            $seq = (string)($g['sequence'] ?? '');
+                            $period = mb_strtolower($g['period'] ?? '');
+                            if (mb_strpos($name, $s) === false && mb_strpos($seq, $s) === false && mb_strpos($period, $s) === false) {
+                                return false;
+                            }
+                        }
+                        return true;
+                    }));
+                }
+                return $data;
+            }
+        }
+
+        // ค่าเริ่มต้น: ทำเนียบเจ้าเมืองและผู้ว่าราชการจังหวัดพัทลุง
+        $defaults = [
+            [
+                'id' => 'gov_1',
+                'sequence' => 1,
+                'name' => 'พระยาพัทลุง (ขุนคางเหล็ก)',
+                'title_honor' => 'เจ้าเมืองพัทลุง ท่านแรกในยุคกรุงธนบุรี',
+                'period' => 'พ.ศ. 2315 - 2332',
+                'era' => 'ยุคกรุงธนบุรีและต้นรัตนโกสินทร์',
+                'image' => 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&q=80',
+                'achievement' => 'เจ้าเมืองพัทลุงผู้มีบทบาทสำคัญในการตั้งมั่นและรักษาความสงบเรียบร้อยของเมืองพัทลุงในยุคผลัดแผ่นดิน',
+                'is_current' => false,
+                'order_num' => 1
+            ],
+            [
+                'id' => 'gov_2',
+                'sequence' => 2,
+                'name' => 'พระยาพัทลุง (ทองขาว)',
+                'title_honor' => 'เจ้าเมืองพัทลุง',
+                'period' => 'พ.ศ. 2332 - 2360',
+                'era' => 'ยุคต้นรัตนโกสินทร์',
+                'image' => '',
+                'achievement' => 'บุตรขุนคางเหล็ก ดำรงตำแหน่งเจ้าเมืองพัทลุงและทำนุบำรุงบ้านเมืองในสมัยรัชกาลที่ 1 และ 2',
+                'is_current' => false,
+                'order_num' => 2
+            ],
+            [
+                'id' => 'gov_3',
+                'sequence' => 3,
+                'name' => 'พระยาพัทลุง (จุ้ย)',
+                'title_honor' => 'เจ้าเมืองพัทลุง',
+                'period' => 'พ.ศ. 2360 - 2382',
+                'era' => 'ยุคต้นรัตนโกสินทร์',
+                'image' => '',
+                'achievement' => 'บริหารราชการบ้านเมืองและดูแลความมั่นคงทางทะเลในสมัยรัชกาลที่ 2 และ 3',
+                'is_current' => false,
+                'order_num' => 3
+            ],
+            [
+                'id' => 'gov_4',
+                'sequence' => 4,
+                'name' => 'พระยาพัทลุง (น้อยเกศ)',
+                'title_honor' => 'เจ้าเมืองพัทลุง',
+                'period' => 'พ.ศ. 2382 - 2410',
+                'era' => 'ยุคต้นรัตนโกสินทร์',
+                'image' => '',
+                'achievement' => 'ปกครองและจัดระเบียบราชการเมืองพัทลุงในสมัยรัชกาลที่ 3 และ 4',
+                'is_current' => false,
+                'order_num' => 4
+            ],
+            [
+                'id' => 'gov_5',
+                'sequence' => 5,
+                'name' => 'พระยาพัทลุง (เนตร)',
+                'title_honor' => 'เจ้าเมืองพัทลุง',
+                'period' => 'พ.ศ. 2410 - 2431',
+                'era' => 'ยุครัตนโกสินทร์ตอนกลาง',
+                'image' => '',
+                'achievement' => 'เจ้าเมืองพัทลุงในสมัยรัชกาลที่ 4 และ 5 มีบทบาทในการสร้างความเจริญแก่ตัวเมืองและขยายเศรษฐกิจท้องถิ่น',
+                'is_current' => false,
+                'order_num' => 5
+            ],
+            [
+                'id' => 'gov_6',
+                'sequence' => 6,
+                'name' => 'พระยาพัทลุง (เหมือน)',
+                'title_honor' => 'เจ้าเมืองพัทลุง',
+                'period' => 'พ.ศ. 2431 - 2437',
+                'era' => 'ยุครัตนโกสินทร์ตอนกลาง',
+                'image' => '',
+                'achievement' => 'เจ้าเมืองพัทลุงท่านสุดท้ายก่อนเข้าสู่การปฏิรูปการปกครองแบบมณฑลเทศาภิบาล',
+                'is_current' => false,
+                'order_num' => 6
+            ],
+            [
+                'id' => 'gov_7',
+                'sequence' => 7,
+                'name' => 'พระยาอภัยบริรักษ์ (เนตร จันทโรจวงศ์)',
+                'title_honor' => 'ผู้ว่าราชการเมืองพัทลุง',
+                'period' => 'พ.ศ. 2437 - 2450',
+                'era' => 'ยุคมณฑลเทศาภิบาล (รัชกาลที่ 5)',
+                'image' => '',
+                'achievement' => 'ผู้ว่าราชการเมืองในยุคปฏิรูปการบริหารราชการแผ่นดิน และเป็นต้นสายสกุลจันทโรจวงศ์',
+                'is_current' => false,
+                'order_num' => 7
+            ],
+            [
+                'id' => 'gov_8',
+                'sequence' => 8,
+                'name' => 'พระยาประเสริฐสิทธิศักดิ์ (กระจ่าง มหารักษ์)',
+                'title_honor' => 'ผู้ว่าราชการเมืองพัทลุง',
+                'period' => 'พ.ศ. 2450 - 2457',
+                'era' => 'ยุคมณฑลเทศาภิบาล',
+                'image' => '',
+                'achievement' => 'บริหารราชการและส่งเสริมการคมนาคมเชื่อมต่อระหว่างเมืองพัทลุงกับมณฑลนครศรีธรรมราช',
+                'is_current' => false,
+                'order_num' => 8
+            ],
+            [
+                'id' => 'gov_54',
+                'sequence' => 54,
+                'name' => 'นายกู้เกียรติ วงศ์กระพันธุ์',
+                'title_honor' => 'ผู้ว่าราชการจังหวัดพัทลุง',
+                'period' => '1 ต.ค. 2560 - 30 ก.ย. 2565',
+                'era' => 'ยุคปัจจุบัน',
+                'image' => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80',
+                'achievement' => 'ขับเคลื่อนการพัฒนาจังหวัดพัทลุงเป็นเมืองท่องเที่ยวเชิงนิเวศ เกษตรอินทรีย์ และพัฒนาโครงสร้างพื้นฐาน',
+                'is_current' => false,
+                'order_num' => 54
+            ],
+            [
+                'id' => 'gov_55',
+                'sequence' => 55,
+                'name' => 'นางนิศากร วิศิษฏ์สรอรรถ',
+                'title_honor' => 'ผู้ว่าราชการจังหวัดพัทลุง (สตรีท่านแรก)',
+                'period' => '2 ธ.ค. 2565 - 30 ก.ย. 2566',
+                'era' => 'ยุคปัจจุบัน',
+                'image' => 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80',
+                'achievement' => 'ส่งเสริมเศรษฐกิจสร้างสรรค์ ศิลปวัฒนธรรมโนราห์ และยกระดับการบริการภาครัฐสู่ดิจิทัล',
+                'is_current' => false,
+                'order_num' => 55
+            ],
+            [
+                'id' => 'gov_56',
+                'sequence' => 56,
+                'name' => 'นางสาวฐิติลักษณ์ คำพา',
+                'title_honor' => 'ผู้ว่าราชการจังหวัดพัทลุง คนปัจจุบัน',
+                'period' => '1 ต.ค. 2566 - ปัจจุบัน',
+                'era' => 'ยุคปัจจุบัน',
+                'image' => 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=400&q=80',
+                'achievement' => 'มุ่งเน้นการขับเคลื่อนยุทธศาสตร์ "เมืองเกษตรอินทรีย์ วิถีวัฒนธรรม ท่องเที่ยวเชิงนิเวศอย่างยั่งยืน"',
+                'is_current' => true,
+                'order_num' => 56
+            ]
+        ];
+
+        if (is_dir($writableDir)) {
+            @file_put_contents($jsonPath, json_encode($defaults, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        }
+
+        return $defaults;
+    }
+}
+
+if (!function_exists('save_site_governors')) {
+    /**
+     * บันทึกข้อมูลทำเนียบผู้ว่าราชการจังหวัดพัทลุง
+     */
+    function save_site_governors(array $governors)
+    {
+        $writableDir = defined('WRITABLE') ? rtrim(\WRITABLE, '/\\') : realpath(__DIR__ . '/../../writable');
+        if (!is_dir($writableDir)) {
+            @mkdir($writableDir, 0777, true);
+        }
+        $jsonPath = $writableDir . DIRECTORY_SEPARATOR . 'site_governors.json';
+        return file_put_contents($jsonPath, json_encode(array_values($governors), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+    }
+}
+
 

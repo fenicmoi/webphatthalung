@@ -18,6 +18,37 @@ class Search extends ResourceController
         helper('settings');
         $index = [];
 
+        // --- 0. ดึงข้อมูลหน้าเว็บไซต์ (Static Pages) ---
+        try {
+            $pageModel = new \App\Models\PageModel();
+            $allPages = $pageModel->findAll();
+            foreach ($allPages as $p) {
+                $cleanContent = strip_tags($p['content'] ?? '');
+                $snippet = mb_substr($cleanContent, 0, 140) . (mb_strlen($cleanContent) > 140 ? '...' : '');
+
+                $pUrl = base_url('page/' . $p['slug']);
+                if (!empty($p['parent_id'])) {
+                    $parentPage = $pageModel->find($p['parent_id']);
+                    if ($parentPage) {
+                        $pUrl = base_url('page/' . $parentPage['slug'] . '#tab-child-' . $p['id']);
+                    }
+                }
+
+                $index[] = [
+                    'id'          => 'page-' . $p['id'],
+                    'type'        => 'page',
+                    'title'       => $p['title'] ?? 'หน้าเว็บไซต์',
+                    'description' => !empty($snippet) ? $snippet : 'หน้าเนื้อหาและข้อมูลทั่วไปของจังหวัดพัทลุง',
+                    'url'         => $pUrl,
+                    'icon'        => 'fa-solid fa-file-lines text-info',
+                    'badge'       => 'หน้าเพจ / ข้อมูลทั่วไป',
+                    'keywords'    => ($p['title'] ?? '') . ' ' . ($p['slug'] ?? '') . ' ' . $snippet . ' หน้าเว็บ ข้อมูลทั่วไป ประวัติ พัทลุง'
+                ];
+            }
+        } catch (\Throwable $e) {
+            // Ignore if DB not ready
+        }
+
         // --- 1. ดึงข้อมูลคลังเอกสารและไฟล์ดาวน์โหลดจริง (Live Smart Documents) ---
         if (function_exists('get_site_documents')) {
             $docs = get_site_documents(null, null, true);

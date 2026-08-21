@@ -355,12 +355,22 @@ $isOfficer = session()->get('isLoggedIn');
             </div>
 
             <!-- Tab 4: วิดีทัศน์ Web TV -->
+            <!-- Tab 4: วิดีทัศน์ Web TV -->
             <div class="tab-pane fade" id="tab-videos" role="tabpanel" aria-labelledby="tab-videos-trigger">
                 <?php if ($isOfficer): ?>
-                    <div class="d-flex justify-content-end mb-3">
-                        <button type="button" onclick="window.location.href='<?= base_url('videos') ?>'" class="btn btn-xs btn-warning rounded-pill px-4 py-2 fw-bold text-dark d-flex align-items-center gap-2">
-                            <i class="fa-solid fa-wand-magic-sparkles"></i> จัดการวิดีโอ (Studio)
-                        </button>
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3.5 p-3 rounded-4 bg-light border">
+                        <div class="small fw-bold text-dark d-flex align-items-center gap-2">
+                            <span class="badge bg-danger rounded-pill px-2.5 py-1.5"><i class="fa-solid fa-film me-1"></i> โหมดจัดการวิดีโอ</span>
+                            <span>คุณสามารถเพิ่ม แก้ไข หรือลบวิดีโอได้โดยตรง</span>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <button type="button" onclick="openHomeVideoAddModal()" class="btn btn-sm btn-danger rounded-pill px-3.5 py-1.5 fw-bold shadow-sm d-flex align-items-center gap-1.5">
+                                <i class="fa-solid fa-plus"></i> เพิ่มวิดีโอใหม่
+                            </button>
+                            <a href="<?= base_url('admin/videos') ?>" class="btn btn-sm btn-outline-dark rounded-pill px-3 py-1.5 fw-bold d-flex align-items-center gap-1.5">
+                                <i class="fa-solid fa-sliders"></i> สตูดิโอหลังบ้าน
+                            </a>
+                        </div>
                     </div>
                 <?php endif; ?>
 
@@ -369,6 +379,11 @@ $isOfficer = session()->get('isLoggedIn');
                         <div class="col-12 text-center py-5">
                             <i class="fa-solid fa-video-slash fs-1 text-muted mb-3"></i>
                             <p class="text-muted m-0">ยังไม่มีวิดีโอประชาสัมพันธ์ในระบบขณะนี้</p>
+                            <?php if ($isOfficer): ?>
+                                <button type="button" onclick="openHomeVideoAddModal()" class="btn btn-danger btn-sm rounded-pill mt-3 px-4">
+                                    <i class="fa-solid fa-plus me-1"></i> เพิ่มวิดีโอแรก
+                                </button>
+                            <?php endif; ?>
                         </div>
                     <?php else: ?>
                         <?php foreach ($homeVideos as $vid): 
@@ -379,10 +394,24 @@ $isOfficer = session()->get('isLoggedIn');
                             $vidCat = esc($vid['category'] ?? 'ทั่วไป');
                             $vidViews = number_format($vid['views'] ?? 1);
                             $vidDate = !empty($vid['date']) ? date('d/m/Y', strtotime($vid['date'])) : '-';
+                            $vidId = esc($vid['id'] ?? '');
                         ?>
                             <div class="col-12 col-md-6 col-lg-4">
-                                <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden transition-transform hover-scale d-flex flex-column justify-content-between" onclick="SmartHomeCinema.play('<?= $yId ?>', '<?= addslashes($vid['title']) ?>', '<?= $vid['id'] ?>')" style="cursor: pointer; background: var(--card-bg, #ffffff); border: 1px solid rgba(225, 29, 72, 0.2) !important;">
-                                    <div>
+                                <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden transition-transform hover-scale d-flex flex-column justify-content-between position-relative" style="cursor: pointer; background: var(--card-bg, #ffffff); border: 1px solid rgba(225, 29, 72, 0.2) !important;">
+                                    
+                                    <?php if ($isOfficer): ?>
+                                        <!-- Quick Edit/Delete Overlay for Officer -->
+                                        <div class="position-absolute top-0 end-0 m-2.5 d-flex gap-1.5" style="z-index: 10;">
+                                            <button type="button" class="btn btn-sm btn-white bg-white shadow rounded-circle border p-0" style="width: 32px; height: 32px;" onclick="event.stopPropagation(); editHomeVideo('<?= $vidId ?>')" title="แก้ไขวิดีโอ">
+                                                <i class="fa-solid fa-pen-to-square text-primary" style="font-size: 0.8rem;"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-white bg-white shadow rounded-circle border p-0" style="width: 32px; height: 32px;" onclick="event.stopPropagation(); deleteHomeVideo('<?= $vidId ?>', '<?= addslashes($vidTitle) ?>')" title="ลบวิดีโอ">
+                                                <i class="fa-solid fa-trash-can text-danger" style="font-size: 0.8rem;"></i>
+                                            </button>
+                                        </div>
+                                    <?php endif; ?>
+
+                                    <div onclick="SmartHomeCinema.play('<?= $yId ?>', '<?= addslashes($vid['title']) ?>', '<?= $vidId ?>')">
                                         <!-- Thumbnail with Play Overlay -->
                                         <div class="position-relative overflow-hidden bg-dark" style="padding-top: 56.25%;">
                                             <span class="badge position-absolute top-0 start-0 m-3 px-3 py-1 rounded-pill fw-bold" style="background: rgba(15,23,42,0.85); backdrop-filter: blur(8px); color: #fb7185; z-index: 2; border: 1px solid rgba(251,113,133,0.3);">
@@ -407,7 +436,7 @@ $isOfficer = session()->get('isLoggedIn');
                                         </div>
                                     </div>
 
-                                    <div class="px-4 py-3 border-top d-flex align-items-center justify-content-between text-muted small" style="border-color: rgba(0,0,0,0.06) !important;">
+                                    <div class="px-4 py-3 border-top d-flex align-items-center justify-content-between text-muted small" style="border-color: rgba(0,0,0,0.06) !important;" onclick="SmartHomeCinema.play('<?= $yId ?>', '<?= addslashes($vid['title']) ?>', '<?= $vidId ?>')">
                                         <span><i class="fa-regular fa-calendar-days me-1 text-danger"></i> <?= $vidDate ?></span>
                                         <span class="btn btn-sm btn-outline-danger rounded-pill px-3 py-1 fw-bold flex-shrink-0" style="font-size: 0.75rem;">
                                             <i class="fa-solid fa-play me-1"></i> คลิกเล่นวิดีโอ
@@ -424,6 +453,194 @@ $isOfficer = session()->get('isLoggedIn');
 
     </div>
 </section>
+
+<?php if ($isOfficer): ?>
+<!-- ======================================================== -->
+<!-- MODAL: QUICK ADD/EDIT YOUTUBE VIDEO (HOME TAB) -->
+<!-- ======================================================== -->
+<div class="modal fade" id="homeVideoModal" tabindex="-1" aria-hidden="true" style="z-index: 1060;">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content rounded-4 border-0 shadow-lg">
+            <div class="modal-header bg-danger text-white py-3 px-4" style="background: linear-gradient(135deg, #991b1b, #dc2626) !important;">
+                <h5 class="modal-title fw-bold" id="homeVideoModalTitle">
+                    <i class="fa-solid fa-film me-2"></i> จัดการวิดีโอ Web TV
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form id="homeVideoForm" onsubmit="event.preventDefault(); saveHomeVideo();">
+                    <input type="hidden" id="homeVideoId" name="id">
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">ชื่อวิดีโอ (Video Title) <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="homeVideoTitle" name="title" required placeholder="เช่น มหัศจรรย์ทะเลน้อย: สวรรค์ของนกน้ำ">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">ลิงก์วิดีโอ YouTube หรือ YouTube ID <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-danger"><i class="fa-brands fa-youtube fs-5"></i></span>
+                            <input type="text" class="form-control" id="homeVideoYoutubeUrl" name="youtube_url" required placeholder="วางลิงก์ YouTube (เช่น https://www.youtube.com/watch?v=... หรือ ID)" oninput="previewHomeYoutubeInput(this.value)">
+                        </div>
+                        <small class="text-muted mt-1 d-block">
+                            <i class="fa-solid fa-circle-info me-1"></i> รองรับทุกลิงก์ YouTube: youtube.com/watch?v=..., youtu.be/..., shorts/..., หรือพิมพ์เฉพาะ Video ID
+                        </small>
+                    </div>
+
+                    <div id="homeYoutubePreviewWrap" class="mb-3 p-2 rounded-3 border bg-light d-none">
+                        <span class="small fw-bold text-secondary d-block mb-1"><i class="fa-solid fa-circle-play text-danger me-1"></i> ตัวอย่างภาพหน้าปก</span>
+                        <div class="ratio ratio-16x9 rounded overflow-hidden shadow-sm" style="max-height: 200px;">
+                            <img id="homeYoutubeThumbImg" src="" alt="YouTube Preview" class="w-100 h-100 object-fit-cover">
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-2">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">หมวดหมู่วิดีโอ</label>
+                            <select class="form-select" id="homeVideoCategory" name="category">
+                                <option value="ท่องเที่ยวและธรรมชาติ">ท่องเที่ยวและธรรมชาติ</option>
+                                <option value="ศิลปวัฒนธรรมท้องถิ่น">ศิลปวัฒนธรรมท้องถิ่น</option>
+                                <option value="ภารกิจและกิจกรรมจังหวัด">ภารกิจและกิจกรรมจังหวัด</option>
+                                <option value="ส่งเสริมการท่องเที่ยว">ส่งเสริมการท่องเที่ยว</option>
+                                <option value="ข่าวสารและสารคดีพิเศษ">ข่าวสารและสารคดีพิเศษ</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">คำอธิบายสั้น</label>
+                            <input type="text" class="form-control" id="homeVideoDesc" name="desc" placeholder="เช่น สารคดีเจาะลึกศิลปะการร่ายรำโนราห์">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer bg-light border-top">
+                <button type="button" class="btn btn-secondary px-3" data-bs-dismiss="modal">ยกเลิก</button>
+                <button type="button" class="btn btn-danger px-4 fw-bold" id="btnSaveHomeVideo" onclick="saveHomeVideo()">
+                    <i class="fa-solid fa-save me-1"></i> บันทึกข้อมูล
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let homeVideoModal;
+
+function openHomeVideoAddModal() {
+    if (!homeVideoModal) homeVideoModal = new bootstrap.Modal(document.getElementById('homeVideoModal'));
+    document.getElementById('homeVideoForm').reset();
+    document.getElementById('homeVideoId').value = '';
+    document.getElementById('homeVideoModalTitle').innerHTML = '<i class="fa-solid fa-plus me-2"></i> เพิ่มวิดีโอ YouTube ใหม่';
+    document.getElementById('homeYoutubePreviewWrap').classList.add('d-none');
+    homeVideoModal.show();
+}
+
+function extractHomeYtId(url) {
+    if (!url) return '';
+    url = url.trim();
+    if (/^[a-zA-Z0-9_-]{11}$/.test(url)) return url;
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|shorts\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length === 11) ? match[2] : '';
+}
+
+function previewHomeYoutubeInput(val) {
+    const yId = extractHomeYtId(val);
+    const wrap = document.getElementById('homeYoutubePreviewWrap');
+    const img = document.getElementById('homeYoutubeThumbImg');
+    if (yId) {
+        img.src = `https://img.youtube.com/vi/${yId}/hqdefault.jpg`;
+        wrap.classList.remove('d-none');
+    } else {
+        wrap.classList.add('d-none');
+    }
+}
+
+async function editHomeVideo(id) {
+    if (!homeVideoModal) homeVideoModal = new bootstrap.Modal(document.getElementById('homeVideoModal'));
+    try {
+        const res = await App.fetch(`<?= base_url('admin/videos/get-item') ?>/${id}`);
+        if (res && res.status === 'success') {
+            const v = res.data;
+            document.getElementById('homeVideoId').value = v.id;
+            document.getElementById('homeVideoTitle').value = v.title;
+            document.getElementById('homeVideoYoutubeUrl').value = v.youtube_id;
+            document.getElementById('homeVideoCategory').value = v.category || 'ท่องเที่ยวและธรรมชาติ';
+            document.getElementById('homeVideoDesc').value = v.desc || '';
+
+            previewHomeYoutubeInput(v.youtube_id);
+            document.getElementById('homeVideoModalTitle').innerHTML = '<i class="fa-solid fa-pen-to-square me-2"></i> แก้ไขวิดีโอ: ' + v.title;
+            homeVideoModal.show();
+        } else {
+            App.toast(res ? res.message : 'ไม่พบข้อมูลวิดีโอ', 'error');
+        }
+    } catch (err) {
+        App.toast('ไม่สามารถโหลดข้อมูลวิดีโอได้', 'error');
+    }
+}
+
+async function saveHomeVideo() {
+    const form = document.getElementById('homeVideoForm');
+    const title = document.getElementById('homeVideoTitle').value.trim();
+    const ytInput = document.getElementById('homeVideoYoutubeUrl').value.trim();
+
+    if (!title || !ytInput) {
+        App.toast('กรุณากรอกชื่อวิดีโอและลิงก์ YouTube ให้ครบถ้วน', 'warning');
+        return;
+    }
+
+    const yId = extractHomeYtId(ytInput);
+    if (!yId) {
+        App.toast('รูปแบบลิงก์ YouTube ไม่ถูกต้อง', 'warning');
+        return;
+    }
+
+    const btn = document.getElementById('btnSaveHomeVideo');
+    const origText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i> กำลังบันทึก...';
+
+    const formData = new FormData(form);
+
+    try {
+        const res = await App.fetch('<?= base_url("admin/videos/save-item") ?>', {
+            method: 'POST',
+            body: formData
+        });
+
+        if (res && res.status === 'success') {
+            App.toast(res.message, 'success');
+            homeVideoModal.hide();
+            setTimeout(() => window.location.reload(), 800);
+        } else {
+            App.toast(res ? res.message : 'บันทึกข้อมูลไม่สำเร็จ', 'error');
+        }
+    } catch (err) {
+        App.toast('เกิดข้อผิดพลาดในการบันทึกข้อมูล', 'error');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = origText;
+    }
+}
+
+async function deleteHomeVideo(id, title) {
+    if (confirm(`คุณแน่ใจหรือไม่ที่จะลบวิดีโอ "${title}" ?`)) {
+        try {
+            const res = await App.fetch(`<?= base_url('admin/videos/delete-item') ?>/${id}`, {
+                method: 'POST'
+            });
+            if (res && res.status === 'success') {
+                App.toast(res.message, 'success');
+                setTimeout(() => window.location.reload(), 800);
+            } else {
+                App.toast(res ? res.message : 'ลบข้อมูลไม่สำเร็จ', 'error');
+            }
+        } catch (err) {
+            App.toast('เกิดข้อผิดพลาดในการลบข้อมูล', 'error');
+        }
+    }
+}
+</script>
+<?php endif; ?>
 
 <script>
 // Filter News items inside Hub dynamically

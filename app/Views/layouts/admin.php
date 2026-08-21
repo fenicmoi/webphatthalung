@@ -8,6 +8,14 @@
     <!-- CSRF Meta -->
     <meta name="X-CSRF-HEADER" content="<?= csrf_header() ?>">
     <meta name="X-CSRF-TOKEN" content="<?= csrf_hash() ?>">
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="<?= base_url('uploads/logo/logo_1787048018.png') ?>">
+    <link rel="apple-touch-icon" href="<?= base_url('uploads/logo/logo_1787048018.png') ?>">
+
+    <!-- Google Fonts Preconnect (High-Speed Non-blocking) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Bootstrap 5.3 & FontAwesome -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -73,8 +81,20 @@
                 </li>
                 <li>
                     <a href="<?= base_url('admin/service-banners') ?>" class="sidebar-link <?= ($activeMenu ?? '') === 'services' ? 'active' : '' ?>">
-                        <i class="fa-solid fa-hand-holding-heart text-success"></i>
-                        <span>บริการ & แบนเนอร์ลิงก์</span>
+                        <i class="fa-solid fa-bullhorn text-success"></i>
+                        <span>แบนเนอร์ประชาสัมพันธ์ & ลิงก์ภายนอก</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="<?= base_url('admin/governors') ?>" class="sidebar-link <?= ($activeMenu ?? '') === 'governors' ? 'active' : '' ?>">
+                        <i class="fa-solid fa-crown text-warning"></i>
+                        <span>ทำเนียบผู้ว่าราชการจังหวัด</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="<?= base_url('admin/videos') ?>" class="sidebar-link <?= ($activeMenu ?? '') === 'videos' ? 'active' : '' ?>">
+                        <i class="fa-solid fa-film text-danger" style="color: #f43f5e;"></i>
+                        <span>วีดิทัศน์ Web TV & YouTube</span>
                     </a>
                 </li>
                 <li>

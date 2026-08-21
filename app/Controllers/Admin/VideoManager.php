@@ -21,6 +21,34 @@ class VideoManager extends BaseController
     }
 
     /**
+     * หน้าแสดงผลระบบจัดการวิดีโอและสื่อ Web TV (Admin Video Studio)
+     */
+    public function index()
+    {
+        if (!session()->get('isLoggedIn')) {
+            return redirect()->to(base_url('login'))->with('error', 'กรุณาเข้าสู่ระบบก่อนเข้าใช้งาน');
+        }
+
+        $videos = get_site_videos(null, null, false);
+        $categories = [
+            'ท่องเที่ยวและธรรมชาติ',
+            'ศิลปวัฒนธรรมท้องถิ่น',
+            'ภารกิจและกิจกรรมจังหวัด',
+            'ส่งเสริมการท่องเที่ยว',
+            'ข่าวสารและสารคดีพิเศษ'
+        ];
+
+        $data = [
+            'title'       => 'ระบบจัดการวิดีทัศน์และสื่อ Web TV | จังหวัดพัทลุง',
+            'activeMenu'  => 'videos',
+            'videos'      => $videos,
+            'categories'  => $categories
+        ];
+
+        return view('admin/video_manager', $data);
+    }
+
+    /**
      * ดึงข้อมูลวิดีโอเดี่ยวเพื่อแก้ไข
      */
     public function getItem($id = null): ResponseInterface

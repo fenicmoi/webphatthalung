@@ -1,5 +1,77 @@
 [
     {
+        "id": "doc_6a87c891e79b8",
+        "title": "แผนปฏิบัติราชการประจำปีงบประมาณ พ.ศ. 2569",
+        "category": "ยุทธศาสตร์ แผนงาน และรายงานผล",
+        "sub_tag": "แผนพัฒนาจังหวัด",
+        "file_type": "pdf",
+        "file_url": "https:\/\/www.phatthalung.go.th\/2022\/files\/com_news_develop\/2026-06_c70cb5c8ea3e690.pdf",
+        "file_size": "1.0 MB",
+        "downloads": 0,
+        "date": "2026-08-21",
+        "active": true
+    },
+    {
+        "id": "doc_6a87c85f5b3c4",
+        "title": "แผนปฏิบัติราชการประจำปีของกลุ่มจังหวัดภาคใต้ฝั่งอ่าวไทย ประจำปีงบประมาณ พ.ศ. 2569",
+        "category": "ยุทธศาสตร์ แผนงาน และรายงานผล",
+        "sub_tag": "แผนพัฒนากลุ่มจังหวัด",
+        "file_type": "pdf",
+        "file_url": "https:\/\/www.phatthalung.go.th\/2022\/files\/com_news_develop\/2026-06_3f33331c7175340.pdf",
+        "file_size": "1.0 MB",
+        "downloads": 0,
+        "date": "2026-08-21",
+        "active": true
+    },
+    {
+        "id": "doc_6a87c7fbdcea0",
+        "title": "แผนพัฒนาจังหวัดพัทลุง 5 ปี (2566-2570) ฉบับทบทวนปีงบประมาณ พ.ศ. 2569",
+        "category": "ยุทธศาสตร์ แผนงาน และรายงานผล",
+        "sub_tag": "แผนพัฒนาจังหวัด",
+        "file_type": "pdf",
+        "file_url": "https:\/\/www.phatthalung.go.th\/2022\/files\/com_news_develop\/2026-05_9720a510735bc9f.pdf",
+        "file_size": "1.0 MB",
+        "downloads": 0,
+        "date": "2026-08-21",
+        "active": true
+    },
+    {
+        "id": "doc_6a87c68b31cbe",
+        "title": "แผนพัฒนาจังหวัดพัทลุง 5 ปี (พ.ศ. 2566 - 2570) ฉบับทบทวนปีงบประมาณ 2569",
+        "category": "ธรรมาภิบาล ความโปร่งใส และ ITA",
+        "sub_tag": "แผนพัฒนาจังหวัด",
+        "file_type": "pdf",
+        "file_url": "https:\/\/www.phatthalung.go.th\/2022\/files\/com_news_develop\/2026-05_9720a510735bc9f.pdf",
+        "file_size": "1.0 MB",
+        "downloads": 1,
+        "date": "2026-08-21",
+        "active": true
+    },
+    {
+        "id": "doc_6a87c61390954",
+        "title": "แผนพัฒนากลุ่มจังหวัดภาคใต้ฝั่งอ่าวไทย พ.ศ. 2566 - 2570) ฉบับทบทวน ปีงบประมาณ พ.ศ. 2568",
+        "category": "ยุทธศาสตร์ แผนงาน และรายงานผล",
+        "sub_tag": "แผนพัฒนาจังหวัด",
+        "file_type": "pdf",
+        "file_url": "https:\/\/www.phatthalung.go.th\/2022\/files\/com_news_develop\/2024-11_56982eb0186c58d.pdf",
+        "file_size": "1.0 MB",
+        "downloads": 1,
+        "date": "2026-08-21",
+        "active": true
+    },
+    {
+        "id": "doc_6a87c313dbbac",
+        "title": "เป้าหมายการพัฒนาจังหวัดพัทลุง 20 ปี",
+        "category": "ยุทธศาสตร์ แผนงาน และรายงานผล",
+        "sub_tag": "เป้าหมายการพัฒนาจังหวัด",
+        "file_type": "pdf",
+        "file_url": "uploads\/documents\/doc_1787282195_1787282195_8bf8fc490676f2efe769.pdf",
+        "file_size": "1.9 MB",
+        "downloads": 1,
+        "date": "2026-08-21",
+        "active": true
+    },
+    {
         "id": "doc-101",
         "title": "ประกาศสำนักงานส่งเสริมการปกครองท้องถิ่นจังหวัดพัทลุง เรื่อง นโยบายการต่อต้านการทุจริตประจำปีงบประมาณ 2569",
         "category": "ธรรมาภิบาล ความโปร่งใส และ ITA",
@@ -7,7 +79,7 @@
         "file_type": "pdf",
         "file_url": "https:\/\/www.w3.org\/WAI\/ER\/tests\/xhtml\/testfiles\/resources\/pdf\/dummy.pdf",
         "file_size": "2.8 MB",
-        "downloads": 343,
+        "downloads": 344,
         "date": "2026-08-02",
         "active": true
     },
@@ -19,20 +91,8 @@
         "file_type": "pdf",
         "file_url": "https:\/\/www.w3.org\/WAI\/ER\/tests\/xhtml\/testfiles\/resources\/pdf\/dummy.pdf",
         "file_size": "1.5 MB",
-        "downloads": 890,
+        "downloads": 891,
         "date": "2026-08-01",
-        "active": true
-    },
-    {
-        "id": "doc-103",
-        "title": "แผนปฏิบัติราชการประจำปีของกลุ่มจังหวัดภาคใต้ฝั่งอ่าวไทย (พัทลุง-สงขลา-นครศรีธรรมราช)",
-        "category": "ยุทธศาสตร์ แผนงาน และรายงานผล",
-        "sub_tag": "แผนยุทธศาสตร์จังหวัด",
-        "file_type": "doc",
-        "file_url": "#",
-        "file_size": "4.2 MB",
-        "downloads": 125,
-        "date": "2026-07-28",
         "active": true
     },
     {

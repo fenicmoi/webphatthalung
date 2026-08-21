@@ -16,7 +16,7 @@
             "uploads\/news\/cover_fit_1787048179_147.jpg"
         ],
         "attachments": [],
-        "views": 9,
+        "views": 14,
         "created_at": "2026-08-18 10:16:29",
         "updated_at": "2026-08-18 10:16:29",
         "active": true
@@ -46,7 +46,7 @@
                 "icon": "fa-solid fa-file-pdf text-danger"
             }
         ],
-        "views": 6,
+        "views": 7,
         "created_at": "2026-08-14 09:29:12",
         "updated_at": "2026-08-14 09:29:12",
         "active": true
@@ -68,7 +68,7 @@
             "assets\/images\/slider\/sane_muanglung.png"
         ],
         "attachments": [],
-        "views": 414,
+        "views": 415,
         "created_at": "2026-08-05 10:00:00",
         "active": true
     },
@@ -100,7 +100,7 @@
                 "icon": "fa-solid fa-file-pdf text-danger"
             }
         ],
-        "views": 1288,
+        "views": 1289,
         "created_at": "2026-08-03 07:19:42",
         "updated_at": "2026-08-04 07:59:23",
         "active": true

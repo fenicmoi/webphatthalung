@@ -15,6 +15,7 @@ class PageModel extends Model
     protected $allowedFields    = [
         'title', 
         'slug', 
+        'header_image',
         'content', 
         'parent_id',
         'order_num',
@@ -31,14 +32,10 @@ class PageModel extends Model
 
     // Validation
     protected $validationRules      = [
-        'title' => 'required|min_length[3]|max_length[255]',
-        'slug'  => 'required|alpha_dash|is_unique[pages.slug,id,{id}]',
+        'title' => 'required|min_length[1]|max_length[255]',
+        'slug'  => 'required|max_length[255]',
     ];
-    protected $validationMessages   = [
-        'slug' => [
-            'is_unique' => 'URL (Slug) นี้ถูกใช้งานแล้ว กรุณาเปลี่ยนใหม่'
-        ]
-    ];
+    protected $validationMessages   = [];
     protected $skipValidation       = false;
     protected $cleanValidationRules = true;
 }

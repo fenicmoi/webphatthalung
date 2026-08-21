@@ -2,6 +2,7 @@
 <?= $this->section('content') ?>
 
 <?php
+$news = $news ?? [];
 $isOfficer = session()->get('isLoggedIn');
 $coverSrc = !empty($news['cover_image']) ? ((strpos((string)$news['cover_image'], 'http') === 0) ? $news['cover_image'] : base_url($news['cover_image'])) : base_url('assets/images/slider/sane_muanglung.png');
 ?>
@@ -59,6 +60,9 @@ $coverSrc = !empty($news['cover_image']) ? ((strpos((string)$news['cover_image']
                 <h1 class="fw-bold article-title mb-4" style="font-size: 2.1rem; line-height: 1.4;">
                     <?= esc($news['title']) ?>
                 </h1>
+
+                <!-- แถบเครื่องมือแชร์โซเชียล สั่งพิมพ์ และปรับขนาดตัวอักษร -->
+                <?= $this->include('components/content_share_toolbar', ['shareTitle' => $news['title'] ?? '']) ?>
 
                 <div class="rounded-4 overflow-hidden shadow-lg mb-5 text-center" style="max-height: 480px; background-color: #090d16;">
                     <img src="<?= $coverSrc ?>" class="w-100" style="max-height: 480px; object-fit: <?= esc($news['cover_fit'] ?? 'cover') ?>;" alt="<?= esc($news['title']) ?>">

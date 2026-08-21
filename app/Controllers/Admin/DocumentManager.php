@@ -43,12 +43,21 @@ class DocumentManager extends BaseController
     {
         if ($auth = $this->checkOfficerAuth()) return $auth;
 
-        $id = $this->request->getPost('id');
-        $title = trim((string)$this->request->getPost('title'));
-        $category = trim((string)$this->request->getPost('category'));
-        $subTag = trim((string)$this->request->getPost('sub_tag'));
-        $externalUrl = trim((string)$this->request->getPost('file_url'));
-        $date = trim((string)$this->request->getPost('date'));
+        // ตรวจจับกรณีขนาดไฟล์เกิน post_max_size ของ PHP
+        if (empty($_POST) && !empty($_SERVER['CONTENT_LENGTH']) && (int)$_SERVER['CONTENT_LENGTH'] > 0) {
+            $postMax = ini_get('post_max_size') ?: '8M';
+            return $this->response->setJSON([
+                'status' => 'error',
+                'message' => "ไฟล์มีขนาดใหญ่เกินกว่าที่เซิร์ฟเวอร์กำหนด (จำกัดที่ {$postMax}) กรุณาลดขนาดไฟล์ หรือใช้ช่องลิงก์ดาวน์โหลดแทน"
+            ]);
+        }
+
+        $id = $this->request->getPost('id') ?? $this->request->getVar('id') ?? ($_POST['id'] ?? null);
+        $title = trim((string)($this->request->getPost('title') ?? $this->request->getVar('title') ?? ($_POST['title'] ?? '')));
+        $category = trim((string)($this->request->getPost('category') ?? $this->request->getVar('category') ?? ($_POST['category'] ?? '')));
+        $subTag = trim((string)($this->request->getPost('sub_tag') ?? $this->request->getVar('sub_tag') ?? ($_POST['sub_tag'] ?? '')));
+        $externalUrl = trim((string)($this->request->getPost('file_url') ?? $this->request->getVar('file_url') ?? ($_POST['file_url'] ?? '')));
+        $date = trim((string)($this->request->getPost('date') ?? $this->request->getVar('date') ?? ($_POST['date'] ?? '')));
 
         if (empty($title) || empty($category)) {
             return $this->response->setJSON(['status' => 'error', 'message' => 'กรุณาระบุชื่อเอกสารและเลือกหมวดหมู่หลัก']);

@@ -65,46 +65,78 @@ class PageManager extends BaseController
     {
         if ($auth = $this->checkOfficerAuth()) return $auth;
 
-        $id = $this->request->getPost('id');
-        $title = trim((string)$this->request->getPost('title'));
-        $slug = trim((string)$this->request->getPost('slug'));
-        $content = $this->request->getPost('content');
-        $parentId = $this->request->getPost('parent_id');
-        $orderNum = (int)$this->request->getPost('order_num');
+        try {
+            $id = $this->request->getPost('id');
+            $title = trim((string)$this->request->getPost('title'));
+            $slug = trim((string)$this->request->getPost('slug'));
+            $content = $this->request->getPost('content');
+            $parentId = $this->request->getPost('parent_id');
+            $orderNum = (int)$this->request->getPost('order_num');
 
-        if (empty($title) || empty($slug)) {
-            return $this->response->setJSON(['status' => 'error', 'message' => 'กรุณาระบุหัวข้อและลิงก์ Slug']);
+            if (empty($title)) {
+                return $this->response->setJSON(['status' => 'error', 'message' => 'กรุณาระบุหัวข้อหน้าเว็บ']);
+            }
+
+            if (empty($slug)) {
+                $slug = 'page-' . time();
+            } else {
+                // ทำความสะอาด slug ให้ปลอดภัย และรองรับภาษาไทย + ตัวเลข + ขีด
+                $slug = preg_replace('/[^\w\s\-ก-๙]/u', '', $slug);
+                $slug = preg_replace('/[\s_\-]+/u', '-', $slug);
+                $slug = trim($slug, '-');
+                if (empty($slug)) {
+                    $slug = 'page-' . time();
+                }
+            }
+
+            // แปลง parent_id เป็น null ถ้าเป็นค่าว่าง
+            $parentId = (!empty($parentId) && is_numeric($parentId)) ? (int)$parentId : null;
+
+            // จัดการภาพส่วนหัว (Header Image)
+            $headerImage = trim((string)$this->request->getPost('header_image'));
+            $headerFile = $this->request->getFile('header_image_file');
+            if ($headerFile && $headerFile->isValid()) {
+                $ext = strtolower($headerFile->getExtension());
+                if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp'])) {
+                    $uploadDir = FCPATH . 'uploads' . DIRECTORY_SEPARATOR . 'pages';
+                    if (!is_dir($uploadDir)) {
+                        @mkdir($uploadDir, 0777, true);
+                    }
+                    $newName = 'header_' . time() . '_' . mt_rand(1000, 9999) . '.' . $ext;
+                    if ($headerFile->move($uploadDir, $newName)) {
+                        $headerImage = 'uploads/pages/' . $newName;
+                    }
+                }
+            }
+
+            $data = [
+                'title'        => $title,
+                'slug'         => $slug,
+                'header_image' => !empty($headerImage) ? $headerImage : null,
+                'content'      => $content ?? '',
+                'parent_id'    => $parentId,
+                'order_num'    => $orderNum
+            ];
+
+            // ตรวจสอบ slug ซ้ำ
+            $existing = $this->pageModel->where('slug', $slug)->first();
+            if ($existing && (!empty($id) ? ($existing['id'] != $id) : true)) {
+                return $this->response->setJSON(['status' => 'error', 'message' => 'ลิงก์ Slug "' . $slug . '" นี้มีใช้งานแล้ว กรุณาเปลี่ยนลิงก์ใหม่']);
+            }
+
+            if (!empty($id)) {
+                $this->pageModel->update($id, $data);
+                $msg = 'อัปเดตข้อมูลหน้าเว็บเรียบร้อยแล้ว';
+            } else {
+                $this->pageModel->insert($data);
+                $msg = 'สร้างหน้าเว็บใหม่เรียบร้อยแล้ว';
+            }
+
+            return $this->response->setJSON(['status' => 'success', 'message' => $msg]);
+        } catch (\Throwable $e) {
+            log_message('error', '[PageManager Save Error] ' . $e->getMessage());
+            return $this->response->setJSON(['status' => 'error', 'message' => 'เกิดข้อผิดพลาดในการบันทึก: ' . $e->getMessage()]);
         }
-
-        // ทำให้ slug ปลอดภัย
-        $slug = url_title($slug, '-', true);
-        
-        // แปลง parent_id เป็น null ถ้าเป็นค่าว่าง
-        $parentId = empty($parentId) ? null : $parentId;
-
-        $data = [
-            'title'     => $title,
-            'slug'      => $slug,
-            'content'   => $content,
-            'parent_id' => $parentId,
-            'order_num' => $orderNum
-        ];
-
-        // ตรวจสอบ slug ซ้ำ
-        $existing = $this->pageModel->where('slug', $slug)->first();
-        if ($existing && $existing['id'] != $id) {
-            return $this->response->setJSON(['status' => 'error', 'message' => 'ลิงก์ Slug นี้มีใช้งานแล้ว กรุณาเปลี่ยนลิงก์ใหม่']);
-        }
-
-        if (!empty($id)) {
-            $this->pageModel->update($id, $data);
-            $msg = 'อัปเดตข้อมูลหน้าเว็บเรียบร้อยแล้ว';
-        } else {
-            $this->pageModel->insert($data);
-            $msg = 'สร้างหน้าเว็บใหม่เรียบร้อยแล้ว';
-        }
-
-        return $this->response->setJSON(['status' => 'success', 'message' => $msg]);
     }
 
     /**
@@ -114,17 +146,76 @@ class PageManager extends BaseController
     {
         if ($auth = $this->checkOfficerAuth()) return $auth;
 
-        if (empty($id)) {
-            return $this->response->setJSON(['status' => 'error', 'message' => 'ไม่ระบุรหัสหน้าที่ต้องการลบ']);
+        try {
+            if (empty($id)) {
+                return $this->response->setJSON(['status' => 'error', 'message' => 'ไม่ระบุรหัสหน้าที่ต้องการลบ']);
+            }
+
+            // ลบเพจย่อยทั้งหมดที่อยู่ภายใต้เพจนี้ก่อน
+            $this->pageModel->where('parent_id', $id)->delete();
+
+            if ($this->pageModel->delete($id)) {
+                return $this->response->setJSON(['status' => 'success', 'message' => 'ลบหน้าเว็บไซต์ออกจากระบบเรียบร้อยแล้ว']);
+            }
+
+            return $this->response->setJSON(['status' => 'error', 'message' => 'เกิดข้อผิดพลาด ไม่สามารถลบหน้าเพจได้']);
+        } catch (\Throwable $e) {
+            log_message('error', '[PageManager Delete Error] ' . $e->getMessage());
+            return $this->response->setJSON(['status' => 'error', 'message' => 'เกิดข้อผิดพลาดในการลบ: ' . $e->getMessage()]);
         }
+    }
 
-        // ลบเพจย่อยทั้งหมดที่อยู่ภายใต้เพจนี้ก่อน
-        $this->pageModel->where('parent_id', $id)->delete();
+    /**
+     * อัปโหลดรูปภาพสำหรับใส่ในเนื้อหาเพจ (TinyMCE Image Upload)
+     */
+    public function uploadImage(): ResponseInterface
+    {
+        if ($auth = $this->checkOfficerAuth()) return $auth;
 
-        if ($this->pageModel->delete($id)) {
-            return $this->response->setJSON(['status' => 'success', 'message' => 'ลบหน้าเว็บไซต์ออกจากระบบเรียบร้อยแล้ว']);
+        try {
+            $file = $this->request->getFile('file') ?? $this->request->getFile('image');
+            if (!$file || !$file->isValid()) {
+                return $this->response->setStatusCode(400)->setJSON([
+                    'error'   => 'ไฟล์รูปภาพไม่ถูกต้อง หรือขนาดใหญ่เกินไป',
+                    'message' => 'ไฟล์รูปภาพไม่ถูกต้อง หรือขนาดใหญ่เกินไป'
+                ]);
+            }
+
+            $ext = strtolower($file->getExtension());
+            $allowed = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'];
+            if (!in_array($ext, $allowed)) {
+                return $this->response->setStatusCode(400)->setJSON([
+                    'error'   => 'อนุญาตเฉพาะไฟล์รูปภาพ (jpg, jpeg, png, gif, webp, svg)',
+                    'message' => 'อนุญาตเฉพาะไฟล์รูปภาพ (jpg, jpeg, png, gif, webp, svg)'
+                ]);
+            }
+
+            $uploadDir = FCPATH . 'uploads' . DIRECTORY_SEPARATOR . 'pages';
+            if (!is_dir($uploadDir)) {
+                @mkdir($uploadDir, 0777, true);
+            }
+
+            $newName = 'page_' . time() . '_' . mt_rand(1000, 9999) . '.' . $ext;
+            if ($file->move($uploadDir, $newName)) {
+                $relPath = 'uploads/pages/' . $newName;
+                $fullUrl = base_url($relPath);
+                
+                return $this->response->setJSON([
+                    'location' => $fullUrl,
+                    'url'      => $fullUrl,
+                    'status'   => 'success'
+                ]);
+            }
+
+            return $this->response->setStatusCode(500)->setJSON([
+                'error'   => 'ไม่สามารถบันทึกไฟล์ภาพลงเซิร์ฟเวอร์ได้',
+                'message' => 'ไม่สามารถบันทึกไฟล์ภาพลงเซิร์ฟเวอร์ได้'
+            ]);
+        } catch (\Throwable $e) {
+            return $this->response->setStatusCode(500)->setJSON([
+                'error'   => $e->getMessage(),
+                'message' => $e->getMessage()
+            ]);
         }
-
-        return $this->response->setJSON(['status' => 'error', 'message' => 'เกิดข้อผิดพลาด ไม่สามารถลบหน้าเพจได้']);
     }
 }

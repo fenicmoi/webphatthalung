@@ -53,8 +53,14 @@ class MenuManager extends BaseController
                     ],
                     [
                         'id' => 'sub_' . uniqid(),
-                        'title' => 'ทำเนียบผู้ว่าราชการและผู้บริหาร',
-                        'url' => '#executives',
+                        'title' => 'ทำเนียบผู้ว่าราชการจังหวัด',
+                        'url' => base_url('governors'),
+                        'target' => '_self'
+                    ],
+                    [
+                        'id' => 'sub_' . uniqid(),
+                        'title' => 'คณะผู้บริหารจังหวัดชุดปัจจุบัน',
+                        'url' => base_url('executives'),
                         'target' => '_self'
                     ],
                     [
@@ -67,6 +73,12 @@ class MenuManager extends BaseController
                         'id' => 'sub_' . uniqid(),
                         'title' => 'แผนยุทธศาสตร์การพัฒนาพัทลุง 2026',
                         'url' => '#strategy',
+                        'target' => '_self'
+                    ],
+                    [
+                        'id' => 'sub_' . uniqid(),
+                        'title' => 'แผนที่สารสนเทศภูมิศาสตร์ (GIS Map)',
+                        'url' => 'gis',
                         'target' => '_self'
                     ]
                 ]

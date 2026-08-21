@@ -17,25 +17,43 @@
             {
                 "id": "sub_6a7172486e728",
                 "title": "ข้อมูลทั่วไปจังหวัดพัทลุง",
-                "url": "#executives",
+                "url": "\/page\/general",
+                "target": "_self"
+            },
+            {
+                "id": "sub_1787201245130",
+                "title": "แผนที่\/ขอบเขตการปกครอง",
+                "url": "gis",
                 "target": "_self"
             },
             {
                 "id": "sub_1787114082554",
                 "title": "ผู้บริหารจังหวัด",
-                "url": "#sub-section",
+                "url": "page\/boss",
+                "target": "_self"
+            },
+            {
+                "id": "sub_1787301755107",
+                "title": "ทำเนียบผู้ว่าราชการจังหวัด",
+                "url": "governors",
                 "target": "_self"
             },
             {
                 "id": "sub_1787114329634",
                 "title": "หัวหน้าส่วนราชการ",
-                "url": "#sub-section",
+                "url": "http:\/\/www.phone.phatthalung.go.th",
                 "target": "_self"
             },
             {
                 "id": "sub_1787114367626",
                 "title": "ยุทธศาตร์การพัฒนาจังหวัด",
                 "url": "#sub-section",
+                "target": "_self"
+            },
+            {
+                "id": "sub_1787284367643",
+                "title": "ผังโครงสร้างบริหารจังหวัดพัทลุง",
+                "url": "https:\/\/organization.phatthalung.go.th\/",
                 "target": "_self"
             }
         ]
