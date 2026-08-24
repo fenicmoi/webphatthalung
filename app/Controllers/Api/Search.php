@@ -135,6 +135,40 @@ class Search extends ResourceController
             }
         }
 
+        // --- 3.1 ดึงข้อมูลคณะผู้บริหารปัจจุบัน (Current Executive Leadership) ---
+        if (function_exists('get_site_executives')) {
+            $execs = get_site_executives(null, null, false);
+            foreach ($execs as $ex) {
+                $index[] = [
+                    'id' => 'exec-' . ($ex['id'] ?? uniqid()),
+                    'type' => 'executive',
+                    'title' => ($ex['name'] ?? 'ผู้บริหาร') . ' - ' . ($ex['position'] ?? 'ผู้บริหารจังหวัดพัทลุง'),
+                    'description' => 'ตำแหน่ง: ' . ($ex['position'] ?? '-') . (!empty($ex['phone']) ? ' | โทร: ' . $ex['phone'] : '') . (!empty($ex['quote']) ? ' | วิสัยทัศน์: ' . $ex['quote'] : ''),
+                    'url' => base_url('executives/detail/' . ($ex['id'] ?? '')),
+                    'icon' => 'fa-solid fa-user-tie text-warning',
+                    'badge' => 'คณะผู้บริหาร',
+                    'keywords' => ($ex['name'] ?? '') . ' ' . ($ex['position'] ?? '') . ' ' . ($ex['education'] ?? '') . ' ' . ($ex['history'] ?? '') . ' ผู้บริหาร ผู้ว่า รองผู้ว่า หัวหน้าส่วนราชการ เบอร์โทร ติดต่อ'
+                ];
+            }
+        }
+
+        // --- 3.2 ดึงข้อมูลทำเนียบอดีตผู้ว่าราชการจังหวัด (Governors Archive) ---
+        if (function_exists('get_site_governors')) {
+            $govs = get_site_governors();
+            foreach ($govs as $g) {
+                $index[] = [
+                    'id' => 'gov-' . ($g['id'] ?? uniqid()),
+                    'type' => 'governor',
+                    'title' => 'ผู้ว่าราชการจังหวัดคนที่ ' . ($g['sequence'] ?? '') . ': ' . ($g['name'] ?? ''),
+                    'description' => 'ดำรงตำแหน่ง: ' . ($g['period'] ?? '-') . ' | ยุคสมัย: ' . ($g['era'] ?? '-') . ' | ' . ($g['achievement'] ?? ''),
+                    'url' => base_url('governors'),
+                    'icon' => 'fa-solid fa-crown text-warning',
+                    'badge' => 'ทำเนียบอดีตผู้ว่าฯ',
+                    'keywords' => ($g['name'] ?? '') . ' ' . ($g['period'] ?? '') . ' ' . ($g['era'] ?? '') . ' ' . ($g['achievement'] ?? '') . ' ผู้ว่าราชการจังหวัด เจ้าเมือง อดีตผู้ว่า ทำเนียบ ประวัติศาสตร์'
+                ];
+            }
+        }
+
         // --- 4. บริการออนไลน์ (e-Services & Static Landmarks) ---
         $staticItems = [
             [
@@ -261,12 +295,15 @@ class Search extends ResourceController
 
         // Categorize results for structured front-end display
         $categorized = [
-            'ita'      => ['label' => '🏆 ความโปร่งใส ITA/OIT & ชุดข้อมูลเปิด (Open Data)', 'items' => []],
-            'service'  => ['label' => '⚙️ บริการออนไลน์และระบบราชการ (e-Services)', 'items' => []],
-            'document' => ['label' => '📂 คลังเอกสาร & ไฟล์ดาวน์โหลดดิจิทัล', 'items' => []],
-            'video'    => ['label' => '🎬 สื่อวิดีทัศน์ Phatthalung Web TV', 'items' => []],
-            'news'     => ['label' => '📰 ข่าวประชาสัมพันธ์ & ประกาศจังหวัด', 'items' => []],
-            'tourism'  => ['label' => '🌿 ท่องเที่ยว & แลนด์มาร์กสำคัญ', 'items' => []],
+            'executive' => ['label' => '👔 คณะผู้บริหารจังหวัดพัทลุง (Executive Leadership)', 'items' => []],
+            'governor'  => ['label' => '👑 ทำเนียบอดีตผู้ว่าราชการจังหวัดพัทลุง', 'items' => []],
+            'ita'       => ['label' => '🏆 ความโปร่งใส ITA/OIT & ชุดข้อมูลเปิด (Open Data)', 'items' => []],
+            'service'   => ['label' => '⚙️ บริการออนไลน์และระบบราชการ (e-Services)', 'items' => []],
+            'document'  => ['label' => '📂 คลังเอกสาร & ไฟล์ดาวน์โหลดดิจิทัล', 'items' => []],
+            'video'     => ['label' => '🎬 สื่อวิดีทัศน์ Phatthalung Web TV', 'items' => []],
+            'news'      => ['label' => '📰 ข่าวประชาสัมพันธ์ & ประกาศจังหวัด', 'items' => []],
+            'page'      => ['label' => '📄 หน้าเพจและข้อมูลทั่วไป', 'items' => []],
+            'tourism'   => ['label' => '🌿 ท่องเที่ยว & แลนด์มาร์กสำคัญ', 'items' => []],
         ];
 
         foreach ($results as $item) {

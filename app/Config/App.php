@@ -32,6 +32,10 @@ class App extends BaseConfig
             if ($dir === '.' || $dir === '/') {
                 $dir = '';
             }
+            // If running inside subfolder with public folder, strip /public for clean URLs
+            if (substr($dir, -7) === '/public') {
+                $dir = substr($dir, 0, -7);
+            }
             $this->baseURL = rtrim($protocol . $host . $dir, '/') . '/';
         }
     }
@@ -59,7 +63,7 @@ class App extends BaseConfig
      * something else. If you are using mod_rewrite to remove the page set this
      * variable so that it is blank.
      */
-    public string $indexPage = 'index.php';
+    public string $indexPage = '';
 
     /**
      * --------------------------------------------------------------------------

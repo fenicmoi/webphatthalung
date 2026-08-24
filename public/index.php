@@ -17,6 +17,14 @@ if (version_compare(PHP_VERSION, $minPhpVersion, '<')) {
 // Path to the front controller (this file)
 define('FCPATH', __DIR__ . DIRECTORY_SEPARATOR);
 
+// Normalize SCRIPT_NAME and PHP_SELF if routed through parent subfolder without /public/
+if (isset($_SERVER['SCRIPT_NAME']) && strpos($_SERVER['REQUEST_URI'] ?? '', '/public/') === false) {
+    $_SERVER['SCRIPT_NAME'] = str_replace('/public/index.php', '/index.php', $_SERVER['SCRIPT_NAME']);
+    if (isset($_SERVER['PHP_SELF'])) {
+        $_SERVER['PHP_SELF'] = str_replace('/public/index.php', '/index.php', $_SERVER['PHP_SELF']);
+    }
+}
+
 // Ensure the current directory is pointing to the front controller's directory
 chdir(FCPATH);
 

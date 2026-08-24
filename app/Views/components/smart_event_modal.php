@@ -6,85 +6,93 @@
 ?>
 <div class="modal fade" id="smartEventViewerModal" tabindex="-1" aria-labelledby="sevTitle" aria-hidden="true" data-bs-backdrop="static">
     <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content border-0 rounded-4 shadow-2xl overflow-hidden" style="background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(25px); border: 1px solid rgba(16, 185, 129, 0.4) !important; color: #f8fafc;">
+        <div class="modal-content border-0 rounded-4 shadow-2xl overflow-hidden" style="background: #ffffff; color: #1e293b; border: 2px solid rgba(16, 185, 129, 0.35) !important;">
             
-            <!-- Cover Header -->
-            <div id="sevCoverContainer" class="position-relative w-100" style="height: 260px; background: #0f172a; overflow: hidden; display: none;">
+            <!-- Cover Header (if image available) -->
+            <div id="sevCoverContainer" class="position-relative w-100" style="height: 240px; background: #022c22; overflow: hidden; display: none;">
                 <img id="sevCoverImg" src="" alt="Event Cover" class="w-100 h-100 object-fit-cover" style="object-fit: cover;">
-                <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(180deg, rgba(15, 23, 42, 0.2) 0%, rgba(15, 23, 42, 0.95) 100%);"></div>
+                <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(180deg, rgba(2, 44, 34, 0.1) 0%, rgba(2, 44, 34, 0.9) 100%);"></div>
                 
-                <span class="badge position-absolute top-0 start-0 m-3 rounded-pill px-3 py-2 text-white shadow-lg d-inline-flex align-items-center gap-1" style="background: linear-gradient(135deg, #10b981, #059669); font-size: 0.85rem; z-index: 2;">
-                    <i class="fa-solid fa-calendar-check"></i>
-                    <span>ปฏิทินกิจกรรมจังหวัด</span>
+                <span class="badge position-absolute top-0 start-0 m-3 rounded-pill px-3 py-2 text-white shadow-md d-inline-flex align-items-center gap-1.5" style="background: linear-gradient(135deg, #059669, #047857); font-size: 0.85rem; z-index: 2;">
+                    <i class="fa-solid fa-calendar-check text-warning"></i>
+                    <span>ปฏิทินกิจกรรมจังหวัดพัทลุง</span>
                 </span>
                 
-                <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3 p-2 bg-dark bg-opacity-75 rounded-circle shadow" data-bs-dismiss="modal" aria-label="Close" style="z-index: 3;"></button>
+                <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3 p-2 bg-dark bg-opacity-50 rounded-circle shadow-sm" data-bs-dismiss="modal" aria-label="Close" style="z-index: 3;"></button>
             </div>
 
             <!-- Standard Header when no cover image -->
-            <div id="sevStandardHeader" class="modal-header border-bottom border-secondary border-opacity-25 py-3 px-4 d-flex align-items-center justify-content-between">
-                <div class="d-flex align-items-center gap-2">
-                    <span class="p-2 rounded-3 text-white d-flex align-items-center justify-content-center" style="background: linear-gradient(135deg, #10b981, #059669); width: 42px; height: 42px;">
-                        <i class="fa-solid fa-calendar-day fs-5"></i>
+            <div id="sevStandardHeader" class="modal-header py-3 px-4 d-flex align-items-center justify-content-between text-white" style="background: linear-gradient(135deg, #022c22 0%, #064e3b 100%); border-bottom: 2px solid #10b981;">
+                <div class="d-flex align-items-center gap-3">
+                    <span class="p-2 rounded-3 text-white d-flex align-items-center justify-content-center shadow-xs" style="background: rgba(255,255,255,0.15); width: 42px; height: 42px; border: 1px solid rgba(255,255,255,0.25);">
+                        <i class="fa-solid fa-calendar-day fs-5 text-warning"></i>
                     </span>
                     <div>
-                        <h6 class="fw-bold m-0 text-white">รายละเอียดกิจกรรมจังหวัดพัทลุง</h6>
-                        <small class="text-success">Provincial Event Calendar Spotlight</small>
+                        <h6 class="fw-bold m-0 text-white" style="font-size: 1.1rem;">รายละเอียดกิจกรรมจังหวัดพัทลุง</h6>
+                        <small class="text-light opacity-75">Provincial Event Calendar Spotlight</small>
                     </div>
                 </div>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
-            <div class="modal-body p-4 p-md-5">
-                <!-- Event Dates Badge Strip -->
-                <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
-                    <span class="badge bg-dark border border-success text-success px-3 py-2 rounded-pill fs-6 fw-bold d-inline-flex align-items-center gap-2 shadow-sm">
-                        <i class="fa-solid fa-clock text-warning animate-pulse"></i>
-                        <span id="sevDateRangeText">วันที่จัดกิจกรรม</span>
-                    </span>
-                    <span class="badge bg-secondary bg-opacity-25 text-light px-3 py-2 rounded-pill small" id="sevCatText">ข่าวกิจกรรมจังหวัด</span>
+            <div class="modal-body p-4 p-md-5 bg-white">
+                <!-- Event Dates & Voice TTS Header Strip -->
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+                    <div class="d-flex flex-wrap align-items-center gap-2">
+                        <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-30 px-3 py-2 rounded-pill fs-6 fw-bold d-inline-flex align-items-center gap-2 shadow-xs" style="color: #047857 !important;">
+                            <i class="fa-regular fa-clock text-warning"></i>
+                            <span id="sevDateRangeText">วันที่จัดกิจกรรม</span>
+                        </span>
+                        <span class="badge bg-warning bg-opacity-15 text-dark border border-warning border-opacity-40 px-3 py-2 rounded-pill small fw-semibold" id="sevCatText">ข่าวกิจกรรมจังหวัด</span>
+                    </div>
+
+                    <!-- Voice TTS Audio Narration Button -->
+                    <button type="button" id="sevSpeakBtn" class="btn btn-sm btn-outline-success rounded-pill px-3 py-1.5 fw-bold d-inline-flex align-items-center gap-2 shadow-xs hover-scale" onclick="SmartEventViewer.toggleSpeakCurrentEvent()">
+                        <i class="fa-solid fa-volume-high text-success" id="sevSpeakIcon"></i>
+                        <span id="sevSpeakText">ฟังเสียงบรรยาย</span>
+                    </button>
                 </div>
 
                 <!-- Event Title -->
-                <h3 id="sevTitleText" class="fw-bold text-white mb-4" style="line-height: 1.4;">
+                <h4 id="sevTitleText" class="fw-bold mb-4" style="color: #0f172a; line-height: 1.45; font-size: 1.25rem;">
                     ชื่อกิจกรรม
-                </h3>
+                </h4>
 
                 <!-- Location & Navigation Box -->
-                <div id="sevLocationBox" class="p-3 rounded-4 mb-4 border d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3 shadow-sm" style="background: rgba(255,255,255,0.04); border-color: rgba(56, 189, 248, 0.25) !important;">
+                <div id="sevLocationBox" class="p-3.5 rounded-4 mb-4 border d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3 shadow-xs" style="background: #f0fdf4; border-color: rgba(16, 185, 129, 0.3) !important;">
                     <div class="d-flex align-items-center gap-3">
-                        <div class="p-3 rounded-circle bg-info bg-opacity-10 text-info d-flex align-items-center justify-content-center flex-shrink-0" style="width: 50px; height: 50px;">
-                            <i class="fa-solid fa-location-dot fs-3 text-warning"></i>
+                        <div class="p-2.5 rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="background: #ffffff; width: 46px; height: 46px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border: 1px solid rgba(16, 185, 129, 0.25);">
+                            <i class="fa-solid fa-location-dot fs-5 text-danger"></i>
                         </div>
                         <div>
-                            <small class="text-white-50 fw-bold d-block">สถานที่ / จุดนัดหมาย:</small>
-                            <span id="sevLocationText" class="text-white fs-6 fw-bold">ไม่ระบุสถานที่</span>
+                            <small class="text-muted fw-bold d-block" style="font-size: 0.8rem;">สถานที่ / จุดนัดหมาย:</small>
+                            <span id="sevLocationText" class="fw-bold" style="color: #064e3b; font-size: 0.98rem;">ไม่ระบุสถานที่</span>
                         </div>
                     </div>
-                    <a id="sevMapBtn" href="#" target="_blank" class="btn btn-sm btn-info text-dark rounded-pill px-4 py-2 fw-bold flex-shrink-0 shadow hover-scale d-inline-flex align-items-center gap-2" style="background: linear-gradient(135deg, #38bdf8, #0ea5e9); border: none;">
-                        <i class="fa-solid fa-map-location-dot fs-6"></i>
+                    <a id="sevMapBtn" href="#" target="_blank" class="btn btn-sm text-white rounded-pill px-4 py-2 fw-bold flex-shrink-0 shadow-xs hover-scale d-inline-flex align-items-center gap-2" style="background: linear-gradient(135deg, #059669 0%, #047857 100%); border: none;">
+                        <i class="fa-solid fa-map-location-dot fs-6 text-warning"></i>
                         <span>นำทางด้วย Google Maps</span>
                     </a>
                 </div>
 
                 <!-- Summary / Content Excerpt -->
-                <div id="sevSummaryBox" class="p-4 rounded-4 mb-4 border text-light" style="background: rgba(0,0,0,0.25); border-color: rgba(255,255,255,0.08) !important; font-size: 1.02rem; line-height: 1.7;">
+                <div id="sevSummaryBox" class="p-4 rounded-4 mb-4 border" style="background: #f8fafc; border-color: #e2e8f0 !important; font-size: 0.96rem; line-height: 1.7; color: #334155;">
                 </div>
 
                 <!-- Footer CTA Buttons -->
-                <div class="d-flex flex-column flex-sm-row align-items-center justify-content-between gap-3 pt-3 border-top border-secondary border-opacity-25">
+                <div class="d-flex flex-column flex-sm-row align-items-center justify-content-between gap-3 pt-3 border-top" style="border-color: rgba(0,0,0,0.06) !important;">
                     <div class="d-flex align-items-center gap-2">
                         <?php if (session()->get('isLoggedIn')): ?>
-                            <button id="sevEditBtn" type="button" class="btn btn-warning text-dark fw-bold rounded-pill px-4 py-2 shadow-sm d-flex align-items-center gap-2">
+                            <button id="sevEditBtn" type="button" class="btn btn-warning text-dark fw-bold rounded-pill px-4 py-2 shadow-xs d-flex align-items-center gap-2">
                                 <i class="fa-solid fa-pen-to-square"></i>
-                                <span>แก้ไขกิจกรรมนี้ (ผ่านระบบข่าว)</span>
+                                <span>แก้ไขกิจกรรมนี้ (Studio)</span>
                             </button>
                         <?php endif; ?>
                     </div>
 
                     <div class="d-flex align-items-center gap-2 w-100 w-sm-auto justify-content-end">
-                        <button type="button" class="btn btn-outline-secondary text-light rounded-pill px-4 py-2" data-bs-dismiss="modal">ปิดหน้าต่าง</button>
-                        <a id="sevReadMoreBtn" href="#" class="btn btn-success fw-bold rounded-pill px-4 py-2 shadow hover-scale d-flex align-items-center gap-2" style="background: linear-gradient(135deg, #10b981, #059669); border: none;">
+                        <button type="button" class="btn btn-light border text-secondary rounded-pill px-4 py-2" data-bs-dismiss="modal">ปิดหน้าต่าง</button>
+                        <a id="sevReadMoreBtn" href="#" class="btn fw-bold rounded-pill px-4 py-2 text-white shadow-xs hover-scale d-flex align-items-center gap-2" style="background: linear-gradient(135deg, #059669 0%, #047857 100%); border: none;">
                             <span>อ่านข่าวสารฉบับเต็ม</span>
                             <i class="fa-solid fa-arrow-right-long"></i>
                         </a>
@@ -100,11 +108,16 @@
 var SmartEventViewer = {
     modal: null,
     eventsMap: {},
+    currentEvent: null,
+    isSpeaking: false,
 
     init: function() {
         var el = document.getElementById('smartEventViewerModal');
         if (el && typeof bootstrap !== 'undefined') {
             this.modal = new bootstrap.Modal(el);
+            el.addEventListener('hidden.bs.modal', function() {
+                SmartEventViewer.stopSpeaking();
+            });
         }
     },
 
@@ -124,6 +137,9 @@ var SmartEventViewer = {
             }
             return;
         }
+
+        this.currentEvent = ev;
+        this.stopSpeaking();
 
         // Title and Category
         document.getElementById('sevTitleText').innerText = ev.title || 'ไม่ระบุชื่อกิจกรรม';
@@ -196,6 +212,72 @@ var SmartEventViewer = {
         var d = parseInt(parts[2], 10);
         var months = ['', 'ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
         return d + ' ' + (months[m] || '') + ' ' + y;
+    },
+
+    toggleSpeakCurrentEvent: function() {
+        if (this.isSpeaking) {
+            this.stopSpeaking();
+            return;
+        }
+        if (!this.currentEvent) return;
+
+        if (!('speechSynthesis' in window)) {
+            alert('เบราว์เซอร์ของท่านไม่รองรับระบบอ่านออกเสียง (Speech Synthesis)');
+            return;
+        }
+
+        window.speechSynthesis.cancel();
+
+        var ev = this.currentEvent;
+        var dateInfo = document.getElementById('sevDateRangeText').innerText;
+        var locInfo = ev.event_location ? ('สถานที่ ' + ev.event_location) : 'ไม่ระบุสถานที่';
+        var sumInfo = ev.summary ? ev.summary.replace(/<[^>]*>?/gm, '') : '';
+
+        var fullSpeech = 'กิจกรรม ' + ev.title + ' ' + dateInfo + ' ' + locInfo + ' รายละเอียด ' + sumInfo;
+
+        var utter = new SpeechSynthesisUtterance(fullSpeech);
+        utter.lang = 'th-TH';
+        utter.rate = 1.0;
+
+        var voices = window.speechSynthesis.getVoices();
+        var thVoice = voices.find(function(v) { return v.lang === 'th-TH' || v.lang === 'th_TH' || v.lang.startsWith('th'); });
+        if (thVoice) utter.voice = thVoice;
+
+        var self = this;
+        utter.onstart = function() {
+            self.isSpeaking = true;
+            var btn = document.getElementById('sevSpeakBtn');
+            var icon = document.getElementById('sevSpeakIcon');
+            var text = document.getElementById('sevSpeakText');
+            if (btn) {
+                btn.classList.remove('btn-outline-success');
+                btn.classList.add('btn-danger', 'text-white');
+            }
+            if (icon) icon.className = 'fa-solid fa-stop text-white';
+            if (text) text.innerText = 'หยุดฟังเสียง';
+        };
+
+        utter.onend = utter.onerror = function() {
+            self.stopSpeaking();
+        };
+
+        window.speechSynthesis.speak(utter);
+    },
+
+    stopSpeaking: function() {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+        }
+        this.isSpeaking = false;
+        var btn = document.getElementById('sevSpeakBtn');
+        var icon = document.getElementById('sevSpeakIcon');
+        var text = document.getElementById('sevSpeakText');
+        if (btn) {
+            btn.classList.remove('btn-danger', 'text-white');
+            btn.classList.add('btn-outline-success');
+        }
+        if (icon) icon.className = 'fa-solid fa-volume-high text-success';
+        if (text) text.innerText = 'ฟังเสียงบรรยาย';
     }
 };
 

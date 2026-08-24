@@ -190,10 +190,21 @@ $routes->post('admin/documents/delete-item/(:any)', 'Admin\DocumentManager::dele
  * --------------------------------------------------------------------
  */
 $routes->get('executives', 'Executive::index');
+$routes->get('executives/detail/(:any)', 'Executive::detail/$1');
 $routes->get('executives/category/(:any)', 'Executive::index/$1');
+$routes->get('admin/executives', 'Admin\ExecutiveManager::index', ['filter' => 'auth']);
 $routes->get('admin/executives/get-item/(:any)', 'Admin\ExecutiveManager::getItem/$1');
 $routes->post('admin/executives/save-item', 'Admin\ExecutiveManager::saveItem');
 $routes->post('admin/executives/delete-item/(:any)', 'Admin\ExecutiveManager::deleteItem/$1');
+
+/*
+ * --------------------------------------------------------------------
+ * Automated News & Social Media Aggregator (ระบบรวบรวมข่าวสารอัตโนมัติ)
+ * --------------------------------------------------------------------
+ */
+$routes->get('admin/news-aggregator', 'Admin\NewsAggregator::index');
+$routes->get('admin/news-aggregator/sync', 'Admin\NewsAggregator::sync');
+$routes->post('admin/news-aggregator/import', 'Admin\NewsAggregator::import');
 
 /*
  * --------------------------------------------------------------------
@@ -253,12 +264,54 @@ $routes->group('admin', ['namespace' => 'App\Controllers\Admin', 'filter' => 'au
     // However, it's better to add the specific page routes into the existing group, or just define them here as long as we use the auth filter.
 });
 
-// Since we already have an 'admin' group, we can just define the routes directly with the filter and namespace:
 $routes->get('admin/pages', 'Admin\PageManager::index', ['filter' => 'auth']);
 $routes->get('admin/pages/get-item/(:any)', 'Admin\PageManager::getItem/$1', ['filter' => 'auth']);
 $routes->post('admin/pages/save-item', 'Admin\PageManager::saveItem', ['filter' => 'auth']);
 $routes->post('admin/pages/delete-item/(:any)', 'Admin\PageManager::deleteItem/$1', ['filter' => 'auth']);
 $routes->post('admin/pages/upload-image', 'Admin\PageManager::uploadImage', ['filter' => 'auth']);
+
+/*
+ * --------------------------------------------------------------------
+ * Provincial Strategy & Development Hub Routes
+ * --------------------------------------------------------------------
+ */
+$routes->get('strategy', 'Strategy::index');
+$routes->get('strategy/download/(:any)', 'Strategy::download/$1');
+$routes->get('admin/strategy', 'Admin\StrategyManager::index', ['filter' => 'auth']);
+$routes->post('admin/strategy/save-vision', 'Admin\StrategyManager::saveVision', ['filter' => 'auth']);
+$routes->post('admin/strategy/save-kpis', 'Admin\StrategyManager::saveKpis', ['filter' => 'auth']);
+$routes->post('admin/strategy/save-kpi', 'Admin\StrategyManager::saveKpi', ['filter' => 'auth']);
+$routes->post('admin/strategy/delete-kpi', 'Admin\StrategyManager::deleteKpi', ['filter' => 'auth']);
+$routes->post('admin/strategy/save-pillar', 'Admin\StrategyManager::savePillar', ['filter' => 'auth']);
+$routes->post('admin/strategy/delete-pillar', 'Admin\StrategyManager::deletePillar', ['filter' => 'auth']);
+$routes->post('admin/strategy/save-document', 'Admin\StrategyManager::saveDocument', ['filter' => 'auth']);
+$routes->post('admin/strategy/delete-document', 'Admin\StrategyManager::deleteDocument', ['filter' => 'auth']);
+
+// Provincial Projects & GIS Map & eMENSCR Dashboard
+$routes->get('projects', 'Projects::index');
+$routes->get('projects/gis', 'Projects::gis');
+$routes->get('projects/dashboard', 'Projects::dashboard');
+$routes->get('projects/detail/(:num)', 'Projects::getDetail/$1');
+$routes->get('projects/geojson', 'Projects::apiGeojson');
+
+// Admin Project Manager
+$routes->get('admin/projects', 'Admin\ProjectManager::index', ['filter' => 'auth']);
+$routes->post('admin/projects/save', 'Admin\ProjectManager::save', ['filter' => 'auth']);
+$routes->post('admin/projects/delete/(:num)', 'Admin\ProjectManager::delete/$1', ['filter' => 'auth']);
+$routes->post('admin/projects/sync-emenscr', 'Admin\ProjectManager::syncEmenscr', ['filter' => 'auth']);
+$routes->post('admin/projects/save-settings', 'Admin\ProjectManager::saveSettings', ['filter' => 'auth']);
+$routes->post('admin/projects/upload-photo', 'Admin\ProjectManager::uploadPhoto', ['filter' => 'auth']);
+$routes->post('admin/projects/upload-doc', 'Admin\ProjectManager::uploadDoc', ['filter' => 'auth']);
+
+/*
+ * --------------------------------------------------------------------
+ * e-GP Procurement Routes
+ * --------------------------------------------------------------------
+ */
+$routes->get('procurement', 'Procurement::index');
+$routes->get('procurement/detail/(:segment)', 'Procurement::detail/$1');
+$routes->match(['get', 'post'], 'api/egp/datatable', 'Procurement::ajaxDatatable');
+
 
 /*
  * --------------------------------------------------------------------

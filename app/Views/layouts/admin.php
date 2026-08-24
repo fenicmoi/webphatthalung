@@ -74,6 +74,12 @@
                     </a>
                 </li>
                 <li>
+                    <a href="<?= base_url('admin/news-aggregator') ?>" class="sidebar-link <?= ($activeMenu ?? '') === 'news_aggregator' ? 'active' : '' ?>">
+                        <i class="fa-solid fa-satellite-dish text-danger"></i>
+                        <span>ระบบดึงข่าวอัตโนมัติ (Live Feeds)</span>
+                    </a>
+                </li>
+                <li>
                     <a href="<?= base_url('admin/pages') ?>" class="sidebar-link <?= ($activeMenu ?? '') === 'page_manager' ? 'active' : '' ?>">
                         <i class="fa-solid fa-file-lines text-info"></i>
                         <span>หน้าเว็บไซต์ (Static Pages)</span>
@@ -86,6 +92,12 @@
                     </a>
                 </li>
                 <li>
+                    <a href="<?= base_url('admin/executives') ?>" class="sidebar-link <?= ($activeMenu ?? '') === 'executive_manager' ? 'active' : '' ?>">
+                        <i class="fa-solid fa-user-tie text-warning"></i>
+                        <span>คณะผู้บริหารปัจจุบัน</span>
+                    </a>
+                </li>
+                <li>
                     <a href="<?= base_url('admin/governors') ?>" class="sidebar-link <?= ($activeMenu ?? '') === 'governors' ? 'active' : '' ?>">
                         <i class="fa-solid fa-crown text-warning"></i>
                         <span>ทำเนียบผู้ว่าราชการจังหวัด</span>
@@ -95,6 +107,18 @@
                     <a href="<?= base_url('admin/videos') ?>" class="sidebar-link <?= ($activeMenu ?? '') === 'videos' ? 'active' : '' ?>">
                         <i class="fa-solid fa-film text-danger" style="color: #f43f5e;"></i>
                         <span>วีดิทัศน์ Web TV & YouTube</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="<?= base_url('admin/strategy') ?>" class="sidebar-link <?= ($activeMenu ?? '') === 'strategy_manager' ? 'active' : '' ?>">
+                        <i class="fa-solid fa-bullseye text-warning"></i>
+                        <span>ยุทธศาสตร์ & แผนพัฒนาจังหวัด</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="<?= base_url('admin/projects') ?>" class="sidebar-link <?= ($activeMenu ?? '') === 'project_manager' ? 'active' : '' ?>">
+                        <i class="fa-solid fa-map-location-dot" style="color: #06b6d4;"></i>
+                        <span>แผนที่ GIS โครงการ & eMENSCR</span>
                     </a>
                 </li>
                 <li>

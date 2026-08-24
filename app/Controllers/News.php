@@ -37,11 +37,17 @@ class News extends BaseController
         $newsList = get_site_news(null, $cat, true);
         $categories = get_news_categories();
 
+        $egpService = new \App\Libraries\EGpService();
+        $isProcurementCat = !empty($cat) && (mb_stripos($cat, 'จัดซื้อจัดจ้าง') !== false || mb_stripos($cat, 'e-gp') !== false);
+        $egpProjects = $isProcurementCat ? $egpService->getPhatthalungProjects() : [];
+
         return view('news/index', [
-            'newsList' => $newsList,
-            'categories' => $categories,
-            'currentCat' => $cat,
-            'pageTitle' => 'ข่าวสารและประกาศจากสำนักงาน'
+            'newsList'          => $newsList,
+            'categories'        => $categories,
+            'currentCat'        => $cat,
+            'isProcurementCat'  => $isProcurementCat,
+            'egpProjects'       => $egpProjects,
+            'pageTitle'         => !empty($cat) ? esc($cat) . ' | ข่าวสารและประกาศ' : 'ข่าวสารและประกาศจากสำนักงาน'
         ]);
     }
 

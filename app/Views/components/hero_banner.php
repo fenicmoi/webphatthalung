@@ -136,7 +136,7 @@ if (empty($banners)) {
                                 </p>
                                 <div class="d-flex align-items-center justify-content-between pt-2 border-top">
                                     <small class="text-muted"><i class="fa-solid fa-lock text-success me-1"></i> ปลอดภัย 24 ชั่วโมง</small>
-                                    <a href="<?= !empty($slide['button_url']) ? $slide['button_url'] : '#services' ?>" class="btn btn-sm btn-primary px-3 rounded-pill fw-bold">
+                                    <a href="<?= !empty($slide['button_url']) ? $slide['button_url'] : '#services' ?>" class="btn btn-sm px-3 rounded-pill fw-bold text-white shadow-xs" style="background: linear-gradient(135deg, #059669 0%, #047857 100%); border: none;">
                                         <?= !empty($slide['button_text']) ? $slide['button_text'] : 'เข้าใช้งาน' ?> <i class="fa-solid fa-arrow-right ms-1"></i>
                                     </a>
                                 </div>

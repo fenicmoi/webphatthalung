@@ -2,7 +2,7 @@
 // =========================================================================
 // ศาลาประชาสัมพันธ์และสื่อเมืองลุง (News, Events, Photo Gallery & Videos Hub)
 // =========================================================================
-$homeNews = function_exists('get_site_news') ? get_site_news(9, null, true) : [];
+$homeNews = function_exists('get_site_news') ? get_site_news(6, null, true) : [];
 $newsCats = function_exists('get_news_categories') ? get_news_categories() : [];
 $homeEvents = function_exists('get_site_events') ? get_site_events(true) : [];
 $homeGalleryAlbums = function_exists('get_gallery_albums') ? get_gallery_albums(4, null, true) : [];
@@ -12,147 +12,335 @@ $isOfficer = session()->get('isLoggedIn');
 ?>
 
 <style>
-/* CSS styles for the News & Media Hub */
-/* 1. Main Tabs (ประเภทหลัก) - Underline Style */
-.nav-underline-custom {
-    gap: 1rem;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    overflow-y: hidden;
-    padding-bottom: 1px;
-}
-.nav-underline-custom::-webkit-scrollbar {
-    height: 4px;
-}
-.nav-underline-custom::-webkit-scrollbar-thumb {
-    background-color: rgba(0,0,0,0.1);
-    border-radius: 4px;
-}
+/* ==========================================================================
+   Clean Editorial News & Media Hub (Calm, Readable, Emerald-Themed)
+   ========================================================================== */
+
+/* 1. Main Navigation Tabs (Underline Minimalist) */
 .news-media-tab-trigger {
     color: #64748b !important;
     background: transparent !important;
     border: none !important;
-    padding: 12px 4px !important;
-    margin-right: 1.5rem !important;
-    font-weight: 600 !important;
-    font-size: 1.05rem;
-    transition: all 0.25s ease !important;
+    padding: 10px 4px !important;
+    margin-right: 2rem !important;
+    font-weight: 500 !important;
+    font-size: 1.02rem;
+    transition: all 0.2s ease !important;
     border-radius: 0 !important;
-    border-bottom: 3px solid transparent !important;
+    border-bottom: 2px solid transparent !important;
     white-space: nowrap;
 }
 .news-media-tab-trigger:hover {
-    color: #1e3a8a !important;
-    border-bottom-color: rgba(30, 58, 138, 0.3) !important;
+    color: #047857 !important;
+    border-bottom-color: rgba(4, 120, 87, 0.3) !important;
 }
 .news-media-tab-trigger.active {
-    color: #1e3a8a !important;
-    border-bottom: 3px solid #1e3a8a !important;
-    box-shadow: none !important;
+    color: #047857 !important;
+    border-bottom: 2px solid #047857 !important;
     font-weight: 700 !important;
 }
 
 [data-theme="dark"] .news-media-tab-trigger {
     color: #94a3b8 !important;
 }
-[data-theme="dark"] .news-media-tab-trigger:hover {
-    color: #60a5fa !important;
-    border-bottom-color: rgba(96, 165, 250, 0.3) !important;
-}
 [data-theme="dark"] .news-media-tab-trigger.active {
-    color: #60a5fa !important;
-    border-bottom-color: #60a5fa !important;
+    color: #34d399 !important;
+    border-bottom-color: #34d399 !important;
 }
 
-/* 2. Category Sub-tabs (ประเภทย่อย) - Filter Chips */
+/* 2. Category Sub-tabs - Soft Pill Chips */
 .news-cat-btn {
     border: 1px solid #e2e8f0 !important;
-    background: #ffffff;
+    background: #f8fafc;
     color: #475569 !important;
     transition: all 0.2s ease;
     font-weight: 500;
     padding: 6px 16px !important;
     font-size: 0.85rem !important;
-    border-radius: 30px !important;
+    border-radius: 50px !important;
 }
 .news-cat-btn:hover {
-    background: #f1f5f9 !important;
-    color: #1e3a8a !important;
-    border-color: #cbd5e1 !important;
+    background: #ecfdf5 !important;
+    color: #047857 !important;
+    border-color: #a7f3d0 !important;
 }
 .news-cat-btn.active {
-    background: #eff6ff !important;
-    color: #1e3a8a !important;
-    font-weight: 700;
-    border-color: #3b82f6 !important;
-    box-shadow: none !important;
+    background: #047857 !important;
+    color: #ffffff !important;
+    font-weight: 600;
+    border-color: #047857 !important;
+    box-shadow: 0 4px 12px rgba(4, 120, 87, 0.2) !important;
 }
 
 [data-theme="dark"] .news-cat-btn {
-    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
     background: rgba(255, 255, 255, 0.05);
-}
-[data-theme="dark"] .news-cat-btn:hover {
-    background: rgba(255, 255, 255, 0.1) !important;
-    color: #60a5fa !important;
-    border-color: rgba(96, 165, 250, 0.4) !important;
+    color: #cbd5e1 !important;
 }
 [data-theme="dark"] .news-cat-btn.active {
-    background: rgba(37, 99, 235, 0.2) !important;
-    color: #60a5fa !important;
-    border-color: #60a5fa !important;
+    background: #059669 !important;
+    color: #ffffff !important;
+    border-color: #059669 !important;
 }
-.news-read-more-link {
-    color: #2563eb !important;
+
+/* 3. News Card System (Calm, Flat & Non-Distracting) */
+.gov-news-card {
+    background: #ffffff;
+    border-radius: 16px;
+    border: 1px solid #edf2f7;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    overflow: hidden;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.gov-news-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 28px -6px rgba(4, 120, 87, 0.1);
+    border-color: rgba(16, 185, 129, 0.35);
+}
+
+.gov-news-img-wrap {
+    height: 185px;
+    background: #f1f5f9;
+    overflow: hidden;
+    position: relative;
+}
+.gov-news-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.35s ease;
+}
+.gov-news-card:hover .gov-news-img-wrap img {
+    transform: scale(1.04);
+}
+
+.gov-news-title {
+    color: #1e293b;
     font-weight: 600;
-    text-decoration: none;
-    transition: transform 0.2s ease;
+    font-size: 1.05rem;
+    line-height: 1.5;
+    transition: color 0.2s ease;
+    margin-bottom: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    min-height: 3rem;
 }
-.news-read-more-link:hover {
-    transform: translateX(4px);
+.gov-news-card:hover .gov-news-title {
+    color: #047857;
+}
+
+.gov-news-meta {
+    color: #64748b;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.gov-news-cat-tag {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #047857;
+    background: #ecfdf5;
+    padding: 3px 10px;
+    border-radius: 20px;
+    display: inline-block;
+}
+
+[data-theme="dark"] .gov-news-card {
+    background: #1e293b;
+    border-color: rgba(255, 255, 255, 0.08);
+}
+[data-theme="dark"] .gov-news-title {
+    color: #f8fafc;
+}
+[data-theme="dark"] .gov-news-card:hover .gov-news-title {
+    color: #34d399;
+}
+[data-theme="dark"] .gov-news-cat-tag {
+    background: rgba(16, 185, 129, 0.2);
+    color: #34d399;
+}
+
+/* 4. Hub Interactive Calendar Styling (High Dimension & Equal 7-Column Layout) */
+.hub-calendar-wrapper {
+    background: #ffffff;
+    border-radius: 18px;
+    border: 1px solid #cbd5e1;
+    overflow: hidden;
+    width: 100%;
+    box-shadow: 0 10px 30px -5px rgba(2, 44, 34, 0.08), 0 4px 12px -2px rgba(0, 0, 0, 0.03);
+}
+.hub-cal-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    background: linear-gradient(135deg, #022c22 0%, #064e3b 55%, #047857 100%);
+    border-bottom: 2px solid #10b981;
+    text-align: center;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: #ffffff;
+    padding: 12px 0;
+    width: 100%;
+    box-shadow: inset 0 -2px 6px rgba(0, 0, 0, 0.12);
+}
+.hub-cal-weekdays div {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    letter-spacing: 0.2px;
+}
+.hub-cal-weekdays div:first-child {
+    color: #fca5a5; /* Sunday */
+}
+.hub-cal-weekdays div:last-child {
+    color: #86efac; /* Saturday */
+}
+.hub-cal-days-grid {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    background: #e2e8f0;
+    gap: 1px;
+    width: 100%;
+}
+.hub-cal-cell {
+    min-height: 110px;
+    background: #ffffff;
+    padding: 8px 10px;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 5px;
+    min-width: 0;
+    overflow: hidden;
+}
+.hub-cal-cell:hover {
+    background: #f0fdf4;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(4, 120, 87, 0.15);
+    z-index: 5;
+}
+.hub-cal-cell.other-month {
+    background: #fafafa;
+    opacity: 0.35;
+}
+.hub-cal-cell.today {
+    background: #ecfdf5;
+    border: 2px solid #047857;
+}
+.hub-cal-cell.today .hub-cal-day-num {
+    background: linear-gradient(135deg, #059669, #047857);
+    color: #ffffff;
+    border-radius: 50%;
+    width: 26px;
+    height: 26px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(4, 120, 87, 0.35);
+}
+.hub-cal-day-num {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #1e293b;
+    flex-shrink: 0;
+}
+.hub-cal-event-pill {
+    background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+    border: 1px solid rgba(16, 185, 129, 0.45);
+    color: #065f46;
+    font-size: 0.78rem;
+    font-weight: 600;
+    border-radius: 6px;
+    padding: 4px 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    max-width: 100%;
+    width: 100%;
+    min-width: 0;
+    line-height: 1.3;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 5px rgba(4, 120, 87, 0.08);
+}
+.hub-cal-event-pill:hover {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(4, 120, 87, 0.25);
+}
+
+[data-theme="dark"] .hub-calendar-wrapper {
+    background: #1e293b;
+    border-color: rgba(255, 255, 255, 0.08);
+}
+[data-theme="dark"] .hub-cal-weekdays {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+[data-theme="dark"] .hub-cal-days-grid {
+    background: rgba(255, 255, 255, 0.08);
+}
+[data-theme="dark"] .hub-cal-cell {
+    background: #1e293b;
+}
+[data-theme="dark"] .hub-cal-cell:hover {
+    background: rgba(16, 185, 129, 0.15);
+}
+[data-theme="dark"] .hub-cal-cell.other-month {
+    background: rgba(15, 23, 42, 0.5);
+}
+[data-theme="dark"] .hub-cal-day-num {
+    color: #cbd5e1;
 }
 </style>
 
-<section id="news-media-hub" class="my-5 py-4">
-    <div class="glass-card p-4 p-md-5" style="border-radius: 28px; border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow); background: var(--card-bg, #ffffff);">
+<section id="news-media-hub" class="my-5 py-2">
+    <div class="card border-0 p-4 p-lg-5 shadow-sm" style="border-radius: 24px; background: var(--card-bg, #ffffff);">
         
-        <!-- Hub Header & Segmented Switcher -->
+        <!-- Hub Header & Main Tabs -->
         <div class="mb-4">
-            <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
-                <div>
-                    <h3 class="fw-bold mb-1 d-flex align-items-center gap-2" style="color: var(--text-primary);">
-                        <i class="fa-solid fa-bullhorn text-warning"></i>
-                        <span>ศาลาประชาสัมพันธ์และข่าวสารจังหวัด</span>
-                        <?php if ($isOfficer): ?>
-                            <span class="badge bg-success text-dark px-2 py-1 fs-6"><i class="fa-solid fa-user-shield me-1"></i>แอดมิน</span>
-                        <?php endif; ?>
-                    </h3>
-                    <p style="color: var(--text-secondary); margin: 0; font-size: 0.92rem;">
-                        จุดศูนย์รวมการประกาศข่าวสาร ปฏิทินตารางงาน คลังภาพ และรายการวิดีทัศน์ประชาสัมพันธ์จังหวัดพัทลุง
-                    </p>
-                </div>
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
+                <h3 class="fw-bold mb-0 d-flex align-items-center gap-2" style="color: var(--text-primary);">
+                    <i class="fa-solid fa-bullhorn text-success" style="color: #047857 !important;"></i>
+                    <span>ข่าวประชาสัมพันธ์</span>
+                    <?php if ($isOfficer): ?>
+                        <span class="badge bg-success bg-opacity-25 text-success px-2 py-1 fs-6"><i class="fa-solid fa-user-shield me-1"></i>แอดมิน</span>
+                    <?php endif; ?>
+                </h3>
             </div>
 
-            <!-- Tab Navigation Pills -> Underline Style -->
-            <ul class="nav nav-underline-custom border-bottom" id="newsMediaHubTabs" role="tablist" style="border-color: rgba(0,0,0,0.08) !important;">
+            <!-- Tab Navigation (Clean Underline Style) -->
+            <ul class="nav nav-underline-custom border-bottom" id="newsMediaHubTabs" role="tablist" style="border-color: rgba(0,0,0,0.06) !important;">
                 <li class="nav-item" role="presentation">
                     <button class="nav-link active news-media-tab-trigger" id="tab-pr-news-trigger" data-bs-toggle="pill" data-bs-target="#tab-pr-news" type="button" role="tab" aria-controls="tab-pr-news" aria-selected="true">
-                        📰 ข่าวประชาสัมพันธ์
+                        ข่าวประชาสัมพันธ์
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link news-media-tab-trigger" id="tab-calendar-trigger" data-bs-toggle="pill" data-bs-target="#tab-calendar" type="button" role="tab" aria-controls="tab-calendar" aria-selected="false">
-                        📅 ปฏิทินตารางงาน
+                        ปฏิทินตารางงาน
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link news-media-tab-trigger" id="tab-gallery-trigger" data-bs-toggle="pill" data-bs-target="#tab-gallery" type="button" role="tab" aria-controls="tab-gallery" aria-selected="false">
-                        📸 คลังภาพกิจกรรม
+                        คลังภาพกิจกรรม
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link news-media-tab-trigger" id="tab-videos-trigger" data-bs-toggle="pill" data-bs-target="#tab-videos" type="button" role="tab" aria-controls="tab-videos" aria-selected="false">
-                        📹 วิดีทัศน์ Web TV
+                        วิดีทัศน์ Web TV
                     </button>
                 </li>
             </ul>
@@ -166,10 +354,10 @@ $isOfficer = session()->get('isLoggedIn');
                 <!-- Action buttons for admins -->
                 <?php if ($isOfficer): ?>
                     <div class="d-flex flex-wrap gap-2 mb-3 justify-content-end">
-                        <button type="button" onclick="NewsStudio.addCategory()" class="btn btn-xs btn-outline-info py-2 px-3 rounded-pill fw-bold">
+                        <button type="button" onclick="NewsStudio.addCategory()" class="btn btn-xs btn-outline-success py-2 px-3 rounded-pill fw-bold">
                             <i class="fa-solid fa-tags"></i> เพิ่มหมวดหมู่ใหม่
                         </button>
-                        <button type="button" onclick="NewsStudio.open()" class="btn btn-xs btn-warning py-2 px-4 rounded-pill fw-bold text-dark" style="background: linear-gradient(135deg, #f59e0b, #fbbf24); border: none;">
+                        <button type="button" onclick="NewsStudio.open()" class="btn btn-xs btn-success py-2 px-4 rounded-pill fw-bold text-white shadow-xs" style="background: #047857; border: none;">
                             <i class="fa-solid fa-circle-plus"></i> + สร้างประกาศข่าวใหม่ (Studio)
                         </button>
                     </div>
@@ -186,14 +374,15 @@ $isOfficer = session()->get('isLoggedIn');
                             if (strcasecmp(trim($hn['category'] ?? ''), trim($cat)) === 0) $countInCat++;
                         }
                         if ($countInCat === 0 && !$isOfficer) continue;
+                        $displayCatName = (strcasecmp(trim($cat), 'general') === 0) ? 'ข่าวทั่วไป' : $cat;
                     ?>
                         <button class="btn btn-xs px-4 py-2 news-cat-btn rounded-pill <?= ($countInCat === 0) ? 'opacity-50' : '' ?>" data-filter="<?= esc($cat) ?>" onclick="filterHomeNews('<?= esc($cat) ?>', this)">
-                            <?= esc($cat) ?> (<?= $countInCat ?>)
+                            <?= esc($displayCatName) ?> (<?= $countInCat ?>)
                         </button>
                     <?php endforeach; ?>
                 </div>
 
-                <!-- News Grid List -->
+                <!-- 6 News Cards Grid -->
                 <div class="row g-4" id="newsGridContainer">
                     <?php if (empty($homeNews)): ?>
                         <div class="col-12 text-center py-5">
@@ -202,42 +391,54 @@ $isOfficer = session()->get('isLoggedIn');
                         </div>
                     <?php else: ?>
                         <?php foreach ($homeNews as $item): 
+                            $rawCat = trim($item['category'] ?? 'ข่าวทั่วไป');
+                            $catLabel = (strcasecmp($rawCat, 'general') === 0 || empty($rawCat)) ? 'ข่าวทั่วไป' : $rawCat;
                             $coverImg = (!empty($item['cover_image']) && (strpos($item['cover_image'], 'http') === 0 || strpos($item['cover_image'], 'data:') === 0 || strpos($item['cover_image'], 'uploads/') === 0)) ? ((strpos($item['cover_image'], 'http') === 0) ? $item['cover_image'] : base_url($item['cover_image'])) : 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80';
                             $attachCount = !empty($item['attachments']) ? count($item['attachments']) : 0;
+                            $newsDate = !empty($item['created_at']) ? date('d/m/Y', strtotime($item['created_at'])) : date('d/m/Y');
+                            $viewsCount = number_format($item['views'] ?? 0);
                         ?>
-                            <div class="col-md-6 col-lg-4 news-card-item" data-category="<?= esc($item['category'] ?? 'ทั่วไป') ?>">
-                                <div class="glass-card h-100 d-flex flex-column justify-content-between hover-lift overflow-hidden" style="border: 1px solid var(--glass-border);">
+                            <div class="col-md-6 col-lg-4 news-card-item" data-category="<?= esc($rawCat) ?>">
+                                <div class="gov-news-card">
                                     
-                                    <!-- Image Header -->
-                                    <a href="<?= base_url('news/detail/' . $item['id']) ?>" class="d-block overflow-hidden position-relative group-hover-zoom flex-shrink-0" style="height: 180px; background: #0f172a;">
-                                        <span class="badge position-absolute top-0 start-0 m-3 px-3 py-1 rounded-pill fw-bold" style="background: rgba(15,23,42,0.85); backdrop-filter: blur(8px); color: var(--accent-primary); z-index: 2; border: 1px solid rgba(56,189,248,0.25);">
-                                            <i class="fa-solid fa-tag me-1"></i> <?= esc($item['category'] ?? 'ทั่วไป') ?>
-                                        </span>
-                                        <img src="<?= $coverImg ?>" alt="<?= esc($item['title']) ?>" class="w-100 h-100 object-fit-cover transition-all" loading="lazy">
+                                    <!-- Image Header (Clean & Uncluttered) -->
+                                    <a href="<?= base_url('news/detail/' . $item['id']) ?>" class="d-block gov-news-img-wrap">
+                                        <img src="<?= $coverImg ?>" alt="<?= esc($item['title']) ?>" loading="lazy">
                                     </a>
 
                                     <!-- Content Body -->
-                                    <div class="card-body p-4 d-flex flex-column justify-content-between flex-grow-1">
+                                    <div class="p-4 d-flex flex-column justify-content-between flex-grow-1">
                                         <div>
-                                            <div class="d-flex align-items-center justify-content-between mb-2 news-card-meta small">
-                                                <span><i class="fa-regular fa-calendar me-1 opacity-75"></i> <?= date('d/m/Y', strtotime($item['created_at'] ?? 'now')) ?></span>
-                                                <span><i class="fa-regular fa-eye me-1 opacity-75"></i> <?= number_format($item['views'] ?? 1) ?> ครั้ง</span>
+                                            <!-- Category & Meta Row -->
+                                            <div class="d-flex align-items-center justify-content-between mb-2.5">
+                                                <span class="gov-news-cat-tag">
+                                                    <?= esc($catLabel) ?>
+                                                </span>
+                                                <div class="gov-news-meta">
+                                                    <span><i class="fa-regular fa-calendar me-1"></i><?= $newsDate ?></span>
+                                                    <span><i class="fa-regular fa-eye me-1"></i><?= $viewsCount ?></span>
+                                                </div>
                                             </div>
-                                            <h5 class="fw-bold news-card-title mb-1 line-clamp-2" style="font-size: 1.12rem; line-height: 1.4;">
-                                                <a href="<?= base_url('news/detail/' . $item['id']) ?>" class="text-decoration-none text-dark" style="display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+
+                                            <!-- News Title -->
+                                            <a href="<?= base_url('news/detail/' . $item['id']) ?>" class="text-decoration-none d-block">
+                                                <h5 class="gov-news-title">
                                                     <?= esc($item['title']) ?>
-                                                </a>
-                                            </h5>
+                                                </h5>
+                                            </a>
                                         </div>
 
-                                        <div class="mt-4 pt-3 news-card-footer d-flex align-items-center justify-content-between border-top" style="border-color: rgba(0,0,0,0.06) !important;">
+                                        <!-- Footer: Attachment & Read Link -->
+                                        <div class="mt-3 pt-3 d-flex align-items-center justify-content-between border-top" style="border-color: rgba(0,0,0,0.05) !important;">
                                             <div>
                                                 <?php if ($attachCount > 0): ?>
-                                                    <small class="text-secondary opacity-75" style="font-size: 0.8rem;"><i class="fa-solid fa-paperclip me-1"></i><?= $attachCount ?> ไฟล์แนบ</small>
+                                                    <span class="text-muted small" style="font-size: 0.78rem;">
+                                                        <i class="fa-solid fa-paperclip me-1 text-secondary"></i><?= $attachCount ?> ไฟล์แนบ
+                                                    </span>
                                                 <?php endif; ?>
                                             </div>
-                                            <a href="<?= base_url('news/detail/' . $item['id']) ?>" class="news-read-more-link small">
-                                                <span>รายละเอียด ➔</span>
+                                            <a href="<?= base_url('news/detail/' . $item['id']) ?>" class="text-decoration-none small fw-semibold" style="color: #047857;">
+                                                <span>อ่านรายละเอียด <i class="fa-solid fa-arrow-right-long ms-1" style="font-size: 0.75rem;"></i></span>
                                             </a>
                                         </div>
                                     </div>
@@ -246,60 +447,59 @@ $isOfficer = session()->get('isLoggedIn');
                         <?php endforeach; ?>
                     <?php endif; ?>
                 </div>
+
+                <!-- View More News Button -->
+                <div class="text-center mt-5">
+                    <a href="<?= base_url('news') ?>" class="btn btn-outline-success rounded-pill px-5 py-2.5 fw-bold shadow-xs d-inline-flex align-items-center gap-2 hover-scale" style="font-size: 0.95rem; border-width: 1.5px; color: #047857; border-color: #047857; transition: all 0.25s ease;">
+                        <i class="fa-solid fa-newspaper text-success"></i>
+                        <span>ดูข่าวประชาสัมพันธ์ทั้งหมด</span>
+                        <i class="fa-solid fa-arrow-right-long ms-1"></i>
+                    </a>
+                </div>
             </div>
 
-            <!-- Tab 2: ปฏิทินตารางงาน -->
+            <!-- Tab 2: ปฏิทินตารางงาน (Interactive Calendar & Event Summary Inspector) -->
             <div class="tab-pane fade" id="tab-calendar" role="tabpanel" aria-labelledby="tab-calendar-trigger">
-                <?php if ($isOfficer): ?>
-                    <div class="d-flex justify-content-end mb-3">
-                        <button type="button" onclick="window.location.href='<?= base_url('calendar') ?>'" class="btn btn-xs btn-warning rounded-pill px-4 py-2 fw-bold text-dark">
-                            <i class="fa-solid fa-calendar-plus"></i> จัดการปฏิทินงาน (Studio)
+                
+                <!-- Calendar Toolbar -->
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4 pb-2 border-bottom" style="border-color: rgba(0,0,0,0.06) !important;">
+                    <div class="d-flex align-items-center gap-2">
+                        <button type="button" class="btn btn-sm btn-outline-success rounded-circle d-flex align-items-center justify-content-center shadow-xs" style="width: 36px; height: 36px; border-color: #047857; color: #047857;" onclick="HubCalendar.prevMonth()" title="เดือนก่อนหน้า">
+                            <i class="fa-solid fa-chevron-left" style="font-size: 0.8rem;"></i>
+                        </button>
+                        <h5 class="fw-bold m-0 px-2 text-dark" id="hubCalMonthTitle" style="min-width: 170px; text-align: center; font-size: 1.15rem; color: #047857 !important;">
+                            สิงหาคม 2569
+                        </h5>
+                        <button type="button" class="btn btn-sm btn-outline-success rounded-circle d-flex align-items-center justify-content-center shadow-xs" style="width: 36px; height: 36px; border-color: #047857; color: #047857;" onclick="HubCalendar.nextMonth()" title="เดือนถัดไป">
+                            <i class="fa-solid fa-chevron-right" style="font-size: 0.8rem;"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-light rounded-pill px-3 py-1 ms-1 fw-semibold text-success border border-success border-opacity-25" onclick="HubCalendar.goToToday()">
+                            วันนี้
                         </button>
                     </div>
-                <?php endif; ?>
 
-                <div class="row g-4">
-                    <?php if (empty($homeEvents)): ?>
-                        <div class="col-12 text-center py-5">
-                            <i class="fa-solid fa-calendar-xmark fs-1 text-muted mb-3"></i>
-                            <p class="text-muted m-0">ยังไม่มีตารางปฏิบัติงานและปฏิทินกิจกรรมในระบบขณะนี้</p>
-                        </div>
-                    <?php else: ?>
-                        <?php 
-                        $displayEvents = array_slice($homeEvents, 0, 3);
-                        foreach ($displayEvents as $ev): 
-                            $sDate = !empty($ev['event_start_date']) ? date('d/m/Y', strtotime($ev['event_start_date'])) : 'เร็วๆ นี้';
-                            $loc = !empty($ev['event_location']) ? $ev['event_location'] : 'จังหวัดพัทลุง';
-                        ?>
-                            <div class="col-12 col-md-6 col-lg-4">
-                                <div class="card h-100 border-0 shadow-sm rounded-4 p-4 d-flex flex-column justify-content-between transition-transform hover-scale" onclick="SmartEventViewer.open('<?= $ev['id'] ?>')" style="cursor: pointer; background: var(--card-bg, #ffffff); border: 1px solid rgba(16, 185, 129, 0.2) !important;">
-                                    <div>
-                                        <div class="d-flex align-items-center justify-content-between mb-3">
-                                            <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3 py-2 rounded-pill fw-bold">
-                                                <i class="fa-solid fa-clock text-warning me-1"></i> <?= $sDate ?>
-                                            </span>
-                                            <span class="badge bg-secondary bg-opacity-10 text-muted small"><?= esc($ev['category'] ?? 'กิจกรรม') ?></span>
-                                        </div>
-                                        <h5 class="fw-bold mb-3 text-truncate-2 text-dark" style="line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
-                                            <?= esc($ev['title']) ?>
-                                        </h5>
-                                        <p class="text-muted small line-clamp-2 mb-4" style="display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.5;">
-                                            <?= esc($ev['summary'] ?? strip_tags($ev['content'] ?? '')) ?>
-                                        </p>
-                                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <!-- Voice TTS Monthly Narration Button -->
+                        <button type="button" id="btnHubCalSpeak" class="btn btn-sm btn-outline-success rounded-pill px-3 py-1.5 fw-bold d-inline-flex align-items-center gap-2 shadow-xs hover-scale" onclick="HubCalendar.toggleSpeakMonthlySchedule()">
+                            <i class="fa-solid fa-volume-high text-success" id="hubCalSpeakIcon"></i>
+                            <span id="hubCalSpeakText">ฟังเสียงกำหนดการเดือนนี้</span>
+                        </button>
+                        <?php if ($isOfficer): ?>
+                            <a href="<?= base_url('calendar') ?>" class="btn btn-sm btn-success rounded-pill px-3 py-1.5 fw-bold text-white shadow-xs" style="background: #047857; border: none;">
+                                <i class="fa-solid fa-calendar-plus me-1"></i> จัดการปฏิทิน (Studio)
+                            </a>
+                        <?php endif; ?>
+                    </div>
+                </div>
 
-                                    <div class="pt-3 border-top d-flex align-items-center justify-content-between" style="border-color: rgba(0,0,0,0.06) !important;">
-                                        <span class="text-primary small fw-bold text-truncate me-2" style="max-width: 65%;" title="<?= esc($loc) ?>">
-                                            <i class="fa-solid fa-location-dot text-danger me-1"></i> <?= esc($loc) ?>
-                                        </span>
-                                        <span class="btn btn-sm btn-outline-success rounded-pill px-3 py-1 fw-bold flex-shrink-0">
-                                            <span>ดูพิกัด & รายละเอียด</span>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
+                <!-- Full-Width Responsive Monthly Calendar Grid -->
+                <div class="hub-calendar-wrapper">
+                    <div class="hub-cal-weekdays">
+                        <div>อาทิตย์</div><div>จันทร์</div><div>อังคาร</div><div>พุธ</div><div>พฤหัสบดี</div><div>ศุกร์</div><div>เสาร์</div>
+                    </div>
+                    <div id="hubCalDaysGrid" class="hub-cal-days-grid">
+                        <!-- Rendered dynamically by HubCalendar.renderGrid() -->
+                    </div>
                 </div>
             </div>
 
@@ -658,4 +858,262 @@ function filterHomeNews(cat, btn) {
         }
     });
 }
+
+// Interactive Hub Calendar & Event Summary Engine
+var ALL_HUB_EVENTS = <?= json_encode($homeEvents) ?>;
+
+var HubCalendar = {
+    currentDate: new Date(),
+    selectedDateStr: '',
+    events: [],
+    isSpeaking: false,
+
+    init: function() {
+        this.events = Array.isArray(ALL_HUB_EVENTS) ? ALL_HUB_EVENTS : [];
+        if (typeof SmartEventViewer !== 'undefined' && SmartEventViewer.registerEvents) {
+            SmartEventViewer.registerEvents(this.events);
+        }
+
+        if (this.events.length > 0) {
+            var firstEventDate = this.events[0].event_start_date;
+            if (firstEventDate) {
+                var d = new Date(firstEventDate);
+                if (!isNaN(d.getTime())) {
+                    this.currentDate = new Date(d.getFullYear(), d.getMonth(), 1);
+                    this.selectedDateStr = firstEventDate.split(' ')[0].split('T')[0];
+                }
+            }
+        }
+
+        if (!this.selectedDateStr) {
+            var today = new Date();
+            this.selectedDateStr = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
+        }
+
+        this.render();
+    },
+
+    prevMonth: function() {
+        this.stopSpeaking();
+        this.currentDate.setMonth(this.currentDate.getMonth() - 1);
+        this.render();
+    },
+
+    nextMonth: function() {
+        this.stopSpeaking();
+        this.currentDate.setMonth(this.currentDate.getMonth() + 1);
+        this.render();
+    },
+
+    goToToday: function() {
+        this.stopSpeaking();
+        this.currentDate = new Date();
+        var today = new Date();
+        this.selectedDateStr = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
+        this.render();
+    },
+
+    selectDate: function(dateStr) {
+        this.selectedDateStr = dateStr;
+        this.renderGrid();
+        this.renderSelectedDay();
+    },
+
+    getEventsForDate: function(dateStr) {
+        return this.events.filter(function(ev) {
+            if (!ev.event_start_date) return false;
+            var s = ev.event_start_date.split(' ')[0].split('T')[0];
+            var e = ev.event_end_date ? ev.event_end_date.split(' ')[0].split('T')[0] : s;
+            return dateStr >= s && dateStr <= e;
+        });
+    },
+
+    formatThaiDate: function(dateStr) {
+        if (!dateStr) return '';
+        var parts = dateStr.split('-');
+        if (parts.length !== 3) return dateStr;
+        var thaiMonths = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+        var d = parseInt(parts[2], 10);
+        var m = parseInt(parts[1], 10) - 1;
+        var y = parseInt(parts[0], 10) + 543;
+        return d + ' ' + (thaiMonths[m] || '') + ' ' + y;
+    },
+
+    render: function() {
+        var year = this.currentDate.getFullYear();
+        var month = this.currentDate.getMonth();
+
+        var thaiMonths = [
+            'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',
+            'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'
+        ];
+        var titleEl = document.getElementById('hubCalMonthTitle');
+        if (titleEl) {
+            titleEl.textContent = (thaiMonths[month] || '') + ' ' + (year + 543);
+        }
+
+        this.renderGrid();
+        this.renderSelectedDay();
+    },
+
+    renderGrid: function() {
+        var gridEl = document.getElementById('hubCalDaysGrid');
+        if (!gridEl) return;
+
+        var year = this.currentDate.getFullYear();
+        var month = this.currentDate.getMonth();
+
+        var firstDayIndex = new Date(year, month, 1).getDay();
+        var daysInMonth = new Date(year, month + 1, 0).getDate();
+        var daysInPrevMonth = new Date(year, month, 0).getDate();
+
+        var totalCells = Math.ceil((firstDayIndex + daysInMonth) / 7) * 7;
+        var html = '';
+
+        var realToday = new Date();
+        var todayStr = realToday.getFullYear() + '-' + String(realToday.getMonth() + 1).padStart(2, '0') + '-' + String(realToday.getDate()).padStart(2, '0');
+
+        for (var i = 0; i < totalCells; i++) {
+            var cellDay = 0;
+            var cellMonth = month;
+            var cellYear = year;
+            var isOtherMonth = false;
+
+            if (i < firstDayIndex) {
+                cellDay = daysInPrevMonth - (firstDayIndex - i) + 1;
+                cellMonth = month - 1;
+                if (cellMonth < 0) { cellMonth = 11; cellYear = year - 1; }
+                isOtherMonth = true;
+            } else if (i >= firstDayIndex + daysInMonth) {
+                cellDay = i - (firstDayIndex + daysInMonth) + 1;
+                cellMonth = month + 1;
+                if (cellMonth > 11) { cellMonth = 0; cellYear = year + 1; }
+                isOtherMonth = true;
+            } else {
+                cellDay = i - firstDayIndex + 1;
+            }
+
+            var cellDateStr = cellYear + '-' + String(cellMonth + 1).padStart(2, '0') + '-' + String(cellDay).padStart(2, '0');
+            var isToday = (!isOtherMonth && cellDateStr === todayStr);
+
+            var cellClass = 'hub-cal-cell' + (isOtherMonth ? ' other-month' : '') + (isToday ? ' today' : '');
+
+            var dayEvents = this.getEventsForDate(cellDateStr);
+            var clickAction = dayEvents.length > 0 ? `onclick="SmartEventViewer.open('${dayEvents[0].id}')"` : '';
+
+            html += `<div class="${cellClass}" ${clickAction}>`;
+            html += `<div class="d-flex align-items-center justify-content-between mb-1">`;
+            html += `<span class="hub-cal-day-num">${cellDay}</span>`;
+            if (dayEvents.length > 0) {
+                html += `<span class="badge bg-success bg-opacity-20 text-success rounded-pill" style="font-size: 0.72rem; padding: 2px 7px;">${dayEvents.length} กิจกรรม</span>`;
+            }
+            html += `</div>`;
+
+            if (dayEvents.length > 0) {
+                dayEvents.forEach(function(ev) {
+                    var safeTitle = (ev.title || 'กิจกรรม').replace(/"/g, '&quot;');
+                    html += `<div class="hub-cal-event-pill" onclick="event.stopPropagation(); SmartEventViewer.open('${ev.id}')" title="${safeTitle}">`;
+                    html += `<i class="fa-solid fa-calendar-check text-success me-1" style="font-size: 0.7rem;"></i> <span>${ev.title}</span>`;
+                    html += `</div>`;
+                });
+            }
+
+            html += `</div>`;
+        }
+
+        gridEl.innerHTML = html;
+    },
+
+    toggleSpeakMonthlySchedule: function() {
+        if (this.isSpeaking) {
+            this.stopSpeaking();
+            return;
+        }
+
+        if (!('speechSynthesis' in window)) {
+            alert('เบราว์เซอร์ของท่านไม่รองรับระบบอ่านออกเสียง (Speech Synthesis)');
+            return;
+        }
+
+        window.speechSynthesis.cancel();
+
+        var monthTitle = document.getElementById('hubCalMonthTitle') ? document.getElementById('hubCalMonthTitle').textContent.trim() : '';
+        var year = this.currentDate.getFullYear();
+        var month = this.currentDate.getMonth();
+
+        // Get all events that fall in this month
+        var monthEvents = this.events.filter(function(ev) {
+            if (!ev.event_start_date) return false;
+            var d = new Date(ev.event_start_date);
+            return d.getFullYear() === year && d.getMonth() === month;
+        });
+
+        var speechText = 'ปฏิทินกิจกรรมจังหวัดพัทลุง ประจำเดือน ' + monthTitle + ' ';
+        if (monthEvents.length === 0) {
+            speechText += 'ไม่มีกำหนดการกิจกรรมในเดือนนี้';
+        } else {
+            speechText += 'มีทั้งหมด ' + monthEvents.length + ' กิจกรรม ได้แก่ ';
+            monthEvents.forEach(function(ev, idx) {
+                var sDate = ev.event_start_date ? HubCalendar.formatThaiDate(ev.event_start_date.split(' ')[0]) : '';
+                var loc = ev.event_location ? (' ณ ' + ev.event_location) : '';
+                speechText += 'ลำดับที่ ' + (idx + 1) + ' ' + ev.title + ' วันที่ ' + sDate + loc + ' ';
+            });
+        }
+
+        var utter = new SpeechSynthesisUtterance(speechText);
+        utter.lang = 'th-TH';
+        utter.rate = 1.0;
+
+        var voices = window.speechSynthesis.getVoices();
+        var thVoice = voices.find(function(v) { return v.lang === 'th-TH' || v.lang === 'th_TH' || v.lang.startsWith('th'); });
+        if (thVoice) utter.voice = thVoice;
+
+        var self = this;
+        utter.onstart = function() {
+            self.isSpeaking = true;
+            var btn = document.getElementById('btnHubCalSpeak');
+            var icon = document.getElementById('hubCalSpeakIcon');
+            var text = document.getElementById('hubCalSpeakText');
+            if (btn) {
+                btn.classList.remove('btn-outline-success');
+                btn.classList.add('btn-danger', 'text-white');
+            }
+            if (icon) icon.className = 'fa-solid fa-stop text-white';
+            if (text) text.innerText = 'หยุดฟังเสียง';
+        };
+
+        utter.onend = utter.onerror = function() {
+            self.stopSpeaking();
+        };
+
+        window.speechSynthesis.speak(utter);
+    },
+
+    stopSpeaking: function() {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+        }
+        this.isSpeaking = false;
+        var btn = document.getElementById('btnHubCalSpeak');
+        var icon = document.getElementById('hubCalSpeakIcon');
+        var text = document.getElementById('hubCalSpeakText');
+        if (btn) {
+            btn.classList.remove('btn-danger', 'text-white');
+            btn.classList.add('btn-outline-success');
+        }
+        if (icon) icon.className = 'fa-solid fa-volume-high text-success';
+        if (text) text.innerText = 'ฟังเสียงกำหนดการเดือนนี้';
+    }
+};
+
+document.addEventListener('DOMContentLoaded', function() {
+    HubCalendar.init();
+    
+    var calTabTrigger = document.getElementById('tab-calendar-trigger');
+    if (calTabTrigger) {
+        calTabTrigger.addEventListener('shown.bs.tab', function () {
+            HubCalendar.render();
+        });
+    }
+});
 </script>

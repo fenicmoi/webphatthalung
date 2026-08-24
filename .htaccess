@@ -1,0 +1,8 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /webphatthalung/
+    
+    # Send all requests to public/
+    RewriteCond %{REQUEST_URI} !^/webphatthalung/public/
+    RewriteRule ^(.*)$ public/$1 [L,QSA]
+</IfModule>

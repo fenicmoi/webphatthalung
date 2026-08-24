@@ -71,8 +71,8 @@ class MenuManager extends BaseController
                     ],
                     [
                         'id' => 'sub_' . uniqid(),
-                        'title' => 'แผนยุทธศาสตร์การพัฒนาพัทลุง 2026',
-                        'url' => '#strategy',
+                        'title' => 'ยุทธศาสตร์และแผนพัฒนาจังหวัด',
+                        'url' => base_url('strategy'),
                         'target' => '_self'
                     ],
                     [

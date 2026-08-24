@@ -135,46 +135,47 @@
         </main>
 
         <!-- Official Elegant Footer -->
-        <footer class="py-5 mt-5" style="background: #0f172a; color: #94a3b8; border-top: 3px solid #2563eb;">
+        <footer class="py-5 mt-5" style="background: linear-gradient(135deg, #022c22 0%, #064e3b 100%); color: #cbd5e1; border-top: 3px solid #10b981;">
             <div class="container">
                 <div class="row g-4">
                     <div class="col-lg-5">
                         <div class="d-flex align-items-center gap-3 mb-3">
                             <div style="width: 44px; height: 44px; border-radius: 10px; background: #ffffff; display: flex; align-items: center; justify-content: center;">
-                                <i class="fa-solid fa-building-columns text-primary" style="font-size: 1.3rem;"></i>
+                                <i class="fa-solid fa-building-columns text-success" style="font-size: 1.3rem;"></i>
                             </div>
                             <div>
                                 <h5 class="fw-bold text-white mb-0"><?= htmlspecialchars($siteConfig['site_title_th'] ?? 'จังหวัดพัทลุง') ?></h5>
-                                <small class="text-white-50"><?= htmlspecialchars($siteConfig['site_title_en'] ?? 'Phatthalung Provincial Portal') ?></small>
+                                <small class="text-light opacity-75"><?= htmlspecialchars($siteConfig['site_title_en'] ?? 'Phatthalung Provincial Portal') ?></small>
                             </div>
                         </div>
-                        <p class="small mb-3" style="line-height: 1.7; color: #cbd5e1;">
+                        <p class="small mb-3" style="line-height: 1.7; color: #a7f3d0;">
                             <?= htmlspecialchars($siteConfig['address'] ?? 'ศาลากลางจังหวัดพัทลุง ถนนราเมศวร์ ตำบลคูหาสวรรค์ อำเภอเมืองพัทลุง 93000') ?>
                         </p>
-                        <div class="d-flex flex-column gap-1 small text-white-50">
-                            <div><i class="fa-solid fa-phone text-primary me-2"></i> โทรศัพท์: <?= htmlspecialchars($siteConfig['contact_phone'] ?? '074-613409') ?></div>
-                            <div><i class="fa-solid fa-envelope text-primary me-2"></i> อีเมล: <?= htmlspecialchars($siteConfig['contact_email'] ?? 'contact@phatthalung.go.th') ?></div>
+                        <div class="d-flex flex-column gap-1 small text-light opacity-90">
+                            <div><i class="fa-solid fa-phone text-warning me-2"></i> โทรศัพท์: <?= htmlspecialchars($siteConfig['contact_phone'] ?? '074-613409') ?></div>
+                            <div><i class="fa-solid fa-envelope text-warning me-2"></i> อีเมล: <?= htmlspecialchars($siteConfig['contact_email'] ?? 'contact@phatthalung.go.th') ?></div>
                         </div>
                     </div>
 
                     <div class="col-sm-6 col-lg-3">
-                        <h6 class="text-white fw-bold mb-3"><i class="fa-solid fa-link text-primary me-2"></i>ลิงก์บริการด่วน</h6>
+                        <h6 class="text-white fw-bold mb-3"><i class="fa-solid fa-link text-warning me-2"></i>ลิงก์บริการด่วน</h6>
                         <ul class="list-unstyled d-flex flex-column gap-2 small">
-                            <li><a href="<?= base_url('news') ?>" class="text-decoration-none text-light opacity-75 hover-opacity-100"><i class="fa-solid fa-chevron-right me-1" style="font-size:0.7rem;"></i> ข่าวประชาสัมพันธ์</a></li>
-                            <li><a href="<?= base_url('procurement') ?>" class="text-decoration-none text-light opacity-75 hover-opacity-100"><i class="fa-solid fa-chevron-right me-1" style="font-size:0.7rem;"></i> ประกาศจัดซื้อจัดจ้าง</a></li>
-                            <li><a href="<?= base_url('gallery') ?>" class="text-decoration-none text-light opacity-75 hover-opacity-100"><i class="fa-solid fa-chevron-right me-1" style="font-size:0.7rem;"></i> ภาพกิจกรรมและคลังสื่อ</a></li>
-                            <li><a href="<?= base_url('ita') ?>" class="text-decoration-none text-light opacity-75 hover-opacity-100"><i class="fa-solid fa-chevron-right me-1" style="font-size:0.7rem;"></i> ศูนย์ข้อมูลความโปร่งใส (ITA)</a></li>
+                            <li><a href="<?= base_url('news') ?>" class="text-decoration-none text-light opacity-75 hover-opacity-100"><i class="fa-solid fa-chevron-right text-success me-1" style="font-size:0.7rem;"></i> ข่าวประชาสัมพันธ์</a></li>
+                            <li><a href="<?= base_url('procurement') ?>" class="text-decoration-none text-light opacity-75 hover-opacity-100"><i class="fa-solid fa-chevron-right text-success me-1" style="font-size:0.7rem;"></i> ประกาศจัดซื้อจัดจ้าง (e-GP)</a></li>
+                            <li><a href="<?= base_url('governors') ?>" class="text-decoration-none text-light opacity-75 hover-opacity-100"><i class="fa-solid fa-chevron-right text-success me-1" style="font-size:0.7rem;"></i> ทำเนียบผู้ว่าราชการจังหวัด</a></li>
+                            <li><a href="<?= base_url('gallery') ?>" class="text-decoration-none text-light opacity-75 hover-opacity-100"><i class="fa-solid fa-chevron-right text-success me-1" style="font-size:0.7rem;"></i> ภาพกิจกรรมและคลังสื่อ</a></li>
+                            <li><a href="<?= base_url('ita') ?>" class="text-decoration-none text-light opacity-75 hover-opacity-100"><i class="fa-solid fa-chevron-right text-success me-1" style="font-size:0.7rem;"></i> ศูนย์ข้อมูลความโปร่งใส (ITA)</a></li>
                         </ul>
                     </div>
 
                     <div class="col-sm-6 col-lg-4">
-                        <h6 class="text-white fw-bold mb-3"><i class="fa-solid fa-shield-check text-success me-2"></i>มาตรฐานและการเข้าถึง</h6>
-                        <p class="small text-white-50 mb-3" style="line-height: 1.6;">
+                        <h6 class="text-white fw-bold mb-3"><i class="fa-solid fa-shield-check text-warning me-2"></i>มาตรฐานและการเข้าถึง</h6>
+                        <p class="small text-light opacity-75 mb-3" style="line-height: 1.6;">
                             เว็บไซต์นี้รองรับมาตรฐานการเข้าถึงข้อมูลภาครัฐ (W3C WCAG AAA) พร้อมระบบอ่านออกเสียงสำหรับผู้พิการและผู้สูงอายุ
                         </p>
                         <div class="d-flex align-items-center gap-2">
-                            <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 rounded-pill" style="font-size: 0.82rem;">
-                                <i class="fa-solid fa-circle-check me-1"></i> ระบบออนไลน์พร้อมใช้งาน 100%
+                            <span class="badge bg-success bg-opacity-25 text-light border border-success border-opacity-50 px-3 py-2 rounded-pill fw-bold" style="font-size: 0.82rem;">
+                                <i class="fa-solid fa-circle-check text-warning me-1"></i> ระบบออนไลน์พร้อมใช้งาน 100%
                             </span>
                         </div>
                     </div>
@@ -273,19 +274,29 @@
                 
                 <!-- Modal Body: Trending Chips & Real-time Categorized Results -->
                 <div class="modal-body p-4" id="omniSearchBody" style="min-height: 400px; max-height: 68vh;">
-                    <!-- Trending Searches Section -->
+                    <!-- Trending Searches Section (Real Dynamic Data) -->
                     <div id="omniTrendingSection">
-                        <div class="d-flex align-items-center gap-2 mb-3 text-warning">
-                            <i class="fa-solid fa-fire-flame-curved"></i>
-                            <h6 class="m-0 fw-bold">คำค้นหายอดนิยมประจำสัปดาห์ (Trending Keywords)</h6>
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <div class="d-flex align-items-center gap-2 text-warning">
+                                <i class="fa-solid fa-fire-flame-curved"></i>
+                                <h6 class="m-0 fw-bold">คำค้นหายอดนิยมประจำสัปดาห์ (Trending Keywords)</h6>
+                            </div>
+                            <span class="badge bg-success bg-opacity-20 text-success border border-success border-opacity-30 rounded-pill px-2.5 py-1 small fw-bold">
+                                <i class="fa-solid fa-bolt me-1"></i> Live Real Trends
+                            </span>
                         </div>
+                        
                         <div class="d-flex flex-wrap gap-2 mb-4" id="omniTrendingChips">
-                            <button type="button" onclick="OmniSearch.quickSearch('ยื่นคำร้อง PDPA')" class="btn btn-sm btn-outline-info rounded-pill px-3 fw-bold">🛡️ ยื่นคำร้อง PDPA</button>
-                            <button type="button" onclick="OmniSearch.quickSearch('ภาษีที่ดิน')" class="btn btn-sm btn-outline-success rounded-pill px-3 fw-bold">💰 ภาษีที่ดิน e-Tax</button>
-                            <button type="button" onclick="OmniSearch.quickSearch('ทะเลน้อย')" class="btn btn-sm btn-outline-warning rounded-pill px-3 fw-bold">🌿 ทะเลน้อย มรดกโลก</button>
-                            <button type="button" onclick="OmniSearch.quickSearch('กล้อง CCTV')" class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-bold">📹 กล้อง AI CCTV</button>
-                            <button type="button" onclick="OmniSearch.quickSearch('ร้องทุกข์')" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-bold">📢 ร้องทุกข์ออนไลน์ 24 ชม.</button>
-                            <button type="button" onclick="OmniSearch.quickSearch('แบบฟอร์ม')" class="btn btn-sm btn-outline-light rounded-pill px-3 fw-bold">📂 โหลดแบบฟอร์มคำร้อง PDF</button>
+                            <?php 
+                            $trendingKeywords = function_exists('get_trending_keywords') ? get_trending_keywords(6) : [];
+                            foreach ($trendingKeywords as $kwItem): 
+                                $kw = is_array($kwItem) ? ($kwItem['keyword'] ?? '') : $kwItem;
+                                $icon = is_array($kwItem) ? ($kwItem['icon'] ?? '🔥') : '🔥';
+                            ?>
+                                <button type="button" onclick="OmniSearch.quickSearch('<?= esc($kw) ?>')" class="btn btn-sm rounded-pill px-3 py-1.5 fw-bold shadow-xs hover-scale" style="background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.4); color: #ffffff; transition: all 0.2s ease;">
+                                    <span><?= $icon ?> <?= esc($kw) ?></span>
+                                </button>
+                            <?php endforeach; ?>
                         </div>
 
                         <h6 class="text-secondary small fw-bold text-uppercase mb-3"><i class="fa-solid fa-compass me-1"></i>บริการและรายการแนะนำ (Featured Services)</h6>

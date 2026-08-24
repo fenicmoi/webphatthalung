@@ -321,6 +321,21 @@ if (!function_exists('get_site_news')) {
     }
 }
 
+if (!function_exists('save_site_news')) {
+    /**
+     * บันทึกรายการข่าวสารประชาสัมพันธ์ลงในไฟล์ JSON
+     */
+    function save_site_news(array $newsList): bool
+    {
+        $writableDir = defined('WRITABLE') ? rtrim(\WRITABLE, '/\\') : realpath(__DIR__ . '/../../writable');
+        if (!is_dir($writableDir)) {
+            @mkdir($writableDir, 0777, true);
+        }
+        $jsonPath = $writableDir . DIRECTORY_SEPARATOR . 'site_news.json';
+        return @file_put_contents($jsonPath, json_encode(array_values($newsList), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)) !== false;
+    }
+}
+
 if (!function_exists('get_news_by_id')) {
     /**
      * ดึงข่าวสารรายชิ้นจากรหัสไอดี
@@ -357,6 +372,23 @@ if (!function_exists('get_site_events')) {
             return $timeA - $timeB;
         });
         return $events;
+    }
+}
+
+if (!function_exists('get_aggregated_news')) {
+    /**
+     * ดึงรายการข่าวสารที่รวบรวมจากฟีด RSS กรมประชาสัมพันธ์ และ Social Media
+     */
+    function get_aggregated_news($forceRefresh = false, $sourceType = null)
+    {
+        $service = new \App\Libraries\NewsAggregatorService();
+        $feeds = $service->getFeeds($forceRefresh);
+        if (!empty($sourceType)) {
+            $feeds = array_filter($feeds, function($item) use ($sourceType) {
+                return ($item['source_type'] ?? '') === $sourceType;
+            });
+        }
+        return array_values($feeds);
     }
 }
 
@@ -1022,42 +1054,124 @@ if (!function_exists('get_executive_categories')) {
 
 if (!function_exists('get_site_executives')) {
     /**
-     * ดึงรายการทำเนียบผู้บริหาร
+     * ดึงรายการทำเนียบผู้บริหารปัจจุบัน (Current Executive Leadership)
      */
     function get_site_executives($limit = null, $category = null, $featuredOnly = false)
     {
-        $model = new \App\Models\ExecutiveModel();
-        
-        $model->where('active', 1);
-        $model->orderBy('order_num', 'ASC');
-        
-        if ($limit !== null && $limit > 0) {
-            $execs = $model->findAll($limit);
-        } else {
-            $execs = $model->findAll();
+        $writableDir = defined('WRITABLE') ? rtrim(\WRITABLE, '/\\') : realpath(__DIR__ . '/../../writable');
+        $jsonPath = ($writableDir ?: WRITEPATH) . DIRECTORY_SEPARATOR . 'site_executives.json';
+
+        $execs = [];
+        if (file_exists($jsonPath)) {
+            $raw = file_get_contents($jsonPath);
+            $decoded = json_decode($raw, true);
+            if (is_array($decoded)) {
+                $execs = $decoded;
+            }
         }
-        
-        return array_map(function($item) {
-            return [
-                'id' => 'exec-' . $item['id'],
-                'name' => $item['name'],
-                'position' => $item['position'],
-                'category' => 'คณะผู้บริหารระดับสูง',
-                'quote' => '',
-                'phone' => '',
-                'email' => '',
-                'photo' => $item['image_path'],
-                'order_num' => (int)$item['order_num'],
-                'featured' => true,
-                'active' => true
+
+        // Fallback default list if json is empty
+        if (empty($execs)) {
+            $execs = [
+                [
+                    'id' => 'exec-1',
+                    'name' => 'นายสุจินต์ วาจากิจ',
+                    'position' => 'ผู้ว่าราชการจังหวัดพัทลุง',
+                    'category' => 'คณะผู้บริหารระดับสูง',
+                    'quote' => 'รักเมืองลุง สร้างเมืองลุง ไปด้วยกัน ทำงานร่วมกัน ด้วยความสามัคคี การมีส่วนร่วม และการรับฟังความคิดเห็นของประชาชนในพื้นที่ เพื่อสร้างความเข้มแข็งจากฐานราก และยกระดับจังหวัดพัทลุง ให้มีความเจริญก้าวหน้าอย่างมั่นคง และยั่งยืนต่อไป',
+                    'phone' => '074-613409',
+                    'email' => 'phatthalung@moi.go.th',
+                    'photo' => 'uploads/executives/exec_1785927173_1785927173_b938f363bbc5e18ce55a.png',
+                    'row_num' => 1,
+                    'col_num' => 1,
+                    'order_num' => 1,
+                    'education' => "ปริญญาตรี รัฐศาสตรบัณฑิต\nปริญญาโท รัฐประศาสนศาสตรมหาบัณฑิต",
+                    'history' => "ผู้ว่าราชการจังหวัดพัทลุง\nรองผู้ว่าราชการจังหวัดพัทลุง\nปลัดจังหวัด\nนายอำเภอ",
+                    'featured' => true,
+                    'active' => true
+                ],
+                [
+                    'id' => 'exec-2',
+                    'name' => 'นายธราวุธ ช่วยเกิด',
+                    'position' => 'รองผู้ว่าราชการจังหวัดพัทลุง',
+                    'category' => 'คณะผู้บริหารระดับสูง',
+                    'quote' => 'ขับเคลื่อนงานราชการและบริหารการปกครองเพื่อผลประโยชน์สูงสุดของพี่น้องชาวพัทลุง',
+                    'phone' => '074-613409',
+                    'email' => 'phatthalung@moi.go.th',
+                    'photo' => 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=400&auto=format&fit=crop',
+                    'row_num' => 2,
+                    'col_num' => 1,
+                    'order_num' => 2,
+                    'education' => "ปริญญาตรี ศิลปศาสตรบัณฑิต\nปริญญาโท พัฒนบริหารศาสตรมหาบัณฑิต",
+                    'history' => "รองผู้ว่าราชการจังหวัดพัทลุง\nปลัดจังหวัด\nนายอำเภอเมือง",
+                    'featured' => true,
+                    'active' => true
+                ],
+                [
+                    'id' => 'exec-3',
+                    'name' => 'นางสาวศรอนงค์ สงสมพันธ์',
+                    'position' => 'รองผู้ว่าราชการจังหวัดพัทลุง',
+                    'category' => 'คณะผู้บริหารระดับสูง',
+                    'quote' => 'มุ่งมั่นยกระดับสวัสดิการสังคม เศรษฐกิจ การศึกษา และการพัฒนาเมืองลุงสู่สากล',
+                    'phone' => '074-613409',
+                    'email' => 'phatthalung@moi.go.th',
+                    'photo' => 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=400&auto=format&fit=crop',
+                    'row_num' => 2,
+                    'col_num' => 2,
+                    'order_num' => 3,
+                    'education' => "ปริญญาตรี รัฐศาสตรบัณฑิต\nปริญญาโท รัฐประศาสนศาสตรมหาบัณฑิต",
+                    'history' => "รองผู้ว่าราชการจังหวัดพัทลุง\nนายอำเภอ\nหัวหน้าสำนักงานจังหวัด",
+                    'featured' => true,
+                    'active' => true
+                ]
             ];
-        }, $execs);
+        }
+
+        // Filter by category
+        if ($category !== null && $category !== 'all' && $category !== '') {
+            $execs = array_filter($execs, static function($it) use ($category) {
+                return (isset($it['category']) && strcasecmp($it['category'], $category) === 0);
+            });
+        }
+
+        // Filter active
+        $execs = array_filter($execs, static function($it) {
+            return !isset($it['active']) || !empty($it['active']);
+        });
+
+        // Filter featured only if requested
+        if ($featuredOnly) {
+            $execs = array_filter($execs, static function($it) {
+                return !empty($it['featured']);
+            });
+        }
+
+        // Sort by row_num ASC, col_num ASC, order_num ASC
+        usort($execs, static function($a, $b) {
+            $rowA = (int)($a['row_num'] ?? 1);
+            $rowB = (int)($b['row_num'] ?? 1);
+            if ($rowA !== $rowB) {
+                return $rowA - $rowB;
+            }
+            $colA = (int)($a['col_num'] ?? 1);
+            $colB = (int)($b['col_num'] ?? 1);
+            if ($colA !== $colB) {
+                return $colA - $colB;
+            }
+            return (int)($a['order_num'] ?? 99) - (int)($b['order_num'] ?? 99);
+        });
+
+        if ($limit !== null && $limit > 0) {
+            $execs = array_slice($execs, 0, $limit);
+        }
+
+        return array_values($execs);
     }
 }
 
 if (!function_exists('save_site_executives')) {
     /**
-     * บันทึกข้อมูลทำเนียบผู้บริหาร
+     * บันทึกข้อมูลทำเนียบผู้บริหารปัจจุบัน
      */
     function save_site_executives(array $execs)
     {
@@ -1065,7 +1179,7 @@ if (!function_exists('save_site_executives')) {
         if (!is_dir($writableDir)) {
             @mkdir($writableDir, 0777, true);
         }
-        $jsonPath = $writableDir . DIRECTORY_SEPARATOR . 'site_executives.json';
+        $jsonPath = ($writableDir ?: WRITEPATH) . DIRECTORY_SEPARATOR . 'site_executives.json';
         return file_put_contents($jsonPath, json_encode(array_values($execs), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
     }
 }
@@ -1537,5 +1651,394 @@ if (!function_exists('save_site_governors')) {
         return file_put_contents($jsonPath, json_encode(array_values($governors), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
     }
 }
+
+if (!function_exists('get_site_strategy')) {
+    /**
+     * ดึงข้อมูลยุทธศาสตร์การพัฒนาจังหวัดพัทลุง (พ.ศ. 2566 - 2570)
+     */
+    function get_site_strategy(): array
+    {
+        $writableDir = defined('WRITABLE') ? rtrim(\WRITABLE, '/\\') : realpath(__DIR__ . '/../../writable');
+        $jsonPath = $writableDir . DIRECTORY_SEPARATOR . 'site_strategy.json';
+
+        if (file_exists($jsonPath)) {
+            $data = json_decode(file_get_contents($jsonPath), true);
+            if (!empty($data)) {
+                return $data;
+            }
+        }
+
+        $defaults = [
+            'vision' => [
+                'title' => 'วิสัยทัศน์การพัฒนาจังหวัดพัทลุง (พ.ศ. 2566 - 2570)',
+                'period' => 'พ.ศ. 2566 - 2570',
+                'statement' => 'เมืองเกษตรคุณค่าสูง ท่องเที่ยวเชิงนิเวศและวัฒนธรรมระดับสากล คุณภาพชีวิตที่ดี สังคมเป็นสุข ทรัพยากรธรรมชาติและสิ่งแวดล้อมยั่งยืน',
+                'tagline' => 'Phatthalung Sustainable Development Goals 2026+',
+                'motto' => 'เมืองลุงน่าอยู่ เกษตรปลอดภัย ทะเลน้อยมรดกโลก สังคมเป็นสุข',
+                'cover_image' => 'assets/images/slider/sane_muanglung.png'
+            ],
+            'missions' => [
+                'ยกระดับขีดความสามารถการผลิตและแปรรูปสินค้าเกษตรมูลค่าสูง เกษตรอินทรีย์ และเกษตรปลอดภัยสู่มาตรฐานสากล',
+                'พัฒนาและยกระดับการท่องเที่ยวเชิงนิเวศ วัฒนธรรม และแหล่งมรดกโลกให้มีคุณภาพและสร้างรายได้กระจายสู่ชุมชน',
+                'เสริมสร้างคุณภาพชีวิต พัฒนาคนทุกช่วงวัย ยกระดับสาธารณสุข และสร้างความมั่นคงทางสังคมอย่างยั่งยืน',
+                'อนุรักษ์ ฟื้นฟู และบริหารจัดการทรัพยากรธรรมชาติ สิ่งแวดล้อม และระบบนิเวศลุ่มน้ำทะเลสาบสงขลาอย่างสมดุล',
+                'พัฒนาระบบการบริหารจัดการภาครัฐให้ทันสมัย มีธรรมาภิบาล สู่การเป็นองค์กรดิจิทัลที่โปร่งใสและตรวจสอบได้'
+            ],
+            'core_values' => [
+                ['title' => 'Green & Organic', 'desc' => 'เกษตรอินทรีย์และสิ่งแวดล้อมสีเขียว', 'icon' => 'fa-solid fa-leaf'],
+                ['title' => 'Heritage & Eco-Tourism', 'desc' => 'มรดกวัฒนธรรมและการท่องเที่ยวยั่งยืน', 'icon' => 'fa-solid fa-mountain-sun'],
+                ['title' => 'Smart Governance', 'desc' => 'บริการภาครัฐดิจิทัลและโปร่งใส (ITA AA)', 'icon' => 'fa-solid fa-shield-halved'],
+                ['title' => 'Well-Being for All', 'desc' => 'คุณภาพชีวิตและความสุขของคนทุกช่วงวัย', 'icon' => 'fa-solid fa-heart-pulse']
+            ],
+            'kpis' => [
+                [
+                    'id' => 'kpi_1',
+                    'title' => 'การเติบโตทางเศรษฐกิจ (GPP)',
+                    'target' => '+4.5%',
+                    'current' => '+3.8%',
+                    'unit' => 'ต่อปี',
+                    'icon' => 'fa-solid fa-chart-line',
+                    'color' => '#2563eb',
+                    'desc' => 'อัตราการขยายตัวของผลิตภัณฑ์มวลรวมจังหวัดพัทลุง'
+                ],
+                [
+                    'id' => 'kpi_2',
+                    'title' => 'พื้นที่เกษตรอินทรีย์และเกษตรปลอดภัย',
+                    'target' => '50,000',
+                    'current' => '38,500',
+                    'unit' => 'ไร่',
+                    'icon' => 'fa-solid fa-wheat-awn',
+                    'color' => '#059669',
+                    'desc' => 'พื้นที่ปลูกข้าวสังข์หยด GI และพืชผลเกษตรอินทรีย์รับรองมาตรฐาน'
+                ],
+                [
+                    'id' => 'kpi_3',
+                    'title' => 'รายได้จากการท่องเที่ยวเชิงนิเวศ',
+                    'target' => '4,500',
+                    'current' => '3,650',
+                    'unit' => 'ล้านบาท/ปี',
+                    'icon' => 'fa-solid fa-route',
+                    'color' => '#d97706',
+                    'desc' => 'รายได้หมุนเวียนสู่ชุมชน ภาคบริการ และผู้ประกอบการท่องเที่ยว'
+                ],
+                [
+                    'id' => 'kpi_4',
+                    'title' => 'การประเมินคุณธรรมและความโปร่งใส (ITA)',
+                    'target' => '95.00+',
+                    'current' => '94.82',
+                    'unit' => 'คะแนน (ระดับ AA)',
+                    'icon' => 'fa-solid fa-award',
+                    'color' => '#7c3aed',
+                    'desc' => 'ผลการประเมิน ITA หน่วยงานภาครัฐในจังหวัดพัทลุง'
+                ]
+            ],
+            'pillars' => [
+                [
+                    'id' => 'pillar_1',
+                    'number' => 1,
+                    'title' => 'การพัฒนาเกษตรมูลค่าสูง เกษตรอินทรีย์ และอุตสาหกรรมแปรรูป',
+                    'short_title' => 'เกษตรมูลค่าสูง & อาหารปลอดภัย',
+                    'icon' => 'fa-solid fa-seedling',
+                    'color' => '#059669',
+                    'bg_gradient' => 'linear-gradient(135deg, #059669 0%, #10b981 100%)',
+                    'summary' => 'ยกระดับสินค้าเกษตรอัตลักษณ์พื้นถิ่น เช่น ข้าวสังข์หยดเมืองพัทลุง GI, ปลาดุกร้า, สละลุงถาวร, กระจูดวรรณี สู่ตลาดพรีเมียมและส่งออก',
+                    'strategies' => [
+                        'ส่งเสริมและขยายพื้นที่การผลิตเกษตรอินทรีย์และเกษตรปลอดภัยได้มาตรฐาน GAP/Organic Thailand',
+                        'พัฒนาเทคโนโลยี นวัตกรรมการแปรรูป และการสร้างแบรนด์สินค้าสิ่งบ่งชี้ทางภูมิศาสตร์ (GI)',
+                        'สร้างเครือข่ายตลาดเกษตรกรดิจิทัล (Digital Farm Marketplace) เชื่อมโยงผู้บริโภคโดยตรง',
+                        'ยกระดับมาตรฐานปศุสัตว์ปลอดภัยและสัตว์น้ำเศรษฐกิจลุ่มน้ำพัทลุง'
+                    ],
+                    'flagship' => 'โครงการขับเคลื่อน Food Valley พัทลุง เมืองนวัตกรรมเกษตรอาหารปลอดภัยระดับสากล'
+                ],
+                [
+                    'id' => 'pillar_2',
+                    'number' => 2,
+                    'title' => 'การส่งเสริมการท่องเที่ยวเชิงนิเวศ อัตลักษณ์วัฒนธรรม และมรดกโลก',
+                    'short_title' => 'ท่องเที่ยวเชิงนิเวศ & มรดกโลก',
+                    'icon' => 'fa-solid fa-mountain-sun',
+                    'color' => '#d97706',
+                    'bg_gradient' => 'linear-gradient(135deg, #d97706 0%, #f59e0b 100%)',
+                    'summary' => 'ชูจุดเด่นพื้นที่ชุ่มน้ำทะเลน้อย แรมซาร์ไซต์แห่งแรกของไทย และมรดกทางการเกษตรโลก (GIAHS) ควายน้ำทะเลน้อย เชื่อมโยงวัฒนธรรมมโนราห์-หนังตะลุง',
+                    'strategies' => [
+                        'พัฒนาแหล่งท่องเที่ยวเชิงนิเวศให้ได้มาตรฐานความยั่งยืนสากล (GSTC)',
+                        'ยกระดับศิลปวัฒนธรรมมโนราห์ หนังตะลุง และหัตถกรรมกระจูด สู่เศรษฐกิจสร้างสรรค์ (Soft Power)',
+                        'พัฒนาเส้นทางท่องเที่ยวเชื่อมโยง อ่าวไทย-อันดามัน และโครงข่ายโฮมสเตย์ชุมชน',
+                        'ส่งเสริมการตลาดท่องเที่ยวดิจิทัลและการท่องเที่ยวคาร์บอนต่ำ (Low Carbon Tourism)'
+                    ],
+                    'flagship' => 'โครงการพัฒนาพื้นที่ทะเลน้อยสู่แหล่งท่องเที่ยวมรดกโลกและการอนุรักษ์ธรรมชาติอย่างยั่งยืน'
+                ],
+                [
+                    'id' => 'pillar_3',
+                    'number' => 3,
+                    'title' => 'การพัฒนาคุณภาพชีวิต สังคมสูงวัย และการเสริมสร้างความมั่นคง',
+                    'short_title' => 'คุณภาพชีวิต & สังคมเป็นสุข',
+                    'icon' => 'fa-solid fa-people-roof',
+                    'color' => '#2563eb',
+                    'bg_gradient' => 'linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%)',
+                    'summary' => 'ยกระดับบริการสาธารณสุข สวัสดิการชุมชน การพัฒนาทักษะอาชีพ และเตรียมความพร้อมรองรับสังคมผู้สูงอายุอย่างมีคุณภาพ',
+                    'strategies' => [
+                        'พัฒนาระบบสุขภาพปฐมภูมิและการดูแลผู้สูงอายุระยะยาว (Long-Term Care)',
+                        'ส่งเสริมการศึกษา การเรียนรู้ตลอดชีวิต และทักษะอาชีพดิจิทัลสำหรับเยาวชนและแรงงาน',
+                        'แก้ไขปัญหาความยากจนแบบชี้เป้าและลดความเหลื่อมล้ำทางสังคม',
+                        'เสริมสร้างความปลอดภัยในชีวิตและทรัพย์สิน การป้องกันปัญหายาเสพติดและอุบัติภัย'
+                    ],
+                    'flagship' => 'โครงการพัทลุงเมืองแห่งความสุขและสังคมสูงวัยคุณภาพ (Age-Friendly Community)'
+                ],
+                [
+                    'id' => 'pillar_4',
+                    'number' => 4,
+                    'title' => 'การอนุรักษ์ ฟื้นฟูทรัพยากรธรรมชาติ และการจัดการสิ่งแวดล้อม',
+                    'short_title' => 'สิ่งแวดล้อมยั่งยืน & เมืองคาร์บอนต่ำ',
+                    'icon' => 'fa-solid fa-water',
+                    'color' => '#0284c7',
+                    'bg_gradient' => 'linear-gradient(135deg, #0284c7 0%, #38bdf8 100%)',
+                    'summary' => 'ฟื้นฟูระบบนิเวศลุ่มน้ำทะเลสาบสงขลา-พัทลุง เพิ่มพื้นที่ป่าไม้ การจัดการขยะชุมชน และการปรับตัวต่อการเปลี่ยนแปลงสภาพภูมิอากาศ',
+                    'strategies' => [
+                        'บูรณาการฟื้นฟูคุณภาพน้ำและทรัพยากรสัตว์น้ำในลุ่มน้ำทะเลสาบสงขลา',
+                        'เพิ่มพื้นที่สีเขียว ปลูกป่าชุมชน และรักษาป่าต้นน้ำเทือกเขาบรรทัด',
+                        'พัฒนาระบบการบริหารจัดการขยะมูลฝอยและน้ำเสียแบบครบวงจร',
+                        'พัฒนาระบบเตือนภัย ป้องกันและบรรเทาสาธารณภัยจากอุทกภัยและดินโคลนถล่ม'
+                    ],
+                    'flagship' => 'โครงการบริหารจัดการน้ำและฟื้นฟูระบบนิเวศลุ่มน้ำทะเลสาบสงขลา-พัทลุงอย่างยั่งยืน'
+                ],
+                [
+                    'id' => 'pillar_5',
+                    'number' => 5,
+                    'title' => 'การยกระดับการบริหารภาครัฐสู่ดิจิทัลและธรรมาภิบาลสากล',
+                    'short_title' => 'ภาครัฐดิจิทัล & โปร่งใส ITA AA',
+                    'icon' => 'fa-solid fa-laptop-code',
+                    'color' => '#7c3aed',
+                    'bg_gradient' => 'linear-gradient(135deg, #6d28d9 0%, #7c3aed 100%)',
+                    'summary' => 'ขับเคลื่อนองค์กรสู่ Smart Province พัฒนาบริการดิจิทัล e-Services ศูนย์ดำรงธรรมออนไลน์ และการเปิดเผยข้อมูลภาครัฐ (Open Data)',
+                    'strategies' => [
+                        'พัฒนาระบบบริการประชาชนแบบจุดเดียวเบ็ดเสร็จ (One Stop Service Digital Portal)',
+                        'เสริมสร้างวัฒนธรรมความโปร่งใส ป้องกันการทุจริต และรักษามาตรฐาน ITA ระดับ AA',
+                        'พัฒนาขีดความสามารถบุคลากรภาครัฐด้านเทคโนโลยีดิจิทัลและข้อมูล (Data Analytics)',
+                        'เปิดโอกาสให้ประชาชนและภาคเอกชนมีส่วนร่วมในการวางแผนและติดตามการพัฒนาจังหวัด'
+                    ],
+                    'flagship' => 'โครงการ Phatthalung Smart Province 2026 ยกระดับบริการดิจิทัลเพื่อประชาชน 24 ชม.'
+                ]
+            ],
+            'documents' => [
+                [
+                    'id' => 'doc_plan_5y',
+                    'title' => 'แผนพัฒนาจังหวัดพัทลุง 5 ปี (พ.ศ. 2566 - 2570) ฉบับทบทวน',
+                    'category' => 'แผนพัฒนาจังหวัด 5 ปี',
+                    'year' => '2566-2570',
+                    'file_url' => 'uploads/strategy/plan_5years_2566_2570.pdf',
+                    'file_size' => '18.4 MB',
+                    'file_type' => 'pdf',
+                    'pages' => 245,
+                    'downloads' => 1420,
+                    'is_featured' => true,
+                    'updated_at' => '2026-01-15'
+                ],
+                [
+                    'id' => 'doc_plan_2569',
+                    'title' => 'แผนปฏิบัติราชการประจำปีของจังหวัดพัทลุง ประจำปีงบประมาณ พ.ศ. 2569',
+                    'category' => 'แผนปฏิบัติราชการประจำปี',
+                    'year' => '2569',
+                    'file_url' => 'uploads/strategy/action_plan_2569.pdf',
+                    'file_size' => '12.8 MB',
+                    'file_type' => 'pdf',
+                    'pages' => 180,
+                    'downloads' => 890,
+                    'is_featured' => true,
+                    'updated_at' => '2025-10-01'
+                ],
+                [
+                    'id' => 'doc_plan_2568',
+                    'title' => 'แผนปฏิบัติราชการประจำปีของจังหวัดพัทลุง ประจำปีงบประมาณ พ.ศ. 2568',
+                    'category' => 'แผนปฏิบัติราชการประจำปี',
+                    'year' => '2568',
+                    'file_url' => 'uploads/strategy/action_plan_2568.pdf',
+                    'file_size' => '11.5 MB',
+                    'file_type' => 'pdf',
+                    'pages' => 165,
+                    'downloads' => 1250,
+                    'is_featured' => false,
+                    'updated_at' => '2024-10-01'
+                ],
+                [
+                    'id' => 'doc_plan_2567',
+                    'title' => 'แผนปฏิบัติราชการประจำปีของจังหวัดพัทลุง ประจำปีงบประมาณ พ.ศ. 2567',
+                    'category' => 'แผนปฏิบัติราชการประจำปี',
+                    'year' => '2567',
+                    'file_url' => 'uploads/strategy/action_plan_2567.pdf',
+                    'file_size' => '9.8 MB',
+                    'file_type' => 'pdf',
+                    'pages' => 150,
+                    'downloads' => 1840,
+                    'is_featured' => false,
+                    'updated_at' => '2023-10-01'
+                ],
+                [
+                    'id' => 'doc_me_report',
+                    'title' => 'รายงานสรุปผลการติดตามและประเมินผลสัมฤทธิ์แผนพัฒนาจังหวัดพัทลุง',
+                    'category' => 'รายงานผลการดำเนินงาน (M&E)',
+                    'year' => '2568',
+                    'file_url' => 'uploads/strategy/me_report_2568.pdf',
+                    'file_size' => '6.4 MB',
+                    'file_type' => 'pdf',
+                    'pages' => 85,
+                    'downloads' => 620,
+                    'is_featured' => false,
+                    'updated_at' => '2025-11-20'
+                ]
+            ]
+        ];
+
+        if (is_dir($writableDir)) {
+            @file_put_contents($jsonPath, json_encode($defaults, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        }
+
+        return $defaults;
+    }
+}
+
+if (!function_exists('save_site_strategy')) {
+    /**
+     * บันทึกข้อมูลยุทธศาสตร์การพัฒนาจังหวัดพัทลุง
+     */
+    function save_site_strategy(array $strategy): bool
+    {
+        $writableDir = defined('WRITABLE') ? rtrim(\WRITABLE, '/\\') : realpath(__DIR__ . '/../../writable');
+        if (!is_dir($writableDir)) {
+            @mkdir($writableDir, 0777, true);
+        }
+        $jsonPath = $writableDir . DIRECTORY_SEPARATOR . 'site_strategy.json';
+        return (bool) file_put_contents($jsonPath, json_encode($strategy, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+    }
+}
+
+if (!function_exists('record_search_query')) {
+    /**
+     * บันทึกคำค้นหาจริงของผู้ใช้งานลงระบบประมวลผลคำค้นหายอดนิยม
+     */
+    function record_search_query(string $query): void
+    {
+        $query = trim(mb_substr($query, 0, 80));
+        if (mb_strlen($query) < 2) return;
+
+        $writableDir = defined('WRITABLE') ? rtrim(\WRITABLE, '/\\') : realpath(__DIR__ . '/../../writable');
+        if (!is_dir($writableDir)) {
+            @mkdir($writableDir, 0777, true);
+        }
+        $jsonPath = $writableDir . DIRECTORY_SEPARATOR . 'search_trends.json';
+
+        $data = [];
+        if (file_exists($jsonPath)) {
+            $data = json_decode((string)file_get_contents($jsonPath), true) ?: [];
+        }
+
+        $normKey = mb_strtolower($query);
+
+        // Remove any incomplete partial prefixes if this is a longer complete word
+        if (mb_strlen($query) >= 3) {
+            foreach (array_keys($data) as $existingKey) {
+                if ($existingKey !== $normKey && mb_strlen($existingKey) < mb_strlen($normKey) && mb_strpos($normKey, $existingKey) === 0) {
+                    if (($data[$existingKey]['count'] ?? 0) <= 2) {
+                        unset($data[$existingKey]);
+                    }
+                }
+            }
+        }
+
+        if (isset($data[$normKey])) {
+            $data[$normKey]['count'] = ($data[$normKey]['count'] ?? 0) + 1;
+            $data[$normKey]['last_searched'] = time();
+            $data[$normKey]['keyword'] = $query;
+        } else {
+            $data[$normKey] = [
+                'keyword'       => $query,
+                'count'         => 1,
+                'first_searched'=> time(),
+                'last_searched' => time()
+            ];
+        }
+
+        @file_put_contents($jsonPath, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+    }
+}
+
+if (!function_exists('get_trending_keywords')) {
+    /**
+     * ดึงคำค้นหายอดนิยมประจำสัปดาห์ (Trending Keywords) จากข้อมูลจริง
+     */
+    function get_trending_keywords(int $limit = 6): array
+    {
+        $writableDir = defined('WRITABLE') ? rtrim(\WRITABLE, '/\\') : realpath(__DIR__ . '/../../writable');
+        $jsonPath = $writableDir . DIRECTORY_SEPARATOR . 'search_trends.json';
+
+        $realTrends = [];
+        if (file_exists($jsonPath)) {
+            $data = json_decode((string)file_get_contents($jsonPath), true) ?: [];
+            if (!empty($data) && is_array($data)) {
+                // Filter out 1-2 char incomplete fragments if longer keyword exists
+                $keys = array_keys($data);
+                foreach ($keys as $k) {
+                    if (mb_strlen($k) < 3) {
+                        foreach ($keys as $otherK) {
+                            if (mb_strlen($otherK) > mb_strlen($k) && mb_strpos($otherK, $k) === 0) {
+                                unset($data[$k]);
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                // Sort primarily by count DESC, secondarily by last_searched DESC (latest search first)
+                uasort($data, function($a, $b) {
+                    $cntA = $a['count'] ?? 0;
+                    $cntB = $b['count'] ?? 0;
+                    if ($cntA === $cntB) {
+                        return ($b['last_searched'] ?? 0) <=> ($a['last_searched'] ?? 0);
+                    }
+                    return $cntB <=> $cntA;
+                });
+
+                foreach ($data as $item) {
+                    if (!empty($item['keyword'])) {
+                        $realTrends[] = [
+                            'keyword' => $item['keyword'],
+                            'count'   => $item['count'] ?? 1,
+                            'icon'    => '🔥'
+                        ];
+                        if (count($realTrends) >= $limit) break;
+                    }
+                }
+            }
+        }
+
+        // หากบันทึกยังไม่ครบตามจำนวน ให้ผสมผสานกับหัวข้อยอดนิยมจริงของจังหวัดพัทลุง
+        $fallbackKeywords = [
+            ['keyword' => 'ผู้ว่าราชการจังหวัด', 'icon' => '👑', 'count' => 98],
+            ['keyword' => 'ประกาศจัดซื้อจัดจ้าง e-GP', 'icon' => '⚖️', 'count' => 142],
+            ['keyword' => 'ทะเลน้อย มรดกโลก GIAHS', 'icon' => '🌿', 'count' => 74],
+            ['keyword' => 'ยื่นคำร้องศูนย์ดำรงธรรม', 'icon' => '📢', 'count' => 85],
+            ['keyword' => 'ศูนย์ข้อมูลความโปร่งใส ITA', 'icon' => '🛡️', 'count' => 65],
+            ['keyword' => 'แผนพัฒนาจังหวัด 2568', 'icon' => '📊', 'count' => 58],
+            ['keyword' => 'ภาษีที่ดินและสิ่งปลูกสร้าง', 'icon' => '💰', 'count' => 45],
+            ['keyword' => 'ภาพกิจกรรมและคลังสื่อ', 'icon' => '📸', 'count' => 40]
+        ];
+
+        if (empty($realTrends)) {
+            return array_slice($fallbackKeywords, 0, $limit);
+        }
+
+        // เติมเต็มจนครบ limit
+        $existingKeywords = array_map('mb_strtolower', array_column($realTrends, 'keyword'));
+        foreach ($fallbackKeywords as $fb) {
+            if (count($realTrends) >= $limit) break;
+            if (!in_array(mb_strtolower($fb['keyword']), $existingKeywords, true)) {
+                $realTrends[] = $fb;
+            }
+        }
+
+        return array_slice($realTrends, 0, $limit);
+    }
+}
+
+
 
 

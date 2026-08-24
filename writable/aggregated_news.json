@@ -1,0 +1,112 @@
+[
+    {
+        "id": "alert_1",
+        "source": "ศูนย์เตือนภัยพิบัติแห่งชาติ \/ ปภ.พัทลุง",
+        "source_type": "alert_disaster",
+        "source_icon": "fa-solid fa-triangle-exclamation text-danger",
+        "badge_color": "bg-danger text-white",
+        "title": "ประกาศแจ้งเตือน: เฝ้าระวังคลื่นลมแรงและฝนตกหนักบริเวณแนวเทือกเขาบรรทัด",
+        "summary": "ขอให้ประชาชนในพื้นที่ลาดเชิงเขาและริมทางน้ำไหลผ่าน อำเภอกงหรา ศรีนครินทร์ และตะโหมด ระมัดระวังน้ำป่าไหลหลากชั่วคราว",
+        "link": "https:\/\/disaster.go.th",
+        "image": null,
+        "published_at": "2026-08-24 04:11:05",
+        "is_local": true,
+        "category": "ประกาศเตือนภัยฉุกเฉิน"
+    },
+    {
+        "id": "prd_sample_1",
+        "source": "สำนักงานประชาสัมพันธ์จังหวัดพัทลุง (สปชส.)",
+        "source_type": "rss_prd",
+        "source_icon": "fa-solid fa-bullhorn text-primary",
+        "badge_color": "bg-primary text-white",
+        "title": "ผู้ว่าฯ พัทลุง นำหัวหน้าส่วนราชการร่วมประชุมขับเคลื่อนการพัฒนาเศรษฐกิจฐานรากและส่งเสริมการท่องเที่ยวทะเลน้อย",
+        "summary": "นายสุจินต์ วาจากิจ ผู้ว่าราชการจังหวัดพัทลุง เป็นประธานการประชุมเพื่อติดตามความก้าวหน้าโครงการส่งเสริมอาชีพชุมชนรอบทะเลน้อยและยกระดับสินค้ากระจูดสู่อินเตอร์",
+        "link": "https:\/\/thainews.prd.go.th",
+        "image": null,
+        "published_at": "2026-08-24 03:11:05",
+        "is_local": true,
+        "category": "ข่าวกิจกรรมผู้บริหาร"
+    },
+    {
+        "id": "fb_post_1",
+        "source": "Facebook: สำนักงานประชาสัมพันธ์จังหวัดพัทลุง",
+        "source_type": "social_facebook",
+        "source_icon": "fa-brands fa-facebook text-primary",
+        "badge_color": "bg-primary text-white",
+        "title": "ภาพบรรยากาศ: กิจกรรมจิตอาสาพระราชทาน \"เราทำความ ดี ด้วยหัวใจ\" พัฒนาภูมิทัศน์รอบสะพานเฉลิมพระเกียรติ 80 พรรษา",
+        "summary": "ชาวพัทลุงร่วมใจทำความสะอาดและปรับปรุงเส้นทางท่องเที่ยว เพื่อต้อนรับนักท่องเที่ยวช่วงวันหยุดยาว ประชาชนเข้าร่วมกว่า 500 คน ณ ทะเลน้อย",
+        "link": "https:\/\/www.facebook.com\/phatthalungPR",
+        "image": null,
+        "published_at": "2026-08-24 02:11:05",
+        "is_local": true,
+        "category": "กระแสโซเชียลพัทลุง",
+        "engagement": {
+            "likes": 342,
+            "shares": 89
+        }
+    },
+    {
+        "id": "prd_sample_2",
+        "source": "กรมประชาสัมพันธ์ (NNT ภาคใต้)",
+        "source_type": "rss_prd",
+        "source_icon": "fa-solid fa-bullhorn text-primary",
+        "badge_color": "bg-primary text-white",
+        "title": "จังหวัดพัทลุงเปิดรับสมัครเยาวชนเข้าร่วมโครงการสืบสานมรดกภูมิปัญญา \"โนราห์เมืองลุง\" ประจำปีงบประมาณ 2569",
+        "summary": "สำนักงานวัฒนธรรมจังหวัดพัทลุง ร่วมกับภาคีเครือข่ายศิลปินพื้นบ้าน จัดกิจกรรมถ่ายทอดทักษะโนราเพื่อการอนุรักษ์มรดกทางวัฒนธรรมที่จับต้องไม่ได้ของ UNESCO",
+        "link": "https:\/\/thainews.prd.go.th",
+        "image": null,
+        "published_at": "2026-08-24 00:11:05",
+        "is_local": true,
+        "category": "ข่าววัฒนธรรมและการศึกษา"
+    },
+    {
+        "id": "fb_post_2",
+        "source": "Facebook: ตำรวจภูธรจังหวัดพัทลุง",
+        "source_type": "social_facebook",
+        "source_icon": "fa-brands fa-facebook text-primary",
+        "badge_color": "bg-primary text-white",
+        "title": "ประชาสัมพันธ์: แจ้งปิดเบี่ยงการจราจรชั่วคราวเพื่อปรับปรุงผิวถนนสายเอเชีย บริเวณแยกควนขนุน",
+        "summary": "ขอความร่วมมือพี่น้องประชาชนผู้ใช้ทาง โปรดขับขี่ด้วยความระมัดระวังและปฏิบัติตามป้ายเตือนของเจ้าหน้าที่อย่างเคร่งครัด",
+        "link": "https:\/\/www.facebook.com\/phatthalungpolice",
+        "image": null,
+        "published_at": "2026-08-23 22:11:05",
+        "is_local": true,
+        "category": "จราจรและความปลอดภัย",
+        "engagement": {
+            "likes": 156,
+            "shares": 45
+        }
+    },
+    {
+        "id": "fb_post_3",
+        "source": "Facebook: การท่องเที่ยวแห่งประเทศไทย (ททท.) สำนักงานพัทลุง",
+        "source_type": "social_facebook",
+        "source_icon": "fa-brands fa-facebook text-primary",
+        "badge_color": "bg-primary text-white",
+        "title": "ชวนสัมผัสเสน่ห์ \"ตลาดป่าไผ่สร้างสุข\" ควนขนุน ช้อปชิมของหรอย ชุมชนวิถีอินทรีย์วันหยุดสุดสัปดาห์นี้",
+        "summary": "สัมผัสบรรยากาศความร่มรื่นใต้ร่มไผ่ ลิ้มลองอาหารพื้นบ้านภาคใต้ และสนับสนุนผลิตภัณฑ์กระจูดหัตถกรรมสร้างสรรค์จากชาวบ้าน",
+        "link": "https:\/\/www.facebook.com\/TAT.Phatthalung",
+        "image": null,
+        "published_at": "2026-08-23 11:11:05",
+        "is_local": true,
+        "category": "ท่องเที่ยวและเศรษฐกิจ",
+        "engagement": {
+            "likes": 520,
+            "shares": 174
+        }
+    },
+    {
+        "id": "prd_sample_3",
+        "source": "กระทรวงมหาดไทย (มท.)",
+        "source_type": "rss_prd",
+        "source_icon": "fa-solid fa-landmark text-primary",
+        "badge_color": "bg-indigo text-white",
+        "title": "มท. กำชับทุกจังหวัดภาคใต้เตรียมความพร้อมระบบเตือนภัยและเฝ้าระวังสถานการณ์น้ำหลากช่วงฤดูมรสุม",
+        "summary": "ศูนย์บัญชาการเหตุการณ์จังหวัดพัทลุง บูรณาการ 11 อำเภอ ตรวจสอบความพร้อมของเครื่องสูบน้ำและแนวคันกั้นน้ำรับมือปริมาณน้ำฝนสะสม",
+        "link": "https:\/\/www.moi.go.th",
+        "image": null,
+        "published_at": "2026-08-23 05:11:05",
+        "is_local": true,
+        "category": "ข่าวความมั่นคง\/สาธารณภัย"
+    }
+]

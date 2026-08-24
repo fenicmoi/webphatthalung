@@ -18,42 +18,137 @@ $layoutMode = $cfg['layout_mode'] ?? 'hybrid_widescreen';
     <?= $this->include('components/hero_banner') ?>
 <?php endif; ?>
 
-<!-- 1.1 GLOBAL SMART SEARCH DOCK -->
+<style>
+/* Futuristic Voice Search Styling & Animations */
+.voice-search-btn:hover {
+    background: #047857 !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
+}
+.voice-search-btn.recording {
+    background: #ef4444 !important;
+    color: #ffffff !important;
+    border-color: #dc2626 !important;
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+    animation: micPulse 1.2s infinite;
+}
+@keyframes micPulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+        transform: scale(1);
+    }
+    70% {
+        box-shadow: 0 0 0 12px rgba(239, 68, 68, 0);
+        transform: scale(1.08);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+        transform: scale(1);
+    }
+}
+.voice-wave-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #10b981;
+    display: inline-block;
+    animation: waveBounce 0.8s infinite alternate ease-in-out;
+}
+@keyframes waveBounce {
+    0% { transform: scale(0.6); opacity: 0.5; }
+    100% { transform: scale(1.2); opacity: 1; background: #34d399; }
+}
+</style>
+
+<!-- 1.1 GLOBAL SMART SEARCH DOCK (High-Visibility Prestigious Emerald Command Deck) -->
 <section class="mb-5 position-relative z-3">
-    <div class="card border-0 p-4 hover-lift" style="border-radius: 24px; background: var(--card-bg, #ffffff); box-shadow: 0 8px 30px rgba(0,0,0,0.04);">
-        <div class="row align-items-center g-4">
-            <div class="col-lg-4 text-center text-lg-start">
-                <h4 class="fw-bold mb-2" style="color: var(--primary-color);">
-                    <i class="fa-solid fa-magnifying-glass-location me-2"></i>ระบบค้นหาอัจฉริยะ
-                </h4>
-                <p class="text-muted mb-0" style="font-size: 0.95rem;">ค้นหาประกาศจัดซื้อฯ, ข่าวสาร, บุคลากร หรือข้อมูลหน่วยงานได้ในที่เดียว</p>
+    <div class="card border-0 p-4 p-lg-4 text-white shadow-xl" 
+         style="border-radius: 26px; background: linear-gradient(135deg, #022c22 0%, #064e3b 55%, #047857 100%); border: 1px solid rgba(16, 185, 129, 0.4) !important; border-top: 3px solid #10b981 !important; box-shadow: 0 20px 45px -10px rgba(2, 44, 34, 0.45), 0 0 0 1px rgba(16, 185, 129, 0.25) !important;">
+        <div class="row align-items-center g-3">
+            
+            <!-- Search Title & Subtitle Badge -->
+            <div class="col-lg-3 text-center text-lg-start">
+                <div class="d-inline-flex align-items-center gap-2.5">
+                    <span class="p-2.5 rounded-3 text-white d-inline-flex align-items-center justify-content-center shadow-md" style="background: rgba(255,255,255,0.15); width: 44px; height: 44px; border: 1px solid rgba(255,255,255,0.25);">
+                        <i class="fa-solid fa-wand-magic-sparkles text-warning fs-5"></i>
+                    </span>
+                    <div>
+                        <h5 class="fw-bold mb-0 text-white" style="font-size: 1.15rem; letter-spacing: -0.2px;">ระบบค้นหาอัจฉริยะ</h5>
+                        <small class="text-light opacity-75" style="font-size: 0.78rem;">Smart AI & Voice Search</small>
+                    </div>
+                </div>
             </div>
-            <div class="col-lg-8 position-relative">
-                <div class="search-container d-flex align-items-center p-2 transition-all" 
-                     style="background: var(--bg-body, #f8fafc); border: 1px solid rgba(0,0,0,0.08); border-radius: 50px; transition: all 0.3s ease;"
-                     onmouseover="this.style.borderColor='rgba(var(--primary-rgb), 0.4)'; this.style.boxShadow='0 4px 15px rgba(0, 0, 0, 0.05)';"
-                     onmouseout="this.style.borderColor='rgba(0,0,0,0.08)'; this.style.boxShadow='none';">
+
+            <!-- Search Input with Voice Dictation -->
+            <div class="col-lg-9 position-relative">
+                <div class="search-container d-flex align-items-center p-1.5 transition-all shadow-lg" 
+                     style="background: #ffffff; border: 2px solid #10b981; border-radius: 50px; transition: all 0.3s ease;"
+                     id="mainSearchWrapper">
                     
-                    <div class="search-icon-wrapper d-flex align-items-center justify-content-center text-muted rounded-circle ms-2" style="width: 40px; height: 40px; flex-shrink: 0;">
-                        <i class="fa-solid fa-search" style="font-size: 1.1rem;"></i>
+                    <div class="search-icon-wrapper d-flex align-items-center justify-content-center text-success rounded-circle ms-2" style="width: 38px; height: 38px; flex-shrink: 0; background: #ecfdf5;">
+                        <i class="fa-solid fa-search" style="color: #047857; font-size: 1.05rem;"></i>
                     </div>
                     
-                    <input type="text" id="globalSearchInput" placeholder="พิมพ์สิ่งที่คุณต้องการค้นหา (เช่น e-bidding, ทะเลน้อย, ผู้ว่า)..." 
+                    <input type="text" id="globalSearchInput" placeholder="พิมพ์หรือกดไมโครโฟนเพื่อค้นหา (เช่น e-bidding, ทะเลน้อย, ผู้ว่า)..." 
                            class="flex-grow-1 px-3"
-                           style="border: none; background: transparent; color: var(--text-primary); outline: none; font-size: 1.05rem;" autocomplete="off">
+                           style="border: none; background: transparent; color: #0f172a; outline: none; font-size: 1.02rem; font-weight: 500;" autocomplete="off"
+                           onkeydown="if(event.key === 'Enter') triggerSearchSubmit();">
                     
-                    <!-- Search Spinner (Hidden by default) -->
-                    <div id="searchSpinner" class="spinner-border text-primary spinner-border-sm mx-3 d-none" role="status" style="width: 1.5rem; height: 1.5rem;">
+                    <!-- Search Spinner -->
+                    <div id="searchSpinner" class="spinner-border text-success spinner-border-sm mx-2 d-none" role="status" style="width: 1.3rem; height: 1.3rem;">
                         <span class="visually-hidden">Loading...</span>
                     </div>
+
+                    <!-- Voice Search Button (Futuristic Voice AI) -->
+                    <button type="button" id="btnVoiceSearch" class="btn btn-sm rounded-circle d-flex align-items-center justify-content-center me-1 voice-search-btn shadow-xs" 
+                            title="พิมพ์ค้นหาด้วยเสียงพูด (Voice Search)" 
+                            onclick="toggleVoiceSearch()" 
+                            style="width: 42px; height: 42px; border: 1.5px solid rgba(16, 185, 129, 0.4); background: #ecfdf5; color: #047857; transition: all 0.25s ease;">
+                        <i class="fa-solid fa-microphone" id="voiceMicIcon" style="font-size: 1.05rem;"></i>
+                    </button>
                     
-                    <button class="btn btn-primary rounded-pill px-4 py-2 me-1 fw-bold text-white shadow-sm transition-all hover-scale" style="background: var(--primary-color); border: none; white-space: nowrap;" onclick="document.getElementById('globalSearchInput').focus()">
-                        ค้นหา
+                    <!-- Submit / Search Button -->
+                    <button type="button" class="btn rounded-pill px-4 py-2 me-1 fw-bold text-white shadow-sm transition-all hover-scale" 
+                            style="background: linear-gradient(135deg, #059669 0%, #047857 100%); border: none; white-space: nowrap; font-size: 0.98rem;" 
+                            onclick="triggerSearchSubmit()">
+                        <span>ค้นหา</span>
                     </button>
                 </div>
+
+                <!-- Voice Listening Status Bar (Pop-down feedback) -->
+                <div id="voiceListeningBar" class="d-none align-items-center justify-content-between px-3 py-2 mt-2 rounded-pill shadow-lg" style="background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); color: #ffffff; border: 1.5px solid #10b981; font-size: 0.88rem;">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="voice-wave-dot"></span>
+                        <span class="voice-wave-dot" style="animation-delay: 0.2s;"></span>
+                        <span class="voice-wave-dot" style="animation-delay: 0.4s;"></span>
+                        <span id="voiceListeningStatusText" class="ms-1 fw-semibold text-warning">กำลังฟังเสียงของคุณ (พูดคำที่ต้องการค้นหา)...</span>
+                    </div>
+                    <button type="button" class="btn btn-xs btn-outline-light rounded-pill px-2.5 py-0.5" style="font-size: 0.75rem;" onclick="stopVoiceSearch()">ยกเลิก</button>
+                </div>
+
+                <!-- Quick Trending Search Pills -->
+                <?php 
+                $trendingKeywords = function_exists('get_trending_keywords') ? get_trending_keywords(6) : [];
+                if (!empty($trendingKeywords)): 
+                ?>
+                    <div class="d-flex flex-wrap align-items-center gap-2 mt-2.5 pt-2 border-top" style="border-color: rgba(255,255,255,0.12) !important;">
+                        <span class="text-light opacity-75 small fw-semibold" style="font-size: 0.8rem;">
+                            <i class="fa-solid fa-fire text-warning me-1"></i> คำค้นหายอดนิยม:
+                        </span>
+                        <?php foreach ($trendingKeywords as $item): 
+                            $kw = is_array($item) ? ($item['keyword'] ?? '') : $item;
+                            $icon = is_array($item) ? ($item['icon'] ?? '🔥') : '🔥';
+                            if (empty($kw)) continue;
+                        ?>
+                            <a href="javascript:void(0)" onclick="quickSearchTag('<?= esc($kw) ?>')" class="badge rounded-pill px-2.5 py-1 text-decoration-none shadow-xs hover-scale" style="background: rgba(255,255,255,0.15); color: #ffffff; border: 1px solid rgba(255,255,255,0.25); font-size: 0.78rem; transition: all 0.2s;">
+                                <span><?= $icon ?></span> <?= esc($kw) ?>
+                            </a>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
                 
                 <!-- Search Results Dropdown -->
-                <div id="searchResultsDropdown" class="dropdown-menu w-100 mt-3 p-0 border-0" style="border-radius: 16px; max-height: 450px; overflow-y: auto; display: none; position: absolute; z-index: 1050; background: var(--card-bg, #ffffff); box-shadow: 0 15px 35px rgba(0,0,0,0.1);">
+                <div id="searchResultsDropdown" class="dropdown-menu w-100 mt-2 p-0 border-0" style="border-radius: 18px; max-height: 450px; overflow-y: auto; display: none; position: absolute; z-index: 1050; background: #ffffff; box-shadow: 0 20px 45px rgba(0,0,0,0.25); border: 2px solid rgba(16, 185, 129, 0.4) !important;">
                     <!-- Results will be injected here via JS -->
                 </div>
             </div>
@@ -222,11 +317,137 @@ async function handleAsyncSubmit(event) {
     }
 }
 
-// 5. Global Smart Search (Live Search)
+// 5. Global Smart Search (Live Search & Voice Dictation)
 let searchTimeout = null;
 const searchInput = document.getElementById('globalSearchInput');
 const searchDropdown = document.getElementById('searchResultsDropdown');
 const searchSpinner = document.getElementById('searchSpinner');
+
+// Voice Recognition Instance
+let voiceRecognition = null;
+let isVoiceListening = false;
+
+function initVoiceSearch() {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+        return null;
+    }
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'th-TH';
+    recognition.continuous = false;
+    recognition.interimResults = true;
+
+    recognition.onstart = function() {
+        isVoiceListening = true;
+        const micBtn = document.getElementById('btnVoiceSearch');
+        const micIcon = document.getElementById('voiceMicIcon');
+        const listeningBar = document.getElementById('voiceListeningBar');
+        const statusText = document.getElementById('voiceListeningStatusText');
+        
+        if (micBtn) micBtn.classList.add('recording');
+        if (micIcon) micIcon.className = 'fa-solid fa-microphone-lines';
+        if (listeningBar) {
+            listeningBar.classList.remove('d-none');
+            listeningBar.classList.add('d-flex');
+        }
+        if (statusText) statusText.innerText = 'กำลังฟังเสียงของคุณ (พูดคำที่ต้องการค้นหา)...';
+    };
+
+    recognition.onresult = function(event) {
+        let transcript = '';
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+            transcript += event.results[i][0].transcript;
+        }
+        const sInput = document.getElementById('globalSearchInput');
+        if (sInput) {
+            sInput.value = transcript;
+            sInput.dispatchEvent(new Event('input'));
+        }
+    };
+
+    recognition.onerror = function(event) {
+        console.warn('Speech recognition error:', event.error);
+        stopVoiceSearch();
+        if (event.error === 'not-allowed') {
+            if (typeof App !== 'undefined' && App.toast) {
+                App.toast('กรุณาอนุญาตการเข้าถึงไมโครโฟนในเบราว์เซอร์', 'warning');
+            } else {
+                alert('กรุณาอนุญาตการเข้าถึงไมโครโฟนในเบราว์เซอร์');
+            }
+        }
+    };
+
+    recognition.onend = function() {
+        stopVoiceSearch();
+        const sInput = document.getElementById('globalSearchInput');
+        if (sInput && sInput.value.trim().length > 0) {
+            sInput.dispatchEvent(new Event('input'));
+        }
+    };
+
+    return recognition;
+}
+
+function toggleVoiceSearch() {
+    if (isVoiceListening) {
+        stopVoiceSearch();
+        return;
+    }
+
+    if (!voiceRecognition) {
+        voiceRecognition = initVoiceSearch();
+    }
+
+    if (!voiceRecognition) {
+        if (typeof App !== 'undefined' && App.toast) {
+            App.toast('เบราว์เซอร์นี้ไม่รองรับระบบสั่งงานด้วยเสียง (Speech Recognition)', 'warning');
+        } else {
+            alert('เบราว์เซอร์นี้ไม่รองรับระบบสั่งงานด้วยเสียง');
+        }
+        return;
+    }
+
+    try {
+        voiceRecognition.start();
+    } catch (err) {
+        console.warn('Voice recognition start error:', err);
+    }
+}
+
+function stopVoiceSearch() {
+    if (voiceRecognition && isVoiceListening) {
+        try { voiceRecognition.stop(); } catch(e) {}
+    }
+    isVoiceListening = false;
+    const micBtn = document.getElementById('btnVoiceSearch');
+    const micIcon = document.getElementById('voiceMicIcon');
+    const listeningBar = document.getElementById('voiceListeningBar');
+
+    if (micBtn) micBtn.classList.remove('recording');
+    if (micIcon) micIcon.className = 'fa-solid fa-microphone';
+    if (listeningBar) {
+        listeningBar.classList.remove('d-flex');
+        listeningBar.classList.add('d-none');
+    }
+}
+
+function triggerSearchSubmit() {
+    const sInput = document.getElementById('globalSearchInput');
+    if (sInput && sInput.value.trim().length > 0) {
+        window.location.href = `<?= base_url('search') ?>?q=${encodeURIComponent(sInput.value.trim())}`;
+    } else if (sInput) {
+        sInput.focus();
+    }
+}
+
+function quickSearchTag(kw) {
+    const sInput = document.getElementById('globalSearchInput');
+    if (sInput) {
+        sInput.value = kw;
+        sInput.focus();
+        sInput.dispatchEvent(new Event('input'));
+    }
+}
 
 if (searchInput) {
     // ซ่อน Dropdown เมื่อคลิกที่อื่น
@@ -276,36 +497,46 @@ if (searchInput) {
 
 function renderSearchResults(results, query) {
     if (results.length === 0) {
-        searchDropdown.innerHTML = `<div class="p-4 text-center text-muted">ไม่พบข้อมูลที่ตรงกับ "${query}"</div>`;
+        searchDropdown.innerHTML = `<div class="p-4 text-center text-muted"><i class="fa-solid fa-magnifying-glass fs-3 d-block mb-2 opacity-50"></i>ไม่พบข้อมูลที่ตรงกับ "${query}"</div>`;
     } else {
         let html = '<div class="list-group list-group-flush" style="border-radius: 12px; overflow: hidden;">';
         results.forEach(item => {
-            // ถ้ามี URL ให้เป็นลิงก์ ถ้าไม่มีให้เป็น javascript:void(0)
             const link = item.url && item.url !== '#' ? item.url : 'javascript:void(0)';
             
-            html += `
-            <a href="${link}" class="list-group-item list-group-item-action d-flex align-items-start gap-3 p-3" style="background: transparent; border-bottom: 1px solid var(--glass-border); transition: all 0.2s;">
-                <div class="mt-1">
-                    <span class="badge ${item.ui_badge_color} rounded-circle p-2 shadow-sm" style="width: 38px; height: 38px; display: flex; align-items: center; justify-content: center;">
-                        <i class="${item.ui_icon}" style="font-size: 1.1rem;"></i>
+            const avatarHtml = item.image_url ? `
+                <div class="position-relative" style="width: 44px; height: 44px; flex-shrink: 0;">
+                    <img src="${item.image_url}" alt="" class="rounded-circle border border-2 border-warning shadow-sm" style="width: 44px; height: 44px; object-fit: cover; object-position: top center;">
+                </div>
+            ` : `
+                <div style="flex-shrink: 0;">
+                    <span class="badge ${item.ui_badge_color} rounded-circle p-2 shadow-sm" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;">
+                        <i class="${item.ui_icon}" style="font-size: 1.15rem;"></i>
                     </span>
                 </div>
+            `;
+
+            html += `
+            <a href="${link}" class="list-group-item list-group-item-action d-flex align-items-center gap-3 p-3 text-decoration-none" style="background: transparent; border-bottom: 1px solid var(--glass-border, #f1f5f9); transition: all 0.2s;">
+                ${avatarHtml}
                 <div class="flex-grow-1 overflow-hidden">
                     <div class="d-flex w-100 justify-content-between align-items-center mb-1">
-                        <h6 class="mb-0 fw-bold text-truncate" style="color: var(--text-primary); max-width: 75%;">${item.title}</h6>
-                        <span class="badge ${item.ui_badge_color} bg-opacity-75" style="font-size: 0.7rem;">${item.ui_badge_text}</span>
+                        <h6 class="mb-0 fw-bold text-truncate" style="color: var(--text-primary, #0f172a); max-width: 75%; font-size: 0.98rem;">${item.title}</h6>
+                        <span class="badge ${item.ui_badge_color} bg-opacity-75" style="font-size: 0.72rem; padding: 4px 8px; border-radius: 50rem;">${item.ui_badge_text}</span>
                     </div>
                     <p class="mb-0 text-muted text-truncate" style="font-size: 0.85rem;">${item.description || '-'}</p>
+                </div>
+                <div class="text-muted ms-1" style="font-size: 0.8rem; opacity: 0.6;">
+                    <i class="fa-solid fa-chevron-right"></i>
                 </div>
             </a>
             `;
         });
         html += '</div>';
         
-        // Add footer for all results link if needed
+        // Add footer for all results link
         html += `
-        <div class="p-2 text-center border-top" style="border-color: var(--glass-border) !important; background: rgba(0,0,0,0.02);">
-            <small class="text-muted"><i class="fa-solid fa-circle-info me-1"></i> แสดงผลลัพธ์ ${results.length} รายการที่ตรงกัน</small>
+        <div class="p-2.5 text-center border-top" style="border-color: var(--glass-border, #f1f5f9) !important; background: rgba(0,0,0,0.02);">
+            <small class="text-muted"><i class="fa-solid fa-circle-check text-success me-1"></i> พบผลลัพธ์ทั้งหมด ${results.length} รายการ (คลิกเพื่อเข้าสู่หน้าเนื้อหา)</small>
         </div>
         `;
         
