@@ -1430,30 +1430,31 @@ if (!function_exists('get_ita_items')) {
      */
     function get_ita_items($category = null, $featuredOnly = false)
     {
-        $model = new \App\Models\ItaDocumentModel();
-        
-        $model->where('status', 'active');
-        
-        $items = $model->findAll();
-        
-        // Map DB fields back for views
-        return array_map(function($item) {
-            return [
-                'id' => $item['id'],
-                'code' => $item['oit_code'],
-                'title' => $item['name'],
-                'category' => 'OIT 1: ตัวชี้วัดการเปิดเผยข้อมูล', // hardcoded for compatibility or can be extended in DB
-                'sub_category' => 'ข้อมูล',
-                'desc' => '-',
-                'file_type' => 'link',
-                'file_url' => $item['url'],
-                'file_size' => '-',
-                'downloads' => 0,
-                'featured' => true,
-                'verified' => true,
-                'date' => $item['created_at']
-            ];
-        }, $items);
+        try {
+            $model = new \App\Models\ItaDocumentModel();
+            $model->where('status', 'active');
+            $items = $model->findAll();
+            
+            return array_map(function($item) {
+                return [
+                    'id' => $item['id'] ?? 1,
+                    'code' => $item['oit_code'] ?? 'OIT',
+                    'title' => $item['name'] ?? 'เอกสารความโปร่งใส',
+                    'category' => 'OIT: ตัวชี้วัดการเปิดเผยข้อมูล',
+                    'sub_category' => 'ข้อมูล',
+                    'desc' => '-',
+                    'file_type' => 'link',
+                    'file_url' => $item['url'] ?? '',
+                    'file_size' => '-',
+                    'downloads' => 0,
+                    'featured' => true,
+                    'verified' => true,
+                    'date' => $item['created_at'] ?? date('Y-m-d')
+                ];
+            }, $items);
+        } catch (\Throwable $e) {
+            return [];
+        }
     }
 }
 
@@ -1524,19 +1525,41 @@ if (!function_exists('get_nora_knowledge')) {
      */
     function get_nora_knowledge()
     {
-        $model = new \App\Models\NoraKnowledgeModel();
-        $items = $model->findAll();
-        
-        return array_map(function($item) {
-            return [
-                'id' => 'nora-qa-' . $item['id'],
-                'keywords' => $item['keywords'],
-                'question' => $item['intent'],
-                'answer' => $item['answer_text'],
-                'link_url' => $item['action_link'],
-                'link_title' => $item['action_link'] ? 'เปิดลิงก์ที่เกี่ยวข้อง' : ''
-            ];
-        }, $items);
+        $writableDir = defined('WRITABLE') ? rtrim(\WRITABLE, '/\\') : realpath(__DIR__ . '/../../writable');
+        $jsonPath = $writableDir . DIRECTORY_SEPARATOR . 'nora_ai_knowledge.json';
+
+        if (is_file($jsonPath)) {
+            $raw = @file_get_contents($jsonPath);
+            $saved = @json_decode($raw, true);
+            if (is_array($saved) && !empty($saved)) {
+                return $saved;
+            }
+        }
+
+        try {
+            $model = new \App\Models\NoraKnowledgeModel();
+            $dbItems = $model->findAll();
+            if (!empty($dbItems)) {
+                $items = array_map(function($item) {
+                    return [
+                        'id' => 'nora-qa-' . $item['id'],
+                        'keywords' => $item['keywords'] ?? '',
+                        'question' => $item['intent'] ?? '',
+                        'answer' => $item['answer_text'] ?? '',
+                        'link_url' => $item['action_link'] ?? '',
+                        'link_title' => !empty($item['action_link']) ? 'เปิดลิงก์ที่เกี่ยวข้อง' : ''
+                    ];
+                }, $dbItems);
+                if (is_dir($writableDir)) {
+                    @file_put_contents($jsonPath, json_encode(array_values($items), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+                }
+                return $items;
+            }
+        } catch (\Throwable $e) {
+            // Fallback gracefully
+        }
+
+        return [];
     }
 }
 
@@ -1551,7 +1574,28 @@ if (!function_exists('save_nora_knowledge')) {
             @mkdir($writableDir, 0777, true);
         }
         $jsonPath = $writableDir . DIRECTORY_SEPARATOR . 'nora_ai_knowledge.json';
-        return file_put_contents($jsonPath, json_encode(array_values($items), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        $result = @file_put_contents($jsonPath, json_encode(array_values($items), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+
+        // Optionally sync to database table
+        try {
+            $model = new \App\Models\NoraKnowledgeModel();
+            $db = \Config\Database::connect();
+            if ($db->tableExists('nora_knowledge')) {
+                $model->truncate();
+                foreach ($items as $item) {
+                    $model->insert([
+                        'intent'      => $item['question'] ?? '',
+                        'keywords'    => $item['keywords'] ?? '',
+                        'answer_text' => $item['answer'],
+                        'action_link' => $item['link_url'] ?? ''
+                    ]);
+                }
+            }
+        } catch (\Throwable $e) {
+            // Ignore DB sync error if table or db not configured
+        }
+
+        return $result !== false;
     }
 }
 

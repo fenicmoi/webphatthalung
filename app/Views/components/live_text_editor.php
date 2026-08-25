@@ -15,7 +15,7 @@ if (!$isOfficer) {
     position: fixed;
     top: 95px;
     right: 25px;
-    z-index: 999999 !important;
+    z-index: 1040;
     background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%);
     color: #ffffff !important;
     border: 2px solid #818cf8;
@@ -55,7 +55,6 @@ body.live-text-edit-active .site-text-node {
     transition: all 0.2s ease;
     display: inline-block !important;
     pointer-events: auto !important;
-    z-index: 9999 !important;
 }
 body.live-text-edit-active .site-text-node:hover {
     outline: 2.5px solid #10b981 !important;
@@ -77,16 +76,13 @@ body.live-text-edit-active .site-text-node::after {
     align-items: center;
     justify-content: center;
     box-shadow: 0 3px 8px rgba(0,0,0,0.4);
-    z-index: 10000 !important;
+    z-index: 10;
     pointer-events: auto !important;
 }
 
-/* Modal styling & High Z-Index */
+/* Modal styling */
 #liveTextEditModal {
-    z-index: 9999999 !important;
-}
-.modal-backdrop {
-    z-index: 9999990 !important;
+    z-index: 1060;
 }
 .live-editor-modal-content {
     background: rgba(15, 23, 42, 0.96) !important;

@@ -159,29 +159,31 @@ class NoraAi extends ResourceController
             ]);
         }
 
-        // 7. Search in live Documents & News
-        $foundDocCount = 0;
-        if (function_exists('get_site_documents')) {
-            $docs = get_site_documents();
-            foreach ($docs as $d) {
-                if (mb_strpos(mb_strtolower($d['title'] . ' ' . $d['category'] . ' ' . ($d['sub_tag'] ?? ''), 'UTF-8'), $msgLower) !== false) {
-                    $url = !empty($d['file_url']) && $d['file_url'] !== '#' ? (str_starts_with($d['file_url'], 'http') ? $d['file_url'] : base_url($d['file_url'])) : base_url('documents');
+        // 7. Google Gemini Live RAG Reasoning (If enabled with API Key)
+        if (!empty($settings['use_gemini_live']) && !empty($settings['gemini_api_key'])) {
+            $searchContext = \App\Libraries\SmartSearchService::search($message, 4);
+            $geminiText = \App\Libraries\GeminiService::generateLiveReply($message, $searchContext);
+            if (!empty($geminiText)) {
+                $cards = [];
+                foreach ($searchContext as $sc) {
                     $cards[] = [
-                        'title' => '📄 [คลังเอกสาร] ' . esc($d['title']),
-                        'url' => $url,
-                        'icon' => 'fa-file-pdf text-danger'
+                        'title' => "👉 [{$sc['badge']}] " . mb_substr($sc['title'], 0, 45) . (mb_strlen($sc['title']) > 45 ? '...' : ''),
+                        'url'   => $sc['url'],
+                        'icon'  => $sc['icon']
                     ];
-                    $foundDocCount++;
-                    if ($foundDocCount >= 3) break;
                 }
+                return $this->respond([
+                    'status' => 'success',
+                    'reply'  => $geminiText,
+                    'cards'  => $cards
+                ]);
             }
         }
-        if ($foundDocCount > 0) {
-            return $this->respond([
-                'status' => 'success',
-                'reply'  => "น้องโนราค้นพบเอกสารราชการหรือไฟล์ที่ตรงกับสิ่งที่คุณต้องการใน **คลังเอกสารดิจิทัล** ค่ะ! คุณสามารถคลิกปุ่มด้านล่างเพื่อเปิดอ่านหรือดาวน์โหลดได้ทันทีค่ะ 👇",
-                'cards'  => $cards
-            ]);
+
+        // 8. Dynamic Smart Omni-Search Integration (Live Retrieval & Synthesis Engine)
+        $smartReply = \App\Libraries\SmartSearchService::generateChatReply($message);
+        if ($smartReply !== null) {
+            return $this->respond($smartReply);
         }
 
         // 8. Fallback Default Reply

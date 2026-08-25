@@ -91,7 +91,7 @@
     box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(217, 119, 6, 0.2);
     display: flex;
     flex-direction: column;
-    z-index: 1055;
+    z-index: 1045;
     overflow: hidden;
     transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
     transform-origin: bottom right;
@@ -103,6 +103,17 @@
     opacity: 1;
     pointer-events: all;
     transform: scale(1) translateY(0);
+}
+
+#noraAiStudioModal {
+    z-index: 1065 !important;
+}
+#noraAiStudioModal .modal-dialog {
+    z-index: 1066 !important;
+    pointer-events: auto !important;
+}
+#noraAiStudioModal .modal-content {
+    pointer-events: auto !important;
 }
 
 .nora-header {
@@ -422,7 +433,12 @@
                             </form>
                         </div>
 
-                        <h6 class="fw-bold small text-muted border-bottom pb-2 mb-3">📚 รายการความรู้ Q&A ที่จดจำในระบบขณะนี้ (<span id="noraQaCount">0</span> รายการ)</h6>
+                        <div class="d-flex align-items-center justify-content-between border-bottom pb-2 mb-3">
+                            <h6 class="fw-bold small text-muted m-0">📚 รายการความรู้ Q&A ที่จดจำในระบบขณะนี้ (<span id="noraQaCount">0</span> รายการ)</h6>
+                            <button type="button" onclick="NoraAI.syncKnowledge()" class="btn btn-xs btn-outline-primary rounded-pill px-3 fw-bold shadow-xs">
+                                <i class="fa-solid fa-arrows-rotate me-1"></i> ดึงความรู้พื้นฐานจากเว็บไซต์ (Auto-Sync)
+                            </button>
+                        </div>
                         <div class="table-responsive">
                             <table class="table table-hover table-sm align-middle small">
                                 <thead class="table-dark">
@@ -639,14 +655,27 @@ const NoraAI = {
 
     <?php if ($isOfficer): ?>
     openStudio: function() {
+        // Minimize chat drawer to prevent overlap
+        if (this.isOpen) {
+            this.toggle();
+        }
+
         const el = document.getElementById('noraAiStudioModal');
         if (el && typeof bootstrap !== 'undefined') {
-            if (el.parentNode !== document.body) {
-                document.body.appendChild(el);
-            }
-            if (!this.studioModal) this.studioModal = new bootstrap.Modal(el);
+            const modalInstance = bootstrap.Modal.getOrCreateInstance(el);
             this.loadKnowledgeList();
-            this.studioModal.show();
+            modalInstance.show();
+        }
+    },
+
+    notify: function(msg, type = 'info') {
+        if (typeof App !== 'undefined' && typeof App.toast === 'function') {
+            App.toast(msg, type);
+        } else if (typeof Swal !== 'undefined') {
+            const icon = type === 'error' ? 'error' : (type === 'warning' ? 'warning' : 'success');
+            Swal.fire({ text: msg, icon: icon, timer: 2000, showConfirmButton: false });
+        } else {
+            alert(msg);
         }
     },
 
@@ -654,6 +683,8 @@ const NoraAI = {
         const tbody = document.getElementById('noraQaTableBody');
         const badge = document.getElementById('noraQaCount');
         if (!tbody) return;
+
+        tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-3"><i class="fa-solid fa-spinner fa-spin me-2"></i>กำลังโหลดข้อมูลคลังความรู้...</td></tr>';
 
         fetch('<?= base_url('admin/nora-ai/list') ?>', {
             headers: { 'X-Requested-With': 'XMLHttpRequest' }
@@ -664,37 +695,60 @@ const NoraAI = {
                 this.qaList = data.items || [];
                 if (badge) badge.innerText = this.qaList.length;
                 if (this.qaList.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-3">ยังไม่มีข้อมูลในคลังความรู้</td></tr>';
-                    return;
+                    tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-4">ยังไม่มีข้อมูลในคลังความรู้ (สามารถเพิ่มใหม่ด้านบน)</td></tr>';
+                } else {
+                    let html = '';
+                    this.qaList.forEach(item => {
+                        const kwArr = (item.keywords || '').split(',');
+                        const kwBadges = kwArr.map(k => `<span class="badge bg-warning bg-opacity-25 text-dark me-1 mb-1 fw-semibold">${k.trim()}</span>`).join('');
+                        const safeTitle = (item.question || '').replace(/'/g, "\\'");
+                        html += `
+                            <tr>
+                                <td>${kwBadges}</td>
+                                <td class="fw-bold text-dark">${item.question || '-'}</td>
+                                <td class="text-muted"><div class="line-clamp-2">${item.answer || '-'}</div></td>
+                                <td class="text-center text-nowrap">
+                                    <button type="button" onclick="NoraAI.editQa('${item.id}')" class="btn btn-xs btn-outline-warning text-dark me-1" title="แก้ไข"><i class="fa-solid fa-pen"></i></button>
+                                    <button type="button" onclick="NoraAI.deleteQa('${item.id}', '${safeTitle}')" class="btn btn-xs btn-outline-danger" title="ลบ"><i class="fa-solid fa-trash-can"></i></button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                    tbody.innerHTML = html;
                 }
-                let html = '';
-                this.qaList.forEach(item => {
-                    html += `
-                        <tr>
-                            <td><span class="badge bg-secondary bg-opacity-25 text-dark text-wrap text-start">${item.keywords}</span></td>
-                            <td class="fw-bold text-primary">${item.question}</td>
-                            <td class="text-muted"><div class="line-clamp-2">${item.answer}</div></td>
-                            <td class="text-center">
-                                <button type="button" onclick="NoraAI.editQa('${item.id}')" class="btn btn-xs btn-outline-warning text-dark me-1" title="แก้ไข"><i class="fa-solid fa-pen"></i></button>
-                                <button type="button" onclick="NoraAI.deleteQa('${item.id}', '${item.question}')" class="btn btn-xs btn-outline-danger" title="ลบ"><i class="fa-solid fa-trash-can"></i></button>
-                            </td>
-                        </tr>
-                    `;
-                });
-                tbody.innerHTML = html;
+
+                // Sync settings tab fields
+                if (data.settings) {
+                    const setBotName = document.getElementById('set_bot_name');
+                    const setTagline = document.getElementById('set_tagline');
+                    const setGreeting = document.getElementById('set_greeting_msg');
+                    const setFallback = document.getElementById('set_fallback_msg');
+                    const setIsEnabled = document.getElementById('set_is_enabled');
+                    if (setBotName && data.settings.bot_name) setBotName.value = data.settings.bot_name;
+                    if (setTagline && data.settings.tagline) setTagline.value = data.settings.tagline;
+                    if (setGreeting && data.settings.greeting_msg) setGreeting.value = data.settings.greeting_msg;
+                    if (setFallback && data.settings.fallback_msg) setFallback.value = data.settings.fallback_msg;
+                    if (setIsEnabled) setIsEnabled.checked = !!data.settings.is_enabled;
+                }
+            } else {
+                tbody.innerHTML = `<tr><td colspan="4" class="text-center text-danger py-3">${data.message || 'ไม่สามารถโหลดข้อมูลได้'}</td></tr>`;
             }
         })
-        .catch(err => console.error(err));
+        .catch(err => {
+            console.error(err);
+            tbody.innerHTML = '<tr><td colspan="4" class="text-center text-danger py-3">เกิดข้อผิดพลาดในการโหลดข้อมูล</td></tr>';
+        });
     },
 
     resetQaForm: function() {
         const form = document.getElementById('noraQaForm');
         if (form) form.reset();
-        document.getElementById('qa_id').value = '';
+        const idField = document.getElementById('qa_id');
+        if (idField) idField.value = '';
     },
 
     editQa: function(id) {
-        const item = this.qaList.find(i => i.id === id);
+        const item = this.qaList.find(i => String(i.id) === String(id));
         if (!item) return;
         document.getElementById('qa_id').value = item.id || '';
         document.getElementById('qa_keywords').value = item.keywords || '';
@@ -702,17 +756,28 @@ const NoraAI = {
         document.getElementById('qa_answer').value = item.answer || '';
         document.getElementById('qa_link_url').value = item.link_url || '';
         document.getElementById('qa_link_title').value = item.link_title || '';
-        if (typeof App !== 'undefined') App.toast('โหลดข้อมูลเตรียมแก้ไขแล้ว', 'info');
+        
+        // Scroll form into view
+        const formCard = document.querySelector('#qa-pane .card');
+        if (formCard) formCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        this.notify('โหลดข้อมูลคำถามเพื่อแก้ไขเรียบร้อยแล้ว', 'info');
     },
 
     saveQaItem: function() {
-        const form = document.getElementById('noraQaForm');
-        if (!form || !form.checkValidity()) {
+        const kw = (document.getElementById('qa_keywords')?.value || '').trim();
+        const q = (document.getElementById('qa_question')?.value || '').trim();
+        const a = (document.getElementById('qa_answer')?.value || '').trim();
+
+        if (!kw || !q || !a) {
+            this.notify('กรุณาระบุคำสำคัญ (Keywords), คำถาม และคำตอบให้ครบถ้วนก่อนบันทึก', 'warning');
+            const form = document.getElementById('noraQaForm');
             if (form) form.reportValidity();
             return;
         }
+
+        const form = document.getElementById('noraQaForm');
         const formData = new FormData(form);
-        if (typeof App !== 'undefined') App.toast('กำลังบันทึก...', 'info');
+        this.notify('กำลังบันทึกเข้าคลังสมอง AI...', 'info');
 
         fetch('<?= base_url('admin/nora-ai/save-qa') ?>', {
             method: 'POST',
@@ -722,22 +787,23 @@ const NoraAI = {
         .then(res => res.json())
         .then(data => {
             if (data.status === 'success') {
-                if (typeof App !== 'undefined') App.toast(data.message, 'success');
+                this.notify(data.message || 'บันทึกสำเร็จ', 'success');
                 this.resetQaForm();
                 this.loadKnowledgeList();
             } else {
-                if (typeof App !== 'undefined') App.toast(data.message || 'เกิดข้อผิดพลาด', 'error');
+                this.notify(data.message || 'เกิดข้อผิดพลาดในการบันทึก', 'error');
             }
         })
         .catch(err => {
             console.error(err);
-            if (typeof App !== 'undefined') App.toast('ข้อผิดพลาดทางเครือข่าย', 'error');
+            this.notify('ข้อผิดพลาดทางเครือข่าย ไม่สามารถบันทึกได้', 'error');
         });
     },
 
     deleteQa: function(id, title) {
-        if (!confirm('คุณต้องการลบคำถาม "' + title + '" ออกจากคลังความรู้หรือไม่?')) return;
+        if (!confirm('คุณต้องการลบคำถาม "' + (title || id) + '" ออกจากคลังความรู้ของน้องโนราหรือไม่?')) return;
 
+        this.notify('กำลังลบข้อมูล...', 'info');
         fetch('<?= base_url('admin/nora-ai/delete-qa/') ?>' + id, {
             method: 'POST',
             headers: { 'X-Requested-With': 'XMLHttpRequest' }
@@ -745,19 +811,22 @@ const NoraAI = {
         .then(res => res.json())
         .then(data => {
             if (data.status === 'success') {
-                if (typeof App !== 'undefined') App.toast(data.message, 'success');
+                this.notify(data.message || 'ลบข้อมูลสำเร็จ', 'success');
                 this.loadKnowledgeList();
             } else {
-                if (typeof App !== 'undefined') App.toast(data.message || 'ไม่สามารถลบรายการได้', 'error');
+                this.notify(data.message || 'ไม่สามารถลบรายการได้', 'error');
             }
         })
-        .catch(err => console.error(err));
+        .catch(err => {
+            console.error(err);
+            this.notify('เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์', 'error');
+        });
     },
 
     saveSettings: function() {
         const form = document.getElementById('noraSettingsForm');
         const formData = new FormData(form);
-        if (typeof App !== 'undefined') App.toast('กำลังบันทึกการตั้งค่า...', 'info');
+        this.notify('กำลังบันทึกการตั้งค่า...', 'info');
 
         fetch('<?= base_url('admin/nora-ai/save-settings') ?>', {
             method: 'POST',
@@ -767,13 +836,38 @@ const NoraAI = {
         .then(res => res.json())
         .then(data => {
             if (data.status === 'success') {
-                if (typeof App !== 'undefined') App.toast(data.message, 'success');
-                setTimeout(() => window.location.reload(), 800);
+                this.notify(data.message || 'บันทึกการตั้งค่าสำเร็จ', 'success');
+                setTimeout(() => window.location.reload(), 1000);
             } else {
-                if (typeof App !== 'undefined') App.toast(data.message || 'ไม่สามารถบันทึกได้', 'error');
+                this.notify(data.message || 'ไม่สามารถบันทึกได้', 'error');
             }
         })
-        .catch(err => console.error(err));
+        .catch(err => {
+            console.error(err);
+            this.notify('เกิดข้อผิดพลาดในการเชื่อมต่อ', 'error');
+        });
+    },
+
+    syncKnowledge: function() {
+        this.notify('กำลังซิงค์และสร้างความรู้จากข้อมูลทั้งเว็บไซต์...', 'info');
+
+        fetch('<?= base_url('admin/nora-ai/sync-knowledge') ?>', {
+            method: 'POST',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'success') {
+                this.notify(data.message || 'ซิงค์ข้อมูลสำเร็จ', 'success');
+                this.loadKnowledgeList();
+            } else {
+                this.notify(data.message || 'ไม่สามารถซิงค์ได้', 'error');
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            this.notify('เกิดข้อผิดพลาดในการเชื่อมต่อ', 'error');
+        });
     }
     <?php endif; ?>
 };

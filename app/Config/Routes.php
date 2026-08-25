@@ -244,10 +244,15 @@ $routes->post('admin/ita/save-scorecard', 'Admin\ItaManager::saveScorecard');
 $routes->post('api/nora-ai/chat', 'Api\NoraAi::chat');
 $routes->get('api/nora-ai/settings', 'Api\NoraAi::getSettings');
 
+$routes->get('admin/nora-ai', 'Admin\NoraAiManager::index');
 $routes->get('admin/nora-ai/list', 'Admin\NoraAiManager::getKnowledgeList');
 $routes->post('admin/nora-ai/save-qa', 'Admin\NoraAiManager::saveQaItem');
 $routes->post('admin/nora-ai/delete-qa/(:any)', 'Admin\NoraAiManager::deleteQaItem/$1');
 $routes->post('admin/nora-ai/save-settings', 'Admin\NoraAiManager::saveSettings');
+$routes->post('admin/nora-ai/sync-knowledge', 'Admin\NoraAiManager::syncKnowledge');
+$routes->post('admin/nora-ai/gemini-extract', 'Admin\NoraAiManager::geminiExtract');
+$routes->post('admin/nora-ai/save-multiple-qa', 'Admin\NoraAiManager::saveMultipleQa');
+$routes->post('admin/nora-ai/test-gemini', 'Admin\NoraAiManager::testGeminiConnection');
 
 /*
  * --------------------------------------------------------------------

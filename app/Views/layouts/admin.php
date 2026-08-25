@@ -128,6 +128,14 @@
                     </a>
                 </li>
 
+                <div class="sidebar-menu-title">ระบบปัญญาประดิษฐ์ (AI & AUTOMATION)</div>
+                <li>
+                    <a href="<?= base_url('admin/nora-ai') ?>" class="sidebar-link <?= ($activeMenu ?? '') === 'nora_ai' ? 'active' : '' ?>">
+                        <i class="fa-solid fa-wand-magic-sparkles text-warning animate-pulse"></i>
+                        <span>น้องโนรา AI & คลังความรู้</span>
+                    </a>
+                </li>
+
                 <div class="sidebar-menu-title">การตั้งค่าระบบ (SETTINGS)</div>
                 <li>
                     <a href="<?= base_url('admin/site-texts') ?>" class="sidebar-link <?= ($activeMenu ?? '') === 'site_texts' ? 'active' : '' ?>">
