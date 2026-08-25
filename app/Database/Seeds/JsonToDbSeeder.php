@@ -59,49 +59,94 @@ class JsonToDbSeeder extends Seeder
                 // MAPPINGS
                 // ------------------------------------
                 if ($tableName === 'procurements') {
-                    if (isset($dbRow['date'])) { $dbRow['published_date'] = $dbRow['date']; unset($dbRow['date']); }
-                    if (isset($dbRow['attachment_url'])) { $dbRow['doc_path'] = $dbRow['attachment_url']; unset($dbRow['attachment_url']); }
-                    unset($dbRow['views'], $dbRow['active'], $dbRow['id']);
-                    if (isset($row['active'])) { $dbRow['status'] = $row['active'] ? 'active' : 'inactive'; }
-                    if (isset($dbRow['budget'])) {
-                        $dbRow['budget'] = (float) preg_replace('/[^0-9.]/', '', $dbRow['budget']);
-                    }
-                    $this->db->table($tableName)->ignore(true)->insert($dbRow);
+                    $insertData = [
+                        'title'          => $dbRow['title'] ?? '',
+                        'budget'         => isset($dbRow['budget']) ? (float) preg_replace('/[^0-9.]/', '', (string)$dbRow['budget']) : 0,
+                        'method'         => $dbRow['method'] ?? null,
+                        'category'       => $dbRow['category'] ?? 'ประกาศจัดซื้อจัดจ้าง',
+                        'status'         => isset($row['active']) ? ($row['active'] ? 'active' : 'inactive') : ($dbRow['status'] ?? 'active'),
+                        'doc_path'       => $dbRow['attachment_url'] ?? ($dbRow['doc_path'] ?? null),
+                        'published_date' => $dbRow['date'] ?? ($dbRow['published_date'] ?? null),
+                        'created_at'     => $createdAt,
+                        'updated_at'     => $updatedAt,
+                    ];
+                    $this->db->table($tableName)->ignore(true)->insert($insertData);
                 } 
                 elseif ($tableName === 'ita_documents') {
-                    if (isset($dbRow['code'])) { $dbRow['oit_code'] = $dbRow['code']; unset($dbRow['code']); }
-                    if (isset($dbRow['title'])) { $dbRow['name'] = $dbRow['title']; unset($dbRow['title']); }
-                    if (isset($dbRow['file_url'])) { $dbRow['url'] = $dbRow['file_url']; unset($dbRow['file_url']); }
-                    unset($dbRow['category'], $dbRow['sub_category'], $dbRow['desc'], $dbRow['file_type'], $dbRow['file_size'], $dbRow['downloads'], $dbRow['featured'], $dbRow['verified'], $dbRow['date'], $dbRow['id']);
-                    $this->db->table($tableName)->ignore(true)->insert($dbRow);
+                    $insertData = [
+                        'oit_code'   => $dbRow['code'] ?? ($dbRow['oit_code'] ?? null),
+                        'name'       => $dbRow['title'] ?? ($dbRow['name'] ?? ''),
+                        'url'        => $dbRow['file_url'] ?? ($dbRow['url'] ?? null),
+                        'year'       => $dbRow['year'] ?? date('Y'),
+                        'status'     => 'active',
+                        'created_at' => $createdAt,
+                        'updated_at' => $updatedAt,
+                    ];
+                    $this->db->table($tableName)->ignore(true)->insert($insertData);
                 }
                 elseif ($tableName === 'executives') {
-                    if (isset($dbRow['photo'])) { $dbRow['image_path'] = $dbRow['photo']; unset($dbRow['photo']); }
-                    unset($dbRow['category'], $dbRow['quote'], $dbRow['phone'], $dbRow['email'], $dbRow['featured'], $dbRow['id']);
-                    $this->db->table($tableName)->ignore(true)->insert($dbRow);
+                    $insertData = [
+                        'name'       => $dbRow['name'] ?? '',
+                        'position'   => $dbRow['position'] ?? null,
+                        'image_path' => $dbRow['photo'] ?? ($dbRow['image_path'] ?? null),
+                        'order_num'  => $dbRow['order_num'] ?? 0,
+                        'active'     => isset($dbRow['active']) ? ($dbRow['active'] ? 1 : 0) : 1,
+                        'created_at' => $createdAt,
+                        'updated_at' => $updatedAt,
+                    ];
+                    $this->db->table($tableName)->ignore(true)->insert($insertData);
                 }
                 elseif ($tableName === 'nora_knowledge') {
-                    if (isset($dbRow['question'])) { $dbRow['intent'] = $dbRow['question']; unset($dbRow['question']); }
-                    if (isset($dbRow['answer'])) { $dbRow['answer_text'] = $dbRow['answer']; unset($dbRow['answer']); }
-                    if (isset($dbRow['link_url'])) { $dbRow['action_link'] = $dbRow['link_url']; unset($dbRow['link_url']); }
-                    unset($dbRow['link_title'], $dbRow['id']);
-                    $this->db->table($tableName)->ignore(true)->insert($dbRow);
+                    $insertData = [
+                        'intent'      => $dbRow['question'] ?? ($dbRow['intent'] ?? ''),
+                        'keywords'    => $dbRow['keywords'] ?? null,
+                        'answer_text' => $dbRow['answer'] ?? ($dbRow['answer_text'] ?? ''),
+                        'action_link' => $dbRow['link_url'] ?? ($dbRow['action_link'] ?? null),
+                        'created_at'  => $createdAt,
+                        'updated_at'  => $updatedAt,
+                    ];
+                    $this->db->table($tableName)->ignore(true)->insert($insertData);
                 }
                 elseif ($tableName === 'site_banners') {
-                    unset($dbRow['id']); // Let auto-increment handle it
-                    $this->db->table($tableName)->ignore(true)->insert($dbRow);
+                    $insertData = [
+                        'title'             => $dbRow['title'] ?? null,
+                        'subtitle'          => $dbRow['subtitle'] ?? null,
+                        'badge_title'       => $dbRow['badge_title'] ?? null,
+                        'badge_icon'        => $dbRow['badge_icon'] ?? null,
+                        'bg_type'           => $dbRow['bg_type'] ?? 'image',
+                        'image_path'        => $dbRow['image_path'] ?? null,
+                        'floating_img_path' => $dbRow['floating_img_path'] ?? null,
+                        'floating_pos'      => $dbRow['floating_pos'] ?? null,
+                        'floating_anim'     => $dbRow['floating_anim'] ?? null,
+                        'card_placement'    => $dbRow['card_placement'] ?? null,
+                        'desc'              => $dbRow['desc'] ?? null,
+                        'button_text'       => $dbRow['button_text'] ?? null,
+                        'button_url'        => $dbRow['button_url'] ?? null,
+                        'button_icon'       => $dbRow['button_icon'] ?? null,
+                        'style_class'       => $dbRow['style_class'] ?? null,
+                        'active'            => isset($dbRow['active']) ? ($dbRow['active'] ? 1 : 0) : 1,
+                        'created_at'        => $createdAt,
+                        'updated_at'        => $updatedAt,
+                    ];
+                    $this->db->table($tableName)->ignore(true)->insert($insertData);
                 }
                 elseif ($tableName === 'gallery_albums') {
                     $photos = $dbRow['photos'] ?? [];
-                    unset($dbRow['category'], $dbRow['date'], $dbRow['views'], $dbRow['active'], $dbRow['photos'], $dbRow['id']);
+                    $insertData = [
+                        'title'       => $dbRow['title'] ?? '',
+                        'cover_image' => $dbRow['cover_image'] ?? null,
+                        'description' => $dbRow['description'] ?? null,
+                        'created_at'  => $createdAt,
+                        'updated_at'  => $updatedAt,
+                    ];
                     
-                    $this->db->table($tableName)->insert($dbRow);
+                    $this->db->table($tableName)->insert($insertData);
                     $albumId = $this->db->insertID();
 
                     if ($albumId && !empty($photos)) {
                         foreach ($photos as $photoUrl) {
                             $this->db->table('gallery_photos')->insert([
-                                'album_id' => $albumId,
+                                'album_id'   => $albumId,
                                 'image_path' => $photoUrl,
                                 'created_at' => $createdAt
                             ]);

@@ -9,4 +9,4 @@ public/assets/uploads/
 logs/
 *.log
 /tmp/
-cache/
+writable/cache/
