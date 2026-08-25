@@ -11,7 +11,13 @@
         "button_url": "www.ma-muanglung.com",
         "button_icon": "fa-solid fa-compass",
         "active": true,
-        "style_class": "slide-bg-sane-muanglung"
+        "style_class": "slide-bg-sane-muanglung",
+        "show_card": false,
+        "show_badge": false,
+        "show_title": false,
+        "show_desc": false,
+        "show_button": false,
+        "show_floating": false
     },
     {
         "id": 2,
@@ -30,7 +36,13 @@
         "floating_img_path": "uploads\/slider\/slide_1785905504_335.png",
         "floating_pos": "right_center",
         "floating_anim": "pulse_glow",
-        "card_placement": "split_left"
+        "card_placement": "split_left",
+        "show_card": true,
+        "show_badge": true,
+        "show_title": true,
+        "show_desc": true,
+        "show_button": true,
+        "show_floating": true
     },
     {
         "id": 3,
@@ -45,7 +57,13 @@
         "button_url": "#tourism",
         "button_icon": "fa-solid fa-compass",
         "active": true,
-        "style_class": "slide-bg-tourism"
+        "style_class": "slide-bg-tourism",
+        "show_card": true,
+        "show_badge": true,
+        "show_title": true,
+        "show_desc": true,
+        "show_button": true,
+        "show_floating": true
     },
     {
         "id": 4,
@@ -60,6 +78,12 @@
         "button_url": "#pdpa",
         "button_icon": "fa-solid fa-paper-plane",
         "active": true,
-        "style_class": "slide-bg-governance"
+        "style_class": "slide-bg-governance",
+        "show_card": true,
+        "show_badge": true,
+        "show_title": true,
+        "show_desc": true,
+        "show_button": true,
+        "show_floating": true
     }
 ]

@@ -40,6 +40,12 @@ class BannerManager extends BaseController
                 'button_url' => '#tourism',
                 'button_icon' => 'fa-solid fa-compass',
                 'active' => true,
+                'show_card' => true,
+                'show_badge' => true,
+                'show_title' => true,
+                'show_desc' => true,
+                'show_button' => true,
+                'show_floating' => true,
                 'style_class' => 'slide-bg-sane-muanglung'
             ],
             [
@@ -55,6 +61,12 @@ class BannerManager extends BaseController
                 'button_url' => '#services',
                 'button_icon' => 'fa-solid fa-arrow-right',
                 'active' => true,
+                'show_card' => true,
+                'show_badge' => true,
+                'show_title' => true,
+                'show_desc' => true,
+                'show_button' => true,
+                'show_floating' => true,
                 'style_class' => 'slide-bg-living'
             ],
             [
@@ -70,6 +82,12 @@ class BannerManager extends BaseController
                 'button_url' => '#tourism',
                 'button_icon' => 'fa-solid fa-compass',
                 'active' => true,
+                'show_card' => true,
+                'show_badge' => true,
+                'show_title' => true,
+                'show_desc' => true,
+                'show_button' => true,
+                'show_floating' => true,
                 'style_class' => 'slide-bg-tourism'
             ],
             [
@@ -85,6 +103,12 @@ class BannerManager extends BaseController
                 'button_url' => '#pdpa',
                 'button_icon' => 'fa-solid fa-paper-plane',
                 'active' => true,
+                'show_card' => true,
+                'show_badge' => true,
+                'show_title' => true,
+                'show_desc' => true,
+                'show_button' => true,
+                'show_floating' => true,
                 'style_class' => 'slide-bg-governance'
             ]
         ];

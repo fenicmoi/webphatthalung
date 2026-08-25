@@ -202,43 +202,131 @@ function renderSlidesList() {
     }
 
     BANNERS_DATA.forEach((slide, idx) => {
+        // Ensure visibility flags default to true if undefined
+        if (slide.show_card === undefined) slide.show_card = true;
+        if (slide.show_badge === undefined) slide.show_badge = true;
+        if (slide.show_title === undefined) slide.show_title = true;
+        if (slide.show_desc === undefined) slide.show_desc = true;
+        if (slide.show_button === undefined) slide.show_button = true;
+        if (slide.show_floating === undefined) slide.show_floating = true;
+        if (slide.active === undefined) slide.active = true;
+
+        let isSlideActive = (slide.active !== false && slide.active != '0');
+        let showCard = (slide.show_card !== false && slide.show_card != '0');
+        let showBadge = (slide.show_badge !== false && slide.show_badge != '0');
+        let showTitle = (slide.show_title !== false && slide.show_title != '0');
+        let showDesc = (slide.show_desc !== false && slide.show_desc != '0');
+        let showButton = (slide.show_button !== false && slide.show_button != '0');
+        let showFloating = (slide.show_floating !== false && slide.show_floating != '0');
+
         let imgDisplay = slide.image_path ? `<?= base_url() ?>/${slide.image_path}` : 'https://placehold.co/600x250/113f4f/ffffff?text=No+Custom+Image+(Using+Kinetic+Vectors)';
         let floatingImgDisplay = slide.floating_img_path ? `<?= base_url() ?>/${slide.floating_img_path}` : 'https://placehold.co/200x100/0c1628/60a5fa?text=ยังไม่ได้เลือกภาพกราฟิกลอยตัว+(PNG)';
 
         const card = document.createElement('div');
-        card.className = "glass-card p-4 rounded-4 position-relative";
+        card.className = "glass-card p-4 rounded-4 position-relative shadow-sm";
         card.style.background = "var(--glass-bg)";
-        card.style.border = "1px solid var(--glass-border)";
+        card.style.border = isSlideActive ? "1px solid var(--glass-border)" : "1px dashed rgba(239, 68, 68, 0.4)";
+        card.id = `slide_card_${idx}`;
 
         card.innerHTML = `
-            <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2" style="border-color: var(--glass-border) !important;">
-                <div class="d-flex align-items-center gap-2">
-                    <span class="badge bg-primary text-white fs-6 px-3 py-2 rounded-pill">สไลด์ลำดับที่ #${idx + 1}</span>
-                    <span class="badge ${slide.active !== false ? 'bg-success' : 'bg-secondary'} px-2 py-1">${slide.active !== false ? 'เปิดแสดงผล' : 'ปิดชั่วคราว'}</span>
+            <!-- SLIDE CARD HEADER -->
+            <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-3 flex-wrap gap-2" style="border-color: var(--glass-border) !important;">
+                <div class="d-flex align-items-center gap-3">
+                    <span class="badge bg-primary text-white fs-6 px-3 py-2 rounded-pill shadow-xs">
+                        <i class="fa-solid fa-layer-group me-1"></i> สไลด์ลำดับที่ #${idx + 1}
+                    </span>
+                    <div class="form-check form-switch m-0 d-flex align-items-center gap-2">
+                        <input class="form-check-input" type="checkbox" id="slide_active_${idx}" ${isSlideActive ? 'checked' : ''} onchange="updateSlideProp(${idx}, 'active', this.checked); renderSlidesList();" style="cursor: pointer; transform: scale(1.15);">
+                        <label class="form-check-label fw-bold ${isSlideActive ? 'text-success' : 'text-danger'}" for="slide_active_${idx}" style="cursor: pointer; font-size: 0.9rem;">
+                            ${isSlideActive ? '<i class="fa-solid fa-circle-check me-1"></i>เปิดแสดงผลบนเว็บ' : '<i class="fa-solid fa-circle-pause me-1"></i>ปิดใช้งานชั่วคราว'}
+                        </label>
+                    </div>
                 </div>
                 <div class="d-flex align-items-center gap-2">
-                    <button type="button" class="btn btn-sm btn-outline-danger px-3 rounded-pill" onclick="deleteSlide(${idx})" title="ลบสไลด์">
-                        <i class="fa-solid fa-trash-can me-1"></i> ลบรายการ
+                    <button type="button" class="btn btn-sm btn-outline-danger px-3 py-1.5 rounded-pill" onclick="deleteSlide(${idx})" title="ลบสไลด์นี้">
+                        <i class="fa-solid fa-trash-can me-1"></i> ลบสไลด์
                     </button>
                 </div>
             </div>
 
+            <!-- VISIBILITY QUICK-CONTROL STRIP -->
+            <div class="p-3 rounded-4 mb-4" style="background: linear-gradient(135deg, rgba(15, 23, 42, 0.6) 0%, rgba(30, 41, 59, 0.6) 100%); border: 1px solid rgba(255,255,255,0.1);">
+                <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
+                    <span class="fw-bold text-light small d-flex align-items-center">
+                        <i class="fa-solid fa-sliders text-warning me-2"></i><b>กำหนดส่วนที่ต้องการให้แสดงบนสไลด์นี้ (Display Elements Visibility)</b>
+                    </span>
+                    <span class="badge bg-dark border border-secondary text-white-50 small fw-normal">คลิกสวิตช์เพื่อเปิดหรือซ่อนแต่ละส่วน</span>
+                </div>
+                <div class="d-flex flex-wrap gap-3 pt-1">
+                    <!-- Toggle Card Box -->
+                    <div class="form-check form-switch m-0 d-flex align-items-center gap-1.5 bg-dark px-3 py-1.5 rounded-pill border ${showCard ? 'border-success' : 'border-secondary'}">
+                        <input class="form-check-input ms-0 me-2" type="checkbox" id="vis_card_${idx}" ${showCard ? 'checked' : ''} onchange="updateSlideProp(${idx}, 'show_card', this.checked); renderSlidesList();" style="cursor: pointer;">
+                        <label class="form-check-label small fw-bold ${showCard ? 'text-white' : 'text-white-50'}" for="vis_card_${idx}" style="cursor: pointer;">
+                            🗂️ กล่องข้อความ (Card Box)
+                        </label>
+                    </div>
+
+                    <!-- Toggle Badge -->
+                    <div class="form-check form-switch m-0 d-flex align-items-center gap-1.5 bg-dark px-3 py-1.5 rounded-pill border ${showBadge ? 'border-info' : 'border-secondary'}">
+                        <input class="form-check-input ms-0 me-2" type="checkbox" id="vis_badge_${idx}" ${showBadge ? 'checked' : ''} onchange="updateSlideProp(${idx}, 'show_badge', this.checked); renderSlidesList();" style="cursor: pointer;">
+                        <label class="form-check-label small fw-bold ${showBadge ? 'text-white' : 'text-white-50'}" for="vis_badge_${idx}" style="cursor: pointer;">
+                            🏷️ ป้ายตราสัญลักษณ์ (Badge)
+                        </label>
+                    </div>
+
+                    <!-- Toggle Title -->
+                    <div class="form-check form-switch m-0 d-flex align-items-center gap-1.5 bg-dark px-3 py-1.5 rounded-pill border ${showTitle ? 'border-primary' : 'border-secondary'}">
+                        <input class="form-check-input ms-0 me-2" type="checkbox" id="vis_title_${idx}" ${showTitle ? 'checked' : ''} onchange="updateSlideProp(${idx}, 'show_title', this.checked); renderSlidesList();" style="cursor: pointer;">
+                        <label class="form-check-label small fw-bold ${showTitle ? 'text-white' : 'text-white-50'}" for="vis_title_${idx}" style="cursor: pointer;">
+                            🔤 หัวข้อ (Title)
+                        </label>
+                    </div>
+
+                    <!-- Toggle Description -->
+                    <div class="form-check form-switch m-0 d-flex align-items-center gap-1.5 bg-dark px-3 py-1.5 rounded-pill border ${showDesc ? 'border-primary' : 'border-secondary'}">
+                        <input class="form-check-input ms-0 me-2" type="checkbox" id="vis_desc_${idx}" ${showDesc ? 'checked' : ''} onchange="updateSlideProp(${idx}, 'show_desc', this.checked); renderSlidesList();" style="cursor: pointer;">
+                        <label class="form-check-label small fw-bold ${showDesc ? 'text-white' : 'text-white-50'}" for="vis_desc_${idx}" style="cursor: pointer;">
+                            📝 คำอธิบาย (Description)
+                        </label>
+                    </div>
+
+                    <!-- Toggle Button -->
+                    <div class="form-check form-switch m-0 d-flex align-items-center gap-1.5 bg-dark px-3 py-1.5 rounded-pill border ${showButton ? 'border-warning' : 'border-secondary'}">
+                        <input class="form-check-input ms-0 me-2" type="checkbox" id="vis_button_${idx}" ${showButton ? 'checked' : ''} onchange="updateSlideProp(${idx}, 'show_button', this.checked); renderSlidesList();" style="cursor: pointer;">
+                        <label class="form-check-label small fw-bold ${showButton ? 'text-white' : 'text-white-50'}" for="vis_button_${idx}" style="cursor: pointer;">
+                            🔘 ปุ่มกดและลิงก์ (Button)
+                        </label>
+                    </div>
+
+                    <!-- Toggle Floating Layer -->
+                    <div class="form-check form-switch m-0 d-flex align-items-center gap-1.5 bg-dark px-3 py-1.5 rounded-pill border ${showFloating ? 'border-warning' : 'border-secondary'}">
+                        <input class="form-check-input ms-0 me-2" type="checkbox" id="vis_floating_${idx}" ${showFloating ? 'checked' : ''} onchange="updateSlideProp(${idx}, 'show_floating', this.checked); renderSlidesList();" style="cursor: pointer;">
+                        <label class="form-check-label small fw-bold ${showFloating ? 'text-white' : 'text-white-50'}" for="vis_floating_${idx}" style="cursor: pointer;">
+                            🌟 ภาพชั้นลอย (Floating Graphic)
+                        </label>
+                    </div>
+                </div>
+            </div>
+
             <div class="row g-4">
+                <!-- LEFT COLUMN: BANNER IMAGE & KEN-BURNS -->
                 <div class="col-lg-5">
-                    <div class="p-3 rounded-4 bg-dark border border-secondary text-center position-relative mb-2">
-                        <img src="${imgDisplay}" id="preview_img_${idx}" class="img-fluid rounded-3" style="max-height: 180px; object-fit: cover; width: 100%;">
+                    <div class="p-3 rounded-4 bg-dark border border-secondary text-center position-relative mb-2 shadow-inner">
+                        <img src="${imgDisplay}" id="preview_img_${idx}" class="img-fluid rounded-3" style="max-height: 200px; object-fit: cover; width: 100%;">
                         <div class="mt-2">
-                            <label class="btn btn-sm btn-info fw-bold rounded-pill px-3 m-0" style="cursor: pointer;">
-                                <i class="fa-solid fa-cloud-arrow-up me-1"></i> อัปโหลดรูปภาพใหม่...
+                            <label class="btn btn-sm btn-info fw-bold rounded-pill px-3 m-0 shadow-xs" style="cursor: pointer;">
+                                <i class="fa-solid fa-cloud-arrow-up me-1"></i> อัปโหลดรูปภาพสไลด์...
                                 <input type="file" class="d-none" accept="image/*" onchange="uploadSlideImage(event, ${idx})">
                             </label>
                         </div>
                     </div>
-                    <small class="text-muted d-block text-center">💡 แนะนำไฟล์ PNG/JPG ขนาดกว้าง 1920x600 px ขึ้นไป (ระบบจะทำ Kinetic Ken-Burns ให้อัตโนมัติ)</small>
+                    <small class="text-white-50 d-block text-center" style="font-size: 0.82rem;">💡 แนะนำไฟล์ PNG/JPG ขนาดกว้าง 1920x600 px ขึ้นไป (ระบบรองรับ Kinetic Motion และ Vignette อัตโนมัติ)</small>
                 </div>
 
+                <!-- RIGHT COLUMN: CONFIGURATION FIELDS -->
                 <div class="col-lg-7">
                     <div class="row g-3">
+                        <!-- BG TYPE -->
                         <div class="col-md-6">
                             <label class="form-label fw-bold text-warning"><i class="fa-solid fa-wand-magic-sparkles me-1"></i> ธีมกราฟิกลอยตัว (Multi-Layer Effect)</label>
                             <select class="form-select modern-input" onchange="updateSlideProp(${idx}, 'bg_type', this.value); renderSlidesList();">
@@ -249,20 +337,40 @@ function renderSlidesList() {
                                 <option value="kinetic_gov" ${slide.bg_type === 'kinetic_gov' ? 'selected' : ''}>🏛️ บริการราชการ 24 ชม. & โล่ PDPA (Digital Governance)</option>
                             </select>
                         </div>
+
+                        <!-- CARD LAYOUT & VISIBILITY TOGGLE -->
                         <div class="col-md-6">
-                            <label class="form-label fw-bold text-info"><i class="fa-solid fa-layer-group me-1"></i> รูปแบบการวางกล่องข้อความ (Card Layout)</label>
-                            <select class="form-select modern-input" onchange="updateSlideProp(${idx}, 'card_placement', this.value)">
+                            <div class="d-flex align-items-center justify-content-between mb-1">
+                                <label class="form-label fw-bold text-info mb-0"><i class="fa-solid fa-layer-group me-1"></i> รูปแบบการวางกล่องข้อความ (Card Layout)</label>
+                                <div class="form-check form-switch m-0">
+                                    <input class="form-check-input" type="checkbox" id="field_toggle_card_${idx}" ${showCard ? 'checked' : ''} onchange="updateSlideProp(${idx}, 'show_card', this.checked); renderSlidesList();" style="cursor: pointer;">
+                                    <label class="form-check-label small fw-bold ${showCard ? 'text-success' : 'text-danger'}" for="field_toggle_card_${idx}" style="cursor: pointer; font-size: 0.78rem;">
+                                        ${showCard ? 'แสดงกล่อง' : 'ซ่อนกล่อง'}
+                                    </label>
+                                </div>
+                            </div>
+                            <select class="form-select modern-input ${!showCard ? 'opacity-50' : ''}" onchange="updateSlideProp(${idx}, 'card_placement', this.value)">
                                 <option value="dock_bottom_right" ${slide.card_placement === 'dock_bottom_right' || (!slide.card_placement && idx === 0) ? 'selected' : ''}>🗂️ แท่นลอยมุมล่างขวา (ไม่บังวิวกึ่งกลางภาพ)</option>
                                 <option value="split_right" ${slide.card_placement === 'split_right' || (!slide.card_placement && idx !== 0) ? 'selected' : ''}>➡️ กล่องข้อความทางขวา (Split-Screen Right)</option>
                                 <option value="split_left" ${slide.card_placement === 'split_left' ? 'selected' : ''}>⬅️ กล่องข้อความทางซ้าย (Split-Screen Left)</option>
                                 <option value="center_overlay" ${slide.card_placement === 'center_overlay' ? 'selected' : ''}>🎯 ข้อความใหญ่กึ่งกลางจอ (Center Cinematic)</option>
                             </select>
                         </div>
+
+                        <!-- CUSTOM FLOATING GRAPHIC LAYER -->
                         <div class="col-12">
-                            <div class="p-3 rounded-4 border border-warning" style="background: rgba(255, 193, 7, 0.06); box-shadow: 0 4px 15px rgba(255, 193, 7, 0.12);">
+                            <div class="p-3 rounded-4 border ${showFloating ? 'border-warning' : 'border-secondary opacity-75'}" style="background: rgba(255, 193, 7, 0.06); box-shadow: 0 4px 15px rgba(255, 193, 7, 0.1);">
                                 <div class="d-flex align-items-center justify-content-between mb-3">
-                                    <h6 class="fw-bold text-warning m-0"><i class="fa-solid fa-wand-magic-sparkles me-2"></i>อัปโหลดภาพชั้นลอยตัวของคุณเอง (Custom Floating Graphic Layer)</h6>
-                                    <span class="badge bg-warning text-dark px-3 py-1 rounded-pill fw-bold">Multi-Layer DIY</span>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <h6 class="fw-bold text-warning m-0"><i class="fa-solid fa-wand-magic-sparkles me-1"></i>อัปโหลดภาพชั้นลอยตัวของคุณเอง (Custom Floating Graphic Layer)</h6>
+                                        <span class="badge bg-warning text-dark px-2 py-0.5 rounded-pill fw-bold" style="font-size: 0.75rem;">Multi-Layer DIY</span>
+                                    </div>
+                                    <div class="form-check form-switch m-0 d-flex align-items-center gap-1.5">
+                                        <input class="form-check-input" type="checkbox" id="field_toggle_floating_${idx}" ${showFloating ? 'checked' : ''} onchange="updateSlideProp(${idx}, 'show_floating', this.checked); renderSlidesList();" style="cursor: pointer;">
+                                        <label class="form-check-label small fw-bold ${showFloating ? 'text-warning' : 'text-white-50'}" for="field_toggle_floating_${idx}" style="cursor: pointer; font-size: 0.8rem;">
+                                            ${showFloating ? '<i class="fa-solid fa-eye me-1"></i>เปิดแสดงชั้นลอย' : '<i class="fa-solid fa-eye-slash me-1"></i>ซ่อนชั้นลอย'}
+                                        </label>
+                                    </div>
                                 </div>
                                 <div class="row align-items-center g-3">
                                     <div class="col-sm-4 text-center">
@@ -301,25 +409,70 @@ function renderSlidesList() {
                                 </div>
                             </div>
                         </div>
+
+                        <!-- TITLE -->
                         <div class="col-md-6">
-                            <label class="form-label fw-bold text-primary"><i class="fa-solid fa-heading me-1"></i> หัวข้อ/คำขวัญสไลด์ (Title)</label>
-                            <input type="text" class="form-control modern-input" value="${slide.title || ''}" onchange="updateSlideProp(${idx}, 'title', this.value)" placeholder="เช่น เสน่ห์เมืองลุง เขา ป่า นา เล...">
+                            <div class="d-flex align-items-center justify-content-between mb-1">
+                                <label class="form-label fw-bold text-primary mb-0"><i class="fa-solid fa-heading me-1"></i> หัวข้อ/คำขวัญสไลด์ (Title)</label>
+                                <div class="form-check form-switch m-0">
+                                    <input class="form-check-input" type="checkbox" id="field_toggle_title_${idx}" ${showTitle ? 'checked' : ''} onchange="updateSlideProp(${idx}, 'show_title', this.checked); renderSlidesList();" style="cursor: pointer;">
+                                    <label class="form-check-label small fw-bold ${showTitle ? 'text-success' : 'text-danger'}" for="field_toggle_title_${idx}" style="cursor: pointer; font-size: 0.78rem;">
+                                        ${showTitle ? 'แสดง' : 'ซ่อน'}
+                                    </label>
+                                </div>
+                            </div>
+                            <input type="text" class="form-control modern-input ${!showTitle ? 'opacity-50' : ''}" value="${slide.title || ''}" onchange="updateSlideProp(${idx}, 'title', this.value)" placeholder="เช่น เสน่ห์เมืองลุง เขา ป่า นา เล...">
                         </div>
+
+                        <!-- BADGE TITLE -->
                         <div class="col-md-6">
-                            <label class="form-label fw-bold text-primary"><i class="fa-solid fa-tag me-1"></i> ข้อความป้ายตราสัญลักษณ์ (Badge Title)</label>
-                            <input type="text" class="form-control modern-input" value="${slide.badge_title || ''}" onchange="updateSlideProp(${idx}, 'badge_title', this.value)" placeholder="เช่น LANDMARK / ECO & HERITAGE">
+                            <div class="d-flex align-items-center justify-content-between mb-1">
+                                <label class="form-label fw-bold text-primary mb-0"><i class="fa-solid fa-tag me-1"></i> ข้อความป้ายตราสัญลักษณ์ (Badge Title)</label>
+                                <div class="form-check form-switch m-0">
+                                    <input class="form-check-input" type="checkbox" id="field_toggle_badge_${idx}" ${showBadge ? 'checked' : ''} onchange="updateSlideProp(${idx}, 'show_badge', this.checked); renderSlidesList();" style="cursor: pointer;">
+                                    <label class="form-check-label small fw-bold ${showBadge ? 'text-success' : 'text-danger'}" for="field_toggle_badge_${idx}" style="cursor: pointer; font-size: 0.78rem;">
+                                        ${showBadge ? 'แสดง' : 'ซ่อน'}
+                                    </label>
+                                </div>
+                            </div>
+                            <input type="text" class="form-control modern-input ${!showBadge ? 'opacity-50' : ''}" value="${slide.badge_title || ''}" onchange="updateSlideProp(${idx}, 'badge_title', this.value)" placeholder="เช่น มาเมืองลุง / ECO & HERITAGE">
                         </div>
+
+                        <!-- DESCRIPTION -->
                         <div class="col-md-12">
-                            <label class="form-label fw-bold text-primary"><i class="fa-solid fa-align-left me-1"></i> คำอธิบายรายละเอียด (Description)</label>
-                            <textarea class="form-control modern-input" rows="2" onchange="updateSlideProp(${idx}, 'desc', this.value)" placeholder="รายละเอียดเชิญชวนประชาชนหรือนักท่องเที่ยว...">${slide.desc || ''}</textarea>
+                            <div class="d-flex align-items-center justify-content-between mb-1">
+                                <label class="form-label fw-bold text-primary mb-0"><i class="fa-solid fa-align-left me-1"></i> คำอธิบายรายละเอียด (Description)</label>
+                                <div class="form-check form-switch m-0">
+                                    <input class="form-check-input" type="checkbox" id="field_toggle_desc_${idx}" ${showDesc ? 'checked' : ''} onchange="updateSlideProp(${idx}, 'show_desc', this.checked); renderSlidesList();" style="cursor: pointer;">
+                                    <label class="form-check-label small fw-bold ${showDesc ? 'text-success' : 'text-danger'}" for="field_toggle_desc_${idx}" style="cursor: pointer; font-size: 0.78rem;">
+                                        ${showDesc ? 'แสดง' : 'ซ่อน'}
+                                    </label>
+                                </div>
+                            </div>
+                            <textarea class="form-control modern-input ${!showDesc ? 'opacity-50' : ''}" rows="2" onchange="updateSlideProp(${idx}, 'desc', this.value)" placeholder="รายละเอียดเชิญชวนประชาชนหรือนักท่องเที่ยว...">${slide.desc || ''}</textarea>
                         </div>
+
+                        <!-- BUTTON TEXT -->
                         <div class="col-md-6">
-                            <label class="form-label fw-bold text-primary"><i class="fa-solid fa-link me-1"></i> ข้อความบนปุ่มกด (Button Text)</label>
-                            <input type="text" class="form-control modern-input" value="${slide.button_text || ''}" onchange="updateSlideProp(${idx}, 'button_text', this.value)" placeholder="เช่น เปิดโลกท่องเที่ยว">
+                            <div class="d-flex align-items-center justify-content-between mb-1">
+                                <label class="form-label fw-bold text-primary mb-0"><i class="fa-solid fa-link me-1"></i> ข้อความบนปุ่มกด (Button Text)</label>
+                                <div class="form-check form-switch m-0">
+                                    <input class="form-check-input" type="checkbox" id="field_toggle_btn_${idx}" ${showButton ? 'checked' : ''} onchange="updateSlideProp(${idx}, 'show_button', this.checked); renderSlidesList();" style="cursor: pointer;">
+                                    <label class="form-check-label small fw-bold ${showButton ? 'text-success' : 'text-danger'}" for="field_toggle_btn_${idx}" style="cursor: pointer; font-size: 0.78rem;">
+                                        ${showButton ? 'แสดง' : 'ซ่อน'}
+                                    </label>
+                                </div>
+                            </div>
+                            <input type="text" class="form-control modern-input ${!showButton ? 'opacity-50' : ''}" value="${slide.button_text || ''}" onchange="updateSlideProp(${idx}, 'button_text', this.value)" placeholder="เช่น สำรวจเลย / เปิดโลกท่องเที่ยว">
                         </div>
+
+                        <!-- BUTTON URL -->
                         <div class="col-md-6">
-                            <label class="form-label fw-bold text-primary"><i class="fa-solid fa-share me-1"></i> ลิงก์ปลายทางเมื่อคลิกปุ่ม (URL / Anchor)</label>
-                            <input type="text" class="form-control modern-input" value="${slide.button_url || ''}" onchange="updateSlideProp(${idx}, 'button_url', this.value)" placeholder="เช่น #tourism หรือ https://...">
+                            <div class="d-flex align-items-center justify-content-between mb-1">
+                                <label class="form-label fw-bold text-primary mb-0"><i class="fa-solid fa-share me-1"></i> ลิงก์ปลายทางเมื่อคลิกปุ่ม (URL / Anchor)</label>
+                                <span class="badge ${showButton ? 'bg-success' : 'bg-secondary'} px-2 py-0.5" style="font-size: 0.72rem;">${showButton ? 'Active' : 'Disabled'}</span>
+                            </div>
+                            <input type="text" class="form-control modern-input ${!showButton ? 'opacity-50' : ''}" value="${slide.button_url || ''}" onchange="updateSlideProp(${idx}, 'button_url', this.value)" placeholder="เช่น #tourism หรือ https://...">
                         </div>
                     </div>
                 </div>
@@ -345,7 +498,13 @@ function addNewSlide() {
         desc: 'ประชาสัมพันธ์ความก้าวหน้าโครงการพัฒนาโครงสร้างพื้นฐานด้านดิจิทัลและส่งเสริมการท่องเที่ยวทะเลน้อย 360 องศา',
         button_text: 'อ่านเพิ่มเติม',
         button_url: '#news',
-        active: true
+        active: true,
+        show_card: true,
+        show_badge: true,
+        show_title: true,
+        show_desc: true,
+        show_button: true,
+        show_floating: true
     };
     BANNERS_DATA.push(newSlide);
     renderSlidesList();

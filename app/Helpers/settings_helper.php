@@ -289,14 +289,31 @@ if (!function_exists('get_site_banners')) {
      */
     function get_site_banners()
     {
-        $model = new \App\Models\SiteBannerModel();
-        $banners = $model->where('active', 1)->findAll();
+        $writableDir = defined('WRITABLE') ? rtrim(\WRITABLE, '/\\') : realpath(__DIR__ . '/../../writable');
+        $jsonPath = $writableDir . DIRECTORY_SEPARATOR . 'site_banners.json';
         
-        if (!empty($banners)) {
-            return $banners;
+        if (is_file($jsonPath)) {
+            $saved = json_decode(file_get_contents($jsonPath), true);
+            if (is_array($saved) && !empty($saved)) {
+                $active = array_values(array_filter($saved, function($b) {
+                    return !isset($b['active']) || $b['active'] == '1' || $b['active'] === true;
+                }));
+                if (!empty($active)) {
+                    return $active;
+                }
+                return $saved;
+            }
         }
 
-        // Return core default slides if DB is empty
+        try {
+            $model = new \App\Models\SiteBannerModel();
+            $banners = $model->where('active', 1)->findAll();
+            if (!empty($banners)) {
+                return $banners;
+            }
+        } catch (\Throwable $e) {}
+
+        // Return core default slides if empty
         return [
             [
                 'id' => 1,
@@ -310,6 +327,12 @@ if (!function_exists('get_site_banners')) {
                 'button_url' => '#tourism',
                 'button_icon' => 'fa-solid fa-compass',
                 'active' => 1,
+                'show_card' => true,
+                'show_badge' => true,
+                'show_title' => true,
+                'show_desc' => true,
+                'show_button' => true,
+                'show_floating' => true,
                 'style_class' => 'slide-bg-sane-muanglung'
             ]
         ];
