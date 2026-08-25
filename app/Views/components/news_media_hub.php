@@ -314,7 +314,7 @@ $isOfficer = session()->get('isLoggedIn');
             <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
                 <h3 class="fw-bold mb-0 d-flex align-items-center gap-2" style="color: var(--text-primary);">
                     <i class="fa-solid fa-bullhorn text-success" style="color: #047857 !important;"></i>
-                    <span>ข่าวประชาสัมพันธ์</span>
+                    <span><?= site_text('news_section_title', 'ข่าวสารและประชาสัมพันธ์', 'หัวข้อส่วนข่าวสาร') ?></span>
                     <?php if ($isOfficer): ?>
                         <span class="badge bg-success bg-opacity-25 text-success px-2 py-1 fs-6"><i class="fa-solid fa-user-shield me-1"></i>แอดมิน</span>
                     <?php endif; ?>

@@ -8,41 +8,57 @@
    ========================================================================== */
 .w3c-aaa-trigger {
     position: fixed;
-    bottom: 25px;
-    left: 25px;
+    bottom: 22px;
+    left: 22px;
     z-index: 1045;
-    background: linear-gradient(135deg, #0284c7 0%, #0369a1 50%, #0f172a 100%);
+    background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
     color: #ffffff !important;
-    border: 3px solid #38bdf8;
+    border: 2px solid #38bdf8;
     border-radius: 50px;
-    padding: 10px 20px;
-    box-shadow: 0 10px 25px rgba(2, 132, 199, 0.45), 0 0 20px rgba(56, 189, 248, 0.25);
+    padding: 6px 14px 6px 6px;
+    box-shadow: 0 8px 24px rgba(2, 132, 199, 0.4), 0 0 15px rgba(56, 189, 248, 0.2);
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     cursor: pointer;
     font-weight: 700;
-    font-size: 1rem;
+    font-size: 0.84rem;
     transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     text-decoration: none;
 }
 .w3c-aaa-trigger:hover {
-    transform: translateY(-5px) scale(1.04);
-    box-shadow: 0 15px 35px rgba(2, 132, 199, 0.65);
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: 0 12px 30px rgba(2, 132, 199, 0.6);
     color: #fff;
     border-color: #00f0ff;
 }
 .w3c-icon-badge {
-    width: 34px;
-    height: 34px;
+    width: 36px;
+    height: 36px;
     background: #fff;
-    color: #0369a1;
+    color: #0284c7;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.2rem;
+    font-size: 1.15rem;
     box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    flex-shrink: 0;
+}
+@media (max-width: 1199px) {
+    .w3c-aaa-trigger {
+        padding: 0;
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        justify-content: center;
+    }
+    .w3c-icon-badge {
+        width: 42px;
+        height: 42px;
+        box-shadow: none;
+    }
+}
 }
 
 /* Modal styling */
@@ -144,10 +160,7 @@ body.w3c-big-cursor * {
 <!-- FLOATING W3C AAA ACCESSIBILITY TRIGGER (BOTTOM LEFT) -->
 <button type="button" class="w3c-aaa-trigger" id="w3cTriggerBtn" onclick="W3CAccessibility.openModal()" title="เครื่องมือช่วยอ่านและปรับการแสดงผล (สำหรับผู้สูงอายุและผู้มีปัญหาการมองเห็น)">
     <div class="w3c-icon-badge"><i class="fa-solid fa-universal-access animate-pulse"></i></div>
-    <div class="d-flex flex-column text-start lh-1">
-        <span class="small fw-normal text-info" style="font-size: 0.72rem;">ผู้สูงอายุ & ผู้พิการทางสายตา</span>
-        <span>♿ ปรับขนาดอักษร & เสียงอ่าน</span>
-    </div>
+    <span class="d-none d-xl-inline-block text-nowrap">ช่วยเหลือการเข้าถึง</span>
 </button>
 
 <!-- W3C WCAG AAA UNIVERSAL ACCESSIBILITY MODAL -->

@@ -108,6 +108,7 @@ class BannerManager extends BaseController
         // Save Settings
         $currentCfg = function_exists('get_banner_settings') ? get_banner_settings() : [];
         $newCfg = [
+            'show_banner'     => $this->request->getPost('show_banner') ? '1' : '0',
             'layout_mode'     => $this->request->getPost('layout_mode') ?: 'hybrid_widescreen',
             'banner_height'   => $this->request->getPost('banner_height') ?: '540',
             'auto_play'       => $this->request->getPost('auto_play') ? '1' : '0',

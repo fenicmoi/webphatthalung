@@ -135,6 +135,7 @@ if (!function_exists('get_banner_settings')) {
     function get_banner_settings()
     {
         $defaults = [
+            'show_banner'     => '1', // 1 = แสดงแบนเนอร์, 0 = ซ่อนแบนเนอร์
             'layout_mode'     => 'hybrid_widescreen', // hybrid_widescreen หรือ modern_boxed
             'banner_height'   => '540',
             'auto_play'       => '1',
@@ -154,6 +155,131 @@ if (!function_exists('get_banner_settings')) {
         }
 
         return $defaults;
+    }
+}
+
+if (!function_exists('get_site_texts')) {
+    /**
+     * ดึงพจนานุกรมข้อความและเนื้อหาทั้งหมดในเว็บไซต์ (Site Text Dictionary)
+     */
+    function get_site_texts()
+    {
+        $defaults = [
+            // --- Hero Banner & Header ---
+            'hero_badge_default'       => 'อัญมณีแห่งภาคใต้ • มรดกเกษตรโลก GIAHS',
+            'hero_weather_title'       => 'จุดชมวิวทะเลน้อย พัทลุง',
+            'hero_weather_desc'        => '28°C แสงสวย อากาศสดชื่น',
+            'hero_landmark_caption'    => 'จุดถ่ายภาพจุดชมวิว 360°',
+            
+            // --- Smart Search Dock ---
+            'search_dock_title'        => 'ระบบค้นหาอัจฉริยะ',
+            'search_dock_subtitle'     => 'Smart AI & Voice Search',
+            'search_input_placeholder' => 'พิมพ์หรือกดไมโครโฟนเพื่อค้นหา (เช่น e-bidding, ทะเลน้อย, ผู้ว่า)...',
+            'search_trending_label'    => 'คำค้นหายอดนิยม',
+
+            // --- News Hub ---
+            'news_section_title'       => 'ข่าวสารและประชาสัมพันธ์',
+            'news_section_subtitle'    => 'ศูนย์กลางข่าวสาร กิจกรรม และประกาศราชการจังหวัดพัทลุง',
+            'news_view_all_btn'        => 'ดูข่าวทั้งหมด',
+            'news_tab_all'             => 'ข่าวทั้งหมด',
+            'news_tab_pr'              => 'ข่าวประชาสัมพันธ์',
+            'news_tab_procure'         => 'ประกาศจัดซื้อจัดจ้าง',
+            'news_tab_activity'        => 'ข่าวกิจกรรมจังหวัด',
+            'news_tab_jobs'            => 'รับสมัครงานราชการ',
+
+            // --- Event Calendar ---
+            'calendar_section_title'   => 'ปฏิทินกิจกรรมประจำเดือน',
+            'calendar_section_subtitle'=> 'ตารางการจัดงาน ประชุม และภารกิจสำคัญของจังหวัดพัทลุง',
+            'calendar_listen_voice_btn'=> '🔊 ฟังเสียงอ่านกำหนดการประจำเดือน',
+
+            // --- Governor & Executives ---
+            'governor_section_title'   => 'สารจากผู้ว่าราชการจังหวัดพัทลุง',
+            'governor_quote_text'      => 'มุ่งมั่นพัฒนาพัทลุงสู่เมืองอัจฉริยะ เกษตรกรรมยั่งยืน การท่องเที่ยวเชิงนิเวศ และคุณภาพชีวิตที่ดีของพี่น้องประชาชน',
+            'executive_section_title'  => 'คณะผู้บริหารจังหวัดพัทลุง',
+            'executive_section_desc'   => 'ทำเนียบคณะผู้บริหาร หัวหน้าส่วนราชการ และผู้ขับเคลื่อนการพัฒนาจังหวัด',
+
+            // --- Strategy & Projects ---
+            'strategy_section_title'   => 'ยุทธศาสตร์และแผนพัฒนาจังหวัด',
+            'strategy_section_desc'    => 'เป้าหมายการพัฒนาจังหวัดพัทลุงและตัวชี้วัดความก้าวหน้า 20 ปี',
+            'projects_section_title'   => 'ระบบติดตามโครงการพัฒนาจังหวัด (GIS Tracker)',
+            'projects_section_desc'    => 'แสดงพิกัดและสถานะความก้าวหน้าโครงการพัฒนาตามยุทธศาสตร์เชิงพื้นที่',
+
+            // --- Public Services ---
+            'services_section_title'   => 'บริการประชาชนและ e-Services',
+            'services_section_desc'    => 'ช่องทางบริการภาครัฐดิจิทัล ร้องทุกข์ ศูนย์ดำรงธรรม และดาวน์โหลดเอกสาร',
+
+            // --- Nora AI Assistant ---
+            'nora_bot_name'            => 'น้องโนรา AI Assistant',
+            'nora_tagline'             => 'ผู้ช่วยบริการประชาชน 24 ชม.',
+            'nora_greeting'            => "สวัสดีค่ะ 🙏 น้องโนรา ยินดีให้บริการ ณ จังหวัดพัทลุง!\nวันนี้มีเรื่องราชการ e-Services หรือท่องเที่ยวใดให้ช่วยเหลือ พิมพ์ถามได้เลยนะคะ 😊",
+
+            // --- Footer & Global ---
+            'site_slogan'              => 'เมืองหนังโนราห์ อู่นาข้าว พราวน้ำตก แหล่งนกน้ำ ทะเลสาบงาม เขาอกทะลุ น้ำพุร้อน',
+            'footer_address'           => 'ศาลากลางจังหวัดพัทลุง ถนนราเมศวร์ ตำบลคูหาสวรรค์ อำเภอเมืองพัทลุง 93000',
+            'footer_phone'             => '074-613409',
+            'footer_email'             => 'contact@phatthalung.go.th',
+            'footer_copyright'         => 'สงวนลิขสิทธิ์ © 2026 สำนักงานจังหวัดพัทลุง ศาลากลางจังหวัดพัทลุง',
+        ];
+
+        $writableDir = defined('WRITABLE') ? rtrim(\WRITABLE, '/\\') : realpath(__DIR__ . '/../../writable');
+        $jsonPath = $writableDir . DIRECTORY_SEPARATOR . 'site_texts.json';
+
+        if (is_file($jsonPath)) {
+            $saved = json_decode(file_get_contents($jsonPath), true);
+            if (is_array($saved)) {
+                return array_merge($defaults, $saved);
+            }
+        }
+
+        return $defaults;
+    }
+}
+
+if (!function_exists('site_text')) {
+    /**
+     * ดึงข้อความตาม Key หากไม่มีจะใช้ค่าเริ่มต้น
+     * และรองรับการห่อ Span สำหรับ On-Page Live Editor
+     *
+     * @param string $key คีย์ข้อความ
+     * @param string $default ข้อความเริ่มต้น
+     * @param string $label ชื่อเรียกเพื่อแสดงในตัวแก้ไข
+     * @param bool $raw คืนค่าเฉพาะข้อความธรรมดา (ไม่ห่อ tag html)
+     * @return string
+     */
+    function site_text($key, $default = '', $label = '', $raw = false)
+    {
+        static $allTexts = null;
+        if ($allTexts === null) {
+            $allTexts = get_site_texts();
+        }
+
+        $val = isset($allTexts[$key]) && $allTexts[$key] !== '' ? $allTexts[$key] : $default;
+
+        if ($raw) {
+            return $val;
+        }
+
+        // Return with data attributes for frontend Live Text Editor
+        $labelAttr = !empty($label) ? htmlspecialchars($label, ENT_QUOTES, 'UTF-8') : htmlspecialchars($key, ENT_QUOTES, 'UTF-8');
+        $keyAttr = htmlspecialchars($key, ENT_QUOTES, 'UTF-8');
+
+        return '<span class="site-text-node" data-text-key="' . $keyAttr . '" data-text-label="' . $labelAttr . '">' . $val . '</span>';
+    }
+}
+
+if (!function_exists('save_site_texts')) {
+    /**
+     * บันทึกพจนานุกรมข้อความลงไฟล์ JSON
+     */
+    function save_site_texts(array $data)
+    {
+        $current = get_site_texts();
+        $updated = array_merge($current, $data);
+
+        $writableDir = defined('WRITABLE') ? rtrim(\WRITABLE, '/\\') : realpath(__DIR__ . '/../../writable');
+        $jsonPath = $writableDir . DIRECTORY_SEPARATOR . 'site_texts.json';
+
+        return (bool) file_put_contents($jsonPath, json_encode($updated, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
     }
 }
 

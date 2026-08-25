@@ -39,6 +39,27 @@
     <div class="tab-content" id="bannerTabContent">
         <!-- ================= TAB 1: LAYOUT MODE SELECTION ================= -->
         <div class="tab-pane fade show active" id="tab-mode" role="tabpanel">
+            
+            <!-- MASTER BANNER VISIBILITY TOGGLE -->
+            <div class="card border-0 mb-4 p-4 rounded-4 shadow-sm" style="background: linear-gradient(135deg, rgba(2, 44, 34, 0.95), rgba(6, 78, 59, 0.9)); border: 2px solid #10b981 !important;">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="p-3 rounded-circle d-flex align-items-center justify-content-center text-white shadow" style="background: #10b981; width: 50px; height: 50px; flex-shrink: 0;">
+                            <i class="fa-solid fa-power-off fs-4"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-1 text-white"><i class="fa-solid fa-eye me-2"></i>เปิด / ปิด การแสดงผลแบนเนอร์หน้าแรก (Hero Banner Toggle)</h5>
+                            <p class="text-light opacity-85 mb-0" style="font-size: 0.92rem;">
+                                กำหนดว่าจะให้แสดงแถบสไลด์ภาพและแอนิเมชันขนาดใหญ่บนหน้าหลักหรือไม่ (หากปิด ระบบจะเลื่อนเนื้อหาหลักขึ้นมาติดแถบเมนูด้านบนทันที)
+                            </p>
+                        </div>
+                    </div>
+                    <div class="form-check form-switch m-0" style="transform: scale(1.4); transform-origin: right center;">
+                        <input class="form-check-input" type="checkbox" name="show_banner" id="show_banner" value="1" <?= (!isset($cfg['show_banner']) || $cfg['show_banner'] == '1') ? 'checked' : '' ?>>
+                    </div>
+                </div>
+            </div>
+
             <h6 class="fw-bold mb-3 text-primary"><i class="fa-solid fa-expand me-2"></i>เลือกโครงสร้างหน้าจอแบนเนอร์หลักบนพอร์ตัลประชาชน</h6>
             
             <div class="row g-4 mb-5">

@@ -7,22 +7,22 @@
 /* --- 1. Smart Floating Capsule Dock --- */
 .floating-capsule-dock {
     position: fixed;
-    bottom: 25px;
+    bottom: 22px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 1040;
-    background: rgba(15, 23, 42, 0.78);
-    backdrop-filter: blur(25px);
-    -webkit-backdrop-filter: blur(25px);
-    border: 1.5px solid rgba(255, 255, 255, 0.18);
-    border-radius: 60px;
-    padding: 6px 14px;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4), 0 0 20px rgba(56, 189, 248, 0.15);
+    background: rgba(15, 23, 42, 0.84);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1.5px solid rgba(255, 255, 255, 0.14);
+    border-radius: 50px;
+    padding: 4px 10px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45), 0 0 20px rgba(16, 185, 129, 0.12);
     transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
     display: flex;
     align-items: center;
-    gap: 6px;
-    max-width: 95vw;
+    gap: 3px;
+    max-width: 92vw;
     overflow-x: auto;
     scrollbar-width: none;
 }
@@ -51,41 +51,41 @@
     justify-content: center;
     text-decoration: none !important;
     color: #f8fafc !important;
-    padding: 6px 12px;
-    border-radius: 30px;
-    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    padding: 4px 8px;
+    border-radius: 24px;
+    transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
     position: relative;
     white-space: nowrap;
     border: 1px solid transparent;
 }
 .dock-item-icon {
-    width: 38px;
-    height: 38px;
+    width: 34px;
+    height: 34px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.15rem;
+    font-size: 1rem;
     background: rgba(255, 255, 255, 0.08);
-    transition: all 0.25s ease;
+    transition: all 0.22s ease;
     margin-bottom: 2px;
 }
 .dock-item-label {
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     font-weight: 600;
     opacity: 0.85;
     transition: opacity 0.2s ease;
 }
 .dock-item:hover {
     background: rgba(255, 255, 255, 0.12);
-    border-color: rgba(255, 255, 255, 0.25);
-    transform: translateY(-6px) scale(1.08);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    border-color: rgba(255, 255, 255, 0.22);
+    transform: translateY(-4px) scale(1.06);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
 }
 .dock-item:hover .dock-item-icon {
     background: #00f0ff !important;
     color: #0f172a !important;
-    box-shadow: 0 0 15px #00f0ff;
+    box-shadow: 0 0 12px #00f0ff;
 }
 .dock-item:hover .dock-item-label {
     opacity: 1;
@@ -93,9 +93,9 @@
 }
 .dock-divider {
     width: 1px;
-    height: 36px;
+    height: 28px;
     background: rgba(255, 255, 255, 0.15);
-    margin: 0 4px;
+    margin: 0 2px;
 }
 .dock-minimize-btn {
     background: transparent;
@@ -223,34 +223,9 @@
 
 <!-- 1. FLOATING CAPSULE DOCK (Section Shortcuts) -->
 <div class="floating-capsule-dock" id="floatingCapsuleDock">
-    <a href="<?= base_url() ?>" class="dock-item">
-        <div class="dock-item-icon" style="background: linear-gradient(135deg, #0284c7, #0369a1);"><i class="fa-solid fa-house text-white"></i></div>
-        <span class="dock-item-label">หน้าหลัก</span>
-    </a>
-
-    <a href="<?= base_url('news') ?>" class="dock-item">
-        <div class="dock-item-icon" style="background: linear-gradient(135deg, #0284c7, #0369a1);"><i class="fa-solid fa-newspaper text-white"></i></div>
-        <span class="dock-item-label">ข่าวสาร</span>
-    </a>
-
-    <a href="<?= base_url('calendar') ?>" class="dock-item">
-        <div class="dock-item-icon" style="background: linear-gradient(135deg, #0284c7, #0369a1);"><i class="fa-solid fa-calendar-check text-white"></i></div>
-        <span class="dock-item-label">ปฏิทินกิจกรรม</span>
-    </a>
-
-    <a href="<?= base_url('procurement') ?>" class="dock-item">
-        <div class="dock-item-icon" style="background: linear-gradient(135deg, #0284c7, #0369a1);"><i class="fa-solid fa-file-invoice-dollar text-white"></i></div>
-        <span class="dock-item-label">จัดซื้อจัดจ้าง</span>
-    </a>
-
     <a href="<?= base_url('gallery') ?>" class="dock-item">
         <div class="dock-item-icon" style="background: linear-gradient(135deg, #475569, #334155);"><i class="fa-solid fa-camera-retro text-white"></i></div>
         <span class="dock-item-label">คลังภาพ</span>
-    </a>
-
-    <a href="<?= base_url('videos') ?>" class="dock-item">
-        <div class="dock-item-icon" style="background: linear-gradient(135deg, #475569, #334155);"><i class="fa-solid fa-play text-white"></i></div>
-        <span class="dock-item-label">วิดีทัศน์</span>
     </a>
 
     <a href="<?= base_url('documents') ?>" class="dock-item">
@@ -269,16 +244,6 @@
     </a>
 
     <div class="dock-divider"></div>
-
-    <a href="javascript:void(0);" onclick="if(typeof NoraAI!=='undefined'){NoraAI.toggle();}" class="dock-item" title="ผู้ช่วยตอบคำถามประชาชน 24 ชม. (น้องโนรา AI)">
-        <div class="dock-item-icon" style="background: linear-gradient(135deg, #d97706, #b45309);"><i class="fa-solid fa-crown text-white animate-bounce-slow"></i></div>
-        <span class="dock-item-label">น้องโนรา AI</span>
-    </a>
-
-    <a href="#services" onclick="event.preventDefault(); scrollToSectionOrHome('services');" class="dock-item">
-        <div class="dock-item-icon" style="background: linear-gradient(135deg, #d97706, #b45309);"><i class="fa-solid fa-hand-pointer text-white"></i></div>
-        <span class="dock-item-label">บริการประชาชน</span>
-    </a>
 
     <a href="javascript:void(0);" onclick="openOmniSearch()" class="dock-item">
         <div class="dock-item-icon" style="background: linear-gradient(135deg, #d97706, #b45309);"><i class="fa-solid fa-magnifying-glass text-white"></i></div>

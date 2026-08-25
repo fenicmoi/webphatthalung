@@ -73,8 +73,8 @@ $layoutMode = $cfg['layout_mode'] ?? 'hybrid_widescreen';
                         <i class="fa-solid fa-wand-magic-sparkles text-warning fs-5"></i>
                     </span>
                     <div>
-                        <h5 class="fw-bold mb-0 text-white" style="font-size: 1.15rem; letter-spacing: -0.2px;">ระบบค้นหาอัจฉริยะ</h5>
-                        <small class="text-light opacity-75" style="font-size: 0.78rem;">Smart AI & Voice Search</small>
+                        <h5 class="fw-bold mb-0 text-white" style="font-size: 1.15rem; letter-spacing: -0.2px;"><?= site_text('search_dock_title', 'ระบบค้นหาอัจฉริยะ', 'หัวข้อระบบค้นหา') ?></h5>
+                        <small class="text-light opacity-75" style="font-size: 0.78rem;"><?= site_text('search_dock_subtitle', 'Smart AI & Voice Search', 'คำโปรยระบบค้นหา') ?></small>
                     </div>
                 </div>
             </div>
@@ -89,7 +89,7 @@ $layoutMode = $cfg['layout_mode'] ?? 'hybrid_widescreen';
                         <i class="fa-solid fa-search" style="color: #047857; font-size: 1.05rem;"></i>
                     </div>
                     
-                    <input type="text" id="globalSearchInput" placeholder="พิมพ์หรือกดไมโครโฟนเพื่อค้นหา (เช่น e-bidding, ทะเลน้อย, ผู้ว่า)..." 
+                    <input type="text" id="globalSearchInput" placeholder="<?= site_text('search_input_placeholder', 'พิมพ์หรือกดไมโครโฟนเพื่อค้นหา (เช่น e-bidding, ทะเลน้อย, ผู้ว่า)...', 'ข้อความกล่องค้นหา', true) ?>" 
                            class="flex-grow-1 px-3"
                            style="border: none; background: transparent; color: #0f172a; outline: none; font-size: 1.02rem; font-weight: 500;" autocomplete="off"
                            onkeydown="if(event.key === 'Enter') triggerSearchSubmit();">

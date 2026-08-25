@@ -130,6 +130,12 @@
 
                 <div class="sidebar-menu-title">การตั้งค่าระบบ (SETTINGS)</div>
                 <li>
+                    <a href="<?= base_url('admin/site-texts') ?>" class="sidebar-link <?= ($activeMenu ?? '') === 'site_texts' ? 'active' : '' ?>">
+                        <i class="fa-solid fa-pen-to-square text-warning"></i>
+                        <span>แก้ไขข้อความทั่วเว็บ</span>
+                    </a>
+                </li>
+                <li>
                     <a href="<?= base_url('admin/menu') ?>" class="sidebar-link <?= ($activeMenu ?? '') === 'menu_manager' ? 'active' : '' ?>">
                         <i class="fa-solid fa-compass text-teal" style="color: #14b8a6;"></i>
                         <span>จัดการเมนูบาร์เว็บ</span>

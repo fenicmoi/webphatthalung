@@ -57,6 +57,11 @@ $routes->group('admin', ['namespace' => 'App\Controllers\Admin', 'filter' => 'au
     $routes->post('menu/save', 'MenuManager::save');
     $routes->post('menu/reset', 'MenuManager::reset');
 
+    // Universal Site Text & Content Management Routes
+    $routes->get('site-texts', 'SiteTextManager::index');
+    $routes->post('site-texts/save', 'SiteTextManager::save');
+    $routes->post('site-texts/reset', 'SiteTextManager::reset');
+
     // Banner & Widescreen Layout Management Routes
     $routes->get('banners', 'BannerManager::index');
     $routes->post('banners/save', 'BannerManager::save');

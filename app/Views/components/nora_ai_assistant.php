@@ -14,32 +14,32 @@
    ========================================================================== */
 .nora-floating-launcher {
     position: fixed;
-    bottom: 25px;
-    right: 25px;
+    bottom: 22px;
+    right: 22px;
     z-index: 1045;
     background: linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #b45309 100%);
     color: #fff !important;
-    border: 3px solid #fef3c7;
+    border: 2px solid #fef3c7;
     border-radius: 50px;
-    padding: 12px 22px;
-    box-shadow: 0 10px 25px rgba(217, 119, 6, 0.45), 0 0 15px rgba(245, 158, 11, 0.3);
+    padding: 6px 14px 6px 6px;
+    box-shadow: 0 8px 24px rgba(217, 119, 6, 0.4), 0 0 15px rgba(245, 158, 11, 0.25);
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     cursor: pointer;
     font-weight: 700;
-    font-size: 1.05rem;
+    font-size: 0.85rem;
     transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     text-decoration: none;
 }
 .nora-floating-launcher:hover {
-    transform: translateY(-5px) scale(1.04);
-    box-shadow: 0 15px 35px rgba(217, 119, 6, 0.6);
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: 0 12px 30px rgba(217, 119, 6, 0.6);
     color: #fff;
 }
 .nora-avatar-icon {
-    width: 34px;
-    height: 34px;
+    width: 36px;
+    height: 36px;
     background: #fff;
     color: #d97706;
     border-radius: 50%;
@@ -48,6 +48,33 @@
     justify-content: center;
     font-size: 1.15rem;
     box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    flex-shrink: 0;
+    position: relative;
+}
+.nora-online-dot {
+    position: absolute;
+    top: -1px;
+    right: -1px;
+    width: 10px;
+    height: 10px;
+    background: #10b981;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 6px #10b981;
+}
+@media (max-width: 1199px) {
+    .nora-floating-launcher {
+        padding: 0;
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        justify-content: center;
+    }
+    .nora-avatar-icon {
+        width: 42px;
+        height: 42px;
+        box-shadow: none;
+    }
 }
 
 /* Chat Drawer Window */
@@ -262,12 +289,12 @@
 
 <!-- FLOATING LAUNCHER BUTTON -->
 <?php if ($noraSettings['is_enabled']): ?>
-<button type="button" class="nora-floating-launcher" id="noraLauncherBtn" onclick="NoraAI.toggle()" title="เปิดผู้ช่วยตอบคำถามประชาชน น้องโนรา AI">
-    <div class="nora-avatar-icon"><i class="fa-solid fa-crown"></i></div>
-    <div class="d-flex flex-column text-start lh-1">
-        <span class="small fw-normal opacity-90" style="font-size: 0.72rem;">ผู้ช่วยอัจฉริยะ 24 ชม.</span>
-        <span>💬 น้องโนรา AI</span>
+<button type="button" class="nora-floating-launcher" id="noraLauncherBtn" onclick="NoraAI.toggle()" title="เปิดผู้ช่วยตอบคำถามประชาชน น้องโนรา AI 24 ชม.">
+    <div class="nora-avatar-icon">
+        <i class="fa-solid fa-crown text-warning"></i>
+        <span class="nora-online-dot"></span>
     </div>
+    <span class="d-none d-xl-inline-block text-nowrap">น้องโนรา AI</span>
 </button>
 <?php endif; ?>
 

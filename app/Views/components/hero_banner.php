@@ -1,15 +1,17 @@
 <?php
-$bannerCfg = function_exists('get_banner_settings') ? get_banner_settings() : ['layout_mode' => 'hybrid_widescreen', 'banner_height' => '540', 'interval_ms' => '7500', 'show_weather' => '1', 'show_giahs' => '1'];
+$bannerCfg = function_exists('get_banner_settings') ? get_banner_settings() : ['show_banner' => '1', 'layout_mode' => 'hybrid_widescreen', 'banner_height' => '540', 'interval_ms' => '7500', 'show_weather' => '1', 'show_giahs' => '1'];
 $banners = function_exists('get_site_banners') ? get_site_banners() : [];
+$showBanner = (!isset($bannerCfg['show_banner']) || $bannerCfg['show_banner'] == '1');
+
+if (!$showBanner || empty($banners)) {
+    return; // Do not render if admin disabled banner or deleted all banners
+}
+
 $isWidescreen = (($bannerCfg['layout_mode'] ?? 'hybrid_widescreen') === 'hybrid_widescreen');
 $bannerHeight = $bannerCfg['banner_height'] ?? '540';
 $intervalMs = $bannerCfg['interval_ms'] ?? '7500';
 $showWeather = (!isset($bannerCfg['show_weather']) || $bannerCfg['show_weather'] != '0');
 $showGiahs = (!isset($bannerCfg['show_giahs']) || $bannerCfg['show_giahs'] != '0');
-
-if (empty($banners)) {
-    return; // Do not render if admin deleted all banners
-}
 ?>
 
 <!-- WIDESCREEN HYBRID & KINETIC HERO BANNER COMPONENT -->
@@ -30,6 +32,7 @@ if (empty($banners)) {
             $styleClass = $slide['style_class'] ?? 'slide-bg-sane-muanglung';
             $bgType = $slide['bg_type'] ?? 'image';
             $imgPath = !empty($slide['image_path']) ? base_url($slide['image_path']) : '';
+            $badgeSubtitle = !empty($slide['subtitle']) ? $slide['subtitle'] : site_text('hero_badge_default', 'อัญมณีแห่งภาคใต้ • มรดกเกษตรโลก GIAHS', 'ข้อความ Badge แบนเนอร์');
         ?>
         <div class="carousel-item <?= $isActive ?> smart-slide-item <?= $styleClass ?> h-100" style="height: <?= $bannerHeight ?>px !important;">
             
@@ -65,7 +68,7 @@ if (empty($banners)) {
                             <div class="anim-from-left delay-1 pointer-events-auto">
                                 <div class="badge-glass-glow">
                                     <i class="fa-solid fa-gem text-warning me-2 animate-pulse" style="font-size: 1.1rem;"></i>
-                                    <span><?= !empty($slide['subtitle']) ? $slide['subtitle'] : 'อัญมณีแห่งภาคใต้ • มรดกเกษตรโลก GIAHS' ?></span>
+                                    <span><?= $badgeSubtitle ?></span>
                                 </div>
                             </div>
                         <?php else: ?>
@@ -77,8 +80,8 @@ if (empty($banners)) {
                                 <div class="weather-glass-node">
                                     <i class="fa-solid fa-cloud-sun text-warning fs-1 me-3"></i>
                                     <div>
-                                        <small class="text-info fw-bold" style="font-size: 0.75rem;"><i class="fa-solid fa-location-dot me-1"></i>จุดชมวิวทะเลน้อย พัทลุง</small>
-                                        <h6 class="mb-0 fw-bold text-white mt-1" style="font-size: 0.95rem;">28°C แสงสวย อากาศสดชื่น</h6>
+                                        <small class="text-info fw-bold" style="font-size: 0.75rem;"><i class="fa-solid fa-location-dot me-1"></i><?= site_text('hero_weather_title', 'จุดชมวิวทะเลน้อย พัทลุง', 'จุดชมวิวสภาพอากาศ') ?></small>
+                                        <h6 class="mb-0 fw-bold text-white mt-1" style="font-size: 0.95rem;"><?= site_text('hero_weather_desc', '28°C แสงสวย อากาศสดชื่น', 'ข้อความสภาพอากาศ') ?></h6>
                                     </div>
                                 </div>
                             </div>
@@ -103,7 +106,7 @@ if (empty($banners)) {
                                         <?= $slide['desc'] ?>
                                     </p>
                                     <div class="d-flex align-items-center justify-content-between pt-2" style="border-top: 1px solid rgba(255,255,255,0.15);">
-                                        <small class="text-warning fw-bold d-flex align-items-center"><i class="fa-solid fa-camera-retro me-1"></i> จุดถ่ายภาพจุดชมวิว 360°</small>
+                                        <small class="text-warning fw-bold d-flex align-items-center"><i class="fa-solid fa-camera-retro me-1"></i> <?= site_text('hero_landmark_caption', 'จุดถ่ายภาพจุดชมวิว 360°', 'คำบรรยายจุดถ่ายภาพ') ?></small>
                                         <a href="<?= !empty($slide['button_url']) ? $slide['button_url'] : '#tourism' ?>" onclick="App.toast('เปิดระบบบริการอัจฉริยะ...', 'success')" class="btn btn-sm btn-warning fw-bold text-dark px-3 rounded-pill hover-lift">
                                             <i class="<?= !empty($slide['button_icon']) ? $slide['button_icon'] : 'fa-solid fa-compass' ?> me-1"></i> <?= !empty($slide['button_text']) ? $slide['button_text'] : 'เข้าใช้งาน' ?>
                                         </a>

@@ -249,6 +249,9 @@
     <?php // Include W3C WCAG AAA Universal Accessibility Suite & Thai AI TTS ?>
     <?= $this->include('components/universal_accessibility_aaa') ?>
 
+    <?php // Include Universal On-Page Live Text & Section Editor for Officers ?>
+    <?= $this->include('components/live_text_editor') ?>
+
     <!-- Universal Smart Omni-Search Modal (Phatthalung Universal Search Engine) -->
     <div class="modal fade" id="omniSearchModal" tabindex="-1" aria-labelledby="omniSearchModalLabel" aria-hidden="true" data-bs-backdrop="static">
         <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
