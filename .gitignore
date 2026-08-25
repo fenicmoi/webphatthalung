@@ -10,3 +10,6 @@ logs/
 *.log
 /tmp/
 writable/cache/
+writable/session/
+writable/logs/
+writable/debugbar/
