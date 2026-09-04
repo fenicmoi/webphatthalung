@@ -86,8 +86,8 @@ class Database extends Config
 
         if (
             in_array($host, ['localhost', 'localhost:8080', '127.0.0.1', '::1'], true) ||
-            (is_string($host) && (str_ends_with($host, '.local') || str_ends_with($host, '.test'))) ||
-            (is_cli() && (DIRECTORY_SEPARATOR === '\\' || str_contains(__DIR__, 'wamp64')))
+            (is_string($host) && (substr($host, -6) === '.local' || substr($host, -5) === '.test')) ||
+            (is_cli() && (DIRECTORY_SEPARATOR === '\\' || strpos(__DIR__, 'wamp64') !== false))
         ) {
             $isLocal = true;
         }

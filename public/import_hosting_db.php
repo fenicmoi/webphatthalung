@@ -7,6 +7,23 @@ error_reporting(E_ALL);
 ini_set('display_errors', '1');
 set_time_limit(300);
 
+// Polyfills for PHP 7.4 compatibility
+if (!function_exists('str_starts_with')) {
+    function str_starts_with($haystack, $needle) {
+        return (string)$needle !== '' && strncmp($haystack, $needle, strlen($needle)) === 0;
+    }
+}
+if (!function_exists('str_ends_with')) {
+    function str_ends_with($haystack, $needle) {
+        return $needle === '' || $needle === substr($haystack, -strlen($needle));
+    }
+}
+if (!function_exists('str_contains')) {
+    function str_contains($haystack, $needle) {
+        return $needle !== '' && mb_strpos($haystack, $needle) !== false;
+    }
+}
+
 $dbHost = 'localhost';
 $dbUser = 'phatthalun_newdb';
 $dbPass = 'hYxuV8ypi4';
