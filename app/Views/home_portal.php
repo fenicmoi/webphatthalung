@@ -160,7 +160,13 @@ $layoutMode = $cfg['layout_mode'] ?? 'hybrid_widescreen';
 <?= $this->include('components/provincial_policy_hub') ?>
 
 <!-- 3. NEWS & MEDIA HUB (ศูนย์รวมข่าวสารและสื่อมัลติมีเดีย) -->
-<?= $this->include('components/news_media_hub') ?>
+<?php 
+try {
+    echo $this->include('components/news_media_hub');
+} catch (\Throwable $e) {
+    echo '<!-- news_media_hub error handled -->';
+}
+?>
 
 <!-- 2. PUBLIC e-SERVICES GRID (ซ่อนไว้ชั่วคราวตามคำขอ) -->
 <?php /*

@@ -47,8 +47,18 @@ class PrdNewsService
             }
         }
 
+        // 2. If running web request and cache does not exist or curl is slow, return cached fallback or empty
+        if (!is_cli() && !function_exists('curl_init')) {
+            return [];
+        }
+
         // 2. Fetch exclusively from สำนักงานประชาสัมพันธ์จังหวัดพัทลุง (phatthalung.prd.go.th)
-        $ptlItems = self::fetchFromPtlPrdSite();
+        $ptlItems = [];
+        try {
+            $ptlItems = self::fetchFromPtlPrdSite();
+        } catch (\Throwable $e) {
+            $ptlItems = [];
+        }
 
         // 3. Sort by date descending
         usort($ptlItems, function ($a, $b) {
