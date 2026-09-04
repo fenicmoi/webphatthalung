@@ -297,7 +297,7 @@ function initPillarChart() {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-                legend: { position: 'bottom', labels: { boxWidth: 12, font: { family: 'Prompt', size: 11 } } },
+                legend: { position: 'bottom', labels: { boxWidth: 12, font: { family: 'Sarabun', size: 12 } } },
                 tooltip: {
                     callbacks: {
                         label: function(c) {
@@ -332,7 +332,7 @@ function initStatusChart() {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-                legend: { position: 'bottom', labels: { boxWidth: 12, font: { family: 'Prompt', size: 12 } } }
+                legend: { position: 'bottom', labels: { boxWidth: 12, font: { family: 'Sarabun', size: 12 } } }
             }
         }
     });
@@ -377,7 +377,7 @@ function initDistrictChart() {
                 }
             },
             plugins: {
-                legend: { position: 'top', labels: { font: { family: 'Prompt' } } }
+                legend: { position: 'top', labels: { font: { family: 'Sarabun' } } }
             }
         }
     });

@@ -104,25 +104,55 @@ class PublicData extends BaseController
      */
     public function submitRequest()
     {
-        $fullName = $this->request->getPost('full_name');
-        $idCard = $this->request->getPost('id_card_last4');
-        $serviceType = $this->request->getPost('service_type');
-        $description = $this->request->getPost('description');
+        $fullName    = trim($this->request->getPost('full_name') ?? '');
+        $contactInfo = trim($this->request->getPost('contact_info') ?? '');
+        $serviceType = trim($this->request->getPost('service_type') ?? 'บริการทั่วไป');
+        $description = trim($this->request->getPost('description') ?? '');
 
         if (empty($fullName) || empty($description)) {
             return $this->respond([
-                'status' => 'error',
+                'status'  => 'error',
                 'message' => 'กรุณากรอกชื่อ-นามสกุล และรายละเอียดคำร้องให้ครบถ้วนก่อนส่ง'
             ], 400);
         }
 
-        // สร้างรหัสอ้างอิงอัตโนมัติ (REQ-XXXXX)
-        $trackingCode = 'PHAT-' . rand(10000, 99999);
+        $contactModel = new \App\Models\CitizenContactModel();
+        $trackingCode = \App\Models\CitizenContactModel::generateTrackingCode();
+
+        $phone = '';
+        $email = '';
+        if (str_contains($contactInfo, '@')) {
+            $email = $contactInfo;
+        } else {
+            $phone = $contactInfo;
+        }
+
+        $insertData = [
+            'tracking_code' => $trackingCode,
+            'full_name'     => $fullName,
+            'phone'         => !empty($phone) ? $phone : 'ระบุในข้อความ',
+            'email'         => !empty($email) ? $email : null,
+            'district'      => 'เมืองพัทลุง',
+            'category'      => 'general',
+            'subject'       => $serviceType,
+            'message'       => $description,
+            'status'        => 'pending',
+            'ip_address'    => $this->request->getIPAddress(),
+        ];
+
+        try {
+            $contactModel->insert($insertData);
+            $insertData['category_name'] = $serviceType;
+            \App\Libraries\LineNotifyService::notifyNewContact($insertData);
+        } catch (\Throwable $e) {
+            log_message('error', '[PublicData::submitRequest] ' . $e->getMessage());
+        }
 
         return $this->respond([
-            'status' => 'success',
+            'status'        => 'success',
             'tracking_code' => $trackingCode,
-            'message' => 'ระบบทำการรับเรื่องเรียบร้อย! รหัสติดตามของคุณคือ ' . $trackingCode . ' เจ้าหน้าที่ที่เกี่ยวข้องจะเร่งดำเนินการภายใน 24 ชม.'
+            'message'       => 'ระบบทำการรับเรื่องเรียบร้อย! รหัสติดตามของคุณคือ ' . $trackingCode . ' เจ้าหน้าที่ที่เกี่ยวข้องจะเร่งดำเนินการภายใน 24 ชม.'
         ], 200);
     }
 }
+

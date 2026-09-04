@@ -156,6 +156,9 @@ $layoutMode = $cfg['layout_mode'] ?? 'hybrid_widescreen';
     </div>
 </section>
 
+<!-- 1.2 PROVINCIAL POLICY, ROYAL INITIATIVES & STRATEGIC HUB (แถบวิสัยทัศน์ แบนเนอร์พระราชดำริ ปกสมุดยุทธศาสตร์ และนโยบายผู้ว่าฯ) -->
+<?= $this->include('components/provincial_policy_hub') ?>
+
 <!-- 3. NEWS & MEDIA HUB (ศูนย์รวมข่าวสารและสื่อมัลติมีเดีย) -->
 <?= $this->include('components/news_media_hub') ?>
 
@@ -546,47 +549,6 @@ function renderSearchResults(results, query) {
 }
 </script>
 
-<!-- 5. DYNAMIC FOOTER & AGENCY CREDENTIALS -->
-<footer class="mt-5 pt-4 border-top" style="border-color: var(--glass-border) !important;">
-    <div class="glass-card p-4 rounded-4 mb-4" style="background: var(--glass-bg);">
-        <div class="row g-4 align-items-center">
-            <div class="col-lg-6">
-                <h5 class="fw-bold mb-2 text-primary d-flex align-items-center gap-2">
-                    <?php $footerLogo = function_exists('get_site_logo') ? get_site_logo() : ''; ?>
-                    <?php if (!empty($footerLogo)): ?>
-                        <img src="<?= htmlspecialchars($footerLogo) ?>" alt="Logo" style="height: 35px; width: auto; max-width: 45px; object-fit: contain;">
-                    <?php else: ?>
-                        <i class="fa-solid fa-building-flag me-1"></i>
-                    <?php endif; ?>
-                    <span><?= htmlspecialchars($cfg['site_title_th'] ?? 'จังหวัดพัทลุง') ?></span>
-                </h5>
-                <p class="text-secondary mb-2" style="font-size: 0.9rem;">
-                    <i class="fa-solid fa-location-dot me-2 text-danger"></i><?= htmlspecialchars($cfg['address'] ?? '') ?>
-                </p>
-                <div class="d-flex flex-wrap gap-3 mt-2" style="font-size: 0.9rem; color: var(--text-secondary);">
-                    <span><i class="fa-solid fa-phone text-success me-1"></i> สายตรง: <strong class="text-primary"><?= htmlspecialchars($cfg['contact_phone'] ?? '-') ?></strong></span>
-                    <span><i class="fa-solid fa-envelope text-warning me-1"></i> อีเมล: <strong class="text-primary"><?= htmlspecialchars($cfg['contact_email'] ?? '-') ?></strong></span>
-                </div>
-            </div>
-            <div class="col-lg-6 text-lg-end">
-                <div class="d-flex justify-content-lg-end gap-3 align-items-center">
-                    <?php if(!empty($cfg['fb_url'])): ?>
-                    <a href="<?= htmlspecialchars($cfg['fb_url']) ?>" target="_blank" class="btn-modern-outline text-decoration-none" style="padding: 0.5rem 1rem; font-size: 0.9rem;">
-                        <i class="fa-brands fa-facebook me-2 text-primary"></i> Facebook ประชาสัมพันธ์
-                    </a>
-                    <?php endif; ?>
-                    <?php if(!empty($cfg['line_id'])): ?>
-                    <span class="glass-badge" style="font-size: 0.9rem; padding: 0.6rem 1rem;">
-                        <i class="fa-brands fa-line text-success me-1" style="font-size: 1.2rem;"></i> LINE Official: <strong class="ms-1"><?= htmlspecialchars($cfg['line_id']) ?></strong>
-                    </span>
-                    <?php endif; ?>
-                </div>
-                <small class="d-block text-muted mt-3" style="font-size: 0.8rem;">
-                    © 2026 <?= htmlspecialchars($cfg['site_title_en'] ?? 'Phatthalung Portal') ?>. Developed with CodeIgniter 4 Interactive SPA Architecture.
-                </small>
-            </div>
-        </div>
-    </div>
-</footer>
+
 
 <?= $this->endSection() ?>

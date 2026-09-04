@@ -6,6 +6,18 @@ if (!function_exists('str_starts_with')) {
     }
 }
 
+if (!function_exists('str_ends_with')) {
+    function str_ends_with($haystack, $needle) {
+        return $needle === '' || $needle === substr($haystack, -strlen($needle));
+    }
+}
+
+if (!function_exists('str_contains')) {
+    function str_contains($haystack, $needle) {
+        return $needle !== '' && mb_strpos($haystack, $needle) !== false;
+    }
+}
+
 if (!function_exists('get_site_settings')) {
     /**
      * ดึงค่าการตั้งค่าเว็บไซต์ (จากตาราง DB หรือ JSON file)
@@ -17,7 +29,7 @@ if (!function_exists('get_site_settings')) {
             'site_title_th'    => 'จังหวัดพัทลุง',
             'site_title_en'    => 'Phatthalung Province',
             'slogan'           => 'เมืองหนังโนราห์ อู่นาข้าว พราวน้ำตก แหล่งนกน้ำ ทะเลสาบงาม เขาอกทะลุ น้ำพุร้อน',
-            'contact_email'    => 'contact@phatthalung.go.th',
+            'contact_email'    => 'phatthalung@moi.go.th',
             'contact_phone'    => '074-613409',
             'address'          => 'ศาลากลางจังหวัดพัทลุง ถนนราเมศวร์ ตำบลคูหาสวรรค์ อำเภอเมืองพัทลุง 93000',
             'maintenance_mode' => '0',
@@ -217,7 +229,7 @@ if (!function_exists('get_site_texts')) {
             'site_slogan'              => 'เมืองหนังโนราห์ อู่นาข้าว พราวน้ำตก แหล่งนกน้ำ ทะเลสาบงาม เขาอกทะลุ น้ำพุร้อน',
             'footer_address'           => 'ศาลากลางจังหวัดพัทลุง ถนนราเมศวร์ ตำบลคูหาสวรรค์ อำเภอเมืองพัทลุง 93000',
             'footer_phone'             => '074-613409',
-            'footer_email'             => 'contact@phatthalung.go.th',
+            'footer_email'             => 'phatthalung@moi.go.th',
             'footer_copyright'         => 'สงวนลิขสิทธิ์ © 2026 สำนักงานจังหวัดพัทลุง ศาลากลางจังหวัดพัทลุง',
         ];
 

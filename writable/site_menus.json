@@ -68,19 +68,19 @@
             {
                 "id": "sub_6a7172486e72d",
                 "title": "ยื่นเรื่องร้องเรียน ศูนย์ดำรงธรรม",
-                "url": "#damrongtham",
+                "url": "contact",
                 "target": "_self"
             },
             {
                 "id": "sub_6a7172486e72e",
                 "title": "ระบบตรวจสอบรหัสสถานะคำร้อง",
-                "url": "#tracking",
+                "url": "contact",
                 "target": "_self"
             },
             {
                 "id": "sub_6a7172486e72f",
                 "title": "คลังดาวน์โหลดแบบฟอร์มประชาชน",
-                "url": "#forms",
+                "url": "documents",
                 "target": "_self"
             }
         ]
@@ -101,13 +101,13 @@
             {
                 "id": "sub_6a7172486e732",
                 "title": "ประกาศจัดซื้อจัดจ้างภาครัฐ (e-Bidding)",
-                "url": "#news-procurement",
+                "url": "procurement",
                 "target": "_self"
             },
             {
                 "id": "sub_6a7172486e733",
-                "title": "ท่องเที่ยวและวัฒนธรรมเมืองหนังโนราห์",
-                "url": "#news-tourism",
+                "title": "เอกสารดาวน์โหลด",
+                "url": "documents",
                 "target": "_self"
             }
         ]
@@ -115,7 +115,7 @@
     {
         "id": "menu_6a7172486e734",
         "title": "ติดต่อเรา",
-        "url": "#contact",
+        "url": "contact",
         "icon": "fa-solid fa-phone-volume",
         "target": "_self",
         "children": []

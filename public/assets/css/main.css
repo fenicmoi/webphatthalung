@@ -65,7 +65,9 @@
 
 /* --- Global Base Styles --- */
 body {
-    font-family: 'Prompt', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Sarabun', 'TH Sarabun New', 'Prompt', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 1.05rem;
+    line-height: 1.65;
     background-color: var(--bg-primary);
     color: var(--text-primary);
     transition: background-color 0.3s ease, color 0.3s ease;
@@ -245,7 +247,9 @@ body {
 .admin-body-classic {
     background-color: #f8fafc !important;
     color: #1e293b !important;
-    font-family: 'Prompt', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Sarabun', 'TH Sarabun New', 'Prompt', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 1.02rem;
+    line-height: 1.6;
 }
 
 .admin-wrapper {
@@ -817,11 +821,11 @@ body {
     border-bottom-color: #10b981;
 }
 
-/* Dropdown styling */
+/* Dropdown styling & Desktop Hover Transition */
 .gov-dropdown-menu {
     border-radius: 12px;
     background: #ffffff;
-    box-shadow: 0 12px 35px rgba(0,0,0,0.15);
+    box-shadow: 0 14px 40px rgba(0, 0, 0, 0.18);
     border: 1px solid #e2e8f0 !important;
     min-width: 240px;
     padding: 0.5rem;
@@ -831,7 +835,7 @@ body {
 .gov-dropdown-menu .dropdown-item {
     color: #1e293b !important;
     border-radius: 8px;
-    padding: 0.5rem 0.85rem;
+    padding: 0.55rem 0.85rem;
     font-size: 0.92rem;
     font-weight: 500;
     transition: all 0.15s ease;
@@ -840,7 +844,53 @@ body {
 .gov-dropdown-menu .dropdown-item:hover {
     background-color: #ecfdf5;
     color: #047857 !important;
-    transform: translateX(3px);
+    transform: translateX(4px);
+}
+
+/* Open dropdown automatically on mouse hover (Desktop: >= 1200px) */
+@media (min-width: 1200px) {
+    .gov-nav-item.dropdown {
+        position: relative;
+    }
+
+    .gov-nav-item.dropdown > .gov-dropdown-menu {
+        display: block;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(8px);
+        transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1), 
+                    transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), 
+                    visibility 0.2s;
+        pointer-events: none;
+        top: 100%;
+        left: 0;
+    }
+
+    .gov-nav-item.dropdown:hover > .gov-dropdown-menu,
+    .gov-nav-item.dropdown.show > .gov-dropdown-menu,
+    .gov-nav-item.dropdown > .gov-dropdown-menu.show {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+        pointer-events: auto;
+    }
+
+    .gov-nav-item.dropdown > .dropdown-menu-end {
+        left: auto;
+        right: 0;
+    }
+
+    /* Bridge gap between link and menu to avoid flicker */
+    .gov-nav-item.dropdown::after {
+        content: '';
+        position: absolute;
+        bottom: -8px;
+        left: 0;
+        right: 0;
+        height: 8px;
+        background: transparent;
+        z-index: 1050;
+    }
 }
 
 /* Utility Station (ขวามือสุด) */

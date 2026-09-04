@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 240" width="200" height="240">
+  <defs>
+    <!-- Soft Glow Filter -->
+    <filter id="emblemGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="0.25" />
+    </filter>
+  </defs>
+
+  <g filter="url(#emblemGlow)">
+    <!-- 1. TOP OUTER CORNER DIAMOND (Center: 100, 35) -->
+    <g transform="translate(0, 0)">
+      <polygon points="100,10 125,35 100,60 75,35" fill="#f97316" stroke="#fbbf24" stroke-width="2" />
+      <polygon points="100,16 119,35 100,54 81,35" fill="#e11d48" />
+      <polygon points="100,22 113,35 100,48 87,35" fill="#ffffff" />
+      <polygon points="100,26 109,35 100,44 91,35" fill="#1d4ed8" />
+    </g>
+
+    <!-- 2. LEFT OUTER CORNER DIAMOND (Center: 35, 100) -->
+    <g transform="translate(0, 0)">
+      <polygon points="35,75 60,100 35,125 10,100" fill="#f97316" stroke="#fbbf24" stroke-width="2" />
+      <polygon points="35,81 54,100 35,119 16,100" fill="#e11d48" />
+      <polygon points="35,87 48,100 35,113 22,100" fill="#ffffff" />
+      <polygon points="35,91 44,100 35,109 26,100" fill="#1d4ed8" />
+    </g>
+
+    <!-- 3. RIGHT OUTER CORNER DIAMOND (Center: 165, 100) -->
+    <g transform="translate(0, 0)">
+      <polygon points="165,75 190,100 165,125 140,100" fill="#f97316" stroke="#fbbf24" stroke-width="2" />
+      <polygon points="165,81 184,100 165,119 146,100" fill="#e11d48" />
+      <polygon points="165,87 178,100 165,113 152,100" fill="#ffffff" />
+      <polygon points="165,91 174,100 165,109 156,100" fill="#1d4ed8" />
+    </g>
+
+    <!-- 4. BOTTOM OUTER CORNER DIAMOND (Center: 100, 165) -->
+    <g transform="translate(0, 0)">
+      <polygon points="100,140 125,165 100,190 75,165" fill="#f97316" stroke="#fbbf24" stroke-width="2" />
+      <polygon points="100,146 119,165 100,184 81,165" fill="#e11d48" />
+      <polygon points="100,152 113,165 100,178 87,165" fill="#ffffff" />
+      <polygon points="100,156 109,165 100,174 91,165" fill="#1d4ed8" />
+    </g>
+
+    <!-- 5. MAIN CENTRAL BLUE DIAMOND (Center: 100, 100) -->
+    <!-- Blue Bevel: Left Half (Lighter) & Right Half (Darker) -->
+    <polygon points="100,45 155,100 100,155 45,100" fill="#2563eb" stroke="#1d4ed8" stroke-width="1.5" />
+    <polygon points="100,45 155,100 100,155 100,45" fill="#1d4ed8" opacity="0.3" />
+    <polygon points="45,100 100,155 100,45" fill="#60a5fa" opacity="0.25" />
+
+    <!-- White Frame -->
+    <polygon points="100,56 144,100 100,144 56,100" fill="#ffffff" />
+
+    <!-- Red / Magenta Frame -->
+    <polygon points="100,64 136,100 100,136 64,100" fill="#e11d48" />
+
+    <!-- Center Yellow Faceted Pyramid Diamond -->
+    <!-- Top-Left Facet -->
+    <polygon points="100,72 100,100 72,100" fill="#fff04b" />
+    <!-- Top-Right Facet -->
+    <polygon points="100,72 128,100 100,100" fill="#ffd700" />
+    <!-- Bottom-Left Facet -->
+    <polygon points="72,100 100,100 100,128" fill="#eab308" />
+    <!-- Bottom-Right Facet -->
+    <polygon points="128,100 100,128 100,100" fill="#ca8a04" />
+
+    <!-- 6. FLOATING DIAMOND ACCENTS (Bottom-Left & Bottom-Right) -->
+    <!-- Bottom Left Floating Accent (Center: 65, 205) -->
+    <g transform="translate(0, 0)">
+      <polygon points="65,190 80,205 65,220 50,205" fill="#f97316" stroke="#fbbf24" stroke-width="1.5" />
+      <polygon points="65,194 76,205 65,216 54,205" fill="#e11d48" />
+      <polygon points="65,198 72,205 65,212 58,205" fill="#ffffff" />
+      <polygon points="65,201 69,205 65,209 61,205" fill="#1d4ed8" />
+    </g>
+
+    <!-- Bottom Right Floating Accent (Center: 160, 185) -->
+    <g transform="translate(0, 0)">
+      <polygon points="160,170 178,188 160,206 142,188" fill="#f97316" stroke="#fbbf24" stroke-width="1.5" />
+      <polygon points="160,175 173,188 160,201 147,188" fill="#e11d48" />
+      <polygon points="160,180 168,188 160,196 152,188" fill="#ffffff" />
+      <polygon points="160,183 165,188 160,193 155,188" fill="#1d4ed8" />
+    </g>
+  </g>
+</svg>

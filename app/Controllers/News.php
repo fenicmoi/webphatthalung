@@ -34,18 +34,46 @@ class News extends BaseController
     {
         helper('settings');
         $cat = $this->request->getGet('category');
-        $newsList = get_site_news(null, $cat, true);
         $categories = get_news_categories();
+
+        $prdCategoryName = 'ข่าวประชาสัมพันธ์ (สปชส.พัทลุง)';
+        if (!in_array($prdCategoryName, $categories, true)) {
+            $categories[] = $prdCategoryName;
+        }
 
         $egpService = new \App\Libraries\EGpService();
         $isProcurementCat = !empty($cat) && (mb_stripos($cat, 'จัดซื้อจัดจ้าง') !== false || mb_stripos($cat, 'e-gp') !== false);
         $egpProjects = $isProcurementCat ? $egpService->getPhatthalungProjects() : [];
+
+        $isPrdCat = !empty($cat) && (mb_stripos($cat, 'สปชส') !== false || mb_stripos($cat, 'สำนักงานประชาสัมพันธ์') !== false || mb_stripos($cat, 'กรมประชาสัมพันธ์') !== false || mb_stripos($cat, 'nnt') !== false || mb_stripos($cat, 'prd') !== false);
+        $prdNewsList = \App\Libraries\PrdNewsService::getPhatthalungNews(24);
+
+        if ($isPrdCat) {
+            $newsList = $prdNewsList;
+        } elseif ($isProcurementCat) {
+            $newsList = get_site_news(null, $cat, true);
+        } else {
+            $localNews = get_site_news(null, $cat, true);
+            if (empty($cat)) {
+                // Merge local provincial news + live PRD Phatthalung news when viewing "All"
+                $merged = array_merge($localNews, $prdNewsList);
+                usort($merged, function ($a, $b) {
+                    $tA = strtotime($a['created_at'] ?? '2026-01-01');
+                    $tB = strtotime($b['created_at'] ?? '2026-01-01');
+                    return $tB <=> $tA;
+                });
+                $newsList = $merged;
+            } else {
+                $newsList = $localNews;
+            }
+        }
 
         return view('news/index', [
             'newsList'          => $newsList,
             'categories'        => $categories,
             'currentCat'        => $cat,
             'isProcurementCat'  => $isProcurementCat,
+            'isPrdCat'          => $isPrdCat,
             'egpProjects'       => $egpProjects,
             'pageTitle'         => !empty($cat) ? esc($cat) . ' | ข่าวสารและประกาศ' : 'ข่าวสารและประกาศจากสำนักงาน'
         ]);
@@ -61,6 +89,31 @@ class News extends BaseController
             return redirect()->to(base_url('news'));
         }
 
+        // Check if this is a PRD News item (from NNT or สปชส.พัทลุง)
+        if (strpos((string)$id, 'prd-') === 0 || strpos((string)$id, 'ptl-prd-') === 0 || strpos((string)$id, 'ptl-') === 0) {
+            $prdNewsList = \App\Libraries\PrdNewsService::getPhatthalungNews(50);
+            $foundPrd = null;
+            foreach ($prdNewsList as $item) {
+                if (
+                    $item['id'] === $id 
+                    || strval($item['prd_news_id'] ?? '') === str_replace(['ptl-prd-', 'prd-', 'ptl-'], '', $id)
+                    || strval($item['id'] ?? '') === 'ptl-prd-' . $id
+                    || strval($item['id'] ?? '') === 'prd-' . $id
+                ) {
+                    $foundPrd = $item;
+                    break;
+                }
+            }
+            if ($foundPrd) {
+                $recentNews = array_slice($prdNewsList, 0, 4);
+                return view('news/detail', [
+                    'news'       => $foundPrd,
+                    'recentNews' => $recentNews,
+                    'pageTitle'  => $foundPrd['title']
+                ]);
+            }
+        }
+
         $news = get_news_by_id($id);
         if (!$news) {
             return redirect()->to(base_url('news'))->with('error', 'ไม่พบข่าวสารที่ท่านค้นหา หรือถูกยกเลิกการเผยแพร่ออกไปแล้ว');
@@ -72,9 +125,9 @@ class News extends BaseController
         $recentNews = get_site_news(4, null, true);
 
         return view('news/detail', [
-            'news' => $news,
+            'news'       => $news,
             'recentNews' => $recentNews,
-            'pageTitle' => $news['title']
+            'pageTitle'  => $news['title']
         ]);
     }
 

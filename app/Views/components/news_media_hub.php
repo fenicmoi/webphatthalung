@@ -2,8 +2,20 @@
 // =========================================================================
 // ศาลาประชาสัมพันธ์และสื่อเมืองลุง (News, Events, Photo Gallery & Videos Hub)
 // =========================================================================
-$homeNews = function_exists('get_site_news') ? get_site_news(6, null, true) : [];
+$localNews = function_exists('get_site_news') ? get_site_news(12, null, true) : [];
+$prdNews = class_exists('\App\Libraries\PrdNewsService') ? \App\Libraries\PrdNewsService::getPhatthalungNews(12) : [];
+$homeNews = array_merge($localNews, $prdNews);
+usort($homeNews, function ($a, $b) {
+    $tA = strtotime($a['created_at'] ?? '2026-01-01');
+    $tB = strtotime($b['created_at'] ?? '2026-01-01');
+    return $tB <=> $tA;
+});
+$homeNews = array_slice($homeNews, 0, 6);
 $newsCats = function_exists('get_news_categories') ? get_news_categories() : [];
+$prdCatName = 'ข่าวประชาสัมพันธ์ (สปชส.พัทลุง)';
+if (!in_array($prdCatName, $newsCats, true)) {
+    $newsCats[] = $prdCatName;
+}
 $homeEvents = function_exists('get_site_events') ? get_site_events(true) : [];
 $homeGalleryAlbums = function_exists('get_gallery_albums') ? get_gallery_albums(4, null, true) : [];
 $totalAlbums = function_exists('get_gallery_albums') ? count(get_gallery_albums()) : 0;
@@ -304,16 +316,43 @@ $isOfficer = session()->get('isLoggedIn');
 [data-theme="dark"] .hub-cal-day-num {
     color: #cbd5e1;
 }
+
+/* News Hub Container with Mathematical Seamless Woven Pattern */
+.news-media-hub-card {
+    position: relative;
+    border-radius: 24px;
+    border: 1.5px solid #d1e7dd !important;
+    background-color: #f6faf7;
+    background-image: 
+        linear-gradient(180deg, rgba(255, 255, 255, 0.80) 0%, rgba(255, 255, 255, 0.90) 100%),
+        url('<?= base_url('assets/images/banners/phatthalung_woven_pattern.svg?v=3') ?>');
+    background-size: 80px 80px;
+    background-repeat: repeat;
+    background-position: top center;
+    box-shadow: 0 10px 30px rgba(4, 120, 87, 0.06);
+    overflow: hidden;
+}
+
+[data-theme="dark"] .news-media-hub-card {
+    background-color: #0f172a;
+    background-image: 
+        linear-gradient(180deg, rgba(15, 23, 42, 0.86) 0%, rgba(15, 23, 42, 0.93) 100%),
+        url('<?= base_url('assets/images/banners/phatthalung_woven_pattern.svg?v=3') ?>');
+    background-size: 80px 80px;
+    background-repeat: repeat;
+    background-position: top center;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+}
 </style>
 
 <section id="news-media-hub" class="my-5 py-2">
-    <div class="card border-0 p-4 p-lg-5 shadow-sm" style="border-radius: 24px; background: var(--card-bg, #ffffff);">
+    <div class="card news-media-hub-card border-0 p-4 p-lg-5 shadow-sm">
         
         <!-- Hub Header & Main Tabs -->
         <div class="mb-4">
             <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
-                <h3 class="fw-bold mb-0 d-flex align-items-center gap-2" style="color: var(--text-primary);">
-                    <i class="fa-solid fa-bullhorn text-success" style="color: #047857 !important;"></i>
+                <h3 class="fw-bold mb-0 d-flex align-items-center gap-2.5" style="color: var(--text-primary);">
+                    <img src="<?= base_url('assets/images/phatthalung_fabric_emblem.svg') ?>" alt="ลายผ้าประจำจังหวัดพัทลุง" style="width: 30px; height: 36px; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));">
                     <span><?= site_text('news_section_title', 'ข่าวสารและประชาสัมพันธ์', 'หัวข้อส่วนข่าวสาร') ?></span>
                     <?php if ($isOfficer): ?>
                         <span class="badge bg-success bg-opacity-25 text-success px-2 py-1 fs-6"><i class="fa-solid fa-user-shield me-1"></i>แอดมิน</span>
@@ -375,14 +414,16 @@ $isOfficer = session()->get('isLoggedIn');
                         }
                         if ($countInCat === 0 && !$isOfficer) continue;
                         $displayCatName = (strcasecmp(trim($cat), 'general') === 0) ? 'ข่าวทั่วไป' : $cat;
+                        $isPrdCatChip = (mb_stripos($cat, 'สปชส') !== false || mb_stripos($cat, 'สำนักงานประชาสัมพันธ์') !== false);
                     ?>
                         <button class="btn btn-xs px-4 py-2 news-cat-btn rounded-pill <?= ($countInCat === 0) ? 'opacity-50' : '' ?>" data-filter="<?= esc($cat) ?>" onclick="filterHomeNews('<?= esc($cat) ?>', this)">
+                            <?php if ($isPrdCatChip): ?><i class="fa-solid fa-bullhorn text-success me-1"></i><?php endif; ?>
                             <?= esc($displayCatName) ?> (<?= $countInCat ?>)
                         </button>
                     <?php endforeach; ?>
                 </div>
 
-                <!-- 6 News Cards Grid -->
+                <!-- News Cards Grid -->
                 <div class="row g-4" id="newsGridContainer">
                     <?php if (empty($homeNews)): ?>
                         <div class="col-12 text-center py-5">
@@ -393,31 +434,30 @@ $isOfficer = session()->get('isLoggedIn');
                         <?php foreach ($homeNews as $item): 
                             $rawCat = trim($item['category'] ?? 'ข่าวทั่วไป');
                             $catLabel = (strcasecmp($rawCat, 'general') === 0 || empty($rawCat)) ? 'ข่าวทั่วไป' : $rawCat;
-                            $coverImg = (!empty($item['cover_image']) && (strpos($item['cover_image'], 'http') === 0 || strpos($item['cover_image'], 'data:') === 0 || strpos($item['cover_image'], 'uploads/') === 0)) ? ((strpos($item['cover_image'], 'http') === 0) ? $item['cover_image'] : base_url($item['cover_image'])) : 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80';
+                            $isPrd = !empty($item['is_prd']);
+                            
+                            $coverImg = !empty($item['cover_image']) ? ((strpos($item['cover_image'], 'http') === 0 || strpos($item['cover_image'], 'data:') === 0 || strpos($item['cover_image'], 'uploads/') === 0) ? ((strpos($item['cover_image'], 'http') === 0) ? $item['cover_image'] : base_url($item['cover_image'])) : base_url('assets/images/slider/sane_muanglung.png')) : base_url('assets/images/slider/sane_muanglung.png');
+                            
                             $attachCount = !empty($item['attachments']) ? count($item['attachments']) : 0;
-                            $newsDate = !empty($item['created_at']) ? date('d/m/Y', strtotime($item['created_at'])) : date('d/m/Y');
+                            $newsDate = !empty($item['created_at']) ? date('d/m/Y', strtotime($item['created_at'])) : (!empty($item['display_date']) ? $item['display_date'] : date('d/m/Y'));
                             $viewsCount = number_format($item['views'] ?? 0);
+                            $sourceName = $item['source'] ?? '';
                         ?>
                             <div class="col-md-6 col-lg-4 news-card-item" data-category="<?= esc($rawCat) ?>">
                                 <div class="gov-news-card">
                                     
                                     <!-- Image Header (Clean & Uncluttered) -->
-                                    <a href="<?= base_url('news/detail/' . $item['id']) ?>" class="d-block gov-news-img-wrap">
+                                    <a href="<?= base_url('news/detail/' . $item['id']) ?>" class="d-block gov-news-img-wrap position-relative">
                                         <img src="<?= $coverImg ?>" alt="<?= esc($item['title']) ?>" loading="lazy">
                                     </a>
 
                                     <!-- Content Body -->
                                     <div class="p-4 d-flex flex-column justify-content-between flex-grow-1">
                                         <div>
-                                            <!-- Category & Meta Row -->
-                                            <div class="d-flex align-items-center justify-content-between mb-2.5">
-                                                <span class="gov-news-cat-tag">
-                                                    <?= esc($catLabel) ?>
-                                                </span>
-                                                <div class="gov-news-meta">
-                                                    <span><i class="fa-regular fa-calendar me-1"></i><?= $newsDate ?></span>
-                                                    <span><i class="fa-regular fa-eye me-1"></i><?= $viewsCount ?></span>
-                                                </div>
+                                            <!-- Meta Row -->
+                                            <div class="gov-news-meta mb-2.5">
+                                                <span><i class="fa-regular fa-calendar me-1"></i><?= $newsDate ?></span>
+                                                <span><i class="fa-regular fa-eye me-1"></i><?= $viewsCount ?></span>
                                             </div>
 
                                             <!-- News Title -->
@@ -425,20 +465,6 @@ $isOfficer = session()->get('isLoggedIn');
                                                 <h5 class="gov-news-title">
                                                     <?= esc($item['title']) ?>
                                                 </h5>
-                                            </a>
-                                        </div>
-
-                                        <!-- Footer: Attachment & Read Link -->
-                                        <div class="mt-3 pt-3 d-flex align-items-center justify-content-between border-top" style="border-color: rgba(0,0,0,0.05) !important;">
-                                            <div>
-                                                <?php if ($attachCount > 0): ?>
-                                                    <span class="text-muted small" style="font-size: 0.78rem;">
-                                                        <i class="fa-solid fa-paperclip me-1 text-secondary"></i><?= $attachCount ?> ไฟล์แนบ
-                                                    </span>
-                                                <?php endif; ?>
-                                            </div>
-                                            <a href="<?= base_url('news/detail/' . $item['id']) ?>" class="text-decoration-none small fw-semibold" style="color: #047857;">
-                                                <span>อ่านรายละเอียด <i class="fa-solid fa-arrow-right-long ms-1" style="font-size: 0.75rem;"></i></span>
                                             </a>
                                         </div>
                                     </div>

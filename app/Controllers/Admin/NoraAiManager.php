@@ -28,7 +28,7 @@ class NoraAiManager extends BaseController
             'qaCount'     => count($knowledge),
             'recentNews'  => function_exists('get_site_news') ? count(get_site_news(100)) : 0,
             'recentDocs'  => function_exists('get_site_documents') ? count(get_site_documents()) : 0,
-            'recentProcs' => function_exists('get_site_procurements') ? count(get_site_procurements()) : 0
+            'recentProcs' => 0
         ];
 
         return view('admin/nora_ai_manager', $data);
@@ -361,9 +361,11 @@ class NoraAiManager extends BaseController
         }
 
         if (empty($items)) {
+            $lastErr = \App\Libraries\GeminiService::getLastError();
+            $msg = $lastErr ?: 'ไม่สามารถสกัดชุดคำถาม-คำตอบจากเนื้อหานี้ได้ กรุณาลองตรวจสอบการเชื่อมต่ออินเทอร์เน็ต หรือปรับข้อความให้ชัดเจนยิ่งขึ้นค่ะ';
             return $this->response->setJSON([
                 'status' => 'error',
-                'message' => 'ไม่สามารถสกัดชุดคำถาม-คำตอบจากเอกสารนี้ได้ (อาจเป็นเพราะไฟล์มีขนาดใหญ่เกินไป หรือเนื้อหาเป็นภาพสแกนที่ไม่ชัดเจน) กรุณาลองคัดลอกข้อความมาวางในช่องแทนค่ะ'
+                'message' => $msg
             ]);
         }
 

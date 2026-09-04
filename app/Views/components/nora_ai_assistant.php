@@ -38,18 +38,24 @@
     color: #fff;
 }
 .nora-avatar-icon {
-    width: 36px;
-    height: 36px;
+    width: 38px;
+    height: 38px;
     background: #fff;
-    color: #d97706;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.15rem;
     box-shadow: 0 2px 8px rgba(0,0,0,0.15);
     flex-shrink: 0;
     position: relative;
+    overflow: visible;
+    padding: 2px;
+}
+.nora-avatar-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 50%;
 }
 .nora-online-dot {
     position: absolute;
@@ -61,6 +67,7 @@
     border: 2px solid #fff;
     border-radius: 50%;
     box-shadow: 0 0 6px #10b981;
+    z-index: 2;
 }
 @media (max-width: 1199px) {
     .nora-floating-launcher {
@@ -302,10 +309,10 @@
 <?php if ($noraSettings['is_enabled']): ?>
 <button type="button" class="nora-floating-launcher" id="noraLauncherBtn" onclick="NoraAI.toggle()" title="เปิดผู้ช่วยตอบคำถามประชาชน น้องโนรา AI 24 ชม.">
     <div class="nora-avatar-icon">
-        <i class="fa-solid fa-crown text-warning"></i>
+        <img src="<?= base_url('assets/images/nora_avatar.png') ?>" alt="น้องโนรา AI">
         <span class="nora-online-dot"></span>
     </div>
-    <span class="d-none d-xl-inline-block text-nowrap">น้องโนรา AI</span>
+    <span class="d-none d-xl-inline-block text-nowrap">ถามน้องโนรา AI</span>
 </button>
 <?php endif; ?>
 
@@ -314,12 +321,12 @@
     <!-- Header -->
     <div class="nora-header">
         <div class="d-flex align-items-center gap-3">
-            <div class="p-2 rounded-circle bg-white text-warning d-flex align-items-center justify-content-center flex-shrink-0" style="width: 42px; height: 42px; border: 2px solid #fef3c7;">
-                <i class="fa-solid fa-chess-queen fs-4 text-warning"></i>
+            <div class="rounded-circle bg-white d-flex align-items-center justify-content-center flex-shrink-0 shadow-xs" style="width: 44px; height: 44px; border: 2px solid #fef3c7; overflow: hidden; padding: 2px;">
+                <img src="<?= base_url('assets/images/nora_avatar.png') ?>" alt="น้องโนรา AI" style="width: 100%; height: 100%; object-fit: contain;">
             </div>
             <div>
                 <h6 class="fw-bold mb-0 text-white d-flex align-items-center gap-2" id="noraChatTitle">
-                    <span><?= esc($noraSettings['bot_name'] ?? 'น้องโนรา AI Assistant') ?></span>
+                    <span><?= esc($noraSettings['bot_name'] ?? 'น้องโนรา (Nora AI)') ?></span>
                     <span class="nora-status-dot" title="ระบบพร้อมให้บริการ"></span>
                 </h6>
                 <span class="small text-light opacity-85 d-block" style="font-size: 0.76rem;">

@@ -1,6 +1,16 @@
 <?= $this->extend('layouts/admin') ?>
 
 <?= $this->section('content') ?>
+<?php
+$projects   = $projects ?? [];
+$filters    = $filters ?? [];
+$yearsList  = $yearsList ?? [];
+$districts  = $districts ?? [];
+$pillars    = $pillars ?? [];
+$settings   = $settings ?? [];
+$summary    = $summary ?? [];
+$totalCount = $totalCount ?? count($projects);
+?>
 
 <!-- Leaflet CSS & JS for Admin Map Picker -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
@@ -343,14 +353,14 @@
                         <div class="p-3.5 rounded-3 bg-light border text-start mb-4 small">
                             <div class="d-flex justify-content-between mb-1">
                                 <span class="text-muted">สถานะการซิงค์:</span>
-                                <span class="badge bg-success" id="syncStatusBadge"><?= esc($settings['last_sync_status']) ?></span>
+                                <span class="badge bg-success" id="syncStatusBadge"><?= esc($settings['last_sync_status'] ?? 'ready') ?></span>
                             </div>
                             <div class="d-flex justify-content-between mb-1">
                                 <span class="text-muted">เวลาที่ซิงค์ล่าสุด:</span>
-                                <span class="fw-bold text-dark" id="syncTimeText"><?= $settings['last_sync_time'] ? date('d/m/Y H:i น.', strtotime($settings['last_sync_time'])) : '-' ?></span>
+                                <span class="fw-bold text-dark" id="syncTimeText"><?= !empty($settings['last_sync_time']) ? date('d/m/Y H:i น.', strtotime($settings['last_sync_time'])) : '-' ?></span>
                             </div>
                             <div class="text-muted mt-2 border-top pt-2" id="syncMessageText">
-                                <?= esc($settings['last_sync_message'] ?: 'พร้อมเชื่อมต่อ API') ?>
+                                <?= esc(($settings['last_sync_message'] ?? '') ?: 'พร้อมเชื่อมต่อ API') ?>
                             </div>
                         </div>
 
@@ -371,12 +381,12 @@
                         <form id="emenscrSettingsForm">
                             <div class="mb-3">
                                 <label class="form-label fw-bold">API Endpoint (URL ระบบ eMENSCR สภาพัฒน์)</label>
-                                <input type="url" class="form-control font-monospace" name="api_endpoint" value="<?= esc($settings['api_endpoint']) ?>">
+                                <input type="url" class="form-control font-monospace" name="api_endpoint" value="<?= esc($settings['api_endpoint'] ?? '') ?>">
                             </div>
 
                             <div class="mb-3">
                                 <label class="form-label fw-bold">API Token / Bearer Key</label>
-                                <input type="password" class="form-control font-monospace" name="api_token" value="<?= esc($settings['api_token']) ?>" placeholder="กรอก API Token ที่ได้รับจาก สศช.">
+                                <input type="password" class="form-control font-monospace" name="api_token" value="<?= esc($settings['api_token'] ?? '') ?>" placeholder="กรอก API Token ที่ได้รับจาก สศช.">
                                 <small class="text-muted">รหัส Token การเข้าถึง API จากสำนักงานสภาพัฒนาการเศรษฐกิจและสังคมแห่งชาติ</small>
                             </div>
 

@@ -174,7 +174,7 @@
 
                     <!-- TAB 4: SOCIAL & SEO -->
                     <div class="tab-pane fade" id="tab-seo" role="tabpanel">
-                        <h6 class="fw-bold mb-3 text-primary"><i class="fa-solid fa-share-nodes me-2"></i>การเชื่อมต่อโซเชียลมีเดียและคำค้นหา (SEO Meta Tags)</h6>
+                        <h6 class="fw-bold mb-3 text-primary"><i class="fa-solid fa-share-nodes me-2"></i>การเชื่อมต่อโซเชียลมีเดีย, LINE แจ้งเตือน และ SEO</h6>
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label class="form-label fw-bold"><i class="fa-brands fa-facebook text-primary me-1"></i> Facebook Official Page</label>
@@ -184,6 +184,28 @@
                                 <label class="form-label fw-bold"><i class="fa-brands fa-line text-success me-1"></i> LINE Official Account ID</label>
                                 <input type="text" name="line_id" class="form-control custom-input" placeholder="@phatthalung_connect" value="<?= htmlspecialchars($s['line_id'] ?? '') ?>">
                             </div>
+                            
+                            <!-- LINE Messaging API Alerts for Officers -->
+                            <div class="col-12 mt-3">
+                                <div class="p-3 rounded-3" style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25);">
+                                    <div class="d-flex align-items-center gap-2 mb-2 text-success fw-bold">
+                                        <i class="fa-brands fa-line fs-5"></i>
+                                        <span>ระบบแจ้งเตือนเข้า LINE เจ้าหน้าที่ (LINE Messaging API / Flex Message)</span>
+                                    </div>
+                                    <div class="row g-2">
+                                        <div class="col-md-8">
+                                            <label class="form-label small fw-bold">LINE Channel Access Token (Long-lived)</label>
+                                            <input type="text" name="line_channel_access_token" class="form-control form-control-sm font-monospace" value="<?= htmlspecialchars($s['line_channel_access_token'] ?? '') ?>" placeholder="ใส่ Channel Access Token ที่ได้จาก LINE Developers Console">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label small fw-bold">Group ID / User ID <small class="text-muted fw-normal">(ว่างไว้เพื่อ Broadcast)</small></label>
+                                            <input type="text" name="line_admin_group_id" class="form-control form-control-sm font-monospace" value="<?= htmlspecialchars($s['line_admin_group_id'] ?? '') ?>" placeholder="เช่น Cxxxxxxxx หรือ Uxxxxxxxx">
+                                        </div>
+                                    </div>
+                                    <small class="text-muted mt-2 d-block">ระบบจะส่ง Flex Message แจ้งเตือนพร้อมปุ่มเปิดรับเรื่องเข้า LINE เจ้าหน้าที่ทันทีที่มีประชาชนส่งเรื่องเข้ามา</small>
+                                </div>
+                            </div>
+
                             <div class="col-12">
                                 <label class="form-label fw-bold"><i class="fa-solid fa-magnifying-glass-chart text-warning me-1"></i> คำค้นหา Google Search (SEO Keywords)</label>
                                 <input type="text" name="seo_keywords" class="form-control custom-input" value="<?= htmlspecialchars($s['seo_keywords'] ?? '') ?>" placeholder="คั่นคำด้วยเครื่องหมายจุลภาค (,)">

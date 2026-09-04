@@ -2,8 +2,13 @@
 <?= $this->section('content') ?>
 
 <?php
-$isOfficer = session()->get('isLoggedIn');
+$isOfficer        = session()->get('isLoggedIn');
 $isProcurementCat = !empty($isProcurementCat);
+$newsList         = $newsList ?? [];
+$categories       = $categories ?? [];
+$currentCat       = $currentCat ?? null;
+$egpProjects      = $egpProjects ?? [];
+$pageTitle        = $pageTitle ?? 'ข่าวสารและประกาศ';
 ?>
 
 <!-- DataTables CSS for Bootstrap 5 -->
@@ -153,9 +158,11 @@ $isProcurementCat = !empty($isProcurementCat);
         <?php foreach ($categories as $cat): 
             $isActive = (strcasecmp(trim($currentCat ?? ''), trim($cat)) === 0);
             $isEgpCat = (mb_stripos($cat, 'จัดซื้อจัดจ้าง') !== false || mb_stripos($cat, 'e-gp') !== false);
+            $isPrdCatItem = (mb_stripos($cat, 'สปชส') !== false || mb_stripos($cat, 'สำนักงานประชาสัมพันธ์') !== false || mb_stripos($cat, 'กรมประชาสัมพันธ์') !== false || mb_stripos($cat, 'nnt') !== false || mb_stripos($cat, 'prd') !== false);
         ?>
             <a href="<?= base_url('news?category=' . urlencode($cat)) ?>" class="btn btn-sm px-3.5 py-1.5 rounded-pill news-cat-btn <?= $isActive ? 'active' : '' ?>">
                 <?php if ($isEgpCat): ?><i class="fa-solid fa-gavel text-warning me-1"></i><?php endif; ?>
+                <?php if ($isPrdCatItem): ?><i class="fa-solid fa-bullhorn text-success me-1"></i><?php endif; ?>
                 <?= esc($cat) ?>
             </a>
         <?php endforeach; ?>
@@ -217,6 +224,18 @@ $isProcurementCat = !empty($isProcurementCat);
                     <i class="fa-solid fa-file-invoice text-primary me-1"></i> ประกาศจัดซื้อจัดจ้างและสรุปผล (สขร.1) เพิ่มเติมจากสำนักงาน
                 </h6>
             </div>
+        <?php elseif (!empty($isPrdCat)): ?>
+            <div class="card-header bg-success bg-opacity-10 py-3 px-4 border-bottom d-flex flex-wrap align-items-center justify-content-between gap-2">
+                <div class="d-flex align-items-center gap-2">
+                    <h6 class="fw-bold m-0 text-success">
+                        <i class="fa-solid fa-bullhorn me-2"></i> ข่าวสารและกิจกรรมจาก สำนักงานประชาสัมพันธ์จังหวัดพัทลุง (สปชส.พัทลุง)
+                    </h6>
+                    <span class="badge bg-success rounded-pill px-2.5 py-0.5" style="font-size: 0.75rem;">Live Feed</span>
+                </div>
+                <a href="https://phatthalung.prd.go.th/th/content/category/index/id/3394" target="_blank" class="btn btn-sm btn-outline-success rounded-pill px-3 py-1 fw-bold">
+                    <i class="fa-solid fa-arrow-up-right-from-square me-1"></i> ดูหมวดข่าวบน สปชส.พัทลุง
+                </a>
+            </div>
         <?php endif; ?>
 
         <?php if (empty($newsList)): ?>
@@ -228,23 +247,36 @@ $isProcurementCat = !empty($isProcurementCat);
         <?php else: ?>
             <div class="list-group list-group-flush">
                 <?php foreach ($newsList as $idx => $item): 
-                    $nDate = !empty($item['created_at']) ? date('d/m/Y', strtotime($item['created_at'])) : date('d/m/Y');
+                    $nDate = !empty($item['created_at']) ? date('d/m/Y', strtotime($item['created_at'])) : (!empty($item['display_date']) ? $item['display_date'] : date('d/m/Y'));
                     $attachCount = !empty($item['attachments']) ? count($item['attachments']) : 0;
                     $views = number_format($item['views'] ?? 1);
+                    $isPrd = !empty($item['is_prd']);
+                    $coverImg = !empty($item['cover_image']) ? $item['cover_image'] : null;
                 ?>
                     <div class="list-group-item list-group-item-action p-3.5 p-md-4 d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3 border-bottom transition-all hover-bg-light" style="border-color: rgba(0,0,0,0.05) !important;">
                         
-                        <!-- Left: Date & Category & Title -->
+                        <!-- Left: Image (if PRD), Date & Category & Title -->
                         <div class="d-flex align-items-start gap-3 flex-grow-1 overflow-hidden">
-                            <div class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-3 py-2 rounded-3 fw-bold flex-shrink-0 text-center" style="min-width: 95px; font-size: 0.82rem;">
-                                <i class="fa-regular fa-calendar me-1"></i> <?= $nDate ?>
-                            </div>
+                            <?php if ($isPrd && !empty($coverImg)): ?>
+                                <img src="<?= esc($coverImg) ?>" alt="<?= esc($item['title']) ?>" class="rounded-3 flex-shrink-0 d-none d-sm-block shadow-xs" style="width: 100px; height: 68px; object-fit: cover;">
+                            <?php else: ?>
+                                <div class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-3 py-2 rounded-3 fw-bold flex-shrink-0 text-center" style="min-width: 95px; font-size: 0.82rem;">
+                                    <i class="fa-regular fa-calendar me-1"></i> <?= $nDate ?>
+                                </div>
+                            <?php endif; ?>
                             
                             <div class="overflow-hidden">
                                 <div class="d-flex align-items-center gap-2 mb-1">
-                                    <span class="badge bg-light text-dark border px-2.5 py-0.5 rounded-pill small" style="font-size: 0.72rem;">
-                                        <i class="fa-solid fa-tag me-1 text-primary"></i> <?= esc($item['category'] ?? 'ข่าวประกาศ') ?>
-                                    </span>
+                                    <?php if ($isPrd && !empty($coverImg)): ?>
+                                        <span class="text-muted small" style="font-size: 0.78rem;">
+                                            <i class="fa-regular fa-calendar text-primary me-1"></i><?= $nDate ?>
+                                        </span>
+                                    <?php elseif (!$isPrd): ?>
+                                        <span class="badge bg-light text-dark border px-2.5 py-0.5 rounded-pill small" style="font-size: 0.72rem;">
+                                            <i class="fa-solid fa-tag me-1 text-primary"></i> <?= esc($item['category'] ?? 'ข่าวประกาศ') ?>
+                                        </span>
+                                    <?php endif; ?>
+
                                     <?php if (!empty($item['is_pinned'])): ?>
                                         <span class="badge bg-warning text-dark rounded-pill px-2 py-0.5" style="font-size: 0.68rem;">
                                             <i class="fa-solid fa-thumbtack me-1"></i> ปักหมุด
@@ -280,7 +312,7 @@ $isProcurementCat = !empty($isProcurementCat);
                                 รายละเอียด <i class="fa-solid fa-chevron-right ms-1"></i>
                             </a>
 
-                            <?php if ($isOfficer): ?>
+                            <?php if ($isOfficer && empty($item['is_prd'])): ?>
                                 <div class="d-flex gap-1 ms-1">
                                     <button type="button" onclick="NewsStudio.open('<?= $item['id'] ?>')" class="btn btn-sm btn-outline-info rounded-circle p-0 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;" title="แก้ไข">
                                         <i class="fa-solid fa-pen text-dark" style="font-size: 0.75rem;"></i>

@@ -13,3 +13,8 @@ writable/cache/
 writable/session/
 writable/logs/
 writable/debugbar/
+writable/prd_news_phatthalung.json
+writable/egp_phatthalung_cache.json
+writable/aggregated_news.json
+writable/search_trends.json
+writable/dump_*.json

@@ -13,9 +13,9 @@
     },
     "ประกาศจัดซื้อจัดจ้าง": {
         "keyword": "ประกาศจัดซื้อจัดจ้าง",
-        "count": 8,
+        "count": 11,
         "first_searched": 1787562500,
-        "last_searched": 1787562780
+        "last_searched": 1788340886
     },
     "ทำเนียบผู้ว่า": {
         "keyword": "ทำเนียบผู้ว่า",
@@ -82,5 +82,35 @@
         "count": 1,
         "first_searched": 1787564915,
         "last_searched": 1787564915
+    },
+    "cm,k": {
+        "keyword": "cm,k",
+        "count": 1,
+        "first_searched": 1788252430,
+        "last_searched": 1788252430
+    },
+    "c,": {
+        "keyword": "c,",
+        "count": 1,
+        "first_searched": 1788252432,
+        "last_searched": 1788252432
+    },
+    "แมว": {
+        "keyword": "แมว",
+        "count": 1,
+        "first_searched": 1788252434,
+        "last_searched": 1788252434
+    },
+    "ดาวน": {
+        "keyword": "ดาวน",
+        "count": 1,
+        "first_searched": 1788339859,
+        "last_searched": 1788339859
+    },
+    "แผนพัฒนา": {
+        "keyword": "แผนพัฒนา",
+        "count": 1,
+        "first_searched": 1788340132,
+        "last_searched": 1788340132
     }
 }

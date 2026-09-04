@@ -4,6 +4,13 @@ namespace App\Libraries;
 
 class GeminiService
 {
+    private static ?string $lastError = null;
+
+    public static function getLastError(): ?string
+    {
+        return self::$lastError;
+    }
+
     /**
      * ดึง API Key ของ Gemini จากการตั้งค่าระบบหรือ .env
      */
@@ -21,7 +28,7 @@ class GeminiService
     }
 
     /**
-     * ดึง Model Name ที่กำหนด (ค่าเริ่มต้น: gemini-1.5-flash)
+     * ดึง Model Name ที่กำหนด (ค่าเริ่มต้น: gemini-3.5-flash)
      */
     public static function getModel(): string
     {
@@ -29,70 +36,158 @@ class GeminiService
             helper('settings');
         }
         $settings = function_exists('get_nora_settings') ? get_nora_settings() : [];
-        return !empty($settings['gemini_model']) ? trim($settings['gemini_model']) : 'gemini-2.5-flash';
+        return !empty($settings['gemini_model']) ? trim($settings['gemini_model']) : 'gemini-3.5-flash';
     }
 
     /**
-     * ส่งคำร้องขอไปยัง Google Gemini REST API
+     * ส่งคำร้องขอไปยัง Google Gemini REST API พร้อมระบบ Auto-Failover
      */
     public static function generateContent(string $prompt, ?string $systemInstruction = null): ?string
     {
+        self::$lastError = null;
         $apiKey = self::getApiKey();
         if (empty($apiKey)) {
+            self::$lastError = 'ยังไม่ได้ตั้งค่า Google Gemini API Key กรุณาระบุในแท็บ "ตั้งค่าแชตบอต"';
             return null;
         }
 
-        $model = self::getModel();
-        $url = "https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent?key={$apiKey}";
+        $preferredModel = self::getModel();
+        $fallbackModels = array_unique([$preferredModel, 'gemini-3.5-flash', 'gemini-3.5-flash-lite', 'gemini-3.6-flash', 'gemini-2.5-pro']);
 
-        $bodyData = [
-            'contents' => [
-                [
-                    'role' => 'user',
-                    'parts' => [
-                        ['text' => $prompt]
+        $lastHttpCode = 0;
+        $lastErrorMsg = '';
+
+        foreach ($fallbackModels as $model) {
+            $url = "https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent?key={$apiKey}";
+
+            $bodyData = [
+                'contents' => [
+                    [
+                        'role' => 'user',
+                        'parts' => [
+                            ['text' => $prompt]
+                        ]
                     ]
-                ]
-            ],
-            'generationConfig' => [
-                'temperature' => 0.4,
-                'maxOutputTokens' => 2048,
-            ]
-        ];
-
-        if (!empty($systemInstruction)) {
-            $bodyData['systemInstruction'] = [
-                'parts' => [
-                    ['text' => $systemInstruction]
+                ],
+                'generationConfig' => [
+                    'temperature' => 0.2,
+                    'maxOutputTokens' => 2048,
                 ]
             ];
+
+            if (!empty($systemInstruction)) {
+                $bodyData['systemInstruction'] = [
+                    'parts' => [
+                        ['text' => $systemInstruction]
+                    ]
+                ];
+            }
+
+            $ch = curl_init();
+            curl_setopt_array($ch, [
+                CURLOPT_URL => $url,
+                CURLOPT_POST => true,
+                CURLOPT_POSTFIELDS => json_encode($bodyData),
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_HTTPHEADER => [
+                    'Content-Type: application/json'
+                ],
+                CURLOPT_CONNECTTIMEOUT => 15,
+                CURLOPT_TIMEOUT => 60,
+                CURLOPT_SSL_VERIFYPEER => false,
+                CURLOPT_SSL_VERIFYHOST => false
+            ]);
+
+            $response = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $error = curl_error($ch);
+            curl_close($ch);
+
+            $lastHttpCode = $httpCode;
+
+            if ($httpCode === 200 && !empty($response)) {
+                $json = @json_decode($response, true);
+                $text = $json['candidates'][0]['content']['parts'][0]['text'] ?? null;
+                if (!empty($text)) {
+                    return $text;
+                }
+            }
+
+            $resJson = @json_decode($response, true);
+            $lastErrorMsg = $resJson['error']['message'] ?? ($error ?: "HTTP Error {$httpCode}");
         }
 
-        $ch = curl_init();
-        curl_setopt_array($ch, [
-            CURLOPT_URL => $url,
-            CURLOPT_POST => true,
-            CURLOPT_POSTFIELDS => json_encode($bodyData),
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_HTTPHEADER => [
-                'Content-Type: application/json'
-            ],
-            CURLOPT_TIMEOUT => 25,
-            CURLOPT_SSL_VERIFYPEER => false
-        ]);
+        self::$lastError = "Google Gemini API ข้อผิดพลาด (HTTP {$lastHttpCode}): {$lastErrorMsg}";
+        log_message('error', "Gemini API Error: " . self::$lastError);
+        return null;
+    }
 
-        $response = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $error = curl_error($ch);
-        curl_close($ch);
+    /**
+     * แยกและแปลง JSON Q&A จากผลลัพธ์ของ LLM อย่างแม่นยำ
+     */
+    public static function parseJsonQaItems(string $resultText): array
+    {
+        if (empty($resultText)) return [];
 
-        if ($error || $httpCode !== 200 || empty($response)) {
-            log_message('error', "Gemini API Error (HTTP {$httpCode}): " . ($error ?: $response));
-            return null;
+        // 1. Try finding outermost array [ ... ]
+        $startPos = strpos($resultText, '[');
+        $endPos = strrpos($resultText, ']');
+        if ($startPos !== false && $endPos !== false && $endPos > $startPos) {
+            $jsonSub = substr($resultText, $startPos, $endPos - $startPos + 1);
+            $data = @json_decode($jsonSub, true);
+            if (is_array($data) && !empty($data)) {
+                return self::sanitizeQaItems($data);
+            }
         }
 
-        $json = @json_decode($response, true);
-        return $json['candidates'][0]['content']['parts'][0]['text'] ?? null;
+        // 2. Try finding outermost object { ... }
+        $startObj = strpos($resultText, '{');
+        $endObj = strrpos($resultText, '}');
+        if ($startObj !== false && $endObj !== false && $endObj > $startObj) {
+            $jsonSub = substr($resultText, $startObj, $endObj - $startObj + 1);
+            $data = @json_decode($jsonSub, true);
+            if (is_array($data)) {
+                if (isset($data['items']) && is_array($data['items'])) {
+                    return self::sanitizeQaItems($data['items']);
+                }
+                if (isset($data['question'])) {
+                    return self::sanitizeQaItems([$data]);
+                }
+            }
+        }
+
+        // 3. Clean backticks fallback
+        $clean = trim($resultText);
+        $clean = preg_replace('/^```(?:json)?/i', '', $clean);
+        $clean = preg_replace('/```$/', '', $clean);
+        $data = @json_decode(trim($clean), true);
+        if (is_array($data)) {
+            return self::sanitizeQaItems($data);
+        }
+
+        return [];
+    }
+
+    private static function sanitizeQaItems(array $rawList): array
+    {
+        $sanitized = [];
+        foreach ($rawList as $item) {
+            if (!is_array($item)) continue;
+            $q = trim((string)($item['question'] ?? ''));
+            $a = trim((string)($item['answer'] ?? ''));
+            $kw = trim((string)($item['keywords'] ?? ''));
+
+            if (!empty($q) && !empty($a)) {
+                $sanitized[] = [
+                    'keywords'   => $kw ?: mb_substr($q, 0, 30),
+                    'question'   => $q,
+                    'answer'     => $a,
+                    'link_url'   => trim((string)($item['link_url'] ?? '')),
+                    'link_title' => trim((string)($item['link_title'] ?? ''))
+                ];
+            }
+        }
+        return $sanitized;
     }
 
     /**
@@ -124,14 +219,7 @@ EOT;
             return [];
         }
 
-        // Clean code block ticks if present
-        $cleanJson = trim($resultText);
-        $cleanJson = preg_replace('/^```(?:json)?/i', '', $cleanJson);
-        $cleanJson = preg_replace('/```$/', '', $cleanJson);
-        $cleanJson = trim($cleanJson);
-
-        $data = @json_decode($cleanJson, true);
-        return is_array($data) ? $data : [];
+        return self::parseJsonQaItems($resultText);
     }
 
     /**
@@ -208,6 +296,9 @@ EOT;
         curl_close($ch);
 
         if ($error || $httpCode !== 200 || empty($response)) {
+            $resJson = @json_decode($response, true);
+            $msg = $resJson['error']['message'] ?? ($error ?: "HTTP Error {$httpCode}");
+            self::$lastError = "Google Gemini API แจ้งข้อผิดพลาด (HTTP {$httpCode}): {$msg}";
             log_message('error', "Gemini Media Extract Error (HTTP {$httpCode}): " . ($error ?: $response));
             return [];
         }
@@ -216,13 +307,7 @@ EOT;
         $resultText = $json['candidates'][0]['content']['parts'][0]['text'] ?? '';
         if (empty($resultText)) return [];
 
-        $cleanJson = trim($resultText);
-        $cleanJson = preg_replace('/^```(?:json)?/i', '', $cleanJson);
-        $cleanJson = preg_replace('/```$/', '', $cleanJson);
-        $cleanJson = trim($cleanJson);
-
-        $data = @json_decode($cleanJson, true);
-        return is_array($data) ? $data : [];
+        return self::parseJsonQaItems($resultText);
     }
 
     /**

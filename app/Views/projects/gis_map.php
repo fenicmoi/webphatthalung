@@ -542,7 +542,7 @@ function renderProjectPins(projects) {
         });
 
         const popupContent = `
-            <div style="min-width: 220px; font-family: 'Prompt', sans-serif;">
+            <div style="min-width: 220px; font-family: 'Sarabun', 'Inter', sans-serif;">
                 <div style="font-size: 0.72rem; color: #64748b; font-weight: 700; margin-bottom: 2px;">
                     ปี ${p.fiscal_year} • อ.${p.district}
                 </div>

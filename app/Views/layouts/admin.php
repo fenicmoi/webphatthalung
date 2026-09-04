@@ -15,7 +15,7 @@
     <!-- Google Fonts Preconnect (High-Speed Non-blocking) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Sarabun:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=Prompt:wght@400;500;600&display=swap" rel="stylesheet">
 
     <!-- Bootstrap 5.3 & FontAwesome -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -65,6 +65,18 @@
                         <span>แผงควบคุมหลัก</span>
                     </a>
                 </li>
+                <li>
+                    <a href="<?= base_url('admin/contacts') ?>" class="sidebar-link <?= ($activeMenu ?? '') === 'contact_manager' ? 'active' : '' ?>">
+                        <i class="fa-solid fa-envelope-open-text text-success"></i>
+                        <span>เรื่องติดต่อ & ร้องเรียนประชาชน</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="<?= base_url('admin/mailbox') ?>" class="sidebar-link <?= ($activeMenu ?? '') === 'mailbox_manager' ? 'active' : '' ?>">
+                        <i class="fa-solid fa-envelope text-primary"></i>
+                        <span>กล่องจดหมายกลาง (MOI)</span>
+                    </a>
+                </li>
 
                 <div class="sidebar-menu-title">บริหารจัดการข้อมูล (CONTENT)</div>
                 <li>
@@ -89,6 +101,12 @@
                     <a href="<?= base_url('admin/service-banners') ?>" class="sidebar-link <?= ($activeMenu ?? '') === 'services' ? 'active' : '' ?>">
                         <i class="fa-solid fa-bullhorn text-success"></i>
                         <span>แบนเนอร์ประชาสัมพันธ์ & ลิงก์ภายนอก</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="<?= base_url('admin/governor-policy') ?>" class="sidebar-link <?= ($activeMenu ?? '') === 'governor_policy' ? 'active' : '' ?>">
+                        <i class="fa-solid fa-user-gear text-success"></i>
+                        <span>นโยบายผู้ว่าราชการจังหวัด</span>
                     </a>
                 </li>
                 <li>

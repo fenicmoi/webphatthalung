@@ -32,7 +32,7 @@ class Settings extends BaseController
             'site_title_th'    => 'ศูนย์บริการดิจิทัลภาครัฐ จังหวัดพัทลุง',
             'site_title_en'    => 'Phatthalung Digital Government Portal',
             'slogan'           => 'บริการรวดเร็ว โปร่งใส ตรวจสอบได้ทุกขั้นตอนด้วยโครงสร้างนวัตกรรมร่วมสมัย',
-            'contact_email'    => 'contact@phatthalung.go.th',
+            'contact_email'    => 'phatthalung@moi.go.th',
             'contact_phone'    => '074-611-234, 074-611-235',
             'address'          => 'ศาลากลางจังหวัดพัทลุง ถนนราเมศวร์ ตำบลคูหาสวรรค์ อำเภอเมืองพัทลุง 93000',
             'maintenance_mode' => '0',

@@ -1,0 +1,182 @@
+[
+    {
+        "id": "1",
+        "oit_code": "O1",
+        "name": "โครงสร้าง และทำเนียบผู้บริหารหน่วยงาน",
+        "url": "executives",
+        "year": null,
+        "status": "active",
+        "created_at": "2026-08-14 09:02:52",
+        "updated_at": "2026-08-14 09:02:52"
+    },
+    {
+        "id": "2",
+        "oit_code": "O18",
+        "name": "รายงานผลการใช้จ่ายงบประมาณประจำปี และรายงานความก้าวหน้าโครงการ",
+        "url": "assets\/docs\/oit18_budget_report.pdf",
+        "year": null,
+        "status": "active",
+        "created_at": "2026-08-14 09:02:52",
+        "updated_at": "2026-08-14 09:02:52"
+    },
+    {
+        "id": "3",
+        "oit_code": "O34",
+        "name": "แผนปฏิบัติการส่งเสริมคุณธรรม และการป้องกันการทุจริตประจำปีงบประมาณ",
+        "url": "assets\/docs\/oit34_anticorruption_plan.pdf",
+        "year": null,
+        "status": "active",
+        "created_at": "2026-08-14 09:02:52",
+        "updated_at": "2026-08-14 09:02:52"
+    },
+    {
+        "id": "4",
+        "oit_code": "O42",
+        "name": "มาตรการและช่องทางการแจ้งเบาะแสการทุจริตประพฤติมิชอบ (Whistleblower Channel)",
+        "url": "citizen\/complaints",
+        "year": null,
+        "status": "active",
+        "created_at": "2026-08-14 09:02:52",
+        "updated_at": "2026-08-14 09:02:52"
+    },
+    {
+        "id": "5",
+        "oit_code": "DAT-01",
+        "name": "ชุดข้อมูลเชิงสถิติ: สถิติการให้บริการประชาชนผ่านระบบออนไลน์ e-Services",
+        "url": "assets\/docs\/opendata_eservice_stats.csv",
+        "year": null,
+        "status": "active",
+        "created_at": "2026-08-14 09:02:52",
+        "updated_at": "2026-08-14 09:02:52"
+    },
+    {
+        "id": "6",
+        "oit_code": "DAT-02",
+        "name": "ชุดข้อมูลเชิงสถิติ: ข้อมูลรายชื่อและสถานที่สำคัญทางวัฒนธรรมและส่งเสริมเศรษฐกิจชุมชน",
+        "url": "assets\/docs\/opendata_tourism_landmarks.json",
+        "year": null,
+        "status": "active",
+        "created_at": "2026-08-14 09:02:52",
+        "updated_at": "2026-08-14 09:02:52"
+    },
+    {
+        "id": "7",
+        "oit_code": "O1",
+        "name": "โครงสร้าง และทำเนียบผู้บริหารหน่วยงาน",
+        "url": "executives",
+        "year": "2026",
+        "status": "active",
+        "created_at": "2026-08-26 00:44:55",
+        "updated_at": "2026-08-26 00:44:55"
+    },
+    {
+        "id": "8",
+        "oit_code": "O18",
+        "name": "รายงานผลการใช้จ่ายงบประมาณประจำปี และรายงานความก้าวหน้าโครงการ",
+        "url": "assets\/docs\/oit18_budget_report.pdf",
+        "year": "2026",
+        "status": "active",
+        "created_at": "2026-08-26 00:44:55",
+        "updated_at": "2026-08-26 00:44:55"
+    },
+    {
+        "id": "9",
+        "oit_code": "O34",
+        "name": "แผนปฏิบัติการส่งเสริมคุณธรรม และการป้องกันการทุจริตประจำปีงบประมาณ",
+        "url": "assets\/docs\/oit34_anticorruption_plan.pdf",
+        "year": "2026",
+        "status": "active",
+        "created_at": "2026-08-26 00:44:55",
+        "updated_at": "2026-08-26 00:44:55"
+    },
+    {
+        "id": "10",
+        "oit_code": "O42",
+        "name": "มาตรการและช่องทางการแจ้งเบาะแสการทุจริตประพฤติมิชอบ (Whistleblower Channel)",
+        "url": "citizen\/complaints",
+        "year": "2026",
+        "status": "active",
+        "created_at": "2026-08-26 00:44:55",
+        "updated_at": "2026-08-26 00:44:55"
+    },
+    {
+        "id": "11",
+        "oit_code": "DAT-01",
+        "name": "ชุดข้อมูลเชิงสถิติ: สถิติการให้บริการประชาชนผ่านระบบออนไลน์ e-Services",
+        "url": "assets\/docs\/opendata_eservice_stats.csv",
+        "year": "2026",
+        "status": "active",
+        "created_at": "2026-08-26 00:44:55",
+        "updated_at": "2026-08-26 00:44:55"
+    },
+    {
+        "id": "12",
+        "oit_code": "DAT-02",
+        "name": "ชุดข้อมูลเชิงสถิติ: ข้อมูลรายชื่อและสถานที่สำคัญทางวัฒนธรรมและส่งเสริมเศรษฐกิจชุมชน",
+        "url": "assets\/docs\/opendata_tourism_landmarks.json",
+        "year": "2026",
+        "status": "active",
+        "created_at": "2026-08-26 00:44:55",
+        "updated_at": "2026-08-26 00:44:55"
+    },
+    {
+        "id": "13",
+        "oit_code": "O1",
+        "name": "โครงสร้าง และทำเนียบผู้บริหารหน่วยงาน",
+        "url": "executives",
+        "year": "2026",
+        "status": "active",
+        "created_at": "2026-08-26 10:02:45",
+        "updated_at": "2026-08-26 10:02:45"
+    },
+    {
+        "id": "14",
+        "oit_code": "O18",
+        "name": "รายงานผลการใช้จ่ายงบประมาณประจำปี และรายงานความก้าวหน้าโครงการ",
+        "url": "assets\/docs\/oit18_budget_report.pdf",
+        "year": "2026",
+        "status": "active",
+        "created_at": "2026-08-26 10:02:45",
+        "updated_at": "2026-08-26 10:02:45"
+    },
+    {
+        "id": "15",
+        "oit_code": "O34",
+        "name": "แผนปฏิบัติการส่งเสริมคุณธรรม และการป้องกันการทุจริตประจำปีงบประมาณ",
+        "url": "assets\/docs\/oit34_anticorruption_plan.pdf",
+        "year": "2026",
+        "status": "active",
+        "created_at": "2026-08-26 10:02:45",
+        "updated_at": "2026-08-26 10:02:45"
+    },
+    {
+        "id": "16",
+        "oit_code": "O42",
+        "name": "มาตรการและช่องทางการแจ้งเบาะแสการทุจริตประพฤติมิชอบ (Whistleblower Channel)",
+        "url": "citizen\/complaints",
+        "year": "2026",
+        "status": "active",
+        "created_at": "2026-08-26 10:02:45",
+        "updated_at": "2026-08-26 10:02:45"
+    },
+    {
+        "id": "17",
+        "oit_code": "DAT-01",
+        "name": "ชุดข้อมูลเชิงสถิติ: สถิติการให้บริการประชาชนผ่านระบบออนไลน์ e-Services",
+        "url": "assets\/docs\/opendata_eservice_stats.csv",
+        "year": "2026",
+        "status": "active",
+        "created_at": "2026-08-26 10:02:45",
+        "updated_at": "2026-08-26 10:02:45"
+    },
+    {
+        "id": "18",
+        "oit_code": "DAT-02",
+        "name": "ชุดข้อมูลเชิงสถิติ: ข้อมูลรายชื่อและสถานที่สำคัญทางวัฒนธรรมและส่งเสริมเศรษฐกิจชุมชน",
+        "url": "assets\/docs\/opendata_tourism_landmarks.json",
+        "year": "2026",
+        "status": "active",
+        "created_at": "2026-08-26 10:02:45",
+        "updated_at": "2026-08-26 10:02:45"
+    }
+]

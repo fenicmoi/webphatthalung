@@ -2,6 +2,8 @@
 
 namespace App\Libraries;
 
+use CodeIgniter\HTTP\Response;
+
 /**
  * NewsAggregatorService (Phatthalung Provincial News & Social Media Aggregator)
  * 
@@ -120,6 +122,7 @@ class NewsAggregatorService
         foreach ($rssUrls as $url) {
             try {
                 $client = \Config\Services::curlrequest(['timeout' => 4]);
+                /** @var Response $response */
                 $response = $client->get($url);
                 if ($response->getStatusCode() === 200) {
                     $xmlString = $response->getBody();
@@ -290,8 +293,11 @@ class NewsAggregatorService
 
     /**
      * Helper to extract image from RSS item
+     * 
+     * @param \SimpleXMLElement $entry
+     * @return string|null
      */
-    private function extractImageFromFeed($entry): ?string
+    private function extractImageFromFeed(\SimpleXMLElement $entry): ?string
     {
         if (isset($entry->enclosure) && !empty($entry->enclosure['url'])) {
             return (string)$entry->enclosure['url'];

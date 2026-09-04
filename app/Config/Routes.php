@@ -197,6 +197,9 @@ $routes->post('admin/documents/delete-item/(:any)', 'Admin\DocumentManager::dele
 $routes->get('executives', 'Executive::index');
 $routes->get('executives/detail/(:any)', 'Executive::detail/$1');
 $routes->get('executives/category/(:any)', 'Executive::index/$1');
+$routes->get('admin/governor-policy', 'Admin\GovernorPolicyManager::index', ['filter' => 'auth']);
+$routes->post('admin/governor-policy/save', 'Admin\GovernorPolicyManager::save', ['filter' => 'auth']);
+
 $routes->get('admin/executives', 'Admin\ExecutiveManager::index', ['filter' => 'auth']);
 $routes->get('admin/executives/get-item/(:any)', 'Admin\ExecutiveManager::getItem/$1');
 $routes->post('admin/executives/save-item', 'Admin\ExecutiveManager::saveItem');
@@ -325,6 +328,31 @@ $routes->match(['get', 'post'], 'api/egp/datatable', 'Procurement::ajaxDatatable
 
 /*
  * --------------------------------------------------------------------
+ * Citizen Contact & Public Service Hub (ศูนย์บริการประชาชนและรับเรื่องร้องเรียน)
+ * --------------------------------------------------------------------
+ */
+$routes->get('contact', 'Contact::index');
+$routes->post('api/contact/submit', 'Contact::submit');
+$routes->get('api/contact/track', 'Contact::track');
+$routes->get('api/contact/track/(:any)', 'Contact::track/$1');
+
+// Admin Contact & Complaint Manager
+$routes->get('admin/contacts', 'Admin\ContactManager::index', ['filter' => 'auth']);
+$routes->get('admin/contacts/detail/(:num)', 'Admin\ContactManager::detail/$1', ['filter' => 'auth']);
+$routes->post('admin/contacts/update-status/(:num)', 'Admin\ContactManager::updateStatus/$1', ['filter' => 'auth']);
+$routes->post('admin/contacts/delete/(:num)', 'Admin\ContactManager::delete/$1', ['filter' => 'auth']);
+
+// Admin Official Mailbox Hub (phatthalung@moi.go.th)
+$routes->get('admin/mailbox', 'Admin\MailboxManager::index', ['filter' => 'auth']);
+$routes->get('admin/mailbox/detail/(:num)', 'Admin\MailboxManager::detail/$1', ['filter' => 'auth']);
+$routes->post('admin/mailbox/sync', 'Admin\MailboxManager::sync', ['filter' => 'auth']);
+$routes->post('admin/mailbox/toggle-star/(:num)', 'Admin\MailboxManager::toggleStar/$1', ['filter' => 'auth']);
+$routes->post('admin/mailbox/delete/(:num)', 'Admin\MailboxManager::deleteEmail/$1', ['filter' => 'auth']);
+$routes->post('admin/mailbox/save-settings', 'Admin\MailboxManager::saveSettings', ['filter' => 'auth']);
+$routes->post('admin/mailbox/convert/(:num)', 'Admin\MailboxManager::convertToRequest/$1', ['filter' => 'auth']);
+
+/*
+ * --------------------------------------------------------------------
  * Additional Routing
  * --------------------------------------------------------------------
  *
@@ -339,3 +367,4 @@ $routes->match(['get', 'post'], 'api/egp/datatable', 'Procurement::ajaxDatatable
 if (is_file(APPPATH . 'Config/' . ENVIRONMENT . '/Routes.php')) {
     require APPPATH . 'Config/' . ENVIRONMENT . '/Routes.php';
 }
+

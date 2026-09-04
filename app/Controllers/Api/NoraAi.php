@@ -160,7 +160,8 @@ class NoraAi extends ResourceController
         }
 
         // 7. Google Gemini Live RAG Reasoning (If enabled with API Key)
-        if (!empty($settings['use_gemini_live']) && !empty($settings['gemini_api_key'])) {
+        $geminiApiKey = \App\Libraries\GeminiService::getApiKey();
+        if (!empty($settings['use_gemini_live']) && !empty($geminiApiKey)) {
             $searchContext = \App\Libraries\SmartSearchService::search($message, 4);
             $geminiText = \App\Libraries\GeminiService::generateLiveReply($message, $searchContext);
             if (!empty($geminiText)) {

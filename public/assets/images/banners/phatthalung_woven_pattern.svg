@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120">
+  <defs>
+    <!-- Background Base -->
+    <style>
+      .bg-base { fill: #a3c299; }
+      .motif-dark { stroke: #8ba981; stroke-width: 1.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+      .motif-light { stroke: #d3e8ca; stroke-width: 1.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+      .motif-highlight { stroke: #eaf5e4; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+      .center-cross { stroke: #eaf5e4; stroke-width: 2.5; stroke-linecap: round; }
+    </style>
+  </defs>
+
+  <!-- Solid Background -->
+  <rect width="120" height="120" class="bg-base" />
+
+  <!-- 1. Center Diamond Motif (Center: 60, 60) -->
+  <!-- Outer Concentric Diamonds -->
+  <path d="M 60 10 L 110 60 L 60 110 L 10 60 Z" class="motif-dark" />
+  <path d="M 60 18 L 102 60 L 60 102 L 18 60 Z" class="motif-light" />
+  <path d="M 60 26 L 94 60 L 60 94 L 26 60 Z" class="motif-dark" />
+  <path d="M 60 34 L 86 60 L 60 86 L 34 60 Z" class="motif-light" />
+  <path d="M 60 42 L 78 60 L 60 78 L 42 60 Z" class="motif-highlight" />
+
+  <!-- Center Cross -->
+  <line x1="48" y1="60" x2="72" y2="60" class="center-cross" />
+  <line x1="60" y1="48" x2="60" y2="72" class="center-cross" />
+
+  <!-- Corner Chevrons (Top-Left 0,0) -->
+  <path d="M 0 50 L 50 0" class="motif-light" />
+  <path d="M 0 42 L 42 0" class="motif-dark" />
+  <path d="M 0 34 L 34 0" class="motif-light" />
+  <path d="M 0 26 L 26 0" class="motif-dark" />
+  <path d="M 0 18 L 18 0" class="motif-highlight" />
+
+  <!-- Corner Chevrons (Top-Right 120,0) -->
+  <path d="M 120 50 L 70 0" class="motif-light" />
+  <path d="M 120 42 L 78 0" class="motif-dark" />
+  <path d="M 120 34 L 86 0" class="motif-light" />
+  <path d="M 120 26 L 94 0" class="motif-dark" />
+  <path d="M 120 18 L 102 0" class="motif-highlight" />
+
+  <!-- Corner Chevrons (Bottom-Left 0,120) -->
+  <path d="M 0 70 L 50 120" class="motif-light" />
+  <path d="M 0 78 L 42 120" class="motif-dark" />
+  <path d="M 0 86 L 34 120" class="motif-light" />
+  <path d="M 0 94 L 26 120" class="motif-dark" />
+  <path d="M 0 102 L 18 120" class="motif-highlight" />
+
+  <!-- Corner Chevrons (Bottom-Right 120,120) -->
+  <path d="M 120 70 L 70 120" class="motif-light" />
+  <path d="M 120 78 L 78 120" class="motif-dark" />
+  <path d="M 120 86 L 86 120" class="motif-light" />
+  <path d="M 120 94 L 94 120" class="motif-dark" />
+  <path d="M 120 102 L 102 120" class="motif-highlight" />
+
+  <!-- Corner Centers (0,0 / 120,0 / 0,120 / 120,120) -->
+  <line x1="0" y1="12" x2="12" y2="0" class="center-cross" />
+  <line x1="120" y1="12" x2="108" y2="0" class="center-cross" />
+  <line x1="0" y1="108" x2="12" y2="120" class="center-cross" />
+  <line x1="120" y1="108" x2="108" y2="120" class="center-cross" />
+
+</svg>

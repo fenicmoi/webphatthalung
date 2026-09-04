@@ -3,11 +3,20 @@
 namespace App\Libraries;
 
 use App\Models\ProjectModel;
+use CodeIgniter\Database\BaseConnection;
+use CodeIgniter\HTTP\Response;
 use Config\Database;
 
 class EmenscrService
 {
+    /**
+     * @var BaseConnection
+     */
     protected $db;
+
+    /**
+     * @var ProjectModel
+     */
     protected $projectModel;
 
     public function __construct()
@@ -80,6 +89,7 @@ class EmenscrService
         if (!empty($token)) {
             try {
                 $client = \Config\Services::curlrequest();
+                /** @var Response $response */
                 $response = $client->request('GET', $endpoint, [
                     'headers' => [
                         'Authorization' => 'Bearer ' . $token,
