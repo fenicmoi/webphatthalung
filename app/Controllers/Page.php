@@ -6,6 +6,14 @@ use App\Models\PageModel;
 
 class Page extends BaseController
 {
+    public function _remap($method, ...$params)
+    {
+        if ($method === 'view') {
+            return $this->view(...$params);
+        }
+        return $this->view($method);
+    }
+
     public function view($slug = null)
     {
         if (empty($slug)) {
