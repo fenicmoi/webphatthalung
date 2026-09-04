@@ -3,6 +3,7 @@
 // ศาลาประชาสัมพันธ์และสื่อเมืองลุง (News, Events, Photo Gallery & Videos Hub)
 // =========================================================================
 $localNews = function_exists('get_site_news') ? get_site_news(12, null, true) : [];
+$localNews = is_array($localNews) ? $localNews : [];
 $prdNews = [];
 try {
     if (class_exists('\App\Libraries\PrdNewsService')) {
@@ -11,6 +12,7 @@ try {
 } catch (\Throwable $e) {
     $prdNews = [];
 }
+$prdNews = is_array($prdNews) ? $prdNews : [];
 $homeNews = array_merge($localNews, $prdNews);
 usort($homeNews, function ($a, $b) {
     $tA = strtotime($a['created_at'] ?? '2026-01-01');
@@ -19,14 +21,18 @@ usort($homeNews, function ($a, $b) {
 });
 $homeNews = array_slice($homeNews, 0, 6);
 $newsCats = function_exists('get_news_categories') ? get_news_categories() : [];
+$newsCats = is_array($newsCats) ? $newsCats : [];
 $prdCatName = 'ข่าวประชาสัมพันธ์ (สปชส.พัทลุง)';
 if (!in_array($prdCatName, $newsCats, true)) {
     $newsCats[] = $prdCatName;
 }
 $homeEvents = function_exists('get_site_events') ? get_site_events(true) : [];
+$homeEvents = is_array($homeEvents) ? $homeEvents : [];
 $homeGalleryAlbums = function_exists('get_gallery_albums') ? get_gallery_albums(4, null, true) : [];
+$homeGalleryAlbums = is_array($homeGalleryAlbums) ? $homeGalleryAlbums : [];
 $totalAlbums = function_exists('get_gallery_albums') ? count(get_gallery_albums()) : 0;
 $homeVideos = function_exists('get_site_videos') ? get_site_videos(3, null, true) : [];
+$homeVideos = is_array($homeVideos) ? $homeVideos : [];
 $isOfficer = false;
 try {
     $isOfficer = (bool)session()->get('isLoggedIn');

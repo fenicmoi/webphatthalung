@@ -157,14 +157,20 @@ $layoutMode = $cfg['layout_mode'] ?? 'hybrid_widescreen';
 </section>
 
 <!-- 1.2 PROVINCIAL POLICY, ROYAL INITIATIVES & STRATEGIC HUB (แถบวิสัยทัศน์ แบนเนอร์พระราชดำริ ปกสมุดยุทธศาสตร์ และนโยบายผู้ว่าฯ) -->
-<?= $this->include('components/provincial_policy_hub') ?>
+<?php 
+try {
+    echo $this->include('components/provincial_policy_hub');
+} catch (\Throwable $e) {
+    echo '<!-- provincial_policy_hub error: ' . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8') . ' in ' . htmlspecialchars($e->getFile(), ENT_QUOTES, 'UTF-8') . ':' . $e->getLine() . ' -->';
+}
+?>
 
 <!-- 3. NEWS & MEDIA HUB (ศูนย์รวมข่าวสารและสื่อมัลติมีเดีย) -->
 <?php 
 try {
     echo $this->include('components/news_media_hub');
 } catch (\Throwable $e) {
-    echo '<!-- news_media_hub error handled -->';
+    echo '<!-- news_media_hub error: ' . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8') . ' in ' . htmlspecialchars($e->getFile(), ENT_QUOTES, 'UTF-8') . ':' . $e->getLine() . ' -->';
 }
 ?>
 
