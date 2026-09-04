@@ -91,7 +91,7 @@ class DotEnv
     protected function setVariable(string $name, string $value = '')
     {
         if (! getenv($name, true)) {
-            putenv("{$name}={$value}");
+            @putenv("{$name}={$value}");
         }
 
         if (empty($_ENV[$name])) {
