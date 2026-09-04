@@ -18,3 +18,6 @@ writable/egp_phatthalung_cache.json
 writable/aggregated_news.json
 writable/search_trends.json
 writable/dump_*.json
+scratch/
+*.zip
+unzip.php

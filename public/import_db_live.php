@@ -37,6 +37,26 @@ $message = '';
 $status = '';
 $tableList = [];
 
+if ($action === 'debug') {
+    $logFiles = glob(__DIR__ . '/../writable/logs/*.log');
+    if (!empty($logFiles)) {
+        rsort($logFiles);
+        $latestLog = $logFiles[0];
+        echo "<h3>Latest Log File: " . basename($latestLog) . "</h3>";
+        echo "<pre style='background:#1e1e1e;color:#fff;padding:15px;border-radius:8px;max-height:500px;overflow:auto;'>" . htmlspecialchars(file_get_contents($latestLog)) . "</pre>";
+    } else {
+        echo "<h3>No log files found in writable/logs/</h3>";
+    }
+
+    echo "<h3>Testing CI Boot:</h3>";
+    try {
+        require_once __DIR__ . '/index.php';
+    } catch (Throwable $e) {
+        echo "<pre style='color:red;font-weight:bold;'>" . htmlspecialchars($e->getMessage() . "\n" . $e->getTraceAsString()) . "</pre>";
+    }
+    exit;
+}
+
 if ($action === 'delete_self') {
     @unlink(__FILE__);
     echo "<h1>ลบไฟล์ Web Importer เรียบร้อยแล้ว</h1><p><a href='./'>กลับสู่หน้าหลักเว็บไซต์</a></p>";
