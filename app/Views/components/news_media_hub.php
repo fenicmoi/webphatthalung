@@ -3,7 +3,14 @@
 // ศาลาประชาสัมพันธ์และสื่อเมืองลุง (News, Events, Photo Gallery & Videos Hub)
 // =========================================================================
 $localNews = function_exists('get_site_news') ? get_site_news(12, null, true) : [];
-$prdNews = class_exists('\App\Libraries\PrdNewsService') ? \App\Libraries\PrdNewsService::getPhatthalungNews(12) : [];
+$prdNews = [];
+try {
+    if (class_exists('\App\Libraries\PrdNewsService')) {
+        $prdNews = \App\Libraries\PrdNewsService::getPhatthalungNews(12);
+    }
+} catch (\Throwable $e) {
+    $prdNews = [];
+}
 $homeNews = array_merge($localNews, $prdNews);
 usort($homeNews, function ($a, $b) {
     $tA = strtotime($a['created_at'] ?? '2026-01-01');
@@ -20,7 +27,13 @@ $homeEvents = function_exists('get_site_events') ? get_site_events(true) : [];
 $homeGalleryAlbums = function_exists('get_gallery_albums') ? get_gallery_albums(4, null, true) : [];
 $totalAlbums = function_exists('get_gallery_albums') ? count(get_gallery_albums()) : 0;
 $homeVideos = function_exists('get_site_videos') ? get_site_videos(3, null, true) : [];
-$isOfficer = session()->get('isLoggedIn');
+$isOfficer = false;
+try {
+    $isOfficer = (bool)session()->get('isLoggedIn');
+} catch (\Throwable $e) {
+    $isOfficer = false;
+}
+
 ?>
 
 <style>

@@ -75,16 +75,18 @@ class PrdNewsService
         $items = [];
         $seenIds = [];
 
-        // 1. Fetch articles from getarticles endpoint (Pages 1 to 4)
-        for ($page = 1; $page <= 4; $page++) {
+        // 1. Fetch articles from getarticles endpoint (Limit to 1-2 pages with strict timeout)
+        for ($page = 1; $page <= 2; $page++) {
             $ch = curl_init(self::$ptlPrdUrl);
+            if (!$ch) break;
             curl_setopt($ch, CURLOPT_POST, true);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
             curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36');
             curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query(['pageIndex' => $page]));
-            curl_setopt($ch, CURLOPT_TIMEOUT, 8);
-            $res = curl_exec($ch);
+            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 2);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 3);
+            $res = @curl_exec($ch);
             curl_close($ch);
 
             if (empty($res)) continue;
