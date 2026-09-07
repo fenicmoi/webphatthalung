@@ -172,7 +172,15 @@ if (empty($prBanners)) {
         </div>
 
         <div class="d-flex align-items-center gap-2">
-            <?php if (session()->get('isLoggedIn')): ?>
+            <?php 
+            $canEditBanner = false;
+            try {
+                $canEditBanner = (bool)session()->get('isLoggedIn');
+            } catch (\Throwable $e) {
+                $canEditBanner = false;
+            }
+            if ($canEditBanner): 
+            ?>
                 <a href="<?= base_url('admin/service-banners') ?>" class="btn btn-sm btn-outline-primary rounded-pill px-3 py-1 me-2" title="ไปเพิ่ม/แก้ไขแบนเนอร์หลังบ้าน">
                     <i class="fa-solid fa-plus me-1"></i> จัดการแบนเนอร์
                 </a>

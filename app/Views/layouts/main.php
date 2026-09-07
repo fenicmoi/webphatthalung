@@ -42,6 +42,31 @@
 </head>
 <body>
     <div class="content-wrapper">
+        <!-- 0. Official Provincial Top Utility Bar (Dignified & Accessible) -->
+        <div class="gov-top-utility-bar d-none d-lg-block" style="background: #022c22; color: #cbd5e1; font-size: 0.8rem; padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.08);">
+            <div class="container d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center gap-3">
+                    <span><i class="fa-regular fa-calendar-check me-1.5 text-warning"></i><?= function_exists('thai_date') ? thai_date(date('Y-m-d'), 'day_full') : date('d/m/Y') ?></span>
+                    <span class="opacity-40">•</span>
+                    <span><i class="fa-solid fa-phone me-1.5 text-success" style="color: #34d399 !important;"></i>สายด่วนศูนย์ดำรงธรรม 1567</span>
+                    <span class="opacity-40">•</span>
+                    <span><i class="fa-solid fa-landmark me-1.5 text-warning"></i>ศาลากลางจังหวัดพัทลุง โทร. 074-613409</span>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <!-- Accessibility Font Size Adjuster -->
+                    <span class="text-white-50 small me-1">ขนาดตัวอักษร:</span>
+                    <button type="button" class="btn btn-xs btn-outline-light rounded px-1.5 py-0 font-btn" onclick="adjustPortalFontSize(-1)" style="font-size: 0.72rem; line-height: 1.3;" title="ลดขนาดตัวอักษร">ก-</button>
+                    <button type="button" class="btn btn-xs btn-outline-light rounded px-1.5 py-0 font-btn active-font" onclick="adjustPortalFontSize(0)" style="font-size: 0.75rem; line-height: 1.3;" title="ขนาดตัวอักษรปกติ">ก</button>
+                    <button type="button" class="btn btn-xs btn-outline-light rounded px-1.5 py-0 font-btn" onclick="adjustPortalFontSize(1)" style="font-size: 0.8rem; line-height: 1.3;" title="เพิ่มขนาดตัวอักษร">ก+</button>
+                    <span class="opacity-40 mx-1">|</span>
+                    <!-- Theme Toggle -->
+                    <button type="button" class="btn btn-xs btn-outline-light rounded px-2 py-0" onclick="App.theme.toggle()" title="สลับโหมดมืด/สว่าง" style="font-size: 0.75rem;">
+                        <i class="fa-solid fa-circle-half-stroke"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <!-- Municipal Government Header -->
         <header class="gov-header-wrapper">
             <div class="gov-navbar">
@@ -103,10 +128,22 @@
                         <?php endif; ?>
                     <?php endforeach; ?>
 
-                    <?php if (session()->get('isLoggedIn')): ?>
+                    <?php 
+                    $isUserLoggedIn = false;
+                    $userName = 'เจ้าหน้าที่';
+                    try {
+                        $isUserLoggedIn = (bool)session()->get('isLoggedIn');
+                        if ($isUserLoggedIn) {
+                            $userName = session()->get('full_name') ?: 'เจ้าหน้าที่';
+                        }
+                    } catch (\Throwable $e) {
+                        $isUserLoggedIn = false;
+                    }
+                    ?>
+                    <?php if ($isUserLoggedIn): ?>
                         <li class="gov-nav-item dropdown">
                             <a class="gov-nav-link dropdown-toggle text-warning" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fa-solid fa-circle-user me-1"></i> <?= mb_substr(session()->get('full_name') ?? 'เจ้าหน้าที่', 0, 15) ?>
+                                <i class="fa-solid fa-circle-user me-1"></i> <?= mb_substr($userName, 0, 15) ?>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end gov-dropdown-menu shadow border-0">
                                 <li class="px-3 py-2 border-bottom"><small class="text-muted">สถานะ: เจ้าหน้าที่ระบบ</small></li>
@@ -257,20 +294,20 @@
     <div class="modal fade" id="omniSearchModal" tabindex="-1" aria-labelledby="omniSearchModalLabel" aria-hidden="true" data-bs-backdrop="static">
         <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content border-0 rounded-4 shadow-lg overflow-hidden" style="background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.15) !important;">
-                <!-- Modal Header with Large Instant Search Input & Voice AI (High-Contrast Luminous Spotlight Theme) -->
-                <div class="modal-header p-3 border-bottom" style="background: rgba(15, 23, 42, 0.95); border-color: rgba(56, 189, 248, 0.4) !important; border-bottom-width: 2px !important;">
-                    <div class="d-flex align-items-center w-100 gap-3 p-2 px-3 rounded-4 shadow-lg" style="background: #ffffff; border: 3px solid #00f0ff; box-shadow: 0 0 30px rgba(0, 240, 255, 0.45) !important;">
-                        <div class="p-2 rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 shadow-sm" style="background: #e0f2fe; color: #0284c7; width: 45px; height: 45px; border: 2px solid #bae6fd;">
-                            <i class="fa-solid fa-magnifying-glass fs-4 animate-bounce"></i>
+                <!-- Modal Header with Large Instant Search Input (Clean Dignified Theme) -->
+                <div class="modal-header p-3 border-bottom" style="background: rgba(15, 23, 42, 0.95); border-color: rgba(16, 185, 129, 0.3) !important; border-bottom-width: 2px !important;">
+                    <div class="d-flex align-items-center w-100 gap-3 p-2 px-3 rounded-4 shadow-sm" style="background: #ffffff; border: 2px solid #059669; box-shadow: 0 4px 20px rgba(5, 150, 105, 0.15) !important;">
+                        <div class="p-2 rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="background: #ecfdf5; color: #047857; width: 44px; height: 44px; border: 1.5px solid #a7f3d0;">
+                            <i class="fa-solid fa-magnifying-glass fs-5"></i>
                         </div>
-                        <input type="text" id="omniSearchInput" class="form-control form-control-lg border-0 bg-transparent text-dark fs-4 px-1 shadow-none fw-bold" placeholder="✨ พิมพ์ชื่อบริการ, ร้องทุกข์ หรือคำค้นที่ต้องการ..." autocomplete="off" style="color: #0f172a !important;">
+                        <input type="text" id="omniSearchInput" class="form-control form-control-lg border-0 bg-transparent text-dark fs-5 px-1 shadow-none fw-semibold" placeholder="ค้นหาข้อมูลบริการ ข่าวสาร หรือเรื่องที่ต้องการ..." autocomplete="off" style="color: #0f172a !important;">
                         
                         <!-- Thai Voice Search Trigger (Web Speech API) -->
-                        <button type="button" class="btn rounded-circle p-2 d-flex align-items-center justify-content-center shadow flex-shrink-0" id="btnVoiceSearch" onclick="OmniSearch.startVoiceSearch()" title="ค้นหาด้วยเสียงภาษาไทย (Voice Search)" style="width: 48px; height: 48px; background: #fff7ed; color: #c2410c; border: 2px solid #fdba74;">
-                            <i class="fa-solid fa-microphone fs-5 text-danger animate-pulse"></i>
+                        <button type="button" class="btn rounded-circle p-2 d-flex align-items-center justify-content-center shadow-xs flex-shrink-0" id="btnVoiceSearch" onclick="OmniSearch.startVoiceSearch()" title="ค้นหาด้วยเสียงภาษาไทย (Voice Search)" style="width: 44px; height: 44px; background: #ecfdf5; color: #047857; border: 1.5px solid #a7f3d0;">
+                            <i class="fa-solid fa-microphone fs-5"></i>
                         </button>
 
-                        <button type="button" class="btn btn-sm btn-dark rounded-pill px-3 py-2 me-1 text-info fw-bold shadow-sm" data-bs-dismiss="modal" style="border: 1px solid #334155;">
+                        <button type="button" class="btn btn-sm btn-dark rounded-pill px-3 py-1.5 me-1 text-light fw-medium shadow-xs" data-bs-dismiss="modal" style="border: 1px solid #334155; font-size: 0.82rem;">
                             ESC
                         </button>
                     </div>
@@ -285,8 +322,8 @@
                                 <i class="fa-solid fa-fire-flame-curved"></i>
                                 <h6 class="m-0 fw-bold">คำค้นหายอดนิยมประจำสัปดาห์ (Trending Keywords)</h6>
                             </div>
-                            <span class="badge bg-success bg-opacity-20 text-success border border-success border-opacity-30 rounded-pill px-2.5 py-1 small fw-bold">
-                                <i class="fa-solid fa-bolt me-1"></i> Live Real Trends
+                            <span class="badge bg-success bg-opacity-20 text-success border border-success border-opacity-30 rounded-pill px-2.5 py-1 small fw-medium">
+                                <i class="fa-solid fa-arrow-trend-up me-1"></i> คำค้นยอดนิยม
                             </span>
                         </div>
                         
@@ -295,9 +332,9 @@
                             $trendingKeywords = function_exists('get_trending_keywords') ? get_trending_keywords(6) : [];
                             foreach ($trendingKeywords as $kwItem): 
                                 $kw = is_array($kwItem) ? ($kwItem['keyword'] ?? '') : $kwItem;
-                                $icon = is_array($kwItem) ? ($kwItem['icon'] ?? '🔥') : '🔥';
+                                $icon = is_array($kwItem) ? ($kwItem['icon'] ?? '') : '';
                             ?>
-                                <button type="button" onclick="OmniSearch.quickSearch('<?= esc($kw) ?>')" class="btn btn-sm rounded-pill px-3 py-1.5 fw-bold shadow-xs hover-scale" style="background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.4); color: #ffffff; transition: all 0.2s ease;">
+                                <button type="button" onclick="OmniSearch.quickSearch('<?= esc($kw) ?>')" class="btn btn-sm rounded-pill px-3 py-1.5 fw-medium shadow-xs hover-scale" style="background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.4); color: #ffffff; transition: all 0.2s ease;">
                                     <span><?= $icon ?> <?= esc($kw) ?></span>
                                 </button>
                             <?php endforeach; ?>
@@ -312,7 +349,7 @@
                     </div>
                 </div>
                 
-                <!-- Modal Footer with Keyboard Shortcuts & AI Branding -->
+                <!-- Modal Footer with Keyboard Shortcuts & Official Identity -->
                 <div class="modal-footer px-4 py-2 border-top d-flex justify-content-between text-muted small" style="background: rgba(0, 0, 0, 0.35); border-color: rgba(255, 255, 255, 0.1) !important; font-size: 0.8rem;">
                     <div class="d-flex align-items-center gap-3">
                         <span><kbd class="bg-dark border border-secondary text-light px-2 py-1 rounded">↑</kbd> <kbd class="bg-dark border border-secondary text-light px-2 py-1 rounded">↓</kbd> เพื่อนำทาง</span>
@@ -320,7 +357,7 @@
                         <span><kbd class="bg-dark border border-secondary text-light px-2 py-1 rounded">ESC</kbd> ปิดหน้าต่าง</span>
                     </div>
                     <div>
-                        <span class="text-info fw-bold"><i class="fa-solid fa-wand-magic-sparkles me-1"></i>Powered by Phatthalung Omni-Search AI</span>
+                        <span class="text-light opacity-75 small"><i class="fa-solid fa-landmark me-1 text-warning"></i>ระบบสืบค้นข้อมูลพอร์ทัลจังหวัดพัทลุง</span>
                     </div>
                 </div>
             </div>

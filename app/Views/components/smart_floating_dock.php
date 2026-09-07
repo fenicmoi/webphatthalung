@@ -26,6 +26,11 @@
     overflow-x: auto;
     scrollbar-width: none;
 }
+@media (max-width: 991px) {
+    .floating-capsule-dock {
+        display: none !important;
+    }
+}
 .floating-capsule-dock.dock-scroll-hidden {
     transform: translateX(-50%) translateY(110%);
     opacity: 0;
