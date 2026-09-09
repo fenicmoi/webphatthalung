@@ -2,6 +2,16 @@
 ini_set('display_errors', '1');
 error_reporting(E_ALL);
 
+require_once __DIR__ . '/../app/Config/Paths.php';
+$paths = new Config\Paths();
+require_once rtrim($paths->systemDirectory, '\\/ ') . DIRECTORY_SEPARATOR . 'bootstrap.php';
+require_once SYSTEMPATH . 'Config/DotEnv.php';
+(new CodeIgniter\Config\DotEnv(ROOTPATH))->load();
+
+$app = Config\Services::codeigniter();
+$app->initialize();
+try { Config\Services::session(); } catch (\Throwable $e) {}
+
 echo "<h1>Diagnostic Report for Web Phatthalung</h1>";
 echo "<p>PHP Version: " . PHP_VERSION . "</p>";
 
@@ -25,15 +35,7 @@ foreach ($writableDirs as $dir) {
 // 2. Test DotEnv & CI Boot
 echo "<h3>2. CodeIgniter 4 Boot Test</h3>";
 try {
-    require_once __DIR__ . '/../app/Config/Paths.php';
-    $paths = new Config\Paths();
-    require_once rtrim($paths->systemDirectory, '\\/ ') . DIRECTORY_SEPARATOR . 'bootstrap.php';
-    require_once SYSTEMPATH . 'Config/DotEnv.php';
-    (new CodeIgniter\Config\DotEnv(ROOTPATH))->load();
     echo "<p style='color:green'>DotEnv loaded successfully!</p>";
-
-    $app = Config\Services::codeigniter();
-    $app->initialize();
     echo "<p style='color:green'>CodeIgniter initialized successfully!</p>";
 
     $db = Config\Database::connect();

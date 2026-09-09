@@ -52,7 +52,10 @@ abstract class BaseController extends Controller
         parent::initController($request, $response, $logger);
 
         // Preload any models, libraries, etc, here.
-
-        // E.g.: $this->session = \Config\Services::session();
+        try {
+            $this->session = \Config\Services::session();
+        } catch (\Throwable $e) {
+            // ignore in CLI or unusual environments
+        }
     }
 }
