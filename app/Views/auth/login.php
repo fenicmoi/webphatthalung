@@ -9,6 +9,11 @@
     <meta name="X-CSRF-HEADER" content="<?= csrf_header() ?>">
     <meta name="X-CSRF-TOKEN" content="<?= csrf_hash() ?>">
     
+    <!-- Google Fonts: Prompt -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <!-- Bootstrap 5.3 & FontAwesome -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -24,8 +29,36 @@
         }
 
         body {
-            font-size: 1.05rem;
+            font-family: 'Prompt', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+            font-size: 1.15rem;
             line-height: 1.6;
+            background: #022c22;
+        }
+
+        .ambient-glow {
+            position: fixed;
+            top: -20%;
+            left: -15%;
+            width: 70vw;
+            height: 70vw;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.35) 0%, rgba(4, 120, 87, 0.15) 50%, rgba(0, 0, 0, 0) 70%);
+            filter: blur(80px);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .ambient-glow-2 {
+            position: fixed;
+            bottom: -20%;
+            right: -15%;
+            width: 65vw;
+            height: 65vw;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(6, 78, 59, 0.45) 0%, rgba(2, 44, 34, 0.2) 60%, rgba(0, 0, 0, 0) 80%);
+            filter: blur(80px);
+            z-index: 0;
+            pointer-events: none;
         }
 
         .login-viewport {
@@ -33,33 +66,36 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 2rem 1.25rem;
+            padding: 3rem 1.5rem;
             position: relative;
             z-index: 1;
         }
 
         .login-card {
             width: 100%;
-            max-width: 540px;
-            border-radius: 32px !important;
-            padding: 3rem 2.5rem !important;
-            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.28), 0 0 0 1px rgba(4, 120, 87, 0.15) !important;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(16px);
+            max-width: 640px;
+            border-radius: 36px !important;
+            padding: 3.6rem 3.2rem !important;
+            box-shadow: 0 30px 80px -10px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(16, 185, 129, 0.25) !important;
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-top: 5px solid #10b981 !important;
+            transition: all 0.3s ease;
         }
 
         .login-logo-box {
-            width: 84px;
-            height: 84px;
-            border-radius: 26px;
+            width: 96px;
+            height: 96px;
+            border-radius: 28px;
             background: linear-gradient(135deg, #022c22 0%, #064e3b 50%, #047857 100%);
             color: white;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 12px 30px rgba(4, 120, 87, 0.35);
-            border: 2px solid rgba(255, 255, 255, 0.25);
-            padding: 10px;
+            box-shadow: 0 14px 35px rgba(4, 120, 87, 0.35);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 12px;
         }
 
         .login-logo-box img {
@@ -69,55 +105,60 @@
         }
 
         .login-title {
-            font-size: 1.85rem;
+            font-size: 2.35rem;
             font-weight: 800;
-            color: #064e3b;
+            color: #022c22;
             letter-spacing: -0.5px;
+            line-height: 1.25;
         }
 
         .login-subtitle {
-            font-size: 1.05rem;
-            color: #4b5563;
+            font-size: 1.22rem;
+            color: #475569;
+            font-weight: 500;
         }
 
         .form-label-lg {
-            font-size: 1.05rem;
+            font-size: 1.2rem;
             font-weight: 700;
-            color: #1f2937;
-            margin-bottom: 0.45rem;
+            color: #0f172a;
+            margin-bottom: 0.55rem;
         }
 
         .login-input {
-            font-size: 1.1rem !important;
-            padding: 0.85rem 1.2rem 0.85rem 3.4rem !important;
-            border-radius: 16px !important;
-            border: 2px solid #d1ded5 !important;
-            background: #fbfdfc !important;
+            font-size: 1.25rem !important;
+            height: 62px !important;
+            padding: 0.9rem 1.4rem 0.9rem 3.8rem !important;
+            border-radius: 18px !important;
+            border: 2px solid #cbd5e1 !important;
+            background: #f8fafc !important;
+            color: #0f172a !important;
+            font-weight: 500 !important;
             transition: all 0.25s ease !important;
         }
 
         .login-input:focus {
-            border-color: #047857 !important;
+            border-color: #059669 !important;
             background: #ffffff !important;
-            box-shadow: 0 0 0 4px rgba(4, 120, 87, 0.15) !important;
+            box-shadow: 0 0 0 5px rgba(16, 185, 129, 0.2) !important;
         }
 
         .login-input-icon {
-            left: 18px;
+            left: 20px;
             top: 50%;
             transform: translateY(-50%);
             color: #047857;
-            font-size: 1.25rem;
+            font-size: 1.45rem;
             pointer-events: none;
         }
 
         .login-toggle-eye {
-            right: 16px;
+            right: 18px;
             top: 50%;
             transform: translateY(-50%);
-            color: #6b7280;
-            font-size: 1.2rem;
-            padding: 6px;
+            color: #64748b;
+            font-size: 1.35rem;
+            padding: 8px;
             text-decoration: none;
         }
 
@@ -126,23 +167,23 @@
         }
 
         .demo-box {
-            background: #f0fdf4;
-            border: 1.5px dashed #86efac;
-            border-radius: 20px;
-            padding: 1.2rem;
+            background: #ecfdf5;
+            border: 2px dashed #6ee7b7;
+            border-radius: 22px;
+            padding: 1.4rem;
         }
 
         .demo-btn {
-            font-size: 0.95rem;
+            font-size: 1.08rem;
             font-weight: 700;
-            padding: 0.6rem 1.2rem;
+            padding: 0.75rem 1.4rem;
             border-radius: 50px;
             background: #ffffff;
             color: #065f46;
-            border: 1.5px solid #a7f3d0;
+            border: 2px solid #a7f3d0;
             cursor: pointer;
             transition: all 0.2s ease;
-            box-shadow: 0 2px 6px rgba(4, 120, 87, 0.08);
+            box-shadow: 0 4px 10px rgba(4, 120, 87, 0.08);
         }
 
         .demo-btn:hover {
@@ -150,36 +191,36 @@
             color: white !important;
             border-color: #047857;
             transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(4, 120, 87, 0.25);
+            box-shadow: 0 8px 20px rgba(4, 120, 87, 0.25);
         }
 
         .btn-login-submit {
             background: linear-gradient(135deg, #059669 0%, #047857 50%, #064e3b 100%);
             color: #ffffff !important;
-            font-size: 1.25rem !important;
+            font-size: 1.4rem !important;
             font-weight: 800 !important;
-            padding: 0.95rem 1.5rem !important;
+            height: 64px !important;
             border-radius: 50px !important;
             border: none !important;
-            box-shadow: 0 8px 25px rgba(4, 120, 87, 0.35) !important;
+            box-shadow: 0 10px 30px rgba(4, 120, 87, 0.4) !important;
             transition: all 0.25s ease !important;
         }
 
         .btn-login-submit:hover {
             background: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%);
             transform: translateY(-2px);
-            box-shadow: 0 12px 30px rgba(4, 120, 87, 0.45) !important;
+            box-shadow: 0 14px 35px rgba(4, 120, 87, 0.5) !important;
         }
 
         .btn-back-home {
-            font-size: 1.05rem;
+            font-size: 1.15rem;
             font-weight: 700;
-            padding: 0.65rem 1.35rem;
+            padding: 0.75rem 1.6rem;
             border-radius: 50px;
-            background: rgba(255, 255, 255, 0.9);
-            border: 1.5px solid #d1e7dd;
-            color: #047857;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            background: rgba(255, 255, 255, 0.95);
+            border: 2px solid rgba(16, 185, 129, 0.3);
+            color: #064e3b;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
             transition: all 0.2s ease;
         }
 
@@ -189,9 +230,53 @@
             transform: translateY(-2px);
         }
 
+        .theme-toggle-btn {
+            width: 52px;
+            height: 52px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.95);
+            border: 2px solid rgba(16, 185, 129, 0.3);
+            font-size: 1.35rem;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .theme-toggle-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 576px) {
+            .login-card {
+                padding: 2.2rem 1.6rem !important;
+                border-radius: 26px !important;
+            }
+            .login-title {
+                font-size: 1.85rem !important;
+            }
+            .login-subtitle {
+                font-size: 1.05rem !important;
+            }
+            .login-input {
+                font-size: 1.15rem !important;
+                height: 54px !important;
+            }
+            .btn-login-submit {
+                font-size: 1.25rem !important;
+                height: 56px !important;
+            }
+        }
+
+        [data-theme="dark"] body {
+            background: #090d16 !important;
+        }
+
         [data-theme="dark"] .login-card {
-            background: rgba(15, 23, 42, 0.92) !important;
+            background: rgba(15, 23, 42, 0.94) !important;
             border-color: rgba(255, 255, 255, 0.15) !important;
+            box-shadow: 0 30px 80px -10px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(52, 211, 153, 0.25) !important;
             color: #f1f5f9;
         }
 
@@ -236,7 +321,7 @@
                 <i class="fa-solid fa-house"></i>
                 <span>กลับหน้าเว็บประชาชน</span>
             </a>
-            <button id="theme-toggle" class="theme-toggle-btn p-2.5 fs-5 rounded-circle shadow-sm" title="สลับโหมดกลางวัน/กลางคืน">
+            <button id="theme-toggle" class="theme-toggle-btn rounded-circle" title="สลับโหมดกลางวัน/กลางคืน">
                 <i class="fa-solid fa-moon text-emerald"></i>
             </button>
         </div>
@@ -252,9 +337,9 @@
                         <img src="<?= base_url('assets/images/phatthalung_fabric_emblem.svg') ?>" alt="ตราลายผ้าอัตลักษณ์ประจำจังหวัดพัทลุง">
                     </div>
                 </div>
-                <h2 class="login-title mb-1.5">ระบบยืนยันตัวตนเจ้าหน้าที่</h2>
+                <h2 class="login-title mb-2">ระบบยืนยันตัวตนเจ้าหน้าที่</h2>
                 <p class="login-subtitle mb-0">
-                    ศูนย์บริหารจัดการข้อมูลภาครัฐ <strong>จังหวัดพัทลุง</strong>
+                    ศูนย์บริหารจัดการข้อมูลภาครัฐ <strong style="color: #047857;">จังหวัดพัทลุง</strong>
                 </p>
             </div>
 
@@ -268,7 +353,7 @@
 
             <!-- Demo Fill Section for Seamless Development Showcase -->
             <div class="demo-box mb-4 text-center">
-                <div class="fw-bold text-emerald mb-2" style="font-size: 0.95rem;">
+                <div class="fw-bold text-emerald mb-2.5" style="font-size: 1.12rem;">
                     <i class="fa-solid fa-wand-magic-sparkles text-warning me-1.5"></i>คลิกเพื่อกรอกรหัสทดสอบอัตโนมัติ (Demo Access):
                 </div>
                 <div class="d-flex flex-wrap justify-content-center gap-2.5">
@@ -286,7 +371,7 @@
                 <?= csrf_field() ?>
                 
                 <!-- Username -->
-                <div class="mb-3.5">
+                <div class="mb-4">
                     <label class="form-label-lg" for="username">
                         ชื่อผู้ใช้งาน หรือ อีเมลราชการ <span class="text-danger">*</span>
                     </label>
@@ -297,12 +382,12 @@
                 </div>
 
                 <!-- Password -->
-                <div class="mb-3.5">
-                    <div class="d-flex justify-content-between align-items-center mb-1">
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-1.5">
                         <label class="form-label-lg mb-0" for="password">
                             รหัสผ่าน <span class="text-danger">*</span>
                         </label>
-                        <a href="#" onclick="App.toast('กรุณาติดต่อศูนย์สารสนเทศและการสื่อสารเพื่อทำการรีเซ็ตรหัสผ่านครับ', 'info'); return false;" class="text-emerald fw-bold text-decoration-none" style="font-size: 0.95rem;">
+                        <a href="#" onclick="App.toast('กรุณาติดต่อศูนย์สารสนเทศและการสื่อสารเพื่อทำการรีเซ็ตรหัสผ่านครับ', 'info'); return false;" class="text-emerald fw-bold text-decoration-none" style="font-size: 1.1rem;">
                             ลืมรหัสผ่าน?
                         </a>
                     </div>
@@ -316,10 +401,10 @@
                 </div>
 
                 <!-- Remember Me -->
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <div class="form-check d-flex align-items-center gap-2">
-                        <input class="form-check-input" type="checkbox" id="rememberMe" checked style="width: 1.25rem; height: 1.25rem; cursor: pointer;">
-                        <label class="form-check-label text-muted" for="rememberMe" style="font-size: 0.95rem; cursor: pointer;">
+                <div class="d-flex justify-content-between align-items-center mb-4 pb-1">
+                    <div class="form-check d-flex align-items-center gap-2.5">
+                        <input class="form-check-input" type="checkbox" id="rememberMe" checked style="width: 1.45rem; height: 1.45rem; cursor: pointer; border-radius: 6px;">
+                        <label class="form-check-label" for="rememberMe" style="font-size: 1.12rem; cursor: pointer; color: #334155; font-weight: 500;">
                             จดจำเซสชันในเบราว์เซอร์นี้
                         </label>
                     </div>
@@ -327,17 +412,18 @@
 
                 <!-- Submit Button -->
                 <button type="submit" id="btnLogin" class="btn btn-login-submit w-100 d-flex align-items-center justify-content-center">
-                    <i class="fa-solid fa-right-to-bracket me-2.5"></i> เข้าสู่ระบบ
+                    <i class="fa-solid fa-right-to-bracket me-2.5 fs-5"></i> เข้าสู่ระบบ
                 </button>
             </form>
 
-            <div class="text-center mt-4 pt-3.5 border-top" style="border-color: rgba(0,0,0,0.08) !important;">
-                <p class="text-muted mb-0" style="font-size: 0.92rem;">
-                    <i class="fa-solid fa-shield-halved text-warning me-1"></i> ระบบสำหรับเจ้าหน้าที่และผู้ได้รับมอบหมายเท่านั้น
+            <div class="text-center mt-4 pt-4 border-top" style="border-color: rgba(0,0,0,0.08) !important;">
+                <p class="text-muted mb-0" style="font-size: 1.05rem;">
+                    <i class="fa-solid fa-shield-halved text-warning me-1.5"></i> ระบบสำหรับเจ้าหน้าที่และผู้ได้รับมอบหมายเท่านั้น
                 </p>
             </div>
         </div>
     </div>
+
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="<?= base_url('assets/js/app.js') ?>"></script>
