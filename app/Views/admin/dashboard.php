@@ -38,25 +38,25 @@ $stats = $stats ?? [
             </div>
             <h3 class="fw-bold mb-1" style="color: #0f172a;"><?= $stats['news'] ?></h3>
             <div class="d-flex align-items-center gap-1" style="font-size: 0.82rem; color: #10b981;">
-                <i class="fa-solid fa-arrow-trend-up"></i>
-                <strong>+12%</strong> <span class="text-muted ms-1">จากเดือนที่ผ่านมา</span>
+                <i class="fa-solid fa-circle-check"></i>
+                <span>ข้อมูลจริงจากตาราง news (MySQL)</span>
             </div>
         </div>
     </div>
 
-    <!-- Card 2: Service Requests -->
+    <!-- Card 2: Service Requests & Complaints -->
     <div class="col-sm-6 col-xl-3">
         <div class="kpi-stat-card">
             <div class="d-flex align-items-center justify-content-between mb-3">
-                <span class="text-muted fw-bold" style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;">บริการประชาชน</span>
+                <span class="text-muted fw-bold" style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;">เรื่องติดต่อ & ร้องเรียน</span>
                 <div class="kpi-icon-box" style="background: #ecfdf5; color: #059669;">
                     <i class="fa-solid fa-clipboard-check"></i>
                 </div>
             </div>
             <h3 class="fw-bold mb-1" style="color: #0f172a;"><?= $stats['services_requests'] ?></h3>
             <div class="d-flex align-items-center gap-1" style="font-size: 0.82rem; color: #059669;">
-                <i class="fa-solid fa-check-double"></i>
-                <span>ดำเนินการเสร็จสิ้น 98%</span>
+                <i class="fa-solid fa-inbox"></i>
+                <span>เรื่องติดต่อจากประชาชนในระบบ</span>
             </div>
         </div>
     </div>
@@ -73,24 +73,24 @@ $stats = $stats ?? [
             <h3 class="fw-bold mb-1" style="color: #0f172a;"><?= $stats['users'] ?></h3>
             <div class="d-flex align-items-center gap-1" style="font-size: 0.82rem; color: #64748b;">
                 <i class="fa-solid fa-shield-halved text-primary"></i>
-                <span>สิทธิ์ Admin / Officer</span>
+                <span>บัญชีผู้ใช้งานจริงในตาราง users</span>
             </div>
         </div>
     </div>
 
-    <!-- Card 4: Monthly Visitors -->
+    <!-- Card 4: Monthly Visitors & News Views -->
     <div class="col-sm-6 col-xl-3">
         <div class="kpi-stat-card">
             <div class="d-flex align-items-center justify-content-between mb-3">
-                <span class="text-muted fw-bold" style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;">การเข้าชมเว็บไซต์</span>
+                <span class="text-muted fw-bold" style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;">ยอดเข้าชมข่าวสาร</span>
                 <div class="kpi-icon-box" style="background: #fffbeb; color: #d97706;">
                     <i class="fa-solid fa-signal"></i>
                 </div>
             </div>
             <h3 class="fw-bold mb-1" style="color: #0f172a;"><?= $stats['monthly_visitors'] ?></h3>
             <div class="d-flex align-items-center gap-1" style="font-size: 0.82rem; color: #10b981;">
-                <i class="fa-solid fa-arrow-trend-up"></i>
-                <strong>+24.5%</strong> <span class="text-muted ms-1">อัตราเติบโต</span>
+                <i class="fa-solid fa-eye"></i>
+                <span>ยอดเปิดอ่านบทความ & ข่าวสารรวม</span>
             </div>
         </div>
     </div>
@@ -159,7 +159,7 @@ $stats = $stats ?? [
         <div class="admin-card">
             <div class="admin-card-header d-flex flex-wrap align-items-center justify-content-between gap-2">
                 <div>
-                    <h6 class="fw-bold mb-0"><i class="fa-solid fa-newspaper text-primary me-2"></i>รายการข่าวสารล่าสุด</h6>
+                    <h6 class="fw-bold mb-0"><i class="fa-solid fa-newspaper text-primary me-2"></i>รายการข่าวสารล่าสุดในระบบ</h6>
                 </div>
                 <a href="<?= base_url('news') ?>" class="btn-modern-outline text-decoration-none" style="padding: 0.35rem 0.85rem; font-size: 0.82rem;">
                     <i class="fa-solid fa-arrow-up-right-from-square me-1"></i> จัดการข่าวทั้งหมด
@@ -178,39 +178,43 @@ $stats = $stats ?? [
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>
-                                <strong class="text-dark">ประกาศโครงการพัฒนาคุณภาพชีวิตประจำปีงบประมาณ</strong>
-                                <br><small class="text-muted"><i class="fa-regular fa-clock me-1"></i>เผยแพร่เมื่อ: 2 ชั่วโมงที่แล้ว</small>
-                            </td>
-                            <td><span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1 rounded-pill">ข่าวประชาสัมพันธ์</span></td>
-                            <td><span class="text-success fw-medium" style="font-size: 0.85rem;"><i class="fa-solid fa-circle me-1" style="font-size: 0.45rem;"></i>เผยแพร่อยู่</span></td>
-                            <td class="text-end">
-                                <a href="<?= base_url('news') ?>" class="btn btn-sm btn-light border" title="ไปจัดการ"><i class="fa-solid fa-pen-to-square text-primary"></i></a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <strong class="text-dark">รายงานสถานการณ์คุณภาพน้ำและการประปาภูมิภาคจังหวัดพัทลุง</strong>
-                                <br><small class="text-muted"><i class="fa-regular fa-clock me-1"></i>เผยแพร่เมื่อ: เมื่อวานนี้</small>
-                            </td>
-                            <td><span class="badge bg-info-subtle text-info border border-info-subtle px-2 py-1 rounded-pill">ข่าวด่วน/สาธารณูปโภค</span></td>
-                            <td><span class="text-success fw-medium" style="font-size: 0.85rem;"><i class="fa-solid fa-circle me-1" style="font-size: 0.45rem;"></i>เผยแพร่อยู่</span></td>
-                            <td class="text-end">
-                                <a href="<?= base_url('news') ?>" class="btn btn-sm btn-light border" title="ไปจัดการ"><i class="fa-solid fa-pen-to-square text-primary"></i></a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <strong class="text-dark">กำหนดการรับข้อเสนอโครงการส่งเสริมและสนับสนุนเกษตรกรท้องถิ่น</strong>
-                                <br><small class="text-muted"><i class="fa-regular fa-clock me-1"></i>เผยแพร่เมื่อ: 3 วันที่แล้ว</small>
-                            </td>
-                            <td><span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 rounded-pill">บริการประชาชน</span></td>
-                            <td><span class="text-warning fw-medium" style="font-size: 0.85rem;"><i class="fa-solid fa-clock me-1" style="font-size: 0.45rem;"></i>รอตรวจทาน</span></td>
-                            <td class="text-end">
-                                <a href="<?= base_url('news') ?>" class="btn btn-sm btn-light border" title="ไปจัดการ"><i class="fa-solid fa-pen-to-square text-primary"></i></a>
-                            </td>
-                        </tr>
+                        <?php if (empty($recentNews)): ?>
+                            <tr>
+                                <td colspan="4" class="text-center py-4 text-muted">
+                                    <i class="fa-regular fa-newspaper me-1"></i> ยังไม่มีข่าวสารในระบบ 
+                                    <a href="<?= base_url('news') ?>" class="btn btn-sm btn-primary ms-2">เพิ่มข่าวสารแรก</a>
+                                </td>
+                            </tr>
+                        <?php else: ?>
+                            <?php foreach ($recentNews as $item): ?>
+                                <tr>
+                                    <td>
+                                        <strong class="text-dark"><?= htmlspecialchars($item['title'] ?? '') ?></strong>
+                                        <br>
+                                        <small class="text-muted">
+                                            <i class="fa-regular fa-clock me-1"></i>
+                                            <?= !empty($item['created_at']) ? (function_exists('thai_date') ? thai_date($item['created_at'], 'short', true) : $item['created_at']) : '-' ?>
+                                            &bull; <i class="fa-solid fa-eye me-1"></i><?= number_format($item['views_count'] ?? 0) ?> วิว
+                                        </small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1 rounded-pill">
+                                            <?= htmlspecialchars($item['category'] ?? 'ข่าวประชาสัมพันธ์') ?>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <?php if (($item['status'] ?? 'published') === 'published'): ?>
+                                            <span class="text-success fw-medium" style="font-size: 0.85rem;"><i class="fa-solid fa-circle me-1" style="font-size: 0.45rem;"></i>เผยแพร่อยู่</span>
+                                        <?php else: ?>
+                                            <span class="text-warning fw-medium" style="font-size: 0.85rem;"><i class="fa-solid fa-clock me-1" style="font-size: 0.45rem;"></i>แบบร่าง</span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td class="text-end">
+                                        <a href="<?= base_url('news') ?>" class="btn btn-sm btn-light border" title="ไปจัดการ"><i class="fa-solid fa-pen-to-square text-primary"></i></a>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
                     </tbody>
                 </table>
             </div>

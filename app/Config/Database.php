@@ -97,8 +97,8 @@ class Database extends Config
             $isLocal = true;
         }
 
-        // กรณีรันบน Hosting จริง (Production) ให้สลับไปใช้ฐานข้อมูล Production อัตโนมัติ
-        if (!$isLocal || (defined('ENVIRONMENT') && ENVIRONMENT === 'production')) {
+        // กรณีรันบน Hosting จริง (ไม่ใช่ Localhost) ให้สลับไปใช้ฐานข้อมูล Production อัตโนมัติ
+        if (!$isLocal) {
             $envHost = env('database.default.hostname');
             $envUser = env('database.default.username');
             $envPass = env('database.default.password');
