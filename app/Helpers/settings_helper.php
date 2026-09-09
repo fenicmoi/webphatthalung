@@ -409,140 +409,58 @@ if (!function_exists('get_news_categories')) {
 
 if (!function_exists('get_site_news')) {
     /**
-     * ดึงรายการข่าวสารประชาสัมพันธ์ทั้งหมด หรือกรองตามจำนวนและหมวดหมู่
+     * ดึงรายการข่าวสารประชาสัมพันธ์ทั้งหมดจากฐานข้อมูล MySQL เท่านั้น (Single Source of Truth)
+     * ไม่แสดงข่าวจำลองหรือข่าวที่ไม่ได้อยู่ในตาราง news ของ MySQL
      */
     function get_site_news($limit = null, $category = null, $activeOnly = true)
     {
-        $writableDir = defined('WRITABLE') ? rtrim(\WRITABLE, '/\\') : realpath(__DIR__ . '/../../writable');
-        $jsonPath = $writableDir . DIRECTORY_SEPARATOR . 'site_news.json';
         $newsList = [];
 
-        if (is_file($jsonPath)) {
-            $saved = json_decode(file_get_contents($jsonPath), true);
-            if (is_array($saved)) {
-                $newsList = $saved;
-            }
-        }
-
-        // ซิงค์กู้คืนข่าวสารจาก MySQL Database เสมอ (ป้องกันข่าวหายกรณีไฟล์ JSON ถูกอัปโหลดทับจากภายนอก)
         try {
             $db = \Config\Database::connect();
             if ($db->tableExists('news')) {
-                $dbNews = $db->table('news')->orderBy('id', 'DESC')->get()->getResultArray();
-                if (!empty($dbNews)) {
-                    $existingTitles = [];
-                    foreach ($newsList as $item) {
-                        if (!empty($item['title'])) {
-                            $existingTitles[trim($item['title'])] = true;
-                        }
-                    }
-                    $needsUpdate = false;
-                    foreach ($dbNews as $row) {
-                        $t = trim($row['title'] ?? '');
-                        if (!empty($t) && !isset($existingTitles[$t])) {
-                            $imported = [
-                                'id' => 'db-' . $row['id'],
-                                'title' => $row['title'],
-                                'category' => !empty($row['category']) ? $row['category'] : 'ข่าวประชาสัมพันธ์',
-                                'summary' => mb_substr(strip_tags($row['content'] ?? ''), 0, 160, 'UTF-8') . '...',
-                                'content' => $row['content'] ?? '',
-                                'cover_image' => !empty($row['thumbnail']) ? $row['thumbnail'] : 'assets/images/slider/sane_muanglung.png',
-                                'cover_fit' => 'cover',
-                                'is_event' => false,
-                                'views' => (int)($row['views_count'] ?? 1),
-                                'created_at' => $row['created_at'] ?? date('Y-m-d H:i:s'),
-                                'updated_at' => $row['updated_at'] ?? date('Y-m-d H:i:s'),
-                                'active' => ($row['status'] ?? 'published') === 'published'
-                            ];
-                            array_unshift($newsList, $imported);
-                            $existingTitles[$t] = true;
-                            $needsUpdate = true;
-                        }
-                    }
-                    if ($needsUpdate && is_file($jsonPath) && is_writable($jsonPath)) {
-                        @file_put_contents($jsonPath, json_encode(array_values($newsList), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-                    }
+                $builder = $db->table('news');
+                if ($activeOnly) {
+                    $builder->where('status', 'published');
+                }
+                if (!empty($category)) {
+                    $builder->where('category', $category);
+                }
+                $builder->orderBy('created_at', 'DESC')
+                        ->orderBy('id', 'DESC');
+                if (!empty($limit) && (int)$limit > 0) {
+                    $builder->limit((int)$limit);
+                }
+                $rows = $builder->get()->getResultArray();
+                foreach ($rows as $row) {
+                    $newsList[] = [
+                        'id'          => $row['id'],
+                        'title'       => $row['title'],
+                        'slug'        => !empty($row['slug']) ? $row['slug'] : ('news-' . $row['id']),
+                        'category'    => !empty($row['category']) ? $row['category'] : 'ข่าวประชาสัมพันธ์',
+                        'summary'     => mb_substr(strip_tags($row['content'] ?? ''), 0, 160, 'UTF-8') . '...',
+                        'content'     => $row['content'] ?? '',
+                        'cover_image' => !empty($row['thumbnail']) ? $row['thumbnail'] : 'assets/images/slider/sane_muanglung.png',
+                        'cover_fit'   => 'cover',
+                        'is_event'    => false,
+                        'views'       => (int)($row['views_count'] ?? 0),
+                        'created_at'  => $row['created_at'] ?? date('Y-m-d H:i:s'),
+                        'updated_at'  => $row['updated_at'] ?? date('Y-m-d H:i:s'),
+                        'active'      => ($row['status'] ?? 'published') === 'published',
+                    ];
                 }
             }
         } catch (\Throwable $e) {
-            // ป้องกันการล่มหากฐานข้อมูลยังไม่พร้อม
+            log_message('error', 'get_site_news DB error: ' . $e->getMessage());
         }
 
-        if (empty($newsList)) {
-            // ข่าวตั้งต้นตัวอย่างสำหรับแสดงผลบนเว็บสาธารณะ
-            $newsList = [
-                [
-                    'id' => 'news-101',
-                    'title' => 'จังหวัดพัทลุงเปิดตัว "พอร์ตัลบริการดิจิทัลเบ็ดเสร็จ" ร้องทุกข์และติดตามเอกสารตลอด 24 ชั่วโมง',
-                    'category' => 'ประกาศราชการ / แจ้งเตือน',
-                    'summary' => 'ประชาชนสามารถเข้าสู่บริการออนไลน์ ยื่นคำร้อง PDPA ชำระภาษีที่ดินท้องถิ่น และติดตามสถานะเอกสารได้รวดเร็วทันใจผ่านเทคโนโลยี AI Search ไม่ต้องเดินทาง',
-                    'content' => '<p>จังหวัดพัทลุงตอกย้ำภาพลักษณ์องค์กรปกครองส่วนท้องถิ่นยุคใหม่ ดำเนินการยกระดับศูนย์บริการประชาชน (e-Services) อย่างรอบด้าน โดยประชาชนในทุกอำเภอสามารถยื่นเรื่องร้องทุกข์ ติดตามผลคำร้องผ่านหมายเลขติดตาม 13 หลัก และดาวน์โหลดแบบฟอร์มเอกสารทางราชการผ่านช่องทางดิจิทัลได้ตลอด 24 ชั่วโมง</p><br><p>นอกจากนี้ยังนำระบบ <b>Universal Omni-Search</b> มาช่วยเหลือประชาชนค้นหาบริการที่เหมาะสม ด้วยระบบสั่งงานด้วยเสียงภาษาไทย (Voice AI) เพื่อการเข้าถึงบริการที่เท่าเทียมและมีประสิทธิภาพสูงสุด</p>',
-                    'cover_image' => 'assets/images/slider/sane_muanglung.png',
-                    'images_gallery' => ['assets/images/slider/sane_muanglung.png'],
-                    'attachments' => [],
-                    'views' => 1284,
-                    'created_at' => date('Y-m-d H:i:s', strtotime('-1 day')),
-                    'active' => true
-                ],
-                [
-                    'id' => 'news-102',
-                    'title' => 'เชิญเที่ยวงานประเพณี "ตักบาตรเทโว ดอยเขาน้อย" มรดกวัฒนธรรมและธรรมชาติเมืองพัทลุง',
-                    'category' => 'ส่งเสริมการท่องเที่ยว',
-                    'summary' => 'ร่วมสืบสานวิถีท้องถิ่น สัมผัสมนต์เสน่ห์เมืองลุง "เขา ป่า นา เล" พร้อมชมความงดงามของแสงอาทิตย์ยามเช้าเหนือบึงทะเลน้อยและฝูงควายน้ำมรดกเกษตรโลก (GIAHS)',
-                    'content' => '<p>สำนักงานการท่องเที่ยวและวัฒนธรรมจังหวัดพัทลุง ขอเชิญชวนประชาชนและนักท่องเที่ยวทั้งชาวไทยและต่างชาติ ร่วมสัมผัสสุนทรียภาพแห่งความงดงามในฤดูกาลท่องเที่ยวท้องถิ่น <b>"เขา ป่า นา เล"</b> พร้อมเรียนรู้วิถีเชิงอนุรักษ์ระบบนิเวศการเลี้ยงควายน้ำทะเลน้อย มรดกทางการเกษตรระดับโลก</p>',
-                    'cover_image' => 'assets/images/slider/sane_muanglung.png',
-                    'images_gallery' => ['assets/images/slider/sane_muanglung.png'],
-                    'attachments' => [],
-                    'views' => 842,
-                    'created_at' => date('Y-m-d H:i:s', strtotime('-3 days')),
-                    'active' => true
-                ],
-                [
-                    'id' => 'news-103',
-                    'title' => 'ประกาศการเปิดเสวนา "SMART PHATTHALUNG 2026" สร้างเครือข่าย WiFi สาธารณะและกล้อง CCTV อัจฉริยะ',
-                    'category' => 'ข่าวกิจกรรมจังหวัด',
-                    'summary' => 'ระดมความคิดภาคประชาสังคม ขยายเสาอัจฉริยะ Smart Pole พร้อมระบบเซ็นเซอร์ฝุ่น PM2.5 และความปลอดภัยแบบเรียลไทม์ ครอบคลุมพื้นที่เศรษฐกิจ',
-                    'content' => '<p>จังหวัดพัทลุงเดินหน้าโครงการ Smart City 2026 อย่างต่อเนื่อง เตรียมพร้อมขยายโครงข่ายเสาอัจฉริยะมัลติฟังก์ชัน (Smart Pole) เพื่อส่งมอบสัญญานอินเทอร์เน็ต WiFi สาธารณะและระบบตรวจสอบความปลอดภัย CCTV ที่ควบคุมโดยเทคโนโลยี AI ในชุมชนหลัก</p>',
-                    'cover_image' => 'assets/images/slider/sane_muanglung.png',
-                    'images_gallery' => ['assets/images/slider/sane_muanglung.png'],
-                    'attachments' => [],
-                    'views' => 591,
-                    'created_at' => date('Y-m-d H:i:s', strtotime('-5 days')),
-                    'active' => true
-                ]
-            ];
-        }
-
-        if ($activeOnly) {
-            $newsList = array_filter($newsList, static function($item) {
-                return !isset($item['active']) || $item['active'] == true;
-            });
-        }
-
-        if (!empty($category)) {
-            $newsList = array_filter($newsList, static function($item) use ($category) {
-                return isset($item['category']) && strcasecmp(trim($item['category']), trim($category)) === 0;
-            });
-        }
-
-        // Sort by created_at descending
-        usort($newsList, static function($a, $b) {
-            $timeA = isset($a['created_at']) ? strtotime($a['created_at']) : 0;
-            $timeB = isset($b['created_at']) ? strtotime($b['created_at']) : 0;
-            return $timeB - $timeA;
-        });
-
-        if ($limit > 0) {
-            $newsList = array_slice($newsList, 0, (int)$limit);
-        }
-
-        return array_values($newsList);
+        return $newsList;
     }
 }
 
 if (!function_exists('save_site_news')) {
     /**
-     * บันทึกรายการข่าวสารประชาสัมพันธ์ลงในไฟล์ JSON
+     * บันทึกรายการข่าวสารประชาสัมพันธ์ลงในไฟล์ JSON (เพื่อเป็นแคชสำรอง)
      */
     function save_site_news(array $newsList): bool
     {
@@ -557,15 +475,40 @@ if (!function_exists('save_site_news')) {
 
 if (!function_exists('get_news_by_id')) {
     /**
-     * ดึงข่าวสารรายชิ้นจากรหัสไอดี
+     * ดึงข่าวสารรายชิ้นจากรหัสไอดีจากฐานข้อมูล MySQL เท่านั้น
      */
     function get_news_by_id($id)
     {
-        $allNews = get_site_news(null, null, false);
-        foreach ($allNews as $news) {
-            if (isset($news['id']) && strval($news['id']) === strval($id)) {
-                return $news;
+        try {
+            $db = \Config\Database::connect();
+            if ($db->tableExists('news')) {
+                $builder = $db->table('news');
+                if (is_numeric($id)) {
+                    $builder->where('id', (int)$id);
+                } else {
+                    $builder->where('slug', $id)->orWhere('id', $id);
+                }
+                $row = $builder->get()->getRowArray();
+                if ($row) {
+                    return [
+                        'id'          => $row['id'],
+                        'title'       => $row['title'],
+                        'slug'        => !empty($row['slug']) ? $row['slug'] : ('news-' . $row['id']),
+                        'category'    => !empty($row['category']) ? $row['category'] : 'ข่าวประชาสัมพันธ์',
+                        'summary'     => mb_substr(strip_tags($row['content'] ?? ''), 0, 160, 'UTF-8') . '...',
+                        'content'     => $row['content'] ?? '',
+                        'cover_image' => !empty($row['thumbnail']) ? $row['thumbnail'] : 'assets/images/slider/sane_muanglung.png',
+                        'cover_fit'   => 'cover',
+                        'is_event'    => false,
+                        'views'       => (int)($row['views_count'] ?? 0),
+                        'created_at'  => $row['created_at'] ?? date('Y-m-d H:i:s'),
+                        'updated_at'  => $row['updated_at'] ?? date('Y-m-d H:i:s'),
+                        'active'      => ($row['status'] ?? 'published') === 'published',
+                    ];
+                }
             }
+        } catch (\Throwable $e) {
+            log_message('error', 'get_news_by_id DB error: ' . $e->getMessage());
         }
         return null;
     }

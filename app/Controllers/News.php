@@ -53,19 +53,7 @@ class News extends BaseController
         } elseif ($isProcurementCat) {
             $newsList = get_site_news(null, $cat, true);
         } else {
-            $localNews = get_site_news(null, $cat, true);
-            if (empty($cat)) {
-                // Merge local provincial news + live PRD Phatthalung news when viewing "All"
-                $merged = array_merge($localNews, $prdNewsList);
-                usort($merged, function ($a, $b) {
-                    $tA = strtotime($a['created_at'] ?? '2026-01-01');
-                    $tB = strtotime($b['created_at'] ?? '2026-01-01');
-                    return $tB <=> $tA;
-                });
-                $newsList = $merged;
-            } else {
-                $newsList = $localNews;
-            }
+            $newsList = get_site_news(null, $cat, true);
         }
 
         return view('news/index', [

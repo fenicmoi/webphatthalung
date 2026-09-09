@@ -13,19 +13,10 @@ try {
     $prdNews = [];
 }
 $prdNews = is_array($prdNews) ? $prdNews : [];
-$homeNews = array_merge($localNews, $prdNews);
-usort($homeNews, function ($a, $b) {
-    $tA = strtotime($a['created_at'] ?? '2026-01-01');
-    $tB = strtotime($b['created_at'] ?? '2026-01-01');
-    return $tB <=> $tA;
-});
+$homeNews = $localNews;
 $homeNews = array_slice($homeNews, 0, 6);
 $newsCats = function_exists('get_news_categories') ? get_news_categories() : [];
 $newsCats = is_array($newsCats) ? $newsCats : [];
-$prdCatName = 'ข่าวประชาสัมพันธ์ (สปชส.พัทลุง)';
-if (!in_array($prdCatName, $newsCats, true)) {
-    $newsCats[] = $prdCatName;
-}
 $homeEvents = function_exists('get_site_events') ? get_site_events(true) : [];
 $homeEvents = is_array($homeEvents) ? $homeEvents : [];
 $homeGalleryAlbums = function_exists('get_gallery_albums') ? get_gallery_albums(4, null, true) : [];
