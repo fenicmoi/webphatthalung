@@ -25,7 +25,11 @@ class App extends BaseConfig
 
         // Dynamic BaseURL auto-detection for mobile simulation, LAN IP, and varied hosts
         if (!empty($_SERVER['HTTP_HOST'])) {
-            $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || ($_SERVER['SERVER_PORT'] ?? '') == 443) ? 'https://' : 'http://';
+            $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') 
+                || (($_SERVER['SERVER_PORT'] ?? '') == 443)
+                || (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')
+                || (!empty($_SERVER['HTTP_X_FORWARDED_SSL']) && $_SERVER['HTTP_X_FORWARDED_SSL'] === 'on');
+            $protocol = $isHttps ? 'https://' : 'http://';
             $host = $_SERVER['HTTP_HOST'];
             $scriptPath = $_SERVER['SCRIPT_NAME'] ?? '';
             $dir = str_replace('\\', '/', dirname($scriptPath));

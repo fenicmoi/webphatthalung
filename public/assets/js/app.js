@@ -78,6 +78,11 @@ const App = (function() {
 
     // 3. Asynchronous Fetch API Helper with auto CSRF injection
     const FetchHelper = async function(url, options = {}) {
+        // Auto-upgrade HTTP to HTTPS if the current page is served over HTTPS (prevents Mixed Content / Failed to fetch)
+        if (typeof window !== 'undefined' && window.location.protocol === 'https:' && typeof url === 'string' && url.startsWith('http:')) {
+            url = url.replace('http:', 'https:');
+        }
+
         options.headers = options.headers || {};
         options.headers['X-Requested-With'] = 'XMLHttpRequest';
         options.headers['Accept'] = 'application/json';

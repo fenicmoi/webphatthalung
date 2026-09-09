@@ -723,57 +723,63 @@ if (!function_exists('get_procurement_items')) {
      */
     function get_procurement_items(?string $category = null, bool $activeOnly = true, ?int $limit = null)
     {
-        $model = new \App\Models\ProcurementModel();
-        
-        if ($activeOnly) {
-            $model->where('status', 'active');
+        try {
+            $model = new \App\Models\ProcurementModel();
+            
+            if ($activeOnly) {
+                $model->where('status', 'active');
+            }
+            
+            if ($category !== null && $category !== 'all') {
+                $model->where('category', $category);
+            }
+            
+            $model->orderBy('published_date', 'DESC');
+            
+            if ($limit !== null && $limit > 0) {
+                $items = $model->findAll($limit);
+            } else {
+                $items = $model->findAll();
+            }
+            
+            // Map DB fields back to what the views expect (for backward compatibility)
+            return array_map(function($item) {
+                return [
+                    'id' => $item['id'],
+                    'title' => $item['title'],
+                    'category' => $item['category'],
+                    'date' => $item['published_date'],
+                    'views' => 0, // Mocked for now, not tracked in DB
+                    'budget' => number_format((float)$item['budget'], 2) . ' บาท',
+                    'attachment_url' => $item['doc_path'],
+                    'active' => ($item['status'] === 'active')
+                ];
+            }, $items);
+        } catch (\Throwable $e) {
+            return [];
         }
-        
-        if ($category !== null && $category !== 'all') {
-            $model->where('category', $category);
-        }
-        
-        $model->orderBy('published_date', 'DESC');
-        
-        if ($limit !== null && $limit > 0) {
-            $items = $model->findAll($limit);
-        } else {
-            $items = $model->findAll();
-        }
-        
-        // Map DB fields back to what the views expect (for backward compatibility)
-        return array_map(function($item) {
-            return [
-                'id' => $item['id'],
-                'title' => $item['title'],
-                'category' => $item['category'],
-                'date' => $item['published_date'],
-                'views' => 0, // Mocked for now, not tracked in DB
-                'budget' => number_format((float)$item['budget'], 2) . ' บาท',
-                'attachment_url' => $item['doc_path'],
-                'active' => ($item['status'] === 'active')
-            ];
-        }, $items);
     }
 }
 
 if (!function_exists('get_procurement_by_id')) {
     function get_procurement_by_id($id)
     {
-        $model = new \App\Models\ProcurementModel();
-        $item = $model->find($id);
-        if ($item) {
-            return [
-                'id' => $item['id'],
-                'title' => $item['title'],
-                'category' => $item['category'],
-                'date' => $item['published_date'],
-                'views' => 0,
-                'budget' => number_format((float)$item['budget'], 2) . ' บาท',
-                'attachment_url' => $item['doc_path'],
-                'active' => ($item['status'] === 'active')
-            ];
-        }
+        try {
+            $model = new \App\Models\ProcurementModel();
+            $item = $model->find($id);
+            if ($item) {
+                return [
+                    'id' => $item['id'],
+                    'title' => $item['title'],
+                    'category' => $item['category'],
+                    'date' => $item['published_date'],
+                    'views' => 0,
+                    'budget' => number_format((float)$item['budget'], 2) . ' บาท',
+                    'attachment_url' => $item['doc_path'],
+                    'active' => ($item['status'] === 'active')
+                ];
+            }
+        } catch (\Throwable $e) {}
         return null;
     }
 }
@@ -815,57 +821,63 @@ if (!function_exists('get_gallery_albums')) {
      */
     function get_gallery_albums($limit = null, $category = null, $activeOnly = true)
     {
-        $model = new \App\Models\GalleryAlbumModel();
-        $model->orderBy('created_at', 'DESC');
-        
-        if ($limit !== null && $limit > 0) {
-            $albums = $model->findAll($limit);
-        } else {
-            $albums = $model->findAll();
+        try {
+            $model = new \App\Models\GalleryAlbumModel();
+            $model->orderBy('created_at', 'DESC');
+            
+            if ($limit !== null && $limit > 0) {
+                $albums = $model->findAll($limit);
+            } else {
+                $albums = $model->findAll();
+            }
+            
+            return array_map(function($item) {
+                return [
+                    'id' => 'gal_' . $item['id'],
+                    'db_id' => $item['id'],
+                    'title' => $item['title'],
+                    'category' => 'ประเพณีและวัฒนธรรม', // mocked category for backward compat
+                    'date' => $item['created_at'],
+                    'views' => 0,
+                    'cover_image' => $item['cover_image'],
+                    'photos' => [], // lazy load or joined later
+                    'active' => true
+                ];
+            }, $albums);
+        } catch (\Throwable $e) {
+            return [];
         }
-        
-        return array_map(function($item) {
-            return [
-                'id' => 'gal_' . $item['id'],
-                'db_id' => $item['id'],
-                'title' => $item['title'],
-                'category' => 'ประเพณีและวัฒนธรรม', // mocked category for backward compat
-                'date' => $item['created_at'],
-                'views' => 0,
-                'cover_image' => $item['cover_image'],
-                'photos' => [], // lazy load or joined later
-                'active' => true
-            ];
-        }, $albums);
     }
 }
 
 if (!function_exists('get_gallery_by_id')) {
     function get_gallery_by_id($id)
     {
-        // $id could be like "gal_1" or "gal_256901"
-        $numericId = (int) preg_replace('/[^0-9]/', '', $id);
-        
-        $model = new \App\Models\GalleryAlbumModel();
-        $album = $model->find($numericId);
-        
-        if ($album) {
-            $photoModel = new \App\Models\GalleryPhotoModel();
-            $photos = $photoModel->where('album_id', $numericId)->findAll();
-            $photoUrls = array_column($photos, 'image_path');
+        try {
+            // $id could be like "gal_1" or "gal_256901"
+            $numericId = (int) preg_replace('/[^0-9]/', '', $id);
             
-            return [
-                'id' => 'gal_' . $album['id'],
-                'db_id' => $album['id'],
-                'title' => $album['title'],
-                'category' => 'ประเพณีและวัฒนธรรม',
-                'date' => $album['created_at'],
-                'views' => 0,
-                'cover_image' => $album['cover_image'],
-                'photos' => $photoUrls,
-                'active' => true
-            ];
-        }
+            $model = new \App\Models\GalleryAlbumModel();
+            $album = $model->find($numericId);
+            
+            if ($album) {
+                $photoModel = new \App\Models\GalleryPhotoModel();
+                $photos = $photoModel->where('album_id', $numericId)->findAll();
+                $photoUrls = array_column($photos, 'image_path');
+                
+                return [
+                    'id' => 'gal_' . $album['id'],
+                    'db_id' => $album['id'],
+                    'title' => $album['title'],
+                    'category' => 'ประเพณีและวัฒนธรรม',
+                    'date' => $album['created_at'],
+                    'views' => 0,
+                    'cover_image' => $album['cover_image'],
+                    'photos' => $photoUrls,
+                    'active' => true
+                ];
+            }
+        } catch (\Throwable $e) {}
         return null;
     }
 }

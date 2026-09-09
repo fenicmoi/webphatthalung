@@ -282,7 +282,8 @@
             </div>
 
             <!-- Interactive Login Form -->
-            <form id="loginForm" onsubmit="handleLoginSubmit(event)">
+            <form id="loginForm" action="<?= base_url('login/attempt') ?>" method="POST" onsubmit="handleLoginSubmit(event)">
+                <?= csrf_field() ?>
                 
                 <!-- Username -->
                 <div class="mb-3.5">
@@ -370,7 +371,7 @@
             }
         }
 
-        // 4. ประมวลผลเข้าสู่ระบบแบบ Async (No-Reload)
+        // 4. ประมวลผลเข้าสู่ระบบแบบ Async (No-Reload) พร้อม Fallback อัตโนมัติ
         async function handleLoginSubmit(event) {
             event.preventDefault();
             const btn = document.getElementById('btnLogin');
@@ -381,8 +382,14 @@
             btn.disabled = true;
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i>กำลังตรวจสอบสิทธิ์กับเซิร์ฟเวอร์...';
 
+            let loginEndpoint = '<?= base_url("login/attempt") ?>';
+            // ป้องกันปัญหา Mixed Content / Failed to fetch หากหน้าเว็บเปิดผ่าน HTTPS
+            if (window.location.protocol === 'https:' && loginEndpoint.startsWith('http:')) {
+                loginEndpoint = loginEndpoint.replace('http:', 'https:');
+            }
+
             try {
-                const res = await App.fetch('<?= base_url("login/attempt") ?>', {
+                const res = await App.fetch(loginEndpoint, {
                     method: 'POST',
                     body: formData
                 });
@@ -403,9 +410,11 @@
                     btn.innerHTML = originalHtml;
                 }
             } catch (err) {
-                // error alert handled in App.fetch
-                btn.disabled = false;
-                btn.innerHTML = originalHtml;
+                console.warn('Fetch failed, switching to standard form submit fallback:', err);
+                // หากติดปัญหา Network / Mixed Content ให้ส่งแบบ Form POST ทั่วไปทันที
+                btn.innerHTML = '<i class="fa-solid fa-arrow-rotate-right fa-spin me-2"></i>กำลังเชื่อมต่อโหมดมาตรฐาน...';
+                form.action = loginEndpoint;
+                form.submit();
             }
         }
     </script>
