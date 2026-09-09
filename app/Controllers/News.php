@@ -606,4 +606,122 @@ class News extends BaseController
             return $this->respond(['status' => 'error', 'message' => 'ไม่สามารถประมวลผลกราฟิกได้: ' . $e->getMessage()]);
         }
     }
+
+    /**
+     * ทดสอบสถานะการเชื่อมต่อฐานข้อมูลตาราง news (Diagnostic endpoint)
+     * เข้าดูได้ที่: URL_เว็บ/news/test-db หรือ /news/testDb
+     */
+    public function testDb()
+    {
+        try {
+            $db = \Config\Database::connect();
+            $dbName = $db->getDatabase();
+            $hasTable = $db->tableExists('news');
+            $count = $hasTable ? $db->table('news')->countAllResults() : 0;
+            $sample = $hasTable ? $db->table('news')->limit(5)->get()->getResultArray() : [];
+
+            return $this->respond([
+                'status'             => 'success',
+                'database_name'      => $dbName,
+                'table_news_exists'  => $hasTable,
+                'total_rows_in_news' => $count,
+                'sample_news'        => $sample,
+                'server_host'        => $_SERVER['HTTP_HOST'] ?? '',
+                'php_version'        => PHP_VERSION,
+            ]);
+        } catch (\Throwable $e) {
+            return $this->respond([
+                'status'  => 'error',
+                'message' => 'DB Connection Failed: ' . $e->getMessage(),
+                'file'    => $e->getFile(),
+                'line'    => $e->getLine()
+            ], 500);
+        }
+    }
+
+    /**
+     * ปุ่มนำเข้า/ซิงค์ข่าวสารจากไฟล์ JSON เข้าสู่ตาราง news ใน MySQL 100%
+     * เข้าเรียกใช้งานได้ที่: URL_เว็บ/news/sync-db หรือ /news/syncDb
+     */
+    public function syncDb()
+    {
+        try {
+            $db = \Config\Database::connect();
+            if (!$db->tableExists('news')) {
+                $db->query("CREATE TABLE IF NOT EXISTS `news` (
+                  `id` int unsigned NOT NULL AUTO_INCREMENT,
+                  `title` varchar(255) NOT NULL,
+                  `slug` varchar(255) NOT NULL,
+                  `category` varchar(100) NOT NULL DEFAULT 'ข่าวประชาสัมพันธ์',
+                  `content` longtext NOT NULL,
+                  `thumbnail` varchar(255) DEFAULT NULL,
+                  `status` enum('draft','published','archived') NOT NULL DEFAULT 'published',
+                  `views_count` int NOT NULL DEFAULT '0',
+                  `author_id` int unsigned DEFAULT NULL,
+                  `created_at` datetime DEFAULT NULL,
+                  `updated_at` datetime DEFAULT NULL,
+                  PRIMARY KEY (`id`),
+                  KEY `idx_slug` (`slug`),
+                  KEY `idx_category` (`category`)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;");
+            }
+
+            $path = $this->getNewsPath();
+            $items = file_exists($path) ? json_decode(file_get_contents($path), true) : [];
+            if (!is_array($items) || empty($items)) {
+                return $this->respond(['status' => 'info', 'message' => 'ไม่พบข้อมูลข่าวสารใน site_news.json สำหรับนำเข้า']);
+            }
+
+            $inserted = 0;
+            $updated = 0;
+            $errors = [];
+
+            foreach ($items as $item) {
+                if (empty($item['title'])) continue;
+                try {
+                    $existing = $db->table('news')->where('title', $item['title'])->get()->getRowArray();
+                    $slug = function_exists('url_title') ? url_title($item['title'], '-', true) : '';
+                    if (empty($slug) || mb_strlen($slug) < 2) {
+                        $slug = 'news-' . time() . '-' . mt_rand(10, 99);
+                    }
+                    $slug = mb_substr($slug, 0, 240);
+
+                    $data = [
+                        'title'       => mb_substr($item['title'], 0, 255),
+                        'slug'        => $slug,
+                        'category'    => mb_substr(!empty($item['category']) ? $item['category'] : 'ข่าวประชาสัมพันธ์', 0, 100),
+                        'content'     => $item['content'] ?? '',
+                        'thumbnail'   => mb_substr(!empty($item['cover_image']) ? $item['cover_image'] : 'assets/images/slider/sane_muanglung.png', 0, 255),
+                        'status'      => 'published',
+                        'views_count' => (int)($item['views'] ?? 0),
+                        'updated_at'  => $item['updated_at'] ?? date('Y-m-d H:i:s'),
+                    ];
+
+                    if ($existing) {
+                        $db->table('news')->where('id', $existing['id'])->update($data);
+                        $updated++;
+                    } else {
+                        $data['created_at'] = $item['created_at'] ?? date('Y-m-d H:i:s');
+                        $db->table('news')->insert($data);
+                        $inserted++;
+                    }
+                } catch (\Throwable $e) {
+                    $errors[] = $item['title'] . ': ' . $e->getMessage();
+                }
+            }
+
+            $totalInDb = $db->table('news')->countAllResults();
+
+            return $this->respond([
+                'status'      => 'success',
+                'message'     => "นำเข้าข่าวสารเข้าตาราง news ใน MySQL สำเร็จ! (เพิ่มใหม่: {$inserted}, อัปเดต: {$updated}, รวมทั้งสิ้น: {$totalInDb} รายการ)",
+                'inserted'    => $inserted,
+                'updated'     => $updated,
+                'total_in_db' => $totalInDb,
+                'errors'      => $errors
+            ]);
+        } catch (\Throwable $e) {
+            return $this->respond(['status' => 'error', 'message' => 'เกิดข้อผิดพลาด: ' . $e->getMessage()], 500);
+        }
+    }
 }
