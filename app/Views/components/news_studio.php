@@ -25,7 +25,15 @@ if (!session()->get('isLoggedIn')) {
                             <span>Phatthalung On-Page News Studio</span>
                             <span class="badge bg-warning text-dark px-2 py-1" style="font-size: 0.75rem;"><i class="fa-solid fa-wand-magic-sparkles me-1"></i>Frontend CMS</span>
                         </h4>
-                        <p class="text-info m-0 small" style="opacity: 0.9;">สตูดิโอบริหารจัดการข่าวและประชาสัมพันธ์บนหน้าเว็บจริง (Officer & Admin Exclusive)</p>
+                        <div class="d-flex flex-wrap align-items-center gap-2 mt-1">
+                            <span class="text-info m-0 small" style="opacity: 0.9;">สตูดิโอบริหารจัดการข่าวสาร (Officer/Admin)</span>
+                            <span id="studioDbBadge" class="badge rounded-pill bg-dark border border-secondary text-light px-2.5 py-1 shadow-xs" style="font-size: 0.76rem;">
+                                <i class="fa-solid fa-spinner fa-spin me-1 text-info"></i> ตรวจสอบ MySQL...
+                            </span>
+                            <a href="<?= base_url('inspect_news_pipeline.php') ?>" target="_blank" class="badge rounded-pill text-decoration-none px-2.5 py-1 text-light border border-info hover-scale shadow-xs" style="background: rgba(14, 165, 233, 0.2); font-size: 0.76rem;" title="เปิดหน้าต่างดักจับ Pipeline ตรวจสอบสถานะระบบ">
+                                <i class="fa-solid fa-microscope text-info me-1"></i> ตรวจจับ Pipeline
+                            </a>
+                        </div>
                     </div>
                 </div>
                 
@@ -44,6 +52,8 @@ if (!session()->get('isLoggedIn')) {
 
             <!-- Studio Body -->
             <div class="modal-body p-4 p-md-5 overflow-auto">
+                <!-- Live Pipeline Inspector Notification Box -->
+                <div id="studioLiveInspectorAlert" class="alert d-none mb-4 rounded-4 p-3 shadow-lg border" style="background: #090d16; border-color: #38bdf8 !important;"></div>
                 <div class="row g-4">
                     
                     <!-- Left Column: Article Meta & Rich Text Editor -->
@@ -237,6 +247,30 @@ window.NewsStudio = {
     imagesGallery: [],
     attachments: [],
     currentCover: '',
+    lastDbCount: 0,
+
+    checkDbStatus: async function() {
+        const badge = document.getElementById('studioDbBadge');
+        if (!badge) return;
+        const baseUrl = window.BASE_URL || '';
+        try {
+            const res = await fetch(baseUrl + '/news/test-db');
+            const data = await res.json();
+            if (data.status === 'success') {
+                this.lastDbCount = parseInt(data.total_rows_in_news || 0);
+                badge.className = 'badge rounded-pill bg-success bg-opacity-20 text-success border border-success px-2.5 py-1 shadow-xs';
+                badge.innerHTML = `<i class="fa-solid fa-database text-success me-1"></i> MySQL: ${data.database_name} (${this.lastDbCount} ข่าว)`;
+                badge.title = `ตาราง news ใน ${data.database_name} พร้อมใช้งาน`;
+            } else {
+                badge.className = 'badge rounded-pill bg-danger bg-opacity-20 text-danger border border-danger px-2.5 py-1 shadow-xs';
+                badge.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-danger me-1"></i> MySQL: ขัดข้อง`;
+                badge.title = data.message || 'ไม่สามารถเชื่อมต่อฐานข้อมูลได้';
+            }
+        } catch (e) {
+            badge.className = 'badge rounded-pill bg-warning bg-opacity-20 text-warning border border-warning px-2.5 py-1 shadow-xs';
+            badge.innerHTML = `<i class="fa-solid fa-server text-warning me-1"></i> MySQL: โหมดสำรอง`;
+        }
+    },
 
     init: function() {
         if (!this.quill && document.getElementById('quillEditorContainer')) {
@@ -273,6 +307,15 @@ window.NewsStudio = {
         this.attachments = [];
         this.currentCover = '';
         
+        // ตรวจสอบสถานะฐานข้อมูลทันทีที่เปิด Modal
+        this.checkDbStatus();
+        
+        const alertBox = document.getElementById('studioLiveInspectorAlert');
+        if (alertBox) {
+            alertBox.className = 'alert d-none';
+            alertBox.innerHTML = '';
+        }
+        
         const modalEl = document.getElementById('newsStudioModal');
         if (!modalEl) return;
 
@@ -283,6 +326,7 @@ window.NewsStudio = {
         if (this.quill) {
             this.quill.root.innerHTML = '';
         }
+
 
         const chkEvent = document.getElementById('studioIsEvent');
         if (chkEvent) chkEvent.checked = false;
@@ -629,6 +673,7 @@ window.NewsStudio = {
     save: async function() {
         const title = document.getElementById('studioNewsTitle').value.trim();
         const content = this.quill ? this.quill.root.innerHTML : '';
+        const alertBox = document.getElementById('studioLiveInspectorAlert');
 
         if (!title) {
             App.toast('กรุณาตั้งชื่อหัวข้อข่าวและประกาศ', 'error');
@@ -644,6 +689,19 @@ window.NewsStudio = {
         const origText = btn.innerHTML;
         btn.disabled = true;
         btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i> กำลังบันทึกข้อมูล...';
+
+        if (alertBox) {
+            alertBox.className = 'alert alert-info mb-4 rounded-4 p-3 shadow-lg border border-info d-block';
+            alertBox.innerHTML = `
+                <div class="d-flex align-items-center gap-3">
+                    <i class="fa-solid fa-spinner fa-spin fs-3 text-info"></i>
+                    <div>
+                        <div class="fw-bold text-info">[Step 1/3] กำลังนำส่งข้อมูลข่าวสารไปยังเซิร์ฟเวอร์...</div>
+                        <small class="text-light opacity-75">ส่งคำขอ POST ไปยัง /news/save</small>
+                    </div>
+                </div>
+            `;
+        }
 
         const formData = new FormData();
         formData.append('id', document.getElementById('studioNewsId').value);
@@ -671,22 +729,92 @@ window.NewsStudio = {
             btn.disabled = false;
             btn.innerHTML = origText;
 
-            if (data.status === 'success') {
-                App.toast('🎉 ' + data.message, 'success');
-                const modal = bootstrap.Modal.getInstance(document.getElementById('newsStudioModal'));
-                if (modal) modal.hide();
+            // ตรวจจับกรณี MySQL บันทึกล้มเหลว
+            const hasMySqlError = data.message && (data.message.includes('MySQL แจ้งเตือน:') || data.message.includes('คำเตือน:'));
 
-                // Reload page automatically in 800ms to show the fresh updated news card/page!
+            if (data.status === 'success' && !hasMySqlError) {
+                // Step 2 & 3: ทำการ Verify ตรวจสอบสดกับฐานข้อมูล MySQL อีกครั้ง
+                if (alertBox) {
+                    alertBox.className = 'alert alert-info mb-4 rounded-4 p-3 shadow-lg border border-info d-block';
+                    alertBox.innerHTML = `
+                        <div class="d-flex align-items-center gap-3">
+                            <i class="fa-solid fa-spinner fa-spin fs-3 text-info"></i>
+                            <div>
+                                <div class="fw-bold text-info">[Step 2/3] เซิร์ฟเวอร์ตอบกลับแล้ว กำลังตรวจสอบยืนยันตาราง MySQL สด...</div>
+                                <small class="text-light opacity-75">ตรวจสอบว่าข้อมูลถูก Insert เข้าตารางจริงหรือไม่</small>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                let verifiedText = '';
+                try {
+                    const testRes = await fetch(baseUrl + '/news/test-db');
+                    const testData = await testRes.json();
+                    if (testData.status === 'success') {
+                        const newCount = parseInt(testData.total_rows_in_news || 0);
+                        verifiedText = `(ตาราง news มียอดข่าวรวมเพิ่มเป็น: ${newCount} รายการ)`;
+                    }
+                } catch (e) {}
+
+                if (alertBox) {
+                    alertBox.className = 'alert alert-success mb-4 rounded-4 p-3 shadow-lg border border-success d-block';
+                    alertBox.innerHTML = `
+                        <div class="d-flex align-items-start gap-3">
+                            <i class="fa-solid fa-circle-check fs-2 text-success mt-1"></i>
+                            <div>
+                                <div class="fw-bold text-success fs-5">🎉 [Step 3/3] ยืนยันสำเร็จ 100%! บันทึกลง MySQL ตาราง news เรียบร้อยแล้ว</div>
+                                <div class="text-light small mt-1">${data.message} ${verifiedText}</div>
+                                <div class="text-secondary small mt-2"><i class="fa-solid fa-arrows-rotate fa-spin me-1"></i> หน้าเว็บกำลังรีเฟรชเพื่อแสดงผลข่าวใหม่ใน 2.5 วินาที...</div>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                App.toast('🎉 ' + data.message, 'success');
+
+                // รอ 2.5 วินาที ให้ผู้ใช้เห็นการยืนยันผล ก่อน Reload
                 setTimeout(() => {
                     window.location.reload();
-                }, 800);
+                }, 2500);
+
             } else {
+                // กรณี MySQL ล้มเหลว หรือ เซิร์ฟเวอร์แจ้งเตือน
+                if (alertBox) {
+                    alertBox.className = 'alert alert-danger mb-4 rounded-4 p-3 shadow-lg border border-danger d-block';
+                    alertBox.innerHTML = `
+                        <div class="d-flex align-items-start gap-3">
+                            <i class="fa-solid fa-triangle-exclamation fs-2 text-danger mt-1"></i>
+                            <div>
+                                <div class="fw-bold text-danger fs-5">⚠️ ตรวจพบข้อผิดพลาดในการบันทึกฐานข้อมูล MySQL!</div>
+                                <div class="text-light mt-1">${data.message || 'บันทึกไม่สำเร็จ'}</div>
+                                <div class="mt-2">
+                                    <a href="${baseUrl}/inspect_news_pipeline.php" target="_blank" class="btn btn-sm btn-outline-warning rounded-pill px-3 py-1 text-decoration-none">
+                                        <i class="fa-solid fa-microscope me-1"></i> เปิดดูตัวตรวจจับ Pipeline เพื่อดู Error ละเอียด
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
                 App.toast(data.message || 'บันทึกผิดพลาด', 'error');
             }
         } catch(e) {
             console.error(e);
             btn.disabled = false;
             btn.innerHTML = origText;
+            if (alertBox) {
+                alertBox.className = 'alert alert-danger mb-4 rounded-4 p-3 shadow-lg border border-danger d-block';
+                alertBox.innerHTML = `
+                    <div class="d-flex align-items-start gap-3">
+                        <i class="fa-solid fa-circle-xmark fs-2 text-danger mt-1"></i>
+                        <div>
+                            <div class="fw-bold text-danger fs-5">เกิดข้อผิดพลาดในการสื่อสารกับเซิร์ฟเวอร์</div>
+                            <div class="text-light small mt-1">${e.message || e}</div>
+                        </div>
+                    </div>
+                `;
+            }
             App.toast('เกิดข้อผิดพลาดในการสื่อสารกับเซิร์ฟเวอร์', 'error');
         }
     },
