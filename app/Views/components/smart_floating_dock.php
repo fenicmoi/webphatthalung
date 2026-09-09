@@ -26,6 +26,11 @@
     overflow-x: auto;
     scrollbar-width: none;
 }
+.floating-capsule-dock.dock-at-top {
+    transform: translateX(-50%) translateY(130%) !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
 .floating-capsule-dock.dock-scroll-hidden {
     transform: translateX(-50%) translateY(110%);
     opacity: 0;
@@ -222,7 +227,7 @@
 </style>
 
 <!-- 1. FLOATING CAPSULE DOCK (Section Shortcuts) -->
-<div class="floating-capsule-dock" id="floatingCapsuleDock">
+<div class="floating-capsule-dock dock-at-top" id="floatingCapsuleDock">
     <a href="<?= base_url('gallery') ?>" class="dock-item">
         <div class="dock-item-icon" style="background: linear-gradient(135deg, #475569, #334155);"><i class="fa-solid fa-camera-retro text-white"></i></div>
         <span class="dock-item-label">คลังภาพ</span>
@@ -377,24 +382,44 @@ document.addEventListener('DOMContentLoaded', function() {
         if (lBtn) lBtn.classList.add('active');
     }
 
-    // ===== AUTO-HIDE DOCK ON SCROLL DOWN, SHOW ON SCROLL UP =====
-    let lastScrollY = window.scrollY;
+    // ===== AUTO-SHOW/HIDE DOCK: HIDE AT TOP OF PAGE TO KEEP HERO/SEARCH CLEAN, SHOW WHEN SCROLLED =====
+    let lastScrollY = window.scrollY || document.documentElement.scrollTop;
     let scrollTimer = null;
     const dock = document.getElementById('floatingCapsuleDock');
-    if (dock && localStorage.getItem('dock_state') !== 'minimized') {
-        window.addEventListener('scroll', function() {
-            const currentY = window.scrollY;
-            if (currentY > lastScrollY && currentY > 300) {
+
+    function checkDockScroll() {
+        if (!dock || localStorage.getItem('dock_state') === 'minimized') return;
+        const currentY = window.scrollY || document.documentElement.scrollTop;
+        
+        if (currentY < 180) {
+            // เมื่ออยู่ด้านบนสุดของหน้าเว็บ ให้ซ่อน Dock ไว้ เพื่อเปิดพื้นที่ให้ช่องค้นหาและหน้าเว็บโปร่ง โล่ง สบายตา
+            dock.classList.add('dock-at-top');
+            dock.classList.remove('dock-scroll-hidden');
+        } else {
+            // เมื่อผู้ใช้เริ่มเลื่อนลงมาอ่านเนื้อหา ค่อยแสดง Dock สำหรับเป็นเมนูทางลัด
+            dock.classList.remove('dock-at-top');
+            
+            if (currentY > lastScrollY && currentY > 400) {
                 dock.classList.add('dock-scroll-hidden');
             } else {
                 dock.classList.remove('dock-scroll-hidden');
             }
-            lastScrollY = currentY;
-            // Show dock again if user stops scrolling for 3 seconds
+        }
+        lastScrollY = currentY;
+    }
+
+    if (dock && localStorage.getItem('dock_state') !== 'minimized') {
+        checkDockScroll(); // Check once on initial load
+        window.addEventListener('scroll', function() {
+            checkDockScroll();
+            // Show dock again if user stops scrolling for 2.5 seconds
             clearTimeout(scrollTimer);
             scrollTimer = setTimeout(() => {
-                dock.classList.remove('dock-scroll-hidden');
-            }, 3000);
+                const curY = window.scrollY || document.documentElement.scrollTop;
+                if (curY >= 180) {
+                    dock.classList.remove('dock-scroll-hidden');
+                }
+            }, 2500);
         }, { passive: true });
     }
 });

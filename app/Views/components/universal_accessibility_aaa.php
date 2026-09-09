@@ -45,7 +45,7 @@
     box-shadow: 0 2px 8px rgba(0,0,0,0.15);
     flex-shrink: 0;
 }
-@media (max-width: 1199px) {
+@media (max-width: 1599px) {
     .w3c-aaa-trigger {
         padding: 0;
         width: 48px;
@@ -53,12 +53,14 @@
         border-radius: 50%;
         justify-content: center;
     }
+    .w3c-aaa-trigger span {
+        display: none !important;
+    }
     .w3c-icon-badge {
-        width: 42px;
-        height: 42px;
+        width: 40px;
+        height: 40px;
         box-shadow: none;
     }
-}
 }
 
 /* Modal styling */
