@@ -8,7 +8,7 @@
         "image_path": "assets\/images\/slider\/sane_muanglung.png",
         "desc": "สัมผัสความอุดมสมบูรณ์ของระบบนิเวศและวัฒนธรรม นำเที่ยวทะเลน้อย ควายน้ำ ยอักษะ และวิถีเกษตรกรรม พร้อมระบบจองท่องเที่ยวชุมชนแบบอัจฉริยะ",
         "button_text": "สำรวจเลย",
-        "button_url": "www.ma-muanglung.com",
+        "button_url": "https://www.ma-muanglung.com",
         "button_icon": "fa-solid fa-compass",
         "active": true,
         "style_class": "slide-bg-sane-muanglung",

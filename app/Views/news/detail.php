@@ -155,9 +155,22 @@ $coverSrc = !empty($news['cover_image']) ? ((strpos((string)$news['cover_image']
                             <span>เอกสารและไฟล์ดาวน์โหลดที่เกี่ยวข้อง (Attachments)</span>
                         </h5>
                         <div class="row g-3">
-                            <?php foreach ($news['attachments'] as $doc): ?>
+                            <?php foreach ($news['attachments'] as $doc): 
+                                $rawUrl = $doc['url'] ?? '';
+                                if (!empty($doc['path'])) {
+                                    $docLink = base_url($doc['path']);
+                                } elseif (strpos($rawUrl, 'localhost') !== false || strpos($rawUrl, '127.0.0.1') !== false) {
+                                    $parsed = parse_url($rawUrl, PHP_URL_PATH);
+                                    $cleanPath = preg_replace('#^/?(webphatthalung/)?(public/)?#i', '', $parsed ?: '');
+                                    $docLink = base_url(ltrim($cleanPath, '/'));
+                                } elseif (strpos($rawUrl, 'http://') === 0 || strpos($rawUrl, 'https://') === 0) {
+                                    $docLink = $rawUrl;
+                                } else {
+                                    $docLink = !empty($rawUrl) ? base_url(ltrim($rawUrl, '/')) : '#';
+                                }
+                            ?>
                                 <div class="col-md-6">
-                                    <a href="<?= esc($doc['url'] ?? '#') ?>" target="_blank" class="text-decoration-none d-flex align-items-center justify-content-between p-3 rounded-3 shadow-xs transition-all hover-lift article-attach-item">
+                                    <a href="<?= esc($docLink) ?>" target="_blank" class="text-decoration-none d-flex align-items-center justify-content-between p-3 rounded-3 shadow-xs transition-all hover-lift article-attach-item">
                                         <div class="d-flex align-items-center gap-3 overflow-hidden me-2">
                                             <i class="<?= esc($doc['icon'] ?? 'fa-solid fa-file-pdf') ?> fs-2 text-danger"></i>
                                             <div class="text-truncate">
