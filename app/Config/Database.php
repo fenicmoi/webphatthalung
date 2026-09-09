@@ -99,10 +99,24 @@ class Database extends Config
 
         // กรณีรันบน Hosting จริง (Production) ให้สลับไปใช้ฐานข้อมูล Production อัตโนมัติ
         if (!$isLocal || (defined('ENVIRONMENT') && ENVIRONMENT === 'production')) {
-            $this->default['hostname'] = env('database.default.hostname', 'localhost');
-            $this->default['database'] = env('database.default.database', 'phatthalun_newdb2026');
-            $this->default['username'] = env('database.default.username', 'phatthalun_newdb');
-            $this->default['password'] = env('database.default.password', 'hYxuV8ypi4');
+            $envHost = env('database.default.hostname');
+            $envUser = env('database.default.username');
+            $envPass = env('database.default.password');
+            $envDb   = env('database.default.database');
+
+            // ป้องกันกรณีเผลออัปโหลดไฟล์ .env ของ Localhost (user: root, password: ว่างเปล่า) ขึ้นไปบน Hosting
+            // หากพบว่าเป็น root หรือ password ว่าง ให้บังคับใช้สิทธิ์จริงของ Hosting ทันที
+            if (empty($envUser) || $envUser === 'root' || empty($envPass)) {
+                $this->default['hostname'] = 'localhost';
+                $this->default['username'] = 'phatthalun_newdb';
+                $this->default['password'] = 'hYxuV8ypi4';
+                $this->default['database'] = 'phatthalun_newdb2026';
+            } else {
+                $this->default['hostname'] = !empty($envHost) ? $envHost : 'localhost';
+                $this->default['username'] = $envUser;
+                $this->default['password'] = $envPass;
+                $this->default['database'] = (!empty($envDb) && $envDb !== 'phatthalun_2026db') ? $envDb : 'phatthalun_newdb2026';
+            }
             $this->default['DBDebug']  = false;
         }
     }
