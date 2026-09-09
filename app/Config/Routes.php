@@ -33,6 +33,21 @@ $routes->get('/', 'Home::index');
 $routes->get('/search', 'SearchController::query');
 $routes->get('page/(:any)', 'Page::view/$1');
 
+// News & PR Module Routes
+$routes->get('news', 'News::index');
+$routes->get('news/detail/(:any)', 'News::detail/$1');
+$routes->get('news/get-json/(:any)', 'News::getJson/$1');
+$routes->post('news/save', 'News::save');
+$routes->post('news/delete', 'News::delete');
+$routes->post('news/delete/(:any)', 'News::delete/$1');
+$routes->post('news/upload-image', 'News::uploadImage');
+$routes->post('news/save-category', 'News::saveCategory');
+$routes->post('news/resize-cover', 'News::resizeCover');
+$routes->match(['get', 'post'], 'news/test-db', 'News::testDb');
+$routes->match(['get', 'post'], 'news/testDb', 'News::testDb');
+$routes->match(['get', 'post'], 'news/sync-db', 'News::syncDb');
+$routes->match(['get', 'post'], 'news/syncDb', 'News::syncDb');
+
 /*
  * --------------------------------------------------------------------
  * Authentication & Login Routes
