@@ -33,13 +33,13 @@
                 <?php if (!empty($adminLogo)): ?>
                     <img src="<?= htmlspecialchars($adminLogo) ?>" alt="Logo" style="height: 36px; width: auto; max-width: 40px; object-fit: contain;">
                 <?php else: ?>
-                    <div style="width: 36px; height: 36px; border-radius: 8px; background: #2563eb; display: flex; align-items: center; justify-content: center; color: #fff;">
+                    <div style="width: 36px; height: 36px; border-radius: 8px; background: linear-gradient(135deg, #059669 0%, #0284c7 100%); display: flex; align-items: center; justify-content: center; color: #fff;">
                         <i class="fa-solid fa-layer-group" style="font-size: 1.1rem;"></i>
                     </div>
                 <?php endif; ?>
                 <div class="d-flex flex-column">
-                    <span style="font-size: 1.05rem; font-weight: 700; color: #ffffff; line-height: 1.2;">PHATTHALUNG</span>
-                    <span style="font-size: 0.72rem; font-weight: 600; color: #60a5fa; letter-spacing: 0.08em;">ADMIN PORTAL</span>
+                    <span style="font-size: 1rem; font-weight: 700; color: #ffffff; line-height: 1.2;">PHATTHALUNG</span>
+                    <span style="font-size: 0.7rem; font-weight: 600; color: #34d399; letter-spacing: 0.08em;">ADMIN PORTAL</span>
                 </div>
             </a>
 
@@ -50,144 +50,236 @@
                     <h6 class="mb-0 fw-bold" style="text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">
                         <?= session()->get('full_name') ?? 'ผู้ดูแลระบบ' ?>
                     </h6>
-                    <small style="color: #94a3b8; font-size: 0.75rem; display: flex; align-items: center;">
+                    <small style="color: #94a3b8; font-size: 0.72rem; display: flex; align-items: center;">
                         <span class="status-dot"></span> <?= session()->get('role') === 'admin' ? 'Super Admin' : 'Officer' ?>
                     </small>
                 </div>
             </div>
 
-            <!-- Sidebar Menu Items -->
-            <ul class="sidebar-menu-list">
-                <div class="sidebar-menu-title">ภาพรวมระบบ (OVERVIEW)</div>
-                <li>
-                    <a href="<?= base_url('admin/dashboard') ?>" class="sidebar-link <?= ($activeMenu ?? '') === 'dashboard' ? 'active' : '' ?>">
+            <?php
+            $currMenu = $activeMenu ?? '';
+            $isNewsActive = in_array($currMenu, ['news', 'news_aggregator', 'videos']);
+            $isProvinceActive = in_array($currMenu, ['executive_manager', 'governors', 'governor_policy', 'strategy_manager', 'project_manager']);
+            $isCmsActive = in_array($currMenu, ['page_manager', 'menu_manager', 'banners', 'services', 'procurement', 'site_texts']);
+            $isServicesActive = in_array($currMenu, ['mailbox_manager', 'contact_manager']);
+            $isSystemActive = in_array($currMenu, ['nora_ai', 'settings', 'users']);
+            ?>
+
+            <!-- Sidebar Navigation Menu Items -->
+            <div class="sidebar-menu-list" id="sidebarMenuList">
+                <!-- Overview: Single Direct Link -->
+                <div class="sidebar-menu-title">
+                    <span>ภาพรวมระบบ</span>
+                    <button type="button" class="btn btn-link p-0 text-muted" id="btnToggleAll" title="ย่อ/ขยายทุกกลุ่ม" style="font-size: 0.72rem; text-decoration: none; color: #64748b !important;">
+                        <i class="fa-solid fa-arrows-up-down me-1"></i>ย่อ/ขยาย
+                    </button>
+                </div>
+                
+                <a href="<?= base_url('admin/dashboard') ?>" class="sidebar-link-single <?= $currMenu === 'dashboard' ? 'active' : '' ?>">
+                    <div class="sidebar-icon-box" style="background: rgba(16, 185, 129, 0.18); color: #34d399;">
                         <i class="fa-solid fa-chart-pie"></i>
-                        <span>แผงควบคุมหลัก</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="<?= base_url('admin/contacts') ?>" class="sidebar-link <?= ($activeMenu ?? '') === 'contact_manager' ? 'active' : '' ?>">
-                        <i class="fa-solid fa-envelope-open-text text-success"></i>
-                        <span>เรื่องติดต่อ & ร้องเรียนประชาชน</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="<?= base_url('admin/mailbox') ?>" class="sidebar-link <?= ($activeMenu ?? '') === 'mailbox_manager' ? 'active' : '' ?>">
-                        <i class="fa-solid fa-envelope text-primary"></i>
-                        <span>กล่องจดหมายกลาง (MOI)</span>
-                    </a>
-                </li>
+                    </div>
+                    <span>แผงควบคุมหลัก (Dashboard)</span>
+                </a>
 
-                <div class="sidebar-menu-title">บริหารจัดการข้อมูล (CONTENT)</div>
-                <li>
-                    <a href="<?= base_url('news') ?>" class="sidebar-link <?= ($activeMenu ?? '') === 'news' ? 'active' : '' ?>" title="ไปจัดการข่าวสารที่หน้าเว็บสาธารณะ">
-                        <i class="fa-solid fa-newspaper text-warning"></i>
-                        <span>ข่าวประชาสัมพันธ์</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="<?= base_url('admin/news-aggregator') ?>" class="sidebar-link <?= ($activeMenu ?? '') === 'news_aggregator' ? 'active' : '' ?>">
-                        <i class="fa-solid fa-satellite-dish text-danger"></i>
-                        <span>ระบบดึงข่าวอัตโนมัติ (Live Feeds)</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="<?= base_url('admin/pages') ?>" class="sidebar-link <?= ($activeMenu ?? '') === 'page_manager' ? 'active' : '' ?>">
-                        <i class="fa-solid fa-file-lines text-info"></i>
-                        <span>หน้าเว็บไซต์ (Static Pages)</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="<?= base_url('admin/service-banners') ?>" class="sidebar-link <?= ($activeMenu ?? '') === 'services' ? 'active' : '' ?>">
-                        <i class="fa-solid fa-bullhorn text-success"></i>
-                        <span>แบนเนอร์ประชาสัมพันธ์ & ลิงก์ภายนอก</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="<?= base_url('admin/governor-policy') ?>" class="sidebar-link <?= ($activeMenu ?? '') === 'governor_policy' ? 'active' : '' ?>">
-                        <i class="fa-solid fa-user-gear text-success"></i>
-                        <span>นโยบายผู้ว่าราชการจังหวัด</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="<?= base_url('admin/executives') ?>" class="sidebar-link <?= ($activeMenu ?? '') === 'executive_manager' ? 'active' : '' ?>">
-                        <i class="fa-solid fa-user-tie text-warning"></i>
-                        <span>คณะผู้บริหารปัจจุบัน</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="<?= base_url('admin/governors') ?>" class="sidebar-link <?= ($activeMenu ?? '') === 'governors' ? 'active' : '' ?>">
-                        <i class="fa-solid fa-crown text-warning"></i>
-                        <span>ทำเนียบผู้ว่าราชการจังหวัด</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="<?= base_url('admin/videos') ?>" class="sidebar-link <?= ($activeMenu ?? '') === 'videos' ? 'active' : '' ?>">
-                        <i class="fa-solid fa-film text-danger" style="color: #f43f5e;"></i>
-                        <span>วีดิทัศน์ Web TV & YouTube</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="<?= base_url('admin/strategy') ?>" class="sidebar-link <?= ($activeMenu ?? '') === 'strategy_manager' ? 'active' : '' ?>">
-                        <i class="fa-solid fa-bullseye text-warning"></i>
-                        <span>ยุทธศาสตร์ & แผนพัฒนาจังหวัด</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="<?= base_url('admin/projects') ?>" class="sidebar-link <?= ($activeMenu ?? '') === 'project_manager' ? 'active' : '' ?>">
-                        <i class="fa-solid fa-map-location-dot" style="color: #06b6d4;"></i>
-                        <span>แผนที่ GIS โครงการ & eMENSCR</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="<?= base_url('admin/banners') ?>" class="sidebar-link <?= ($activeMenu ?? '') === 'banners' ? 'active' : '' ?>">
-                        <i class="fa-solid fa-images text-purple" style="color: #a855f7;"></i>
-                        <span>แบนเนอร์ & เลย์เอาต์เว็บ</span>
-                    </a>
-                </li>
+                <!-- Group 1: News & Media -->
+                <div class="sidebar-group <?= $isNewsActive ? 'open' : '' ?>" id="grp-news">
+                    <button type="button" class="sidebar-group-btn <?= $isNewsActive ? 'has-active' : '' ?>" onclick="toggleSidebarGroup('grp-news')">
+                        <div class="d-flex align-items-center gap-2.5">
+                            <div class="sidebar-icon-box" style="background: rgba(16, 185, 129, 0.15); color: #10b981;">
+                                <i class="fa-solid fa-newspaper"></i>
+                            </div>
+                            <span>ข่าวสารและมีเดีย</span>
+                        </div>
+                        <i class="fa-solid fa-chevron-down sidebar-chevron"></i>
+                    </button>
+                    <ul class="sidebar-submenu">
+                        <li>
+                            <a href="<?= base_url('news') ?>" class="sidebar-sublink <?= $currMenu === 'news' ? 'active' : '' ?>">
+                                <i class="fa-regular fa-newspaper"></i>
+                                <span>ข่าวประชาสัมพันธ์</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="<?= base_url('admin/news-aggregator') ?>" class="sidebar-sublink <?= $currMenu === 'news_aggregator' ? 'active' : '' ?>">
+                                <i class="fa-solid fa-satellite-dish"></i>
+                                <span>ดึงข่าวอัตโนมัติ (Feeds)</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="<?= base_url('admin/videos') ?>" class="sidebar-sublink <?= $currMenu === 'videos' ? 'active' : '' ?>">
+                                <i class="fa-solid fa-film"></i>
+                                <span>วีดิทัศน์ & YouTube</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
 
-                <div class="sidebar-menu-title">ระบบปัญญาประดิษฐ์ (AI & AUTOMATION)</div>
-                <li>
-                    <a href="<?= base_url('admin/nora-ai') ?>" class="sidebar-link <?= ($activeMenu ?? '') === 'nora_ai' ? 'active' : '' ?>">
-                        <i class="fa-solid fa-wand-magic-sparkles text-warning animate-pulse"></i>
-                        <span>น้องโนรา AI & คลังความรู้</span>
-                    </a>
-                </li>
+                <!-- Group 2: Provincial Info & Strategy -->
+                <div class="sidebar-group <?= $isProvinceActive ? 'open' : '' ?>" id="grp-province">
+                    <button type="button" class="sidebar-group-btn <?= $isProvinceActive ? 'has-active' : '' ?>" onclick="toggleSidebarGroup('grp-province')">
+                        <div class="d-flex align-items-center gap-2.5">
+                            <div class="sidebar-icon-box" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b;">
+                                <i class="fa-solid fa-landmark"></i>
+                            </div>
+                            <span>ข้อมูลจังหวัด & ยุทธศาสตร์</span>
+                        </div>
+                        <i class="fa-solid fa-chevron-down sidebar-chevron"></i>
+                    </button>
+                    <ul class="sidebar-submenu">
+                        <li>
+                            <a href="<?= base_url('admin/executives') ?>" class="sidebar-sublink <?= $currMenu === 'executive_manager' ? 'active' : '' ?>">
+                                <i class="fa-solid fa-user-tie"></i>
+                                <span>คณะผู้บริหารปัจจุบัน</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="<?= base_url('admin/governors') ?>" class="sidebar-sublink <?= $currMenu === 'governors' ? 'active' : '' ?>">
+                                <i class="fa-solid fa-crown"></i>
+                                <span>ทำเนียบผู้ว่าราชการ</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="<?= base_url('admin/governor-policy') ?>" class="sidebar-sublink <?= $currMenu === 'governor_policy' ? 'active' : '' ?>">
+                                <i class="fa-solid fa-user-gear"></i>
+                                <span>นโยบายผู้ว่าราชการ</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="<?= base_url('admin/strategy') ?>" class="sidebar-sublink <?= $currMenu === 'strategy_manager' ? 'active' : '' ?>">
+                                <i class="fa-solid fa-bullseye"></i>
+                                <span>ยุทธศาสตร์ & แผนพัฒนา</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="<?= base_url('admin/projects') ?>" class="sidebar-sublink <?= $currMenu === 'project_manager' ? 'active' : '' ?>">
+                                <i class="fa-solid fa-map-location-dot"></i>
+                                <span>แผนที่ GIS & eMENSCR</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
 
-                <div class="sidebar-menu-title">การตั้งค่าระบบ (SETTINGS)</div>
-                <li>
-                    <a href="<?= base_url('admin/site-texts') ?>" class="sidebar-link <?= ($activeMenu ?? '') === 'site_texts' ? 'active' : '' ?>">
-                        <i class="fa-solid fa-pen-to-square text-warning"></i>
-                        <span>แก้ไขข้อความทั่วเว็บ</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="<?= base_url('admin/menu') ?>" class="sidebar-link <?= ($activeMenu ?? '') === 'menu_manager' ? 'active' : '' ?>">
-                        <i class="fa-solid fa-compass text-teal" style="color: #14b8a6;"></i>
-                        <span>จัดการเมนูบาร์เว็บ</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="<?= base_url('admin/settings') ?>" class="sidebar-link <?= ($activeMenu ?? '') === 'settings' ? 'active' : '' ?>">
-                        <i class="fa-solid fa-sliders text-indigo" style="color: #818cf8;"></i>
-                        <span>ตั้งค่าระบบเว็บไซต์</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#users" onclick="App.toast('ระบบจัดการสิทธิ์เจ้าหน้าที่อยู่ในแผนอัปเดตถัดไป', 'info')" class="sidebar-link">
-                        <i class="fa-solid fa-users-gear text-slate" style="color: #94a3b8;"></i>
-                        <span>เจ้าหน้าที่ระบบ</span>
-                    </a>
-                </li>
-            </ul>
+                <!-- Group 3: Web CMS & Portal Management -->
+                <div class="sidebar-group <?= $isCmsActive ? 'open' : '' ?>" id="grp-cms">
+                    <button type="button" class="sidebar-group-btn <?= $isCmsActive ? 'has-active' : '' ?>" onclick="toggleSidebarGroup('grp-cms')">
+                        <div class="d-flex align-items-center gap-2.5">
+                            <div class="sidebar-icon-box" style="background: rgba(59, 130, 246, 0.15); color: #3b82f6;">
+                                <i class="fa-solid fa-layer-group"></i>
+                            </div>
+                            <span>จัดการหน้าเว็บและเนื้อหา</span>
+                        </div>
+                        <i class="fa-solid fa-chevron-down sidebar-chevron"></i>
+                    </button>
+                    <ul class="sidebar-submenu">
+                        <li>
+                            <a href="<?= base_url('admin/pages') ?>" class="sidebar-sublink <?= $currMenu === 'page_manager' ? 'active' : '' ?>">
+                                <i class="fa-solid fa-file-lines"></i>
+                                <span>หน้าเว็บไซต์ (Static Pages)</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="<?= base_url('admin/menu') ?>" class="sidebar-sublink <?= $currMenu === 'menu_manager' ? 'active' : '' ?>">
+                                <i class="fa-solid fa-compass"></i>
+                                <span>จัดการเมนูบาร์เว็บไซต์</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="<?= base_url('admin/banners') ?>" class="sidebar-sublink <?= $currMenu === 'banners' ? 'active' : '' ?>">
+                                <i class="fa-solid fa-images"></i>
+                                <span>แบนเนอร์ & สไลด์หน้าแรก</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="<?= base_url('admin/service-banners') ?>" class="sidebar-sublink <?= $currMenu === 'services' ? 'active' : '' ?>">
+                                <i class="fa-solid fa-bullhorn"></i>
+                                <span>แบนเนอร์บริการประชาชน</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="<?= base_url('admin/procurement') ?>" class="sidebar-sublink <?= $currMenu === 'procurement' ? 'active' : '' ?>">
+                                <i class="fa-solid fa-file-invoice-dollar"></i>
+                                <span>จัดซื้อจัดจ้าง e-GP</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="<?= base_url('admin/site-texts') ?>" class="sidebar-sublink <?= $currMenu === 'site_texts' ? 'active' : '' ?>">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                                <span>แก้ไขข้อความทั่วเว็บไซต์</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
 
+                <!-- Group 4: Citizen Inquiries & Complaints -->
+                <div class="sidebar-group <?= $isServicesActive ? 'open' : '' ?>" id="grp-services">
+                    <button type="button" class="sidebar-group-btn <?= $isServicesActive ? 'has-active' : '' ?>" onclick="toggleSidebarGroup('grp-services')">
+                        <div class="d-flex align-items-center gap-2.5">
+                            <div class="sidebar-icon-box" style="background: rgba(6, 182, 212, 0.15); color: #06b6d4;">
+                                <i class="fa-solid fa-comments"></i>
+                            </div>
+                            <span>บริการและรับเรื่องราว</span>
+                        </div>
+                        <i class="fa-solid fa-chevron-down sidebar-chevron"></i>
+                    </button>
+                    <ul class="sidebar-submenu">
+                        <li>
+                            <a href="<?= base_url('admin/mailbox') ?>" class="sidebar-sublink <?= $currMenu === 'mailbox_manager' ? 'active' : '' ?>">
+                                <i class="fa-solid fa-envelope"></i>
+                                <span>กล่องจดหมายกลาง (MOI)</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="<?= base_url('admin/contacts') ?>" class="sidebar-sublink <?= $currMenu === 'contact_manager' ? 'active' : '' ?>">
+                                <i class="fa-solid fa-envelope-open-text"></i>
+                                <span>เรื่องติดต่อ & ร้องเรียน</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Group 5: AI Tools & Settings -->
+                <div class="sidebar-group <?= $isSystemActive ? 'open' : '' ?>" id="grp-system">
+                    <button type="button" class="sidebar-group-btn <?= $isSystemActive ? 'has-active' : '' ?>" onclick="toggleSidebarGroup('grp-system')">
+                        <div class="d-flex align-items-center gap-2.5">
+                            <div class="sidebar-icon-box" style="background: rgba(168, 85, 247, 0.15); color: #a855f7;">
+                                <i class="fa-solid fa-sliders"></i>
+                            </div>
+                            <span>ระบบและความปลอดภัย</span>
+                        </div>
+                        <i class="fa-solid fa-chevron-down sidebar-chevron"></i>
+                    </button>
+                    <ul class="sidebar-submenu">
+                        <li>
+                            <a href="<?= base_url('admin/nora-ai') ?>" class="sidebar-sublink <?= $currMenu === 'nora_ai' ? 'active' : '' ?>">
+                                <i class="fa-solid fa-wand-magic-sparkles text-warning"></i>
+                                <span>น้องโนรา AI & คลังความรู้</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="<?= base_url('admin/settings') ?>" class="sidebar-sublink <?= $currMenu === 'settings' ? 'active' : '' ?>">
+                                <i class="fa-solid fa-gear"></i>
+                                <span>ตั้งค่าระบบเว็บไซต์</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#users" onclick="App.toast('ระบบจัดการสิทธิ์เจ้าหน้าที่อยู่ในแผนอัปเดตถัดไป', 'info')" class="sidebar-sublink">
+                                <i class="fa-solid fa-users-gear"></i>
+                                <span>เจ้าหน้าที่ระบบ</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Sidebar Footer -->
             <div class="sidebar-footer">
-                <div class="d-flex flex-column gap-2">
-                    <a href="<?= base_url() ?>" target="_blank" class="btn btn-sm w-100 d-flex align-items-center justify-content-center gap-2 text-decoration-none" style="background: rgba(255, 255, 255, 0.08); color: #e2e8f0; font-size: 0.85rem; border-radius: 8px; padding: 0.45rem 1rem;">
-                        <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 0.8rem;"></i> <span>ดูหน้าเว็บประชาชน</span>
+                <div class="d-flex gap-2">
+                    <a href="<?= base_url() ?>" target="_blank" class="btn btn-sm flex-fill d-flex align-items-center justify-content-center gap-1.5 text-decoration-none" style="background: rgba(255, 255, 255, 0.08); color: #e2e8f0; font-size: 0.82rem; border-radius: 8px; padding: 0.45rem 0.5rem;" title="เปิดหน้าเว็บไซต์ประชาชน">
+                        <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 0.78rem;"></i> <span>หน้าเว็บประชาชน</span>
                     </a>
-                    <a href="<?= base_url('logout') ?>" class="btn btn-sm w-100 d-flex align-items-center justify-content-center gap-2 text-decoration-none text-danger" style="background: rgba(239, 68, 68, 0.12); font-size: 0.85rem; border-radius: 8px; padding: 0.45rem 1rem; font-weight: 600;">
-                        <i class="fa-solid fa-power-off"></i> <span>ออกจากระบบ</span>
+                    <a href="<?= base_url('logout') ?>" class="btn btn-sm d-flex align-items-center justify-content-center gap-1.5 text-decoration-none text-danger" style="background: rgba(239, 68, 68, 0.12); font-size: 0.82rem; border-radius: 8px; padding: 0.45rem 0.85rem; font-weight: 600;" title="ออกจากระบบ">
+                        <i class="fa-solid fa-power-off"></i> <span>ออก</span>
                     </a>
                 </div>
             </div>
@@ -195,16 +287,21 @@
 
         <!-- Main Content Area -->
         <div class="admin-main">
-            <!-- Clean Topbar -->
+            <!-- Clean Topbar with Real-Time Spotlight Menu Search -->
             <header class="admin-topbar">
-                <div class="d-flex align-items-center gap-3">
+                <div class="d-flex align-items-center gap-3 position-relative">
                     <button class="btn btn-sm p-1 d-lg-none" id="toggleSidebarBtn" style="color: #475569; font-size: 1.25rem; border: none; background: transparent;">
                         <i class="fa-solid fa-bars-staggered"></i>
                     </button>
                     
-                    <div class="d-none d-md-flex align-items-center admin-search-box">
+                    <!-- Spotlight Live Search -->
+                    <div class="d-none d-md-flex align-items-center admin-search-box position-relative">
                         <i class="fa-solid fa-magnifying-glass" style="color: #94a3b8; font-size: 0.85rem;"></i>
-                        <input type="text" placeholder="ค้นหาเมนูหรือฟังก์ชัน...">
+                        <input type="text" id="adminMenuSearch" placeholder="ค้นหาเมนู (เช่น ข่าว, ผู้ว่า, แผน, สถิติ)..." autocomplete="off">
+                        <span id="searchClearBtn" class="d-none text-muted" style="cursor: pointer; font-size: 0.75rem;" title="ล้างการค้นหา"><i class="fa-solid fa-xmark"></i></span>
+                        
+                        <!-- Instant Dropdown Results -->
+                        <div id="spotlightDropdown" class="admin-spotlight-dropdown shadow-lg"></div>
                     </div>
                 </div>
 
@@ -231,10 +328,121 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="<?= base_url('assets/js/app.js') ?>"></script>
     <script>
-        // Mobile Sidebar Toggle Script
+        // 1. Mobile Sidebar Toggle
         document.getElementById('toggleSidebarBtn')?.addEventListener('click', function() {
             document.getElementById('adminSidebar').classList.toggle('show');
         });
+
+        // 2. Accordion Group Toggle
+        function toggleSidebarGroup(groupId) {
+            const group = document.getElementById(groupId);
+            if (!group) return;
+            group.classList.toggle('open');
+        }
+
+        // 3. Toggle All Groups
+        let allExpanded = true;
+        document.getElementById('btnToggleAll')?.addEventListener('click', function() {
+            const groups = document.querySelectorAll('.sidebar-group');
+            allExpanded = !allExpanded;
+            groups.forEach(grp => {
+                if (allExpanded) {
+                    grp.classList.add('open');
+                } else {
+                    grp.classList.remove('open');
+                }
+            });
+        });
+
+        // 4. Instant Live Spotlight Search
+        const searchInput = document.getElementById('adminMenuSearch');
+        const clearBtn = document.getElementById('searchClearBtn');
+        const dropdown = document.getElementById('spotlightDropdown');
+
+        if (searchInput) {
+            // Index all menu links
+            const menuLinks = [];
+            document.querySelectorAll('.sidebar-sublink, .sidebar-link-single').forEach(link => {
+                const text = link.innerText.trim();
+                const href = link.getAttribute('href');
+                const icon = link.querySelector('i')?.className || 'fa-solid fa-link';
+                const parentGroup = link.closest('.sidebar-group');
+                const groupTitle = parentGroup ? parentGroup.querySelector('.sidebar-group-btn span')?.innerText.trim() : 'ภาพรวม';
+                menuLinks.push({ text, href, icon, groupTitle, element: link, parentGroup });
+            });
+
+            searchInput.addEventListener('input', function() {
+                const q = this.value.trim().toLowerCase();
+                if (q === '') {
+                    clearBtn.classList.add('d-none');
+                    dropdown.classList.remove('show');
+                    dropdown.innerHTML = '';
+                    // Reset all groups to default visibility
+                    menuLinks.forEach(m => {
+                        m.element.style.display = '';
+                    });
+                    document.querySelectorAll('.sidebar-group').forEach(g => {
+                        g.style.display = '';
+                    });
+                    return;
+                }
+
+                clearBtn.classList.remove('d-none');
+                const matches = menuLinks.filter(m => 
+                    m.text.toLowerCase().includes(q) || 
+                    m.groupTitle.toLowerCase().includes(q) ||
+                    m.href.toLowerCase().includes(q)
+                );
+
+                // Highlight & Filter in Sidebar
+                menuLinks.forEach(m => {
+                    const isMatch = m.text.toLowerCase().includes(q) || m.groupTitle.toLowerCase().includes(q);
+                    m.element.style.display = isMatch ? '' : 'none';
+                });
+
+                document.querySelectorAll('.sidebar-group').forEach(grp => {
+                    const hasVisibleLinks = grp.querySelectorAll('.sidebar-sublink:not([style*="display: none"])').length > 0;
+                    grp.style.display = hasVisibleLinks ? '' : 'none';
+                    if (hasVisibleLinks) grp.classList.add('open');
+                });
+
+                // Build Spotlight Dropdown
+                if (matches.length > 0) {
+                    let html = `<div class="px-2 py-1 text-muted fw-bold" style="font-size: 0.75rem; text-transform: uppercase;">ผลการค้นหา (${matches.length} เมนู)</div>`;
+                    matches.forEach(m => {
+                        html += `
+                            <a href="${m.href}" class="spotlight-item">
+                                <div style="width: 28px; height: 28px; border-radius: 6px; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center; font-size: 0.85rem;">
+                                    <i class="${m.icon}"></i>
+                                </div>
+                                <div>
+                                    <div class="fw-bold" style="font-size: 0.86rem; color: #0f172a;">${m.text}</div>
+                                    <div style="font-size: 0.72rem; color: #64748b;">${m.groupTitle}</div>
+                                </div>
+                            </a>
+                        `;
+                    });
+                    dropdown.innerHTML = html;
+                    dropdown.classList.add('show');
+                } else {
+                    dropdown.innerHTML = `<div class="p-3 text-center text-muted" style="font-size: 0.85rem;"><i class="fa-solid fa-magnifying-glass me-1"></i> ไม่พบเมนูที่ตรงกับ "${q}"</div>`;
+                    dropdown.classList.add('show');
+                }
+            });
+
+            clearBtn.addEventListener('click', function() {
+                searchInput.value = '';
+                searchInput.dispatchEvent(new Event('input'));
+                searchInput.focus();
+            });
+
+            // Close spotlight when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!searchInput.contains(e.target) && !dropdown.contains(e.target)) {
+                    dropdown.classList.remove('show');
+                }
+            });
+        }
     </script>
 </body>
 </html>

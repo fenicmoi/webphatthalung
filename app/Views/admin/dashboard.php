@@ -96,6 +96,63 @@ $stats = $stats ?? [
     </div>
 </div>
 
+<!-- Quick Category Hub -->
+<div class="mb-4">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <h6 class="fw-bold mb-0" style="color: #0f172a;">
+            <i class="fa-solid fa-shapes text-emerald me-2"></i>หมวดหมู่การทำงานหลัก (System Management Hub)
+        </h6>
+        <span class="text-muted" style="font-size: 0.8rem;">เข้าถึงเครื่องมือจัดการแยกตามหมวดหมู่</span>
+    </div>
+    <div class="row g-3">
+        <div class="col-6 col-md-4 col-xl">
+            <a href="<?= base_url('news') ?>" class="quick-hub-card text-decoration-none">
+                <div class="hub-icon" style="background: rgba(16, 185, 129, 0.12); color: #059669;">
+                    <i class="fa-solid fa-newspaper"></i>
+                </div>
+                <div class="hub-title">ข่าวสาร & สื่อ</div>
+                <div class="hub-desc">ประชาสัมพันธ์, Feeds, วีดิทัศน์</div>
+            </a>
+        </div>
+        <div class="col-6 col-md-4 col-xl">
+            <a href="<?= base_url('admin/executives') ?>" class="quick-hub-card text-decoration-none">
+                <div class="hub-icon" style="background: rgba(245, 158, 11, 0.12); color: #d97706;">
+                    <i class="fa-solid fa-landmark"></i>
+                </div>
+                <div class="hub-title">ข้อมูลจังหวัด</div>
+                <div class="hub-desc">ผู้บริหาร, ผู้ว่าฯ, ยุทธศาสตร์, GIS</div>
+            </a>
+        </div>
+        <div class="col-6 col-md-4 col-xl">
+            <a href="<?= base_url('admin/pages') ?>" class="quick-hub-card text-decoration-none">
+                <div class="hub-icon" style="background: rgba(59, 130, 246, 0.12); color: #2563eb;">
+                    <i class="fa-solid fa-layer-group"></i>
+                </div>
+                <div class="hub-title">จัดการหน้าเว็บ</div>
+                <div class="hub-desc">Static Pages, เมนูบาร์, แบนเนอร์</div>
+            </a>
+        </div>
+        <div class="col-6 col-md-4 col-xl">
+            <a href="<?= base_url('admin/mailbox') ?>" class="quick-hub-card text-decoration-none">
+                <div class="hub-icon" style="background: rgba(6, 182, 212, 0.12); color: #0891b2;">
+                    <i class="fa-solid fa-comments"></i>
+                </div>
+                <div class="hub-title">บริการประชาชน</div>
+                <div class="hub-desc">กล่องจดหมาย MOI, ร้องเรียน</div>
+            </a>
+        </div>
+        <div class="col-12 col-md-4 col-xl">
+            <a href="<?= base_url('admin/nora-ai') ?>" class="quick-hub-card text-decoration-none">
+                <div class="hub-icon" style="background: rgba(168, 85, 247, 0.12); color: #7c3aed;">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                </div>
+                <div class="hub-title">ระบบ & น้องโนรา AI</div>
+                <div class="hub-desc">AI คลังความรู้, ตั้งค่าระบบ</div>
+            </a>
+        </div>
+    </div>
+</div>
+
 <!-- Main Section: Recent News & Quick Status -->
 <div class="row g-4">
     <div class="col-xl-8">
