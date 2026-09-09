@@ -3,7 +3,7 @@
 // คอมโพเนนต์: แถบเครื่องมือแชร์โซเชียล สั่งพิมพ์ และปรับขนาดตัวอักษร (Content Share & Print Toolbar)
 // =========================================================================
 $shareTitle = !empty($shareTitle) ? $shareTitle : (!empty($page['title']) ? $page['title'] : (!empty($news['title']) ? $news['title'] : 'จังหวัดพัทลุง'));
-$shareUrl = current_url();
+$shareUrl = function_exists('current_url') ? current_url() : (isset($_SERVER['REQUEST_URI']) ? (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . ($_SERVER['HTTP_HOST'] ?? 'localhost') . $_SERVER['REQUEST_URI'] : base_url());
 ?>
 
 <div class="content-toolbar-box d-flex align-items-center flex-wrap gap-2">

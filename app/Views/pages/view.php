@@ -7,8 +7,15 @@ $children = $children ?? [];
 
 $headerImg = !empty($page['header_image']) ? $page['header_image'] : '';
 if (!empty($headerImg) && strpos($headerImg, 'http') !== 0 && strpos($headerImg, 'data:') !== 0) {
-    $headerImg = base_url($headerImg);
+    $headerImg = base_url(ltrim($headerImg, '/'));
 }
+
+$renderContent = function($rawHtml) {
+    if (empty($rawHtml)) return '';
+    $html = str_replace('../uploads/', base_url('uploads/'), $rawHtml);
+    $html = str_replace('./uploads/', base_url('uploads/'), $html);
+    return $html;
+};
 ?>
 
 <!-- PAGE HEADER (รองรับภาพพื้นหลังกำหนดเอง - ขนาดใหญ่สวยงามเต็มตา) -->
@@ -79,19 +86,19 @@ if (!empty($headerImg) && strpos($headerImg, 'http') !== 0 && strpos($headerImg,
                         <div class="tab-content" id="pageTabContent">
                             <!-- เนื้อหาหลัก -->
                             <div class="tab-pane fade show active dynamic-content" id="tab-main" role="tabpanel" aria-labelledby="main-tab">
-                                <?= $page['content'] ?? '' ?>
+                                <?= $renderContent($page['content'] ?? '') ?>
                             </div>
                             <!-- เนื้อหาย่อย (Children) -->
                             <?php foreach($children as $idx => $child): ?>
                             <div class="tab-pane fade dynamic-content" id="tab-child-<?= $child['id'] ?>" role="tabpanel" aria-labelledby="child-tab-<?= $child['id'] ?>">
-                                <?= $child['content'] ?? '' ?>
+                                <?= $renderContent($child['content'] ?? '') ?>
                             </div>
                             <?php endforeach; ?>
                         </div>
                     <?php else: ?>
                         <!-- แสดงผลเนื้อหาเดี่ยวๆ -->
                         <div class="dynamic-content">
-                            <?= $page['content'] ?? '' ?>
+                            <?= $renderContent($page['content'] ?? '') ?>
                         </div>
                     <?php endif; ?>
 
