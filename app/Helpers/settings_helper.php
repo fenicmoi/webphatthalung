@@ -418,6 +418,27 @@ if (!function_exists('get_site_news')) {
 
         try {
             $db = \Config\Database::connect();
+
+            // 1. ตรวจสอบและสร้างตาราง news อัตโนมัติหากยังไม่มีในฐานข้อมูล
+            if (!$db->tableExists('news')) {
+                $db->query("CREATE TABLE IF NOT EXISTS `news` (
+                  `id` int unsigned NOT NULL AUTO_INCREMENT,
+                  `title` varchar(255) NOT NULL,
+                  `slug` varchar(255) NOT NULL,
+                  `category` varchar(100) NOT NULL DEFAULT 'ข่าวประชาสัมพันธ์',
+                  `content` longtext NOT NULL,
+                  `thumbnail` varchar(255) DEFAULT NULL,
+                  `status` enum('draft','published','archived') NOT NULL DEFAULT 'published',
+                  `views_count` int NOT NULL DEFAULT '0',
+                  `author_id` int unsigned DEFAULT NULL,
+                  `created_at` datetime DEFAULT NULL,
+                  `updated_at` datetime DEFAULT NULL,
+                  PRIMARY KEY (`id`),
+                  KEY `idx_slug` (`slug`),
+                  KEY `idx_category` (`category`)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;");
+            }
+
             if ($db->tableExists('news')) {
                 $builder = $db->table('news');
                 if ($activeOnly) {
@@ -449,6 +470,57 @@ if (!function_exists('get_site_news')) {
                         'active'      => ($row['status'] ?? 'published') === 'published',
                     ];
                 }
+
+                // 2. หากในตาราง news ยังไม่มีข้อมูล แต่ใน site_news.json มีข้อมูล
+                // ให้นำข้อมูลจาก site_news.json มาแสดงผล และ auto-insert เข้าสู่ MySQL ทันที!
+                if (empty($newsList)) {
+                    $writableDir = defined('WRITABLE') ? rtrim(\WRITABLE, '/\\') : realpath(__DIR__ . '/../../writable');
+                    $jsonPath = $writableDir . DIRECTORY_SEPARATOR . 'site_news.json';
+                    if (file_exists($jsonPath)) {
+                        $jsonContent = @file_get_contents($jsonPath);
+                        $jsonNews = !empty($jsonContent) ? json_decode($jsonContent, true) : [];
+                        if (is_array($jsonNews) && !empty($jsonNews)) {
+                            foreach ($jsonNews as $item) {
+                                if (empty($item['title'])) continue;
+                                if ($activeOnly && isset($item['active']) && !$item['active']) continue;
+                                if (!empty($category) && isset($item['category']) && $item['category'] !== $category) continue;
+
+                                try {
+                                    $slug = function_exists('url_title') ? url_title($item['title'], '-', true) : '';
+                                    if (empty($slug) || mb_strlen($slug) < 2) {
+                                        $slug = 'news-' . time() . '-' . mt_rand(10, 99);
+                                    }
+                                    $slug = mb_substr($slug, 0, 240);
+
+                                    $existingRow = $db->table('news')->where('title', $item['title'])->get()->getRowArray();
+                                    if (!$existingRow) {
+                                        $db->table('news')->insert([
+                                            'title'       => mb_substr($item['title'], 0, 255),
+                                            'slug'        => $slug,
+                                            'category'    => mb_substr(!empty($item['category']) ? $item['category'] : 'ข่าวประชาสัมพันธ์', 0, 100),
+                                            'content'     => $item['content'] ?? '',
+                                            'thumbnail'   => mb_substr(!empty($item['cover_image']) ? $item['cover_image'] : 'assets/images/slider/sane_muanglung.png', 0, 255),
+                                            'status'      => 'published',
+                                            'views_count' => (int)($item['views'] ?? 0),
+                                            'created_at'  => $item['created_at'] ?? date('Y-m-d H:i:s'),
+                                            'updated_at'  => $item['updated_at'] ?? date('Y-m-d H:i:s'),
+                                        ]);
+                                        $item['id'] = $db->insertID();
+                                    } else {
+                                        $item['id'] = $existingRow['id'];
+                                    }
+                                } catch (\Throwable $migErr) {
+                                    log_message('error', 'Auto-migrate news to DB error: ' . $migErr->getMessage());
+                                }
+
+                                $newsList[] = $item;
+                                if (!empty($limit) && count($newsList) >= (int)$limit) {
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
             }
         } catch (\Throwable $e) {
             log_message('error', 'get_site_news DB error: ' . $e->getMessage());
@@ -460,7 +532,7 @@ if (!function_exists('get_site_news')) {
 
 if (!function_exists('save_site_news')) {
     /**
-     * บันทึกรายการข่าวสารประชาสัมพันธ์ลงในไฟล์ JSON (เพื่อเป็นแคชสำรอง)
+     * บันทึกรายการข่าวสารประชาสัมพันธ์ลงในไฟล์ JSON และ sync ลง MySQL
      */
     function save_site_news(array $newsList): bool
     {
@@ -469,13 +541,48 @@ if (!function_exists('save_site_news')) {
             @mkdir($writableDir, 0777, true);
         }
         $jsonPath = $writableDir . DIRECTORY_SEPARATOR . 'site_news.json';
-        return @file_put_contents($jsonPath, json_encode(array_values($newsList), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)) !== false;
+        $saved = @file_put_contents($jsonPath, json_encode(array_values($newsList), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)) !== false;
+
+        // Sync items to MySQL
+        try {
+            $db = \Config\Database::connect();
+            if ($db->tableExists('news')) {
+                foreach ($newsList as $item) {
+                    if (empty($item['title'])) continue;
+                    $existing = $db->table('news')->where('title', $item['title'])->get()->getRowArray();
+                    $slug = function_exists('url_title') ? url_title($item['title'], '-', true) : '';
+                    if (empty($slug) || mb_strlen($slug) < 2) {
+                        $slug = 'news-' . time() . '-' . mt_rand(10, 99);
+                    }
+                    $data = [
+                        'title'       => mb_substr($item['title'], 0, 255),
+                        'slug'        => mb_substr($slug, 0, 240),
+                        'category'    => mb_substr(!empty($item['category']) ? $item['category'] : 'ข่าวประชาสัมพันธ์', 0, 100),
+                        'content'     => $item['content'] ?? '',
+                        'thumbnail'   => mb_substr(!empty($item['cover_image']) ? $item['cover_image'] : 'assets/images/slider/sane_muanglung.png', 0, 255),
+                        'status'      => 'published',
+                        'views_count' => (int)($item['views'] ?? 0),
+                        'updated_at'  => $item['updated_at'] ?? date('Y-m-d H:i:s'),
+                    ];
+                    if ($existing) {
+                        $db->table('news')->where('id', $existing['id'])->update($data);
+                    } else {
+                        $data['created_at'] = $item['created_at'] ?? date('Y-m-d H:i:s');
+                        $db->table('news')->insert($data);
+                    }
+                }
+            }
+        } catch (\Throwable $e) {
+            log_message('error', 'save_site_news DB sync error: ' . $e->getMessage());
+        }
+
+        return $saved;
     }
 }
 
 if (!function_exists('get_news_by_id')) {
     /**
-     * ดึงข่าวสารรายชิ้นจากรหัสไอดีจากฐานข้อมูล MySQL เท่านั้น
+     * ดึงข่าวสารรายชิ้นจากรหัสไอดี (จาก MySQL และ fallback จาก JSON)
      */
     function get_news_by_id($id)
     {
@@ -510,6 +617,21 @@ if (!function_exists('get_news_by_id')) {
         } catch (\Throwable $e) {
             log_message('error', 'get_news_by_id DB error: ' . $e->getMessage());
         }
+
+        // Fallback from JSON if not found in DB
+        $writableDir = defined('WRITABLE') ? rtrim(\WRITABLE, '/\\') : realpath(__DIR__ . '/../../writable');
+        $jsonPath = $writableDir . DIRECTORY_SEPARATOR . 'site_news.json';
+        if (file_exists($jsonPath)) {
+            $all = json_decode(file_get_contents($jsonPath), true);
+            if (is_array($all)) {
+                foreach ($all as $item) {
+                    if (strval($item['id'] ?? '') === strval($id) || ($item['slug'] ?? '') === strval($id)) {
+                        return $item;
+                    }
+                }
+            }
+        }
+
         return null;
     }
 }

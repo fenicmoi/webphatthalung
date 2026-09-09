@@ -249,48 +249,110 @@ class News extends BaseController
             @copy($path, $backupPath);
         }
 
-        // 2. บันทึกสำเนาลง MySQL Database ตาราง news อัตโนมัติ (Dual-Storage) เพื่อไม่ให้ข้อมูลหายแม้ไฟล์ JSON ถูกเขียนทับ
+        // 2. บันทึกลง MySQL Database ตาราง news เป็นหลัก (Primary Source of Truth)
+        $dbError = null;
+        $insertedDbId = null;
         try {
             $db = \Config\Database::connect();
+            
+            // ตรวจสอบและสร้างตาราง news อัตโนมัติหากบนโฮสต์ยังไม่ได้สร้าง
+            if (!$db->tableExists('news')) {
+                $db->query("CREATE TABLE IF NOT EXISTS `news` (
+                  `id` int unsigned NOT NULL AUTO_INCREMENT,
+                  `title` varchar(255) NOT NULL,
+                  `slug` varchar(255) NOT NULL,
+                  `category` varchar(100) NOT NULL DEFAULT 'ข่าวประชาสัมพันธ์',
+                  `content` longtext NOT NULL,
+                  `thumbnail` varchar(255) DEFAULT NULL,
+                  `status` enum('draft','published','archived') NOT NULL DEFAULT 'published',
+                  `views_count` int NOT NULL DEFAULT '0',
+                  `author_id` int unsigned DEFAULT NULL,
+                  `created_at` datetime DEFAULT NULL,
+                  `updated_at` datetime DEFAULT NULL,
+                  PRIMARY KEY (`id`),
+                  KEY `idx_slug` (`slug`),
+                  KEY `idx_category` (`category`)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;");
+            }
+
             if ($db->tableExists('news')) {
-                $existingDb = $db->table('news')->where('title', $title)->get()->getRowArray();
-                $slug = function_exists('url_title') ? url_title($title, '-', true) : '';
-                if (empty($slug) || mb_strlen($slug) < 2) {
-                    $slug = 'news-' . time() . '-' . mt_rand(10, 99);
+                // ตรวจสอบรายการเดิมด้วย ID (ถ้าเป็นตัวเลข) หรือค้นหาจากชื่อหัวข้อ
+                $existingDb = null;
+                if (is_numeric($id)) {
+                    $existingDb = $db->table('news')->where('id', (int)$id)->get()->getRowArray();
+                }
+                if (!$existingDb) {
+                    $existingDb = $db->table('news')->where('title', $title)->get()->getRowArray();
                 }
 
+                // สร้าง slug ที่ปลอดภัยและไม่ซ้ำ
+                $baseSlug = function_exists('url_title') ? url_title($title, '-', true) : '';
+                if (empty($baseSlug) || mb_strlen($baseSlug) < 2) {
+                    $baseSlug = 'news-' . time();
+                }
+                $baseSlug = mb_substr($baseSlug, 0, 240);
+                $slug = $baseSlug;
+
+                $slugQuery = $db->table('news')->where('slug', $slug);
+                if ($existingDb) {
+                    $slugQuery->where('id !=', $existingDb['id']);
+                }
+                if ($slugQuery->countAllResults() > 0) {
+                    $slug = $baseSlug . '-' . mt_rand(100, 999);
+                }
+
+                $authorId = session()->get('user_id') ?? session()->get('id') ?? null;
                 $dbData = [
-                    'title'       => $title,
-                    'slug'        => $slug,
-                    'category'    => !empty($category) ? $category : 'ข่าวประชาสัมพันธ์',
+                    'title'       => mb_substr($title, 0, 255),
+                    'slug'        => mb_substr($slug, 0, 255),
+                    'category'    => mb_substr(!empty($category) ? $category : 'ข่าวประชาสัมพันธ์', 0, 100),
                     'content'     => $content,
-                    'thumbnail'   => !empty($coverImage) ? $coverImage : 'assets/images/slider/sane_muanglung.png',
+                    'thumbnail'   => mb_substr(!empty($coverImage) ? $coverImage : 'assets/images/slider/sane_muanglung.png', 0, 255),
                     'status'      => 'published',
                     'views_count' => ($foundIndex >= 0 && isset($allNews[$foundIndex]['views'])) ? (int)$allNews[$foundIndex]['views'] : 1,
+                    'author_id'   => is_numeric($authorId) ? (int)$authorId : null,
                     'updated_at'  => $now,
                 ];
 
                 if ($existingDb) {
                     $db->table('news')->where('id', $existingDb['id'])->update($dbData);
+                    $insertedDbId = $existingDb['id'];
                 } else {
                     $dbData['created_at'] = $now;
                     $db->table('news')->insert($dbData);
+                    $insertedDbId = $db->insertID();
+                }
+
+                if ($insertedDbId) {
+                    $newEntry['id'] = $insertedDbId;
+                    if ($foundIndex >= 0) {
+                        $allNews[$foundIndex]['id'] = $insertedDbId;
+                    } else {
+                        $allNews[0]['id'] = $insertedDbId;
+                    }
                 }
             }
         } catch (\Throwable $e) {
+            $dbError = $e->getMessage();
             log_message('error', 'Dual-sync news to DB error: ' . $e->getMessage());
         }
 
-        // 3. บันทึกลง JSON
-        if (@file_put_contents($path, json_encode(array_values($allNews), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)) !== false) {
-            return $this->respond([
-                'status' => 'success',
-                'message' => 'บันทึกข่าวสารประชาสัมพันธ์เรียบร้อยแล้ว (บันทึกทั้งระบบไฟล์และฐานข้อมูลสำรอง)',
-                'data' => $newEntry
-            ]);
+        // 3. บันทึกลง JSON เป็นแคชสำรอง
+        @file_put_contents($path, json_encode(array_values($allNews), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+
+        $msg = 'บันทึกข่าวสารประชาสัมพันธ์เรียบร้อยแล้ว';
+        if ($insertedDbId) {
+            $msg .= " (บันทึกลงฐานข้อมูล MySQL ตาราง news [ID: {$insertedDbId}] เรียบร้อย)";
+        }
+        if ($dbError) {
+            $msg .= " (หมายเหตุ: บันทึกไฟล์สำเร็จ แต่ฐานข้อมูล MySQL แจ้งเตือน: {$dbError})";
         }
 
-        return $this->respond(['status' => 'error', 'message' => 'ไม่สามารถบันทึกไฟล์ข้อมูลบนเซิร์ฟเวอร์ได้']);
+        return $this->respond([
+            'status'  => 'success',
+            'message' => $msg,
+            'data'    => $newEntry
+        ]);
     }
 
     /**
@@ -321,18 +383,22 @@ class News extends BaseController
             }
         }
 
-        if ($deleted) {
+        if ($deleted || is_numeric($id)) {
             $path = $this->getNewsPath();
             @file_put_contents($path, json_encode(array_values($newNews), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 
-            // ลบจาก DB ด้วยถ้ามี
-            if (!empty($deletedTitle)) {
-                try {
-                    $db = \Config\Database::connect();
-                    if ($db->tableExists('news')) {
+            // ลบจาก DB
+            try {
+                $db = \Config\Database::connect();
+                if ($db->tableExists('news')) {
+                    if (is_numeric($id)) {
+                        $db->table('news')->where('id', (int)$id)->delete();
+                    } elseif (!empty($deletedTitle)) {
                         $db->table('news')->where('title', $deletedTitle)->delete();
                     }
-                } catch (\Throwable $e) {}
+                }
+            } catch (\Throwable $e) {
+                log_message('error', 'Delete news from DB error: ' . $e->getMessage());
             }
 
             return $this->respond(['status' => 'success', 'message' => 'ลบรายการข่าวเรียบร้อยแล้ว']);
