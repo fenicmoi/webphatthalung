@@ -253,10 +253,51 @@ class News extends BaseController
         }
 
         $path = $this->getNewsPath();
+        $writableDir = dirname($path);
+
+        // 1. สำรองข้อมูล backup เสมอก่อนบันทึก เพื่อป้องกันไฟล์สูญหาย
+        if (file_exists($path)) {
+            $backupPath = $writableDir . DIRECTORY_SEPARATOR . 'site_news.backup.json';
+            @copy($path, $backupPath);
+        }
+
+        // 2. บันทึกสำเนาลง MySQL Database ตาราง news อัตโนมัติ (Dual-Storage) เพื่อไม่ให้ข้อมูลหายแม้ไฟล์ JSON ถูกเขียนทับ
+        try {
+            $db = \Config\Database::connect();
+            if ($db->tableExists('news')) {
+                $existingDb = $db->table('news')->where('title', $title)->get()->getRowArray();
+                $slug = function_exists('url_title') ? url_title($title, '-', true) : '';
+                if (empty($slug) || mb_strlen($slug) < 2) {
+                    $slug = 'news-' . time() . '-' . mt_rand(10, 99);
+                }
+
+                $dbData = [
+                    'title'       => $title,
+                    'slug'        => $slug,
+                    'category'    => !empty($category) ? $category : 'ข่าวประชาสัมพันธ์',
+                    'content'     => $content,
+                    'thumbnail'   => !empty($coverImage) ? $coverImage : 'assets/images/slider/sane_muanglung.png',
+                    'status'      => 'published',
+                    'views_count' => ($foundIndex >= 0 && isset($allNews[$foundIndex]['views'])) ? (int)$allNews[$foundIndex]['views'] : 1,
+                    'updated_at'  => $now,
+                ];
+
+                if ($existingDb) {
+                    $db->table('news')->where('id', $existingDb['id'])->update($dbData);
+                } else {
+                    $dbData['created_at'] = $now;
+                    $db->table('news')->insert($dbData);
+                }
+            }
+        } catch (\Throwable $e) {
+            log_message('error', 'Dual-sync news to DB error: ' . $e->getMessage());
+        }
+
+        // 3. บันทึกลง JSON
         if (@file_put_contents($path, json_encode(array_values($allNews), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)) !== false) {
             return $this->respond([
                 'status' => 'success',
-                'message' => 'บันทึกข่าวสารประชาสัมพันธ์เรียบร้อยแล้ว',
+                'message' => 'บันทึกข่าวสารประชาสัมพันธ์เรียบร้อยแล้ว (บันทึกทั้งระบบไฟล์และฐานข้อมูลสำรอง)',
                 'data' => $newEntry
             ]);
         }
@@ -281,17 +322,31 @@ class News extends BaseController
         $allNews = get_site_news(null, null, false);
         $newNews = [];
         $deleted = false;
+        $deletedTitle = '';
 
         foreach ($allNews as $item) {
             if (strval($item['id']) !== strval($id)) {
                 $newNews[] = $item;
             } else {
                 $deleted = true;
+                $deletedTitle = $item['title'] ?? '';
             }
         }
 
         if ($deleted) {
-            @file_put_contents($this->getNewsPath(), json_encode(array_values($newNews), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+            $path = $this->getNewsPath();
+            @file_put_contents($path, json_encode(array_values($newNews), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+
+            // ลบจาก DB ด้วยถ้ามี
+            if (!empty($deletedTitle)) {
+                try {
+                    $db = \Config\Database::connect();
+                    if ($db->tableExists('news')) {
+                        $db->table('news')->where('title', $deletedTitle)->delete();
+                    }
+                } catch (\Throwable $e) {}
+            }
+
             return $this->respond(['status' => 'success', 'message' => 'ลบรายการข่าวเรียบร้อยแล้ว']);
         }
 

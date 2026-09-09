@@ -422,7 +422,53 @@ if (!function_exists('get_site_news')) {
             if (is_array($saved)) {
                 $newsList = $saved;
             }
-        } else {
+        }
+
+        // ซิงค์กู้คืนข่าวสารจาก MySQL Database เสมอ (ป้องกันข่าวหายกรณีไฟล์ JSON ถูกอัปโหลดทับจากภายนอก)
+        try {
+            $db = \Config\Database::connect();
+            if ($db->tableExists('news')) {
+                $dbNews = $db->table('news')->orderBy('id', 'DESC')->get()->getResultArray();
+                if (!empty($dbNews)) {
+                    $existingTitles = [];
+                    foreach ($newsList as $item) {
+                        if (!empty($item['title'])) {
+                            $existingTitles[trim($item['title'])] = true;
+                        }
+                    }
+                    $needsUpdate = false;
+                    foreach ($dbNews as $row) {
+                        $t = trim($row['title'] ?? '');
+                        if (!empty($t) && !isset($existingTitles[$t])) {
+                            $imported = [
+                                'id' => 'db-' . $row['id'],
+                                'title' => $row['title'],
+                                'category' => !empty($row['category']) ? $row['category'] : 'ข่าวประชาสัมพันธ์',
+                                'summary' => mb_substr(strip_tags($row['content'] ?? ''), 0, 160, 'UTF-8') . '...',
+                                'content' => $row['content'] ?? '',
+                                'cover_image' => !empty($row['thumbnail']) ? $row['thumbnail'] : 'assets/images/slider/sane_muanglung.png',
+                                'cover_fit' => 'cover',
+                                'is_event' => false,
+                                'views' => (int)($row['views_count'] ?? 1),
+                                'created_at' => $row['created_at'] ?? date('Y-m-d H:i:s'),
+                                'updated_at' => $row['updated_at'] ?? date('Y-m-d H:i:s'),
+                                'active' => ($row['status'] ?? 'published') === 'published'
+                            ];
+                            array_unshift($newsList, $imported);
+                            $existingTitles[$t] = true;
+                            $needsUpdate = true;
+                        }
+                    }
+                    if ($needsUpdate && is_file($jsonPath) && is_writable($jsonPath)) {
+                        @file_put_contents($jsonPath, json_encode(array_values($newsList), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+                    }
+                }
+            }
+        } catch (\Throwable $e) {
+            // ป้องกันการล่มหากฐานข้อมูลยังไม่พร้อม
+        }
+
+        if (empty($newsList)) {
             // ข่าวตั้งต้นตัวอย่างสำหรับแสดงผลบนเว็บสาธารณะ
             $newsList = [
                 [
