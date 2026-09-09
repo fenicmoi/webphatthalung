@@ -2,7 +2,7 @@
     {
         "id": "menu_6a7172486e6b1",
         "title": "หน้าหลัก",
-        "url": "http:\/\/localhost\/webphatthalung\/public\/",
+        "url": "/",
         "icon": "fa-solid fa-house",
         "target": "_self",
         "children": []

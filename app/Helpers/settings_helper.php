@@ -353,12 +353,24 @@ if (!function_exists('get_site_banners')) {
 
 if (!function_exists('format_menu_url')) {
     /**
-     * แปลงลิงก์เมนูให้เป็น URL ที่ถูกต้องอัตโนมัติ (รองรับทั้ง page/slug, ลิงก์ภายนอก และ anchor)
+     * แปลงลิงก์เมนูให้เป็น URL ที่ถูกต้องอัตโนมัติ (รองรับทั้ง page/slug, ลิงก์ภายนอก, anchor และตรวจจับแปลง localhost สู่โดเมนจริง)
      */
     function format_menu_url($url)
     {
         $url = trim((string)$url);
         if (empty($url) || $url === '#') return '#';
+        if ($url === '/' || $url === './') return base_url();
+
+        // ตรวจจับและแปลง URL ที่ติด localhost จากเครื่อง Dev ให้เป็น base_url ปัจจุบันของ Hosting เสมอ
+        if (strpos($url, 'localhost') !== false || strpos($url, '127.0.0.1') !== false) {
+            $parsed = parse_url($url, PHP_URL_PATH);
+            $path = $parsed ?: '';
+            // ตัดชื่อโฟลเดอร์ local เช่น /webphatthalung/public หรือ /webphatthalung ออก
+            $path = preg_replace('#^/?(webphatthalung/)?(public/)?#i', '', $path);
+            $path = ltrim($path, '/');
+            return empty($path) ? base_url() : base_url($path);
+        }
+
         if (strpos($url, 'http://') === 0 || strpos($url, 'https://') === 0 || strpos($url, 'javascript:') === 0) {
             return $url;
         }

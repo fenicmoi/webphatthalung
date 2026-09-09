@@ -33,7 +33,7 @@ class MenuManager extends BaseController
             [
                 'id' => 'menu_' . uniqid(),
                 'title' => 'หน้าแรก',
-                'url' => base_url(),
+                'url' => '/',
                 'icon' => 'fa-solid fa-house',
                 'target' => '_self',
                 'children' => []
@@ -54,13 +54,13 @@ class MenuManager extends BaseController
                     [
                         'id' => 'sub_' . uniqid(),
                         'title' => 'ทำเนียบผู้ว่าราชการจังหวัด',
-                        'url' => base_url('governors'),
+                        'url' => 'governors',
                         'target' => '_self'
                     ],
                     [
                         'id' => 'sub_' . uniqid(),
                         'title' => 'คณะผู้บริหารจังหวัดชุดปัจจุบัน',
-                        'url' => base_url('executives'),
+                        'url' => 'executives',
                         'target' => '_self'
                     ],
                     [
@@ -72,7 +72,7 @@ class MenuManager extends BaseController
                     [
                         'id' => 'sub_' . uniqid(),
                         'title' => 'ยุทธศาสตร์และแผนพัฒนาจังหวัด',
-                        'url' => base_url('strategy'),
+                        'url' => 'strategy',
                         'target' => '_self'
                     ],
                     [
