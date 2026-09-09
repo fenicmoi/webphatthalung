@@ -19,259 +19,109 @@ $layoutMode = $cfg['layout_mode'] ?? 'hybrid_widescreen';
 <?php endif; ?>
 
 <style>
-/* ==========================================================================
-   Provincial Citizen Search Dock (Warm, Natural, Accessible & Prestigious)
-   ========================================================================== */
-.provincial-search-card {
-    background: #ffffff;
-    border-radius: 22px;
-    border: 1px solid #e2e8f0 !important;
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.06), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
-    transition: all 0.3s ease;
-}
-.provincial-search-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3.5px;
-    background: linear-gradient(90deg, #047857 0%, #10b981 35%, #d97706 70%, #047857 100%);
-}
-[data-theme="dark"] .provincial-search-card {
-    background: #1e293b;
-    border-color: #334155 !important;
-    box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.4);
-}
-[data-theme="dark"] .provincial-search-card .text-dark {
-    color: #f1f5f9 !important;
-}
-[data-theme="dark"] .provincial-search-card .text-secondary {
-    color: #94a3b8 !important;
-}
-[data-theme="dark"] .provincial-search-card input.text-dark {
-    color: #f8fafc !important;
-}
-.search-icon-badge {
-    width: 44px;
-    height: 44px;
-    border-radius: 12px;
-    background: #ecfdf5;
-    color: #047857;
-    border: 1px solid #a7f3d0;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-}
-[data-theme="dark"] .search-icon-badge {
-    background: rgba(16, 185, 129, 0.15);
-    color: #34d399;
-    border-color: rgba(16, 185, 129, 0.3);
-}
-.search-dock-input-wrap {
-    background: #f8fafc;
-    border: 1.5px solid #cbd5e1;
-    border-radius: 50px;
-    padding: 6px 8px;
-    transition: all 0.25s ease;
-}
-.search-dock-input-wrap:focus-within {
-    background: #ffffff;
-    border-color: #059669;
-    box-shadow: 0 0 0 4px rgba(5, 150, 105, 0.12);
-}
-[data-theme="dark"] .search-dock-input-wrap {
-    background: #0f172a;
-    border-color: #334155;
-}
-[data-theme="dark"] .search-dock-input-wrap:focus-within {
-    border-color: #34d399;
-    box-shadow: 0 0 0 4px rgba(52, 211, 153, 0.15);
-}
-.voice-search-btn {
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    border: 1px solid #e2e8f0;
-    background: #ffffff;
-    color: #64748b;
-    transition: all 0.2s ease;
-}
+/* Futuristic Voice Search Styling & Animations */
 .voice-search-btn:hover {
-    background: #ecfdf5;
-    color: #047857;
-    border-color: #a7f3d0;
+    background: #047857 !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
 }
 .voice-search-btn.recording {
-    background: #fee2e2 !important;
-    color: #dc2626 !important;
-    border-color: #f87171 !important;
-    animation: micGentlePulse 1.2s infinite;
+    background: #ef4444 !important;
+    color: #ffffff !important;
+    border-color: #dc2626 !important;
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+    animation: micPulse 1.2s infinite;
 }
-@keyframes micGentlePulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.08); }
+@keyframes micPulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+        transform: scale(1);
+    }
+    70% {
+        box-shadow: 0 0 0 12px rgba(239, 68, 68, 0);
+        transform: scale(1.08);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+        transform: scale(1);
+    }
 }
-.voice-listening-toast {
-    background: #0f172a;
-    color: #ffffff;
-    border-radius: 30px;
-    padding: 8px 18px;
-    border: 1px solid #334155;
-    font-size: 0.88rem;
+.voice-wave-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #10b981;
+    display: inline-block;
+    animation: waveBounce 0.8s infinite alternate ease-in-out;
 }
-.trending-tag-pill {
-    background: #f1f5f9;
-    color: #475569;
-    border: 1px solid #e2e8f0;
-    border-radius: 50px;
-    padding: 4px 12px;
-    font-size: 0.82rem;
-    font-weight: 500;
-    text-decoration: none;
-    transition: all 0.2s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-}
-.trending-tag-pill:hover {
-    background: #ecfdf5;
-    color: #047857;
-    border-color: #a7f3d0;
-    transform: translateY(-1px);
-}
-[data-theme="dark"] .trending-tag-pill {
-    background: #334155;
-    color: #cbd5e1;
-    border-color: #475569;
-}
-[data-theme="dark"] .trending-tag-pill:hover {
-    background: rgba(16, 185, 129, 0.2);
-    color: #34d399;
-    border-color: #34d399;
-}
-[data-theme="dark"] #searchResultsDropdown {
-    background: #1e293b !important;
-    border-color: #334155 !important;
-    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4) !important;
-}
-/* Quick Citizen Services Strip */
-.quick-service-pill {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 16px;
-    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    height: 100%;
-    position: relative;
-    overflow: hidden;
-}
-.quick-service-pill:hover {
-    border-color: #059669;
-    box-shadow: 0 10px 20px -4px rgba(5, 150, 105, 0.12);
-    transform: translateY(-2px);
-}
-.quick-service-icon-wrap {
-    width: 44px;
-    height: 44px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    transition: transform 0.25s ease;
-}
-.quick-service-pill:hover .quick-service-icon-wrap {
-    transform: scale(1.08);
-}
-.quick-service-title {
-    font-size: 0.95rem;
-    line-height: 1.3;
-}
-.quick-service-sub {
-    font-size: 0.76rem;
-    line-height: 1.2;
-}
-[data-theme="dark"] .quick-service-pill {
-    background: #1e293b;
-    border-color: #334155;
-    box-shadow: 0 4px 14px rgba(0,0,0,0.3);
-}
-[data-theme="dark"] .quick-service-pill:hover {
-    border-color: #34d399;
-}
-[data-theme="dark"] .quick-service-pill .text-dark {
-    color: #f1f5f9 !important;
-}
-[data-theme="dark"] .quick-service-pill .text-secondary {
-    color: #94a3b8 !important;
+@keyframes waveBounce {
+    0% { transform: scale(0.6); opacity: 0.5; }
+    100% { transform: scale(1.2); opacity: 1; background: #34d399; }
 }
 </style>
 
-<!-- 1.1 PROVINCIAL CITIZEN SEARCH DOCK (Warm, Accessible & Dignified) -->
-<section class="mb-4 position-relative z-3">
-    <div class="card border-0 p-3 p-lg-4 provincial-search-card">
+<!-- 1.1 GLOBAL SMART SEARCH DOCK (High-Visibility Prestigious Emerald Command Deck) -->
+<section class="mb-5 position-relative z-3">
+    <div class="card border-0 p-4 p-lg-4 text-white shadow-xl" 
+         style="border-radius: 26px; background: linear-gradient(135deg, #022c22 0%, #064e3b 55%, #047857 100%); border: 1px solid rgba(16, 185, 129, 0.4) !important; border-top: 3px solid #10b981 !important; box-shadow: 0 20px 45px -10px rgba(2, 44, 34, 0.45), 0 0 0 1px rgba(16, 185, 129, 0.25) !important;">
         <div class="row align-items-center g-3">
             
             <!-- Search Title & Subtitle Badge -->
             <div class="col-lg-3 text-center text-lg-start">
-                <div class="d-inline-flex align-items-center gap-3">
-                    <span class="search-icon-badge shadow-xs">
-                        <i class="fa-solid fa-magnifying-glass fs-5"></i>
+                <div class="d-inline-flex align-items-center gap-2.5">
+                    <span class="p-2.5 rounded-3 text-white d-inline-flex align-items-center justify-content-center shadow-md" style="background: rgba(255,255,255,0.15); width: 44px; height: 44px; border: 1px solid rgba(255,255,255,0.25);">
+                        <i class="fa-solid fa-wand-magic-sparkles text-warning fs-5"></i>
                     </span>
                     <div>
-                        <h5 class="fw-bold mb-0 text-dark" style="font-size: 1.12rem; letter-spacing: -0.2px;">
-                            <?= site_text('search_dock_title', 'สืบค้นข้อมูลและบริการประชาชน', 'หัวข้อระบบค้นหา') ?>
-                        </h5>
-                        <small class="text-secondary" style="font-size: 0.8rem;">
-                            <?= site_text('search_dock_subtitle', 'ศูนย์บริการข้อมูลข่าวสารและบริการภาครัฐ', 'คำโปรยระบบค้นหา') ?>
-                        </small>
+                        <h5 class="fw-bold mb-0 text-white" style="font-size: 1.15rem; letter-spacing: -0.2px;"><?= site_text('search_dock_title', 'ระบบค้นหาอัจฉริยะ', 'หัวข้อระบบค้นหา') ?></h5>
+                        <small class="text-light opacity-75" style="font-size: 0.78rem;"><?= site_text('search_dock_subtitle', 'Smart AI & Voice Search', 'คำโปรยระบบค้นหา') ?></small>
                     </div>
                 </div>
             </div>
 
             <!-- Search Input with Voice Dictation -->
             <div class="col-lg-9 position-relative">
-                <div class="search-dock-input-wrap d-flex align-items-center shadow-xs" id="mainSearchWrapper">
+                <div class="search-container d-flex align-items-center p-1.5 transition-all shadow-lg" 
+                     style="background: #ffffff; border: 2px solid #10b981; border-radius: 50px; transition: all 0.3s ease;"
+                     id="mainSearchWrapper">
                     
-                    <div class="d-flex align-items-center justify-content-center text-muted ps-2 pe-1" style="font-size: 1.05rem;">
-                        <i class="fa-solid fa-search" style="color: #059669;"></i>
+                    <div class="search-icon-wrapper d-flex align-items-center justify-content-center text-success rounded-circle ms-2" style="width: 38px; height: 38px; flex-shrink: 0; background: #ecfdf5;">
+                        <i class="fa-solid fa-search" style="color: #047857; font-size: 1.05rem;"></i>
                     </div>
                     
-                    <input type="text" id="globalSearchInput" 
-                           placeholder="<?= site_text('search_input_placeholder', 'ค้นหาข้อมูล เช่น ศูนย์ดำรงธรรม, ทะเลน้อย, แผนพัฒนาจังหวัด, e-Bidding...', 'ข้อความกล่องค้นหา', true) ?>" 
-                           class="form-control border-0 bg-transparent px-2 shadow-none text-dark"
-                           style="font-size: 0.98rem; font-weight: 500;" autocomplete="off"
+                    <input type="text" id="globalSearchInput" placeholder="<?= site_text('search_input_placeholder', 'พิมพ์หรือกดไมโครโฟนเพื่อค้นหา (เช่น e-bidding, ทะเลน้อย, ผู้ว่า)...', 'ข้อความกล่องค้นหา', true) ?>" 
+                           class="flex-grow-1 px-3"
+                           style="border: none; background: transparent; color: #0f172a; outline: none; font-size: 1.02rem; font-weight: 500;" autocomplete="off"
                            onkeydown="if(event.key === 'Enter') triggerSearchSubmit();">
                     
                     <!-- Search Spinner -->
-                    <div id="searchSpinner" class="spinner-border text-success spinner-border-sm mx-2 d-none" role="status" style="width: 1.2rem; height: 1.2rem;">
+                    <div id="searchSpinner" class="spinner-border text-success spinner-border-sm mx-2 d-none" role="status" style="width: 1.3rem; height: 1.3rem;">
                         <span class="visually-hidden">Loading...</span>
                     </div>
 
-                    <!-- Voice Search Button -->
-                    <button type="button" id="btnVoiceSearch" class="btn btn-sm d-flex align-items-center justify-content-center me-1 voice-search-btn" 
-                            title="ค้นหาด้วยเสียงพูด (Voice Search)" 
-                            onclick="toggleVoiceSearch()">
-                        <i class="fa-solid fa-microphone" id="voiceMicIcon" style="font-size: 0.95rem;"></i>
+                    <!-- Voice Search Button (Futuristic Voice AI) -->
+                    <button type="button" id="btnVoiceSearch" class="btn btn-sm rounded-circle d-flex align-items-center justify-content-center me-1 voice-search-btn shadow-xs" 
+                            title="พิมพ์ค้นหาด้วยเสียงพูด (Voice Search)" 
+                            onclick="toggleVoiceSearch()" 
+                            style="width: 42px; height: 42px; border: 1.5px solid rgba(16, 185, 129, 0.4); background: #ecfdf5; color: #047857; transition: all 0.25s ease;">
+                        <i class="fa-solid fa-microphone" id="voiceMicIcon" style="font-size: 1.05rem;"></i>
                     </button>
                     
                     <!-- Submit / Search Button -->
-                    <button type="button" class="btn rounded-pill px-4 py-2 me-1 fw-bold text-white shadow-xs transition-all hover-scale" 
-                            style="background: linear-gradient(135deg, #059669 0%, #047857 100%); border: none; white-space: nowrap; font-size: 0.95rem;" 
+                    <button type="button" class="btn rounded-pill px-4 py-2 me-1 fw-bold text-white shadow-sm transition-all hover-scale" 
+                            style="background: linear-gradient(135deg, #059669 0%, #047857 100%); border: none; white-space: nowrap; font-size: 0.98rem;" 
                             onclick="triggerSearchSubmit()">
-                        <i class="fa-solid fa-magnifying-glass me-1 opacity-75"></i>
                         <span>ค้นหา</span>
                     </button>
                 </div>
 
                 <!-- Voice Listening Status Bar (Pop-down feedback) -->
-                <div id="voiceListeningBar" class="d-none align-items-center justify-content-between px-3 py-2 mt-2 voice-listening-toast shadow-md">
+                <div id="voiceListeningBar" class="d-none align-items-center justify-content-between px-3 py-2 mt-2 rounded-pill shadow-lg" style="background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); color: #ffffff; border: 1.5px solid #10b981; font-size: 0.88rem;">
                     <div class="d-flex align-items-center gap-2">
-                        <span class="spinner-grow spinner-grow-sm text-warning" role="status" aria-hidden="true"></span>
-                        <span id="voiceListeningStatusText" class="ms-1 fw-medium text-warning">กำลังรับฟังเสียงของคุณ (พูดคำที่ต้องการค้นหา)...</span>
+                        <span class="voice-wave-dot"></span>
+                        <span class="voice-wave-dot" style="animation-delay: 0.2s;"></span>
+                        <span class="voice-wave-dot" style="animation-delay: 0.4s;"></span>
+                        <span id="voiceListeningStatusText" class="ms-1 fw-semibold text-warning">กำลังฟังเสียงของคุณ (พูดคำที่ต้องการค้นหา)...</span>
                     </div>
                     <button type="button" class="btn btn-xs btn-outline-light rounded-pill px-2.5 py-0.5" style="font-size: 0.75rem;" onclick="stopVoiceSearch()">ยกเลิก</button>
                 </div>
@@ -281,85 +131,27 @@ $layoutMode = $cfg['layout_mode'] ?? 'hybrid_widescreen';
                 $trendingKeywords = function_exists('get_trending_keywords') ? get_trending_keywords(6) : [];
                 if (!empty($trendingKeywords)): 
                 ?>
-                    <div class="d-flex flex-wrap align-items-center gap-2 mt-2 pt-2">
-                        <span class="text-secondary small fw-medium" style="font-size: 0.8rem;">
-                            <i class="fa-solid fa-fire text-amber-500 me-1" style="color: #d97706;"></i> บริการยอดนิยม:
+                    <div class="d-flex flex-wrap align-items-center gap-2 mt-2.5 pt-2 border-top" style="border-color: rgba(255,255,255,0.12) !important;">
+                        <span class="text-light opacity-75 small fw-semibold" style="font-size: 0.8rem;">
+                            <i class="fa-solid fa-fire text-warning me-1"></i> คำค้นหายอดนิยม:
                         </span>
                         <?php foreach ($trendingKeywords as $item): 
                             $kw = is_array($item) ? ($item['keyword'] ?? '') : $item;
-                            $icon = is_array($item) ? ($item['icon'] ?? '') : '';
+                            $icon = is_array($item) ? ($item['icon'] ?? '🔥') : '🔥';
                             if (empty($kw)) continue;
                         ?>
-                            <a href="javascript:void(0)" onclick="quickSearchTag('<?= esc($kw) ?>')" class="trending-tag-pill shadow-xs">
-                                <?php if (!empty($icon)): ?><span><?= $icon ?></span><?php endif; ?>
-                                <span><?= esc($kw) ?></span>
+                            <a href="javascript:void(0)" onclick="quickSearchTag('<?= esc($kw) ?>')" class="badge rounded-pill px-2.5 py-1 text-decoration-none shadow-xs hover-scale" style="background: rgba(255,255,255,0.15); color: #ffffff; border: 1px solid rgba(255,255,255,0.25); font-size: 0.78rem; transition: all 0.2s;">
+                                <span><?= $icon ?></span> <?= esc($kw) ?>
                             </a>
                         <?php endforeach; ?>
                     </div>
                 <?php endif; ?>
                 
                 <!-- Search Results Dropdown -->
-                <div id="searchResultsDropdown" class="dropdown-menu w-100 mt-2 p-0 border-0" style="border-radius: 16px; max-height: 450px; overflow-y: auto; display: none; position: absolute; z-index: 1050; background: #ffffff; box-shadow: 0 16px 40px rgba(15, 23, 42, 0.12); border: 1px solid #e2e8f0 !important;">
+                <div id="searchResultsDropdown" class="dropdown-menu w-100 mt-2 p-0 border-0" style="border-radius: 18px; max-height: 450px; overflow-y: auto; display: none; position: absolute; z-index: 1050; background: #ffffff; box-shadow: 0 20px 45px rgba(0,0,0,0.25); border: 2px solid rgba(16, 185, 129, 0.4) !important;">
                     <!-- Results will be injected here via JS -->
                 </div>
             </div>
-        </div>
-    </div>
-</section>
-
-<!-- 1.1.5 QUICK CITIZEN ACCESS SERVICES (4 ทางลัดบริการด่วนประชาชน) -->
-<section class="mb-4">
-    <div class="row g-2 g-md-3">
-        <!-- 1. ยื่นเรื่องศูนย์ดำรงธรรม -->
-        <div class="col-6 col-lg-3">
-            <a href="<?= base_url('contact') ?>" class="quick-service-pill text-decoration-none d-flex align-items-center p-2.5 p-lg-3">
-                <div class="quick-service-icon-wrap me-2.5" style="background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0;">
-                    <i class="fa-solid fa-scale-balanced fs-5"></i>
-                </div>
-                <div class="overflow-hidden">
-                    <span class="d-block fw-bold text-dark quick-service-title">ศูนย์ดำรงธรรม</span>
-                    <small class="text-secondary d-none d-sm-block text-truncate quick-service-sub">ยื่นเรื่องร้องทุกข์ 24 ชม.</small>
-                </div>
-            </a>
-        </div>
-
-        <!-- 2. ตรวจสอบสถานะคำร้อง -->
-        <div class="col-6 col-lg-3">
-            <a href="<?= base_url('contact#tracking') ?>" class="quick-service-pill text-decoration-none d-flex align-items-center p-2.5 p-lg-3">
-                <div class="quick-service-icon-wrap me-2.5" style="background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe;">
-                    <i class="fa-solid fa-clock-rotate-left fs-5"></i>
-                </div>
-                <div class="overflow-hidden">
-                    <span class="d-block fw-bold text-dark quick-service-title">ติดตามคำร้อง</span>
-                    <small class="text-secondary d-none d-sm-block text-truncate quick-service-sub">ตรวจสอบรหัสติดตาม</small>
-                </div>
-            </a>
-        </div>
-
-        <!-- 3. คลังดาวน์โหลดแบบฟอร์ม -->
-        <div class="col-6 col-lg-3">
-            <a href="<?= base_url('documents') ?>" class="quick-service-pill text-decoration-none d-flex align-items-center p-2.5 p-lg-3">
-                <div class="quick-service-icon-wrap me-2.5" style="background: #fffbeb; color: #b45309; border: 1px solid #fde68a;">
-                    <i class="fa-solid fa-file-arrow-down fs-5"></i>
-                </div>
-                <div class="overflow-hidden">
-                    <span class="d-block fw-bold text-dark quick-service-title">แบบฟอร์มราชการ</span>
-                    <small class="text-secondary d-none d-sm-block text-truncate quick-service-sub">คลังเอกสารประชาชน</small>
-                </div>
-            </a>
-        </div>
-
-        <!-- 4. ประกาศจัดซื้อจัดจ้างภาครัฐ (e-Bidding) -->
-        <div class="col-6 col-lg-3">
-            <a href="<?= base_url('procurement') ?>" class="quick-service-pill text-decoration-none d-flex align-items-center p-2.5 p-lg-3">
-                <div class="quick-service-icon-wrap me-2.5" style="background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0;">
-                    <i class="fa-solid fa-file-invoice-dollar fs-5"></i>
-                </div>
-                <div class="overflow-hidden">
-                    <span class="d-block fw-bold text-dark quick-service-title">จัดซื้อจัดจ้าง</span>
-                    <small class="text-secondary d-none d-sm-block text-truncate quick-service-sub">ประกาศ e-GP ภาครัฐ</small>
-                </div>
-            </a>
         </div>
     </div>
 </section>

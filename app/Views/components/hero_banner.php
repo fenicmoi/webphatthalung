@@ -14,33 +14,9 @@ $showWeather = (!isset($bannerCfg['show_weather']) || $bannerCfg['show_weather']
 $showGiahs = (!isset($bannerCfg['show_giahs']) || $bannerCfg['show_giahs'] != '0');
 ?>
 
-<style>
-/* Adaptive Responsive Banner Height for 19-inch & Standard Screens */
-#smartCityCarousel, 
-#smartCityCarousel .carousel-item,
-#smartCityCarousel .smart-slide-item {
-    height: clamp(340px, 42vh, 440px) !important;
-    min-height: 340px !important;
-}
-@media (min-width: 1600px) and (min-height: 960px) {
-    #smartCityCarousel, 
-    #smartCityCarousel .carousel-item,
-    #smartCityCarousel .smart-slide-item {
-        height: <?= $bannerHeight ?>px !important;
-    }
-}
-@media (max-width: 768px) {
-    #smartCityCarousel, 
-    #smartCityCarousel .carousel-item,
-    #smartCityCarousel .smart-slide-item {
-        height: 360px !important;
-    }
-}
-</style>
-
 <!-- WIDESCREEN HYBRID & KINETIC HERO BANNER COMPONENT -->
 <section id="smartCityCarousel" class="carousel slide smart-slider-box <?= $isWidescreen ? 'mode-widescreen' : 'mode-boxed' ?>" data-bs-ride="carousel" data-bs-interval="<?= $intervalMs ?>" 
-         style="<?= !$isWidescreen ? 'border-radius: var(--radius-lg) !important; width: 100% !important; border: 1px solid var(--glass-border) !important; margin-bottom: 2rem !important; box-shadow: 0 20px 45px rgba(0,0,0,0.25);' : 'width: 100% !important; border-radius: 0 !important; margin-bottom: 0 !important; border: none !important; border-bottom: 3px solid #6fd3c6 !important; box-shadow: 0 25px 55px rgba(0,0,0,0.35);' ?>">
+         style="height: <?= $bannerHeight ?>px !important; <?= !$isWidescreen ? 'border-radius: var(--radius-lg) !important; width: 100% !important; border: 1px solid var(--glass-border) !important; margin-bottom: 2rem !important; box-shadow: 0 20px 45px rgba(0,0,0,0.25);' : 'width: 100% !important; border-radius: 0 !important; margin-bottom: 0 !important; border: none !important; border-bottom: 3px solid #6fd3c6 !important; box-shadow: 0 25px 55px rgba(0,0,0,0.35);' ?>">
     
     <!-- Carousel Indicators -->
     <div class="carousel-indicators" style="z-index: 20; margin-bottom: 1.2rem;">
