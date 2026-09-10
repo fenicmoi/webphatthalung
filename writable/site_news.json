@@ -1,1 +1,39 @@
-[]
+[
+    {
+        "id": 2,
+        "title": "test23",
+        "category": "ประกาศจัดซื้อจัดจ้าง (e-GP)",
+        "summary": "test23",
+        "content": "<p>test23<\/p>",
+        "cover_image": "uploads\/news\/news_1788944707_8655.jpg",
+        "cover_fit": "cover",
+        "is_event": false,
+        "event_start_date": "",
+        "event_end_date": "",
+        "event_location": "",
+        "event_coordinates": "",
+        "images_gallery": [
+            "uploads\/news\/news_1788944707_8655.jpg"
+        ],
+        "attachments": [],
+        "views": 1,
+        "created_at": "2026-09-09 09:05:12",
+        "updated_at": "2026-09-09 09:05:12",
+        "active": true
+    },
+    {
+        "id": "1",
+        "title": "asdfasdf",
+        "slug": "asdfasdf",
+        "category": "ประกาศจัดซื้อจัดจ้าง (e-GP)",
+        "summary": "asdfasdfasdfasdf...",
+        "content": "<p>asdfasdfasdfasdf<\/p>",
+        "cover_image": "uploads\/news\/news_1788939042_1258.jpg",
+        "cover_fit": "cover",
+        "is_event": false,
+        "views": 1,
+        "created_at": "2026-09-09 07:30:45",
+        "updated_at": "2026-09-09 07:30:45",
+        "active": true
+    }
+]

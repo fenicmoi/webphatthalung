@@ -1,68 +1,20 @@
 [
     {
-        "id": "gal_1",
-        "db_id": "1",
-        "title": "งานประเพณีแข่งโพนและลากพระ จังหวัดพัทลุง ประจำปี 2569 ยกระดับมรดกวัฒนธรรมท้องถิ่นสู่สายตาสากล",
-        "category": "ประเพณีและวัฒนธรรม",
-        "date": "2026-08-25 03:31:17",
-        "views": 0,
-        "cover_image": "https:\/\/images.unsplash.com\/photo-1542273917363-3b1817f69a2d?auto=format&fit=crop&w=900&q=80",
-        "photos": [],
-        "active": true
-    },
-    {
-        "id": "gal_2",
-        "db_id": "2",
-        "title": "ผู้ว่าราชการจังหวัดนำทีมลงพื้นที่ตรวจเยี่ยม ยกระดับทะเลน้อยสู่พื้นที่ชุ่มน้ำ (Ramsar Site) เพื่ออนุรักษ์ควายน้ำมรดกเกษตรโลก",
-        "category": "ประเพณีและวัฒนธรรม",
-        "date": "2026-08-25 03:31:17",
-        "views": 0,
-        "cover_image": "https:\/\/images.unsplash.com\/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=900&q=80",
-        "photos": [],
-        "active": true
-    },
-    {
-        "id": "gal_3",
-        "db_id": "3",
-        "title": "กิจกรรมจิตอาสาทำความดีด้วยหัวใจ พัฒนาสิ่งแวดล้อมและปรับภูมิทัศน์ลำน้ำสายหลัก รอบเขาอกทะลุ",
-        "category": "ประเพณีและวัฒนธรรม",
-        "date": "2026-08-25 03:31:17",
+        "id": "gal_6aa1246ac864b",
+        "title": "ตลาดนัด",
+        "category": "ภารกิจผู้บริหารและจังหวัด",
+        "date": "2026-09-09",
         "views": 1,
-        "cover_image": "https:\/\/images.unsplash.com\/photo-1511632765486-a01980e01a18?auto=format&fit=crop&w=900&q=80",
-        "photos": [],
-        "active": true
-    },
-    {
-        "id": "gal_4",
-        "db_id": "4",
-        "title": "งานส่งเสริมเศรษฐกิจการท่องเที่ยวเชิงนิเวศและสินค้า OTOP ปักษ์ใต้ ยุคดิจิทัล 5.0",
-        "category": "ประเพณีและวัฒนธรรม",
-        "date": "2026-08-25 03:31:17",
-        "views": 0,
-        "cover_image": "https:\/\/images.unsplash.com\/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=900&q=80",
-        "photos": [],
-        "active": true
-    },
-    {
-        "id": "gal_5",
-        "db_id": "5",
-        "title": "โครงการอบรมยกระดับเยาวชนและนักศึกษาจังหวัดพัทลุงสู่วิศวกรรมปัญญาประดิษฐ์ (AI) และทักษะดิจิทัลร่วมสมัย",
-        "category": "ประเพณีและวัฒนธรรม",
-        "date": "2026-08-25 03:31:17",
-        "views": 0,
-        "cover_image": "https:\/\/images.unsplash.com\/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=900&q=80",
-        "photos": [],
-        "active": true
-    },
-    {
-        "id": "gal_6",
-        "db_id": "6",
-        "title": "งานแถลงข่าวความพร้อมการจัดการแข่งขันกีฬากลุ่มภาคใต้และส่งเสริมการออกกำลังกายสู่เมืองสุขภาพดี (Healthy City)",
-        "category": "ประเพณีและวัฒนธรรม",
-        "date": "2026-08-25 03:31:17",
-        "views": 0,
-        "cover_image": "https:\/\/images.unsplash.com\/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=900&q=80",
-        "photos": [],
+        "cover_image": "uploads\/gallery\/cover_1788945514_1788945514_67a01bfbdaa6da5d6e4f.jpg",
+        "photos": [
+            "uploads\/gallery\/img_6aa1246aca413_1788945514_1f074f1273b74a321473.jpg",
+            "uploads\/gallery\/img_6aa1246aca9a8_1788945514_0a2b88f1767e9ac679db.jpg",
+            "uploads\/gallery\/img_6aa1246acaf3c_1788945514_f1f5350851f54f7c05c5.jpg",
+            "uploads\/gallery\/img_6aa1246acb567_1788945514_f298bb45e9ce2b9c774b.jpg",
+            "uploads\/gallery\/img_6aa1246acbb79_1788945514_e187f87b8082c7cd5344.jpg",
+            "uploads\/gallery\/img_6aa1246acc1c5_1788945514_e2ed91e8f847476f566c.jpeg",
+            "uploads\/gallery\/img_6aa1246acc728_1788945514_592dc5d83a668108234e.jpeg"
+        ],
         "active": true
     }
 ]
