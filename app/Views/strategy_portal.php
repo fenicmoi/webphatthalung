@@ -216,7 +216,10 @@ $isOfficer = $isOfficer ?? false;
 
                 <div class="col-lg-4 text-center d-none d-lg-block">
                     <div class="p-4 rounded-circle bg-white bg-opacity-10 border border-white border-opacity-20 shadow-lg d-inline-flex align-items-center justify-content-center" style="width: 240px; height: 240px; backdrop-filter: blur(10px);">
-                        <img src="<?= base_url('uploads/logo/logo_1787048018.png') ?>" alt="ตราประจำจังหวัดพัทลุง" class="img-fluid" style="max-height: 180px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));">
+                        <picture>
+                            <source srcset="<?= base_url('uploads/logo/logo_1787048018.webp') ?>" type="image/webp">
+                            <img src="<?= base_url('uploads/logo/logo_1787048018.png') ?>" alt="ตราประจำจังหวัดพัทลุง" class="img-fluid" style="max-height: 180px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));" width="180" height="180" loading="lazy" decoding="async">
+                        </picture>
                     </div>
                     <div class="mt-3 text-white text-opacity-90 fw-bold fs-6">
                         จังหวัดพัทลุง • Phatthalung Province

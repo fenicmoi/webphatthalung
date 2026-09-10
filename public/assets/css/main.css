@@ -1260,6 +1260,19 @@ body {
     background-position: center center !important;
     animation: kenburnsBreathe 16s ease-in-out infinite alternate;
     z-index: 1;
+    overflow: hidden;
+}
+.kenburns-bg picture,
+.kenburns-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+    pointer-events: none;
 }
 @keyframes kenburnsBreathe {
     0% { transform: scale(1.0) translate3d(0, 0, 0); }

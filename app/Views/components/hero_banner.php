@@ -31,14 +31,29 @@ $showGiahs = (!isset($bannerCfg['show_giahs']) || $bannerCfg['show_giahs'] != '0
             $isActive = ($idx === 0) ? 'active' : '';
             $styleClass = $slide['style_class'] ?? 'slide-bg-sane-muanglung';
             $bgType = $slide['bg_type'] ?? 'image';
-            $imgPath = !empty($slide['image_path']) ? base_url($slide['image_path']) : '';
+            $slideImgRaw = !empty($slide['image_path']) ? $slide['image_path'] : '';
+            $bgSources = !empty($slideImgRaw) && function_exists('get_image_sources') ? get_image_sources($slideImgRaw) : null;
+            $imgPath = $bgSources ? $bgSources['original_url'] : (!empty($slideImgRaw) ? base_url($slideImgRaw) : '');
             $badgeSubtitle = !empty($slide['subtitle']) ? $slide['subtitle'] : site_text('hero_badge_default', 'อัญมณีแห่งภาคใต้ • มรดกเกษตรโลก GIAHS', 'ข้อความ Badge แบนเนอร์');
         ?>
         <div class="carousel-item <?= $isActive ?> smart-slide-item <?= $styleClass ?> h-100" style="height: <?= $bannerHeight ?>px !important;">
             
-            <!-- Background Image Layer -->
+            <!-- Background Image Layer (LCP Optimized) -->
             <?php if (!empty($imgPath)): ?>
-                <div class="kenburns-bg" style="background-image: url('<?= $imgPath ?>');"></div>
+                <div class="kenburns-bg">
+                    <picture>
+                        <?php if (!empty($bgSources['webp_url'])): ?>
+                            <source srcset="<?= $bgSources['webp_url'] ?>" type="image/webp">
+                        <?php endif; ?>
+                        <img src="<?= $imgPath ?>" 
+                             alt="<?= htmlspecialchars($slide['title'] ?? 'แบนเนอร์จังหวัดพัทลุง') ?>" 
+                             class="kenburns-img"
+                             <?= ($idx === 0) ? 'fetchpriority="high" loading="eager"' : 'loading="lazy"' ?>
+                             decoding="async"
+                             width="1920"
+                             height="<?= $bannerHeight ?>">
+                    </picture>
+                </div>
                 <div class="cinematic-vignette"></div>
             <?php else: ?>
                 <div class="slide-geo-left"></div>
@@ -54,9 +69,22 @@ $showGiahs = (!isset($bannerCfg['show_giahs']) || $bannerCfg['show_giahs'] != '0
                 if ($fPos === 'right_center') $posCss = "right: 8%; top: 50%; transform: translateY(-50%);";
                 elseif ($fPos === 'top_center') $posCss = "left: 50%; top: 18%; transform: translateX(-50%);";
                 elseif ($fPos === 'bottom_left') $posCss = "left: 6%; bottom: 8%;";
+                
+                $floatSources = function_exists('get_image_sources') ? get_image_sources($slide['floating_img_path']) : null;
+                $floatOrig = $floatSources ? $floatSources['original_url'] : base_url($slide['floating_img_path']);
             ?>
                 <div class="position-absolute d-none d-md-block" style="<?= $posCss ?> z-index: 12; pointer-events: none; max-width: 420px;">
-                    <img src="<?= base_url($slide['floating_img_path']) ?>" alt="Floating Layer" class="img-fluid" style="max-height: 380px; filter: drop-shadow(0 20px 35px rgba(0, 0, 0, 0.45));">
+                    <picture>
+                        <?php if (!empty($floatSources['webp_url'])): ?>
+                            <source srcset="<?= $floatSources['webp_url'] ?>" type="image/webp">
+                        <?php endif; ?>
+                        <img src="<?= $floatOrig ?>" 
+                             alt="Floating Graphic Layer" 
+                             class="img-fluid" 
+                             <?= ($idx === 0) ? 'fetchpriority="high" loading="eager"' : 'loading="lazy"' ?>
+                             decoding="async"
+                             style="max-height: 380px; filter: drop-shadow(0 20px 35px rgba(0, 0, 0, 0.45));">
+                    </picture>
                 </div>
             <?php endif; ?>
 

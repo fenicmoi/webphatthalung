@@ -102,7 +102,16 @@ class Settings extends BaseController
             }
             $newFileName = 'logo_' . time() . '.' . $logoFile->getExtension();
             $logoFile->move($uploadDir, $newFileName);
-            $newSettings['site_logo'] = 'uploads/logo/' . $newFileName;
+            $logoRel = 'uploads/logo/' . $newFileName;
+
+            // Auto-optimize to modern WebP format for fast LCP & small payload
+            if (function_exists('convert_to_webp_if_missing')) {
+                $webpLogo = convert_to_webp_if_missing($logoRel, 90, null);
+                if (!empty($webpLogo)) {
+                    $logoRel = $webpLogo;
+                }
+            }
+            $newSettings['site_logo'] = $logoRel;
         } elseif ($this->request->getPost('remove_logo') === '1') {
             $newSettings['site_logo'] = '';
         } elseif (!isset($newSettings['site_logo'])) {

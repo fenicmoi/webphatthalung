@@ -31,6 +31,16 @@
     <!-- Custom Modern Stylesheet -->
     <link rel="stylesheet" href="<?= base_url('assets/css/main.css?v=' . time()) ?>">
     
+    <?php 
+    $firstHero = function_exists('get_first_hero_image') ? get_first_hero_image() : null;
+    if ($firstHero): 
+        $preloadUrl = !empty($firstHero['webp_url']) ? $firstHero['webp_url'] : $firstHero['original_url'];
+        $preloadType = !empty($firstHero['webp_url']) ? 'image/webp' : 'image/jpeg';
+    ?>
+    <!-- Preload Hero LCP Image -->
+    <link rel="preload" as="image" href="<?= $preloadUrl ?>" type="<?= $preloadType ?>" fetchpriority="high">
+    <?php endif; ?>
+    
     <?php if (!empty($siteConfig['theme_accent'])): ?>
     <style>
         :root {
@@ -74,9 +84,18 @@
                 <div class="gov-brand-bar d-flex align-items-center justify-content-between">
                     <a href="<?= base_url() ?>" class="gov-brand-ribbon">
                         <div class="gov-logo-circle">
-                            <?php $siteLogo = function_exists('get_site_logo') ? get_site_logo() : ''; ?>
+                            <?php 
+                            $siteLogo = function_exists('get_site_logo') ? get_site_logo() : ''; 
+                            $rawLogoSetting = get_site_settings('site_logo');
+                            $logoSources = !empty($rawLogoSetting) && function_exists('get_image_sources') ? get_image_sources($rawLogoSetting) : null;
+                            ?>
                             <?php if (!empty($siteLogo)): ?>
-                                <img src="<?= htmlspecialchars($siteLogo) ?>" alt="Logo" class="gov-logo-img">
+                                <picture>
+                                    <?php if (!empty($logoSources['webp_url'])): ?>
+                                        <source srcset="<?= $logoSources['webp_url'] ?>" type="image/webp">
+                                    <?php endif; ?>
+                                    <img src="<?= htmlspecialchars($siteLogo) ?>" alt="ตราประจำจังหวัดพัทลุง" class="gov-logo-img" width="40" height="40" fetchpriority="high" decoding="async">
+                                </picture>
                             <?php else: ?>
                                 <i class="fa-solid fa-building-columns text-primary" style="font-size: 1.5rem;"></i>
                             <?php endif; ?>

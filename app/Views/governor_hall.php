@@ -193,7 +193,10 @@ $isOfficer    = $isOfficer ?? (bool)session()->get('isLoggedIn');
             <div class="col-lg-4 text-center d-none d-lg-block">
                 <div class="position-relative d-inline-block">
                     <div class="p-4 rounded-circle bg-white bg-opacity-10 border border-white border-opacity-20 shadow-lg" style="width: 220px; height: 220px; backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center;">
-                        <img src="<?= base_url('uploads/logo/logo_1787048018.png') ?>" alt="ตราประจำจังหวัดพัทลุง" class="img-fluid" style="max-height: 160px; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.4));">
+                        <picture>
+                            <source srcset="<?= base_url('uploads/logo/logo_1787048018.webp') ?>" type="image/webp">
+                            <img src="<?= base_url('uploads/logo/logo_1787048018.png') ?>" alt="ตราประจำจังหวัดพัทลุง" class="img-fluid" style="max-height: 160px; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.4));" width="160" height="160" loading="lazy" decoding="async">
+                        </picture>
                     </div>
                 </div>
             </div>

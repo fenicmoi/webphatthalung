@@ -99,20 +99,156 @@ if (!function_exists('thai_date')) {
     }
 }
 
+if (!function_exists('convert_to_webp_if_missing')) {
+    /**
+     * แปลงไฟล์ภาพต้นฉบับให้เป็น WebP อัตโนมัติ (หากยังไม่มี) เพื่อเร่งความเร็ว LCP
+     */
+    function convert_to_webp_if_missing($relativePath, $quality = 82, $maxDim = 1920)
+    {
+        if (empty($relativePath)) return null;
+        
+        // หากเป็น WebP อยู่แล้ว
+        if (str_ends_with(strtolower($relativePath), '.webp')) {
+            return $relativePath;
+        }
+
+        $fcPath = defined('FCPATH') ? rtrim(FCPATH, '/\\') : realpath(__DIR__ . '/../../public');
+        $cleanRel = ltrim($relativePath, '/\\');
+        $fullPath = $fcPath . DIRECTORY_SEPARATOR . str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $cleanRel);
+
+        if (!is_file($fullPath)) {
+            return null;
+        }
+
+        $pathInfo = pathinfo($cleanRel);
+        $webpRel = ($pathInfo['dirname'] !== '.' ? $pathInfo['dirname'] . '/' : '') . $pathInfo['filename'] . '.webp';
+        $fullWebp = $fcPath . DIRECTORY_SEPARATOR . str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $webpRel);
+
+        if (is_file($fullWebp)) {
+            return $webpRel;
+        }
+
+        if (!function_exists('imagewebp')) {
+            return null;
+        }
+
+        $imgInfo = @getimagesize($fullPath);
+        if (!$imgInfo) return null;
+
+        $mime = $imgInfo['mime'];
+        $srcImg = null;
+        if ($mime === 'image/jpeg') {
+            $srcImg = @imagecreatefromjpeg($fullPath);
+        } elseif ($mime === 'image/png') {
+            $srcImg = @imagecreatefrompng($fullPath);
+            if ($srcImg) {
+                imagealphablending($srcImg, false);
+                imagesavealpha($srcImg, true);
+            }
+        }
+
+        if (!$srcImg) return null;
+
+        $w = $imgInfo[0];
+        $h = $imgInfo[1];
+        if ($maxDim && ($w > $maxDim || $h > $maxDim)) {
+            if ($w > $h) {
+                $newW = $maxDim;
+                $newH = (int)round($h * ($maxDim / $w));
+            } else {
+                $newH = $maxDim;
+                $newW = (int)round($w * ($maxDim / $h));
+            }
+            $resized = imagecreatetruecolor($newW, $newH);
+            if ($mime === 'image/png') {
+                imagealphablending($resized, false);
+                imagesavealpha($resized, true);
+                $transparent = imagecolorallocatealpha($resized, 255, 255, 255, 127);
+                imagefilledrectangle($resized, 0, 0, $newW, $newH, $transparent);
+            }
+            imagecopyresampled($resized, $srcImg, 0, 0, 0, 0, $newW, $newH, $w, $h);
+            imagedestroy($srcImg);
+            $srcImg = $resized;
+        }
+
+        @imagewebp($srcImg, $fullWebp, $quality);
+        imagedestroy($srcImg);
+
+        return is_file($fullWebp) ? $webpRel : null;
+    }
+}
+
+if (!function_exists('get_image_sources')) {
+    /**
+     * คืนค่า URL ภาพทั้งแบบ WebP และ Original สำหรับใช้กับแท็ก <picture>
+     */
+    function get_image_sources($relativePath)
+    {
+        if (empty($relativePath)) return null;
+        if (strpos($relativePath, 'http://') === 0 || strpos($relativePath, 'https://') === 0 || strpos($relativePath, 'data:image') === 0) {
+            return [
+                'original_url' => $relativePath,
+                'webp_url'     => null,
+                'has_webp'     => false
+            ];
+        }
+
+        $cleanRel = ltrim($relativePath, '/\\');
+        $webpRel = convert_to_webp_if_missing($cleanRel);
+
+        return [
+            'original_url' => base_url($cleanRel),
+            'webp_url'     => $webpRel ? base_url($webpRel) : null,
+            'has_webp'     => !empty($webpRel)
+        ];
+    }
+}
+
 if (!function_exists('get_site_logo')) {
     /**
-     * ดึง URL ของโลโก้หน่วยงาน (หากมีอัปโหลดหรือตั้งค่าไว้)
+     * ดึง URL ของโลโก้หน่วยงาน (หากมีอัปโหลดหรือตั้งค่าไว้) พร้อมตรวจหาเวอร์ชัน WebP อัตโนมัติ
      */
-    function get_site_logo()
+    function get_site_logo($preferWebp = false)
     {
         $logo = get_site_settings('site_logo');
         if (!empty($logo)) {
             if (strpos($logo, 'http://') === 0 || strpos($logo, 'https://') === 0 || strpos($logo, 'data:image') === 0) {
                 return $logo;
             }
-            return base_url(ltrim($logo, '/\\'));
+            $cleanRel = ltrim($logo, '/\\');
+            if ($preferWebp) {
+                $webpRel = convert_to_webp_if_missing($cleanRel, 90, null);
+                if ($webpRel) {
+                    return base_url($webpRel);
+                }
+            }
+            return base_url($cleanRel);
         }
         return null;
+    }
+}
+
+if (!function_exists('get_first_hero_image')) {
+    /**
+     * ดึงข้อมูลภาพแรกของ Hero Slider สำหรับทำ Preload ใน <head> เพื่อเร่งค่า LCP
+     */
+    function get_first_hero_image()
+    {
+        $bannerCfg = function_exists('get_banner_settings') ? get_banner_settings() : [];
+        if (isset($bannerCfg['show_banner']) && ($bannerCfg['show_banner'] === '0' || $bannerCfg['show_banner'] === false)) {
+            return null;
+        }
+
+        $banners = function_exists('get_site_banners') ? get_site_banners() : [];
+        if (empty($banners)) return null;
+
+        $first = $banners[0] ?? null;
+        if (!$first) return null;
+
+        $imgPath = !empty($first['image_path']) ? $first['image_path'] : null;
+        if (!$imgPath) return null;
+
+        return get_image_sources($imgPath);
     }
 }
 

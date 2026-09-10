@@ -173,11 +173,19 @@ class BannerManager extends BaseController
         $file->move($uploadDir, $newName);
         $relativePath = 'uploads/slider/' . $newName;
 
+        // Auto-optimize to modern WebP format for fast LCP
+        if (function_exists('convert_to_webp_if_missing')) {
+            $webpRel = convert_to_webp_if_missing($relativePath, 82, 1920);
+            if (!empty($webpRel)) {
+                $relativePath = $webpRel;
+            }
+        }
+
         return $this->respond([
             'status' => 'success',
             'path'   => $relativePath,
             'url'    => base_url($relativePath),
-            'message' => 'อัปโหลดรูปภาพสไลด์สำเร็จ!'
+            'message' => 'อัปโหลดและปรับแต่งรูปภาพความเร็วสูง (WebP) สำเร็จ!'
         ], 200);
     }
 
