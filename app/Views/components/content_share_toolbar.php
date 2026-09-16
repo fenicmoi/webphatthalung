@@ -8,47 +8,61 @@ $shareUrl = function_exists('current_url') ? current_url() : (isset($_SERVER['RE
 
 <div class="content-toolbar-box d-flex align-items-center flex-wrap gap-2">
     
-    <!-- 1. Left: Social Sharing Buttons -->
-    <div class="d-flex align-items-center flex-wrap gap-1">
-        <span class="small fw-semibold text-secondary me-1 d-none d-sm-inline" style="font-size: 0.8rem;">
-            <i class="fa-solid fa-share-nodes text-primary me-1"></i> แชร์:
+    <!-- 1. Left: Social Sharing Buttons (0 Third-Party Blocking / Inline SVG) -->
+    <div class="d-flex align-items-center flex-wrap gap-1.5">
+        <span class="fw-medium text-secondary me-1 d-none d-sm-inline" style="font-family: 'Prompt', sans-serif; font-size: 0.86rem;">
+            <i class="fa-solid fa-share-nodes text-success me-1"></i> แชร์:
         </span>
         
-        <!-- Facebook Share -->
-        <a href="https://www.facebook.com/sharer/sharer.php?u=<?= urlencode($shareUrl) ?>" 
-           target="_blank" rel="noopener noreferrer"
-           class="btn btn-sm btn-social-share btn-facebook" 
-           title="แชร์ไปยัง Facebook">
-            <i class="fa-brands fa-facebook-f"></i>
-        </a>
+        <!-- Native Smart Share (Visible on mobile/devices supporting Web Share API) -->
+        <button type="button" 
+                class="btn btn-sm btn-social-share btn-smart-share d-none" 
+                id="btnNativeShare"
+                onclick="triggerNativeShare('<?= esc($shareTitle, 'js') ?>', '<?= esc($shareUrl, 'js') ?>')"
+                title="แชร์ด่วนผ่านแอปพลิเคชัน">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+            <span style="font-family: 'Prompt', sans-serif; font-size: 0.82rem;">แชร์</span>
+        </button>
 
-        <!-- Line Share -->
-        <a href="https://social-plugins.line.me/lineit/share?url=<?= urlencode($shareUrl) ?>" 
-           target="_blank" rel="noopener noreferrer"
-           class="btn btn-sm btn-social-share btn-line" 
-           title="แชร์ไปยัง LINE">
-            <i class="fa-brands fa-line"></i>
-        </a>
+        <!-- Facebook Share (Inline SVG - No FontAwesome Brand Font Download) -->
+        <button type="button" 
+                onclick="triggerDynamicShare('facebook', '<?= esc($shareUrl, 'js') ?>', '<?= esc($shareTitle, 'js') ?>')" 
+                class="btn btn-sm btn-social-share btn-facebook" 
+                title="แชร์ไปยัง Facebook"
+                aria-label="แชร์ไปยัง Facebook">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+        </button>
 
-        <!-- X (Twitter) Share -->
-        <a href="https://twitter.com/intent/tweet?text=<?= urlencode($shareTitle) ?>&url=<?= urlencode($shareUrl) ?>" 
-           target="_blank" rel="noopener noreferrer"
-           class="btn btn-sm btn-social-share btn-x" 
-           title="แชร์ไปยัง X (Twitter)">
-            <i class="fa-brands fa-x-twitter"></i>
-        </a>
+        <!-- Line Share (Inline SVG) -->
+        <button type="button" 
+                onclick="triggerDynamicShare('line', '<?= esc($shareUrl, 'js') ?>', '<?= esc($shareTitle, 'js') ?>')" 
+                class="btn btn-sm btn-social-share btn-line" 
+                title="แชร์ไปยัง LINE"
+                aria-label="แชร์ไปยัง LINE">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M24 10.304c0-5.369-5.383-9.738-12-9.738-6.616 0-12 4.369-12 9.738 0 4.814 4.269 8.846 10.036 9.608.391.084.922.258 1.057.592.121.303.079.777.039 1.085l-.171 1.027c-.053.303-.242 1.186 1.039.645 1.281-.54 6.911-4.069 9.428-6.967 1.739-1.907 2.572-3.843 2.572-5.99z"/></svg>
+        </button>
 
-        <!-- Copy Link Button -->
+        <!-- X (Twitter) Share (Inline SVG) -->
+        <button type="button" 
+                onclick="triggerDynamicShare('x', '<?= esc($shareUrl, 'js') ?>', '<?= esc($shareTitle, 'js') ?>')" 
+                class="btn btn-sm btn-social-share btn-x" 
+                title="แชร์ไปยัง X (Twitter)"
+                aria-label="แชร์ไปยัง X (Twitter)">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        </button>
+
+        <!-- Copy Link Button (Inline SVG) -->
         <button type="button" 
                 class="btn btn-sm btn-social-share btn-copy" 
                 onclick="copyPageLink('<?= $shareUrl ?>')" 
-                title="คัดลอกลิงก์">
-            <i class="fa-regular fa-copy"></i>
+                title="คัดลอกลิงก์"
+                aria-label="คัดลอกลิงก์">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
         </button>
     </div>
 
     <!-- 2. Right: Action Buttons (Print & Font Size) -->
-    <div class="d-flex align-items-center gap-1.5 ms-auto">
+    <div class="d-flex align-items-center gap-2 ms-auto">
         <!-- Font Size Scale -->
         <div class="btn-group btn-group-sm" role="group" aria-label="Font Size">
             <button type="button" class="btn btn-outline-secondary font-scale-btn" onclick="adjustContentFontSize(-1)" title="ลดขนาดตัวอักษร">A-</button>
@@ -57,12 +71,12 @@ $shareUrl = function_exists('current_url') ? current_url() : (isset($_SERVER['RE
         </div>
 
         <!-- Print / PDF Button -->
-        <button type="button" class="btn btn-sm btn-primary rounded-pill px-2.5 py-1 fw-bold shadow-sm d-flex align-items-center gap-1" 
+        <button type="button" class="btn btn-sm rounded-pill px-3 py-1 fw-semibold shadow-sm d-flex align-items-center gap-1.5 text-white" 
                 onclick="window.print()" 
-                style="background: #1e40af; border: none; font-size: 0.8rem;"
+                style="background: linear-gradient(135deg, #064e3b 0%, #047857 100%); border: none; font-family: 'Prompt', sans-serif; font-size: 0.84rem; height: 32px;"
                 title="สั่งพิมพ์หน้านี้ หรือบันทึกเป็นไฟล์ PDF">
             <i class="fa-solid fa-print"></i>
-            <span class="d-none d-sm-inline">สั่งพิมพ์/PDF</span>
+            <span class="d-none d-sm-inline">สั่งพิมพ์ / PDF</span>
         </button>
     </div>
 </div>
@@ -70,22 +84,24 @@ $shareUrl = function_exists('current_url') ? current_url() : (isset($_SERVER['RE
 <style>
 /* Social Share Buttons Styling */
 .btn-social-share {
-    border-radius: 30px !important;
-    padding: 0.35rem 0.85rem !important;
+    width: 32px !important;
+    height: 32px !important;
+    padding: 0 !important;
+    border-radius: 50% !important;
     font-size: 0.84rem !important;
     font-weight: 600 !important;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     border: none !important;
-    transition: all 0.2s ease !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
     color: #ffffff !important;
     text-decoration: none !important;
 }
 
 .btn-social-share:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
     opacity: 0.92;
 }
 
@@ -109,20 +125,25 @@ $shareUrl = function_exists('current_url') ? current_url() : (isset($_SERVER['RE
 
 .btn-copy:hover {
     background: #f1f5f9 !important;
-    color: #1e293b !important;
+    color: #0f172a !important;
 }
 
 .font-scale-btn {
-    padding: 0.25rem 0.6rem !important;
-    font-weight: bold;
+    font-family: 'Prompt', sans-serif !important;
+    height: 32px !important;
+    padding: 0 0.65rem !important;
+    font-weight: 600 !important;
     font-size: 0.82rem !important;
     border-color: #cbd5e1 !important;
     color: #475569 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
 }
 
 .font-scale-btn:hover {
-    background-color: #e2e8f0 !important;
-    color: #1e293b !important;
+    background-color: #f1f5f9 !important;
+    color: #0f172a !important;
 }
 
 /* Print CSS Optimizations (รองรับการพิมพ์เอกสารราชการที่สวยงามและประหยัดหมึก) */
@@ -177,6 +198,60 @@ $shareUrl = function_exists('current_url') ? current_url() : (isset($_SERVER['RE
 </style>
 
 <script>
+// ตรวจสอบความพร้อมของ Web Share API บนอุปกรณ์ผู้ใช้
+document.addEventListener('DOMContentLoaded', function() {
+    if (navigator.share) {
+        const btnNative = document.getElementById('btnNativeShare');
+        if (btnNative) {
+            btnNative.classList.remove('d-none');
+        }
+    }
+});
+
+// Dynamic On-Demand Share (ไม่โหลดสคริปต์ภายนอกล่วงหน้า)
+function triggerDynamicShare(platform, url, title) {
+    let targetUrl = '';
+    const encodedUrl = encodeURIComponent(url);
+    const encodedTitle = encodeURIComponent(title || document.title);
+
+    switch(platform) {
+        case 'facebook':
+            targetUrl = 'https://www.facebook.com/sharer/sharer.php?u=' + encodedUrl;
+            break;
+        case 'line':
+            targetUrl = 'https://social-plugins.line.me/lineit/share?url=' + encodedUrl;
+            break;
+        case 'x':
+            targetUrl = 'https://twitter.com/intent/tweet?text=' + encodedTitle + '&url=' + encodedUrl;
+            break;
+        default:
+            return;
+    }
+
+    // เปิดหน้าต่างแชร์แบบ Popup ไม่ดึงสคริปต์และไม่โหลด SDK ภายนอกมาบล็อกหน้าเว็บ
+    const w = 620, h = 560;
+    const left = (screen.width / 2) - (w / 2);
+    const top = (screen.height / 2) - (h / 2);
+    window.open(targetUrl, 'shareWindow', 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, copyhistory=no, width=' + w + ', height=' + h + ', top=' + top + ', left=' + left);
+}
+
+// Native Web Share API (สำหรับมือถือ เปิดเมนูแชร์ของระบบปฏิบัติการโดยตรง)
+function triggerNativeShare(title, url) {
+    if (navigator.share) {
+        navigator.share({
+            title: title || document.title,
+            text: title || document.title,
+            url: url || window.location.href
+        }).catch(err => {
+            if (err.name !== 'AbortError') {
+                copyPageLink(url);
+            }
+        });
+    } else {
+        copyPageLink(url);
+    }
+}
+
 function copyPageLink(url) {
     if (navigator.clipboard) {
         navigator.clipboard.writeText(url).then(function() {
@@ -202,7 +277,7 @@ function adjustContentFontSize(action) {
         } else if (action === 1) {
             el.style.fontSize = Math.min(26, currentSize + 2) + 'px';
         } else {
-            el.style.fontSize = '1.05rem';
+            el.style.fontSize = '1.15rem';
         }
     });
 }

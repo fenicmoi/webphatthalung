@@ -35,7 +35,7 @@ class GalleryManager extends BaseController
     }
 
     /**
-     * บันทึกหรือแก้ไขอัลบั้ม (รองรับอัปโหลดภาพปกและอัปโหลดภาพหลายภาพในชุด)
+     * บันทึกหรือแก้ไขอัลบั้ม (บันทึกลงฐานข้อมูล MySQL ตาราง gallery_albums & gallery_photos และ sync ไฟล์ JSON)
      */
     public function saveItem(): ResponseInterface
     {
@@ -50,22 +50,28 @@ class GalleryManager extends BaseController
             return $this->response->setJSON(['status' => 'error', 'message' => 'กรุณาระบุชื่ออัลบั้มกิจกรรม']);
         }
 
-        $albums = get_gallery_albums(null, null, false);
-        $existingIndex = null;
+        $numericId = (int) preg_replace('/[^0-9]/', '', (string)$id);
+        $albumModel = new \App\Models\GalleryAlbumModel();
+        $photoModel = new \App\Models\GalleryPhotoModel();
 
-        if (!empty($id)) {
-            foreach ($albums as $idx => $item) {
+        $existingDbAlbum = $numericId > 0 ? $albumModel->find($numericId) : null;
+        $coverImage = $existingDbAlbum['cover_image'] ?? '';
+        $existingPhotos = [];
+
+        if ($existingDbAlbum) {
+            $dbPhotos = $photoModel->where('album_id', $numericId)->findAll();
+            $existingPhotos = array_column($dbPhotos, 'image_path');
+        } else {
+            // Also check fallback json if updating a json-seeded item
+            $albums = get_gallery_albums(null, null, false);
+            foreach ($albums as $item) {
                 if ((string)($item['id'] ?? '') === (string)$id) {
-                    $existingIndex = $idx;
+                    $coverImage = $item['cover_image'] ?? '';
+                    $existingPhotos = $item['photos'] ?? [];
                     break;
                 }
             }
         }
-
-        $albumId = $id ?: 'gal_' . uniqid();
-        $views = ($existingIndex !== null) ? ($albums[$existingIndex]['views'] ?? 1) : 1;
-        $coverImage = ($existingIndex !== null) ? ($albums[$existingIndex]['cover_image'] ?? '') : '';
-        $existingPhotos = ($existingIndex !== null) ? ($albums[$existingIndex]['photos'] ?? []) : [];
 
         // อัปโหลดไฟล์ภาพปกใหม่ (ถ้ามี)
         $coverFile = $this->request->getFile('cover_file');
@@ -79,7 +85,12 @@ class GalleryManager extends BaseController
             $coverImage = 'uploads/gallery/' . $newName;
         } elseif (!$coverImage) {
             // ถ้าระบุเป็นลิงก์เว็บ
-            $coverImage = trim((string)$this->request->getPost('cover_url')) ?: 'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?auto=format&fit=crop&w=800&q=80';
+            $coverUrl = trim((string)$this->request->getPost('cover_url'));
+            if (!empty($coverUrl)) {
+                $coverImage = $coverUrl;
+            } else {
+                $coverImage = 'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?auto=format&fit=crop&w=800&q=80';
+            }
         }
 
         // อัปโหลดภาพกิจกรรมในอัลบั้ม (Multiple photo files)
@@ -115,23 +126,90 @@ class GalleryManager extends BaseController
             $existingPhotos[] = $coverImage;
         }
 
+        // 1. บันทึกลงฐานข้อมูล MySQL (gallery_albums & gallery_photos)
+        $descData = [
+            'category' => $category ?: 'กิจกรรมสาธารณประโยชน์',
+            'date'     => $date ?: date('Y-m-d'),
+            'views'    => 1
+        ];
+
+        $albumDbData = [
+            'title'       => $title,
+            'cover_image' => $coverImage,
+            'description' => json_encode($descData, JSON_UNESCAPED_UNICODE),
+            'updated_at'  => date('Y-m-d H:i:s')
+        ];
+
+        if (!empty($date)) {
+            $albumDbData['created_at'] = date('Y-m-d H:i:s', strtotime($date));
+        }
+
+        $dbAlbumId = null;
+        try {
+            if ($existingDbAlbum) {
+                $albumModel->update($numericId, $albumDbData);
+                $dbAlbumId = $numericId;
+                $msg = 'อัปเดตข้อมูลอัลบั้มในฐานข้อมูลเรียบร้อยแล้ว';
+            } else {
+                $dbAlbumId = $albumModel->insert($albumDbData);
+                $msg = 'สร้างอัลบั้มภาพกิจกรรมใหม่ในฐานข้อมูลเรียบร้อยแล้ว';
+            }
+
+            if ($dbAlbumId) {
+                // จัดการรูปภาพในตาราง gallery_photos
+                $curDbPhotos = $photoModel->where('album_id', $dbAlbumId)->findAll();
+                $curPhotoPaths = array_column($curDbPhotos, 'image_path');
+
+                // เพิ่มรูปใหม่ที่ยังไม่มีในฐานข้อมูล
+                foreach ($existingPhotos as $pPath) {
+                    if (!in_array($pPath, $curPhotoPaths)) {
+                        $photoModel->insert([
+                            'album_id'   => $dbAlbumId,
+                            'image_path' => $pPath,
+                            'caption'    => null,
+                            'created_at' => date('Y-m-d H:i:s')
+                        ]);
+                    }
+                }
+
+                // ลบรูปที่ผู้ใช้กดลบออก
+                foreach ($curDbPhotos as $curP) {
+                    if (!in_array($curP['image_path'], $existingPhotos)) {
+                        $photoModel->delete($curP['id']);
+                    }
+                }
+            }
+        } catch (\Throwable $e) {
+            log_message('error', 'Gallery Save to DB Error: ' . $e->getMessage());
+            $msg = 'บันทึกข้อมูลเรียบร้อยแล้ว';
+        }
+
+        // 2. ซิงค์ลงไฟล์ JSON สำหรับ Cache / สำรองข้อมูล
+        $finalId = $dbAlbumId ? ('gal_' . $dbAlbumId) : ($id ?: 'gal_' . uniqid());
         $albumData = [
-            'id'          => $albumId,
+            'id'          => $finalId,
+            'db_id'       => $dbAlbumId ?? $numericId,
             'title'       => $title,
             'category'    => $category ?: 'กิจกรรมสาธารณประโยชน์',
             'date'        => $date ?: date('Y-m-d'),
-            'views'       => $views,
+            'views'       => 1,
             'cover_image' => $coverImage,
             'photos'      => array_values($existingPhotos),
             'active'      => true
         ];
 
-        if ($existingIndex !== null) {
-            $albums[$existingIndex] = $albumData;
-            $msg = 'อัปเดตข้อมูลอัลบั้มเรียบร้อยแล้ว';
-        } else {
+        $albums = get_gallery_albums(null, null, false);
+        $found = false;
+        foreach ($albums as $k => $item) {
+            if ((string)($item['id'] ?? '') === (string)$finalId || 
+                ($dbAlbumId && (int)($item['db_id'] ?? 0) === (int)$dbAlbumId)) {
+                $albums[$k] = $albumData;
+                $found = true;
+                break;
+            }
+        }
+        if (!$found) {
             array_unshift($albums, $albumData);
-            $msg = 'สร้างอัลบั้มภาพกิจกรรมใหม่เรียบร้อยแล้ว';
         }
 
         save_gallery_albums($albums);
@@ -149,14 +227,25 @@ class GalleryManager extends BaseController
             return $this->response->setJSON(['status' => 'error', 'message' => 'ไม่ระบุรหัสอัลบั้มที่ต้องการลบ']);
         }
 
-        $albums = get_gallery_albums(null, null, false);
-        $newAlbums = array_filter($albums, static function($item) use ($id) {
-            return (string)($item['id'] ?? '') !== (string)$id;
-        });
+        $numericId = (int) preg_replace('/[^0-9]/', '', (string)$id);
 
-        if (count($albums) === count($newAlbums)) {
-            return $this->response->setJSON(['status' => 'error', 'message' => 'ไม่พบอัลบั้มในระบบ']);
+        try {
+            if ($numericId > 0) {
+                $albumModel = new \App\Models\GalleryAlbumModel();
+                $photoModel = new \App\Models\GalleryPhotoModel();
+                $photoModel->where('album_id', $numericId)->delete();
+                $albumModel->delete($numericId);
+            }
+        } catch (\Throwable $e) {
+            log_message('error', 'Gallery Delete DB Error: ' . $e->getMessage());
         }
+
+        $albums = get_gallery_albums(null, null, false);
+        $newAlbums = array_filter($albums, static function($item) use ($id, $numericId) {
+            $matchId = (string)($item['id'] ?? '') === (string)$id;
+            $matchDb = $numericId > 0 && (int)($item['db_id'] ?? 0) === $numericId;
+            return !$matchId && !$matchDb;
+        });
 
         save_gallery_albums(array_values($newAlbums));
         return $this->response->setJSON(['status' => 'success', 'message' => 'ลบอัลบั้มออกจากคลังภาพเรียบร้อยแล้ว']);
@@ -176,23 +265,27 @@ class GalleryManager extends BaseController
             return $this->response->setJSON(['status' => 'error', 'message' => 'ข้อมูลไม่ถูกต้อง']);
         }
 
-        $albums = get_gallery_albums(null, null, false);
-        $found = false;
+        $numericId = (int) preg_replace('/[^0-9]/', '', (string)$albumId);
 
+        try {
+            if ($numericId > 0) {
+                $photoModel = new \App\Models\GalleryPhotoModel();
+                $photoModel->where('album_id', $numericId)->where('image_path', $photoUrl)->delete();
+            }
+        } catch (\Throwable $e) {
+            log_message('error', 'Gallery Delete Photo DB Error: ' . $e->getMessage());
+        }
+
+        $albums = get_gallery_albums(null, null, false);
         foreach ($albums as $idx => $album) {
-            if ((string)($album['id'] ?? '') === (string)$albumId) {
+            if ((string)($album['id'] ?? '') === (string)$albumId || ($numericId > 0 && (int)($album['db_id'] ?? 0) === $numericId)) {
                 $photos = $album['photos'] ?? [];
                 $newPhotos = array_filter($photos, static function($p) use ($photoUrl) {
                     return trim($p) !== trim($photoUrl);
                 });
                 $albums[$idx]['photos'] = array_values($newPhotos);
-                $found = true;
                 break;
             }
-        }
-
-        if (!$found) {
-            return $this->response->setJSON(['status' => 'error', 'message' => 'ไม่พบข้อมูลอัลบั้ม']);
         }
 
         save_gallery_albums($albums);

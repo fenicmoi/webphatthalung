@@ -29,7 +29,9 @@ class Page extends BaseController
         // 1. ลองดึงข้อมูลเพจจากฐานข้อมูล
         try {
             $pageModel = new PageModel();
-            $page = $pageModel->where('slug', $slug)->first();
+            if ($pageModel->db->tableExists($pageModel->getTable())) {
+                $page = $pageModel->where('slug', $slug)->first();
+            }
         } catch (\Throwable $e) {
             log_message('error', 'Page query error: ' . $e->getMessage());
         }
@@ -56,8 +58,8 @@ class Page extends BaseController
                 'order_num'    => 0,
                 'title'        => 'ข้อมูลทั่วไปจังหวัดพัทลุง',
                 'slug'         => 'general',
-                'header_image' => 'uploads/pages/header_1787197577_7804.png',
-                'content'      => '<p><img src="' . base_url('uploads/pages/page_1787280116_8602.png') . '" alt="ข้อมูลทั่วไปจังหวัดพัทลุง" class="img-fluid rounded shadow-sm"></p>',
+                'header_image' => 'uploads/pages/header_1787197577_7804.webp',
+                'content'      => '<p><img src="' . base_url('uploads/pages/page_1787280116_8602.webp') . '" alt="ข้อมูลทั่วไปจังหวัดพัทลุง" class="img-fluid rounded shadow-sm"></p>',
                 'views'        => 50,
                 'created_at'   => date('Y-m-d H:i:s'),
                 'updated_at'   => date('Y-m-d H:i:s'),
@@ -72,10 +74,12 @@ class Page extends BaseController
         // 4. อัปเดตยอดผู้เข้าชมอย่างปลอดภัย (ไม่กระทบการแสดงผลหาก DB มีปัญหา)
         if (!empty($pageModel) && !empty($page['id'])) {
             try {
-                $pageModel->builder()
-                          ->where('id', $page['id'])
-                          ->set('views', 'views + 1', false)
-                          ->update();
+                if ($pageModel->db->tableExists($pageModel->getTable())) {
+                    $pageModel->builder()
+                              ->where('id', $page['id'])
+                              ->set('views', 'views + 1', false)
+                              ->update();
+                }
             } catch (\Throwable $e) {
                 // ละเว้นหาก views column ไม่มีหรือ update ล้มเหลว
             }
@@ -84,7 +88,7 @@ class Page extends BaseController
         // 5. ดึงเพจย่อย (Children) อย่างปลอดภัย
         if (!empty($page['id'])) {
             try {
-                if (!empty($pageModel) && $pageModel->db->fieldExists('parent_id', 'pages')) {
+                if (!empty($pageModel) && $pageModel->db->tableExists($pageModel->getTable()) && $pageModel->db->fieldExists('parent_id', $pageModel->getTable())) {
                     $children = $pageModel->where('parent_id', $page['id'])
                                           ->orderBy('order_num', 'ASC')
                                           ->findAll();

@@ -1,38 +1,76 @@
 <?= $this->extend('layouts/main') ?>
 
-<?= $this->section('content') ?>
 <?php 
 $page = $page ?? []; 
 $children = $children ?? []; 
 
-$headerImg = !empty($page['header_image']) ? $page['header_image'] : '';
-if (!empty($headerImg) && strpos($headerImg, 'http') !== 0 && strpos($headerImg, 'data:') !== 0) {
-    $headerImg = base_url(ltrim($headerImg, '/'));
-}
+$headerRaw = !empty($page['header_image']) ? $page['header_image'] : '';
+$headerSources = !empty($headerRaw) && function_exists('get_image_sources') ? get_image_sources($headerRaw) : null;
+$headerUrl = $headerSources ? (!empty($headerSources['webp_url']) ? $headerSources['webp_url'] : $headerSources['original_url']) : (!empty($headerRaw) ? base_url(ltrim($headerRaw, '/')) : '');
 
-$renderContent = function($rawHtml) {
+$renderContent = function($rawHtml) use ($headerUrl) {
     if (empty($rawHtml)) return '';
     $html = str_replace('../uploads/', base_url('uploads/'), $rawHtml);
     $html = str_replace('./uploads/', base_url('uploads/'), $html);
+
+    // Auto-convert images to modern WebP & apply responsive lazy loading
+    $imgCount = 0;
+    $html = preg_replace_callback('/<img\s+([^>]*?)src=["\']([^"\']+)["\']([^>]*)>/i', function($m) use (&$imgCount, $headerUrl) {
+        $prefix = $m[1];
+        $src = $m[2];
+        $suffix = $m[3];
+
+        $webpSrc = $src;
+        if (strpos($src, 'uploads/') !== false) {
+            $parsed = parse_url($src, PHP_URL_PATH);
+            $pos = strpos($parsed, 'uploads/');
+            if ($pos !== false) {
+                $rel = substr($parsed, $pos);
+                if (function_exists('convert_to_webp_if_missing')) {
+                    $w = convert_to_webp_if_missing($rel);
+                    if ($w) {
+                        $webpSrc = base_url($w);
+                    }
+                }
+            }
+        }
+
+        // The first image in content is LCP if no header image exists
+        $isLcp = ($imgCount === 0 && empty($headerUrl));
+        $loadingAttr = $isLcp ? 'fetchpriority="high" loading="eager"' : 'loading="lazy"';
+        $imgCount++;
+
+        $rest = preg_replace('/\s+(loading|decoding|fetchpriority)=["\'][^"\']*["\']/i', '', $prefix . ' ' . $suffix);
+        return '<img src="' . htmlspecialchars($webpSrc) . '" ' . trim($rest) . ' ' . $loadingAttr . ' decoding="async">';
+    }, $html);
+
     return $html;
 };
 ?>
 
-<!-- PAGE HEADER (รองรับภาพพื้นหลังกำหนดเอง - ขนาดใหญ่สวยงามเต็มตา) -->
-<div class="text-white py-5 position-relative overflow-hidden" 
-     style="min-height: 220px; display: flex; align-items: center; <?= !empty($headerImg) ? "background: url('" . esc($headerImg) . "') center center / cover no-repeat;" : 'background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #0369a1 100%);' ?> box-shadow: 0 4px 20px rgba(0,0,0,0.15);">
+<?php if (!empty($headerUrl)): ?>
+<?= $this->section('head_preload') ?>
+    <link rel="preload" as="image" href="<?= $headerUrl ?>" type="image/webp" fetchpriority="high">
+<?= $this->endSection() ?>
+<?php endif; ?>
+
+<?= $this->section('content') ?>
+
+<!-- PAGE HEADER (รองรับภาพพื้นหลังกำหนดเอง - ขนาดใหญ่สวยงามเต็มตา / WebP Optimized) -->
+<div class="text-white py-4 py-md-5 position-relative overflow-hidden" 
+     style="min-height: 200px; display: flex; align-items: center; <?= !empty($headerUrl) ? "background: url('" . esc($headerUrl) . "') center center / cover no-repeat;" : 'background: linear-gradient(135deg, #022c22 0%, #064e3b 50%, #047857 100%);' ?> box-shadow: 0 4px 20px rgba(0,0,0,0.15);">
     
     <!-- Dark Vignette Overlay for High Contrast Text Readability -->
-    <div class="position-absolute top-0 start-0 w-100 h-100" style="background: <?= !empty($headerImg) ? 'linear-gradient(90deg, rgba(15,23,42,0.88) 0%, rgba(15,23,42,0.65) 50%, rgba(15,23,42,0.4) 100%)' : 'rgba(0,0,0,0.15)' ?>; z-index: 1;"></div>
+    <div class="position-absolute top-0 start-0 w-100 h-100" style="background: <?= !empty($headerUrl) ? 'linear-gradient(90deg, rgba(2,44,34,0.92) 0%, rgba(2,44,34,0.72) 50%, rgba(2,44,34,0.45) 100%)' : 'rgba(0,0,0,0.2)' ?>; z-index: 1;"></div>
     
-    <div class="container position-relative py-3" style="z-index: 2;">
+    <div class="container position-relative py-2" style="z-index: 2;">
         <nav aria-label="breadcrumb">
-            <ol class="breadcrumb mb-2" style="font-size: 0.92rem;">
-                <li class="breadcrumb-item"><a href="<?= base_url() ?>" class="text-white text-decoration-none opacity-75 hover-opacity-100"><i class="fa-solid fa-house"></i> หน้าแรก</a></li>
-                <li class="breadcrumb-item active text-white" aria-current="page"><?= esc($page['title'] ?? '') ?></li>
+            <ol class="breadcrumb mb-2" style="font-size: 0.88rem; font-family: 'Prompt', sans-serif;">
+                <li class="breadcrumb-item"><a href="<?= base_url() ?>" class="text-white text-decoration-none opacity-75 hover-opacity-100"><i class="fa-solid fa-house me-1"></i>หน้าแรก</a></li>
+                <li class="breadcrumb-item active text-white fw-medium" aria-current="page"><?= esc($page['title'] ?? '') ?></li>
             </ol>
         </nav>
-        <h1 class="fw-bold mb-0 text-white" style="font-size: 2.2rem; text-shadow: 0 2px 8px rgba(0,0,0,0.6);"><?= esc($page['title'] ?? '') ?></h1>
+        <h1 class="fw-bold mb-0 text-white page-main-title"><?= esc($page['title'] ?? '') ?></h1>
     </div>
 </div>
 
@@ -45,17 +83,26 @@ $renderContent = function($rawHtml) {
                     
                     <!-- 1. แท็บเมนูหน้าย่อย (ถ้ามี) -->
                     <?php if (!empty($children)): ?>
-                        <div class="mb-3">
+                        <?php
+                        $getChildIcon = function($title) {
+                            if (stripos($title, 'ประวัติ') !== false) return 'fa-landmark';
+                            if (stripos($title, 'สัญลักษณ์') !== false || stripos($title, 'โลโก้') !== false) return 'fa-award';
+                            if (stripos($title, 'ยุทธศาสตร์') !== false || stripos($title, 'พัฒนา') !== false) return 'fa-bullseye';
+                            if (stripos($title, 'แผนที่') !== false) return 'fa-map-location-dot';
+                            return 'fa-layer-group';
+                        };
+                        ?>
+                        <div class="mb-4">
                             <ul class="nav nav-pills custom-pills gap-2 flex-wrap" id="pageTab" role="tablist">
                                 <li class="nav-item" role="presentation">
-                                    <button class="nav-link active rounded-pill px-3.5 py-2 fw-bold" id="main-tab" data-bs-toggle="tab" data-bs-target="#tab-main" type="button" role="tab" aria-controls="tab-main" aria-selected="true" style="font-size: 0.94rem;">
-                                        <i class="fa-solid fa-file-lines me-1.5 opacity-75"></i><?= esc($page['title'] ?? '') ?>
+                                    <button class="nav-link active rounded-pill fw-semibold" id="main-tab" data-bs-toggle="tab" data-bs-target="#tab-main" type="button" role="tab" aria-controls="tab-main" aria-selected="true">
+                                        <i class="fa-solid fa-circle-info me-1.5 opacity-85"></i><?= esc($page['title'] ?? '') ?>
                                     </button>
                                 </li>
                                 <?php foreach($children as $idx => $child): ?>
                                 <li class="nav-item" role="presentation">
-                                    <button class="nav-link rounded-pill px-3.5 py-2 fw-bold" id="child-tab-<?= $child['id'] ?>" data-bs-toggle="tab" data-bs-target="#tab-child-<?= $child['id'] ?>" type="button" role="tab" aria-controls="tab-child-<?= $child['id'] ?>" aria-selected="false" style="font-size: 0.94rem;">
-                                        <?= esc($child['title'] ?? '') ?>
+                                    <button class="nav-link rounded-pill fw-semibold" id="child-tab-<?= $child['id'] ?>" data-bs-toggle="tab" data-bs-target="#tab-child-<?= $child['id'] ?>" type="button" role="tab" aria-controls="tab-child-<?= $child['id'] ?>" aria-selected="false">
+                                        <i class="fa-solid <?= $getChildIcon($child['title'] ?? '') ?> me-1.5 opacity-85"></i><?= esc($child['title'] ?? '') ?>
                                     </button>
                                 </li>
                                 <?php endforeach; ?>
@@ -65,13 +112,13 @@ $renderContent = function($rawHtml) {
 
                     <!-- 2. แถบสถานะและเครื่องมือ (จัดวางสมดุล ซ้าย: วันที่/ยอดวิว, ขวา: แชร์/พิมพ์/ซูม) -->
                     <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4 pb-3 border-bottom" style="border-color: rgba(0,0,0,0.08) !important;">
-                        <div class="d-flex align-items-center gap-3 text-muted small" style="font-size: 0.85rem;">
-                            <span>
-                                <i class="fa-regular fa-clock me-1 text-primary"></i> อัปเดต: <?= function_exists('thai_date') ? thai_date($page['updated_at'] ?? $page['created_at'], 'compact') : date('d/m/Y', strtotime($page['updated_at'] ?? $page['created_at'])) ?>
+                        <div class="d-flex align-items-center gap-2.5 text-secondary" style="font-family: 'Prompt', sans-serif; font-size: 0.88rem;">
+                            <span class="d-inline-flex align-items-center">
+                                <i class="fa-regular fa-clock me-1.5 text-success"></i> อัปเดต: <?= function_exists('thai_date') ? thai_date($page['updated_at'] ?? $page['created_at'], 'compact') : date('d/m/Y', strtotime($page['updated_at'] ?? $page['created_at'])) ?>
                             </span>
-                            <span class="d-none d-sm-inline opacity-50">|</span>
-                            <span>
-                                <i class="fa-regular fa-eye me-1 text-primary"></i> <?= number_format($page['views'] ?? 0) ?> ครั้ง
+                            <span class="opacity-40">•</span>
+                            <span class="d-inline-flex align-items-center">
+                                <i class="fa-regular fa-eye me-1.5 text-success"></i> <?= number_format($page['views'] ?? 0) ?> ครั้ง
                             </span>
                         </div>
 
@@ -102,12 +149,12 @@ $renderContent = function($rawHtml) {
                         </div>
                     <?php endif; ?>
 
-                    <div class="mt-4 pt-3 border-top d-flex flex-wrap align-items-center justify-content-between text-muted small" style="border-color: rgba(0,0,0,0.06) !important; font-size: 0.85rem;">
+                    <div class="mt-4 pt-3 border-top d-flex flex-wrap align-items-center justify-content-between text-muted" style="border-color: rgba(0,0,0,0.06) !important; font-family: 'Prompt', sans-serif; font-size: 0.86rem;">
                         <div>
-                            <i class="fa-regular fa-clock me-1 text-primary"></i> อัปเดตล่าสุด: <?= function_exists('thai_date') ? thai_date($page['updated_at'] ?? $page['created_at'], 'full', true) : date('d/m/Y H:i', strtotime($page['updated_at'] ?? $page['created_at'])) ?>
+                            <i class="fa-regular fa-clock me-1 text-success"></i> อัปเดตล่าสุด: <?= function_exists('thai_date') ? thai_date($page['updated_at'] ?? $page['created_at'], 'full', true) : date('d/m/Y H:i', strtotime($page['updated_at'] ?? $page['created_at'])) ?>
                         </div>
                         <div>
-                            <i class="fa-regular fa-eye me-1 text-primary"></i> จำนวนผู้เข้าชม: <span class="fw-bold text-dark"><?= number_format($page['views'] ?? 0) ?></span> ครั้ง
+                            <i class="fa-regular fa-eye me-1 text-success"></i> จำนวนผู้เข้าชม: <span class="fw-bold text-dark"><?= number_format($page['views'] ?? 0) ?></span> ครั้ง
                         </div>
                     </div>
                 </div>
@@ -117,57 +164,130 @@ $renderContent = function($rawHtml) {
 </div>
 
 <style>
-/* แท็บควบคุมการสลับหน้าย่อย */
+/* หัวข้อใหญ่ประจำหน้า */
+.page-main-title {
+    font-family: 'Prompt', sans-serif;
+    font-size: 1.85rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.6);
+}
+
+@media (max-width: 767px) {
+    .page-main-title {
+        font-size: 1.45rem;
+    }
+}
+
+/* แท็บควบคุมการสลับหน้าย่อย (Modern Segment Control) */
 .custom-pills .nav-link {
+    font-family: 'Prompt', sans-serif;
+    font-size: 0.95rem;
+    padding: 0.55rem 1.25rem;
     color: #475569;
     background-color: #f1f5f9;
-    transition: all 0.2s ease;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     border: 1px solid #e2e8f0;
+    display: inline-flex;
+    align-items: center;
 }
 .custom-pills .nav-link:hover {
     background-color: #e2e8f0;
-    color: #1e293b;
+    color: #0f172a;
+    transform: translateY(-1px);
 }
 .custom-pills .nav-link.active {
-    background-color: #1e3a8a !important;
+    background: linear-gradient(135deg, #022c22 0%, #064e3b 50%, #047857 100%) !important;
     color: #ffffff !important;
-    border-color: #1e3a8a !important;
-    box-shadow: 0 2px 8px rgba(30, 58, 138, 0.25);
+    border-color: #047857 !important;
+    box-shadow: 0 4px 14px rgba(6, 78, 59, 0.35);
 }
 
-/* จัดรูปแบบเนื้อหาที่สร้างจาก WYSIWYG Editor ให้กระชับ */
+/* จัดรูปแบบเนื้อหาการอ่าน (Article Reading Typography) */
 .dynamic-content {
-    line-height: 1.75;
-    color: var(--text-primary, #1e293b);
-    font-size: 1.02rem;
+    font-family: 'Sarabun', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 1.15rem; /* ขนาดมาตรฐานอ่านสบายตาสำหรับภาษาไทย */
+    line-height: 1.85;
+    color: #1e293b;
+    letter-spacing: 0.005em;
+}
+.dynamic-content p {
+    margin-bottom: 1.25rem;
+}
+.dynamic-content h2 {
+    font-family: 'Prompt', sans-serif;
+    font-size: 1.55rem;
+    font-weight: 700;
+    color: #064e3b;
+    margin-top: 2rem;
+    margin-bottom: 0.9rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 2px solid #e2e8f0;
+}
+.dynamic-content h3 {
+    font-family: 'Prompt', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #047857;
+    margin-top: 1.75rem;
+    margin-bottom: 0.75rem;
+}
+.dynamic-content h4 {
+    font-family: 'Prompt', sans-serif;
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: #0f172a;
+    margin-top: 1.25rem;
+    margin-bottom: 0.5rem;
+}
+.dynamic-content ul, .dynamic-content ol {
+    margin-bottom: 1.25rem;
+    padding-left: 1.5rem;
+}
+.dynamic-content li {
+    margin-bottom: 0.55rem;
+    line-height: 1.8;
+}
+.dynamic-content strong {
+    font-weight: 600;
+    color: #0f172a;
 }
 .dynamic-content img {
     max-width: 100%;
     height: auto;
-    border-radius: 10px;
-    margin: 1rem 0;
-}
-.dynamic-content p {
-    margin-bottom: 0.95rem;
-}
-.dynamic-content h2, .dynamic-content h3, .dynamic-content h4 {
-    margin-top: 1.5rem;
-    margin-bottom: 0.75rem;
-    font-weight: 700;
-    color: #1e3a8a;
+    border-radius: 12px;
+    margin: 1.25rem 0;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
 }
 .dynamic-content a {
-    color: #1e40af;
+    color: #047857;
     text-decoration: underline;
+    font-weight: 500;
+}
+.dynamic-content a:hover {
+    color: #064e3b;
 }
 .dynamic-content table {
     width: 100%;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
     border-collapse: collapse;
+    font-size: 1.02rem;
+    line-height: 1.6;
+    background: #ffffff;
+    border-radius: 8px;
+    overflow: hidden;
 }
 .dynamic-content table th, .dynamic-content table td {
-    padding: 0.6rem 0.85rem;
+    padding: 0.75rem 1rem;
     border: 1px solid #e2e8f0;
+    vertical-align: top;
+}
+.dynamic-content table th {
+    background-color: #f8fafc;
+    color: #0f172a;
+    font-family: 'Prompt', sans-serif;
+    font-weight: 600;
+    border-bottom: 2px solid #cbd5e1;
 }
 </style>
 

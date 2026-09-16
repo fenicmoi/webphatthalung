@@ -4,10 +4,29 @@ $galCategories = get_gallery_categories();
 ?>
 
 <!-- ON-PAGE GALLERY STUDIO (จัดการคลังภาพกิจกรรมพร้อมอัปโหลดหลายภาพ) -->
+<style>
+#galleryStudioModal .modal-body::-webkit-scrollbar {
+    width: 6px;
+}
+#galleryStudioModal .modal-body::-webkit-scrollbar-track {
+    background: rgba(15, 23, 42, 0.4);
+    border-radius: 4px;
+}
+#galleryStudioModal .modal-body::-webkit-scrollbar-thumb {
+    background: rgba(56, 189, 248, 0.4);
+    border-radius: 4px;
+}
+#galleryStudioModal .modal-body::-webkit-scrollbar-thumb:hover {
+    background: rgba(56, 189, 248, 0.7);
+}
+</style>
+
 <div class="modal fade" id="galleryStudioModal" tabindex="-1" aria-labelledby="galleryStudioTitle" aria-hidden="true" data-bs-backdrop="static">
     <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content glass-modal border-0 rounded-4 shadow-lg" style="background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(25px); border: 1px solid rgba(56, 189, 248, 0.35) !important; color: #f8fafc;">
-            <div class="modal-header border-bottom border-secondary border-opacity-25 py-3 px-4">
+        <form class="modal-content glass-modal border-0 rounded-4 shadow-lg" id="galleryStudioForm" onsubmit="GalleryStudio.save(event)" style="background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(25px); border: 1px solid rgba(56, 189, 248, 0.35) !important; color: #f8fafc; max-height: calc(100vh - 3.5rem); display: flex; flex-direction: column;">
+            <input type="hidden" name="id" id="galId">
+
+            <div class="modal-header border-bottom border-secondary border-opacity-25 py-3 px-4 flex-shrink-0">
                 <div class="d-flex align-items-center gap-3">
                     <div class="p-3 rounded-3 text-dark fw-bold d-flex align-items-center justify-content-center" style="background: linear-gradient(135deg, #f59e0b, #fbbf24); width: 48px; height: 48px;">
                         <i class="fa-solid fa-camera-retro fs-3"></i>
@@ -20,97 +39,93 @@ $galCategories = get_gallery_categories();
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
-            <form id="galleryStudioForm" onsubmit="GalleryStudio.save(event)">
-                <input type="hidden" name="id" id="galId">
+            <div class="modal-body px-4 py-3" style="overflow-y: auto; flex: 1 1 auto;">
+                <!-- 1. ชื่ออัลบั้ม -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold text-warning small">
+                        <i class="fa-solid fa-heading me-1"></i> ชื่ออัลบั้มกิจกรรม / งานประเพณี <span class="text-danger">*</span>
+                    </label>
+                    <input type="text" class="form-control bg-dark text-white border-secondary border-opacity-50 py-2 rounded-3" name="title" id="galTitle" placeholder="เช่น งานประเพณีแข่งโพนและลากพระ ประจำปี 2569..." required>
+                </div>
 
-                <div class="modal-body px-4 py-4">
-                    <!-- 1. ชื่ออัลบั้ม -->
-                    <div class="mb-3">
+                <div class="row g-3 mb-3">
+                    <!-- 2. หมวดหมู่ -->
+                    <div class="col-md-6">
                         <label class="form-label fw-bold text-warning small">
-                            <i class="fa-solid fa-heading me-1"></i> ชื่ออัลบั้มกิจกรรม / งานประเพณี <span class="text-danger">*</span>
+                            <i class="fa-solid fa-folder me-1"></i> หมวดหมู่กิจกรรม
                         </label>
-                        <input type="text" class="form-control bg-dark text-white border-secondary border-opacity-50 py-2 rounded-3" name="title" id="galTitle" placeholder="เช่น งานประเพณีแข่งโพนและลากพระ ประจำปี 2569..." required>
+                        <select class="form-select bg-dark text-white border-secondary border-opacity-50 py-2 rounded-3" name="category" id="galCategory">
+                            <?php foreach ($galCategories as $gCat): ?>
+                                <option value="<?= esc($gCat) ?>"><?= esc($gCat) ?></option>
+                            <?php endforeach; ?>
+                        </select>
                     </div>
 
-                    <div class="row g-3 mb-4">
-                        <!-- 2. หมวดหมู่ -->
-                        <div class="col-md-6">
-                            <label class="form-label fw-bold text-warning small">
-                                <i class="fa-solid fa-folder me-1"></i> หมวดหมู่กิจกรรม
-                            </label>
-                            <select class="form-select bg-dark text-white border-secondary border-opacity-50 py-2 rounded-3" name="category" id="galCategory">
-                                <?php foreach ($galCategories as $gCat): ?>
-                                    <option value="<?= esc($gCat) ?>"><?= esc($gCat) ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-
-                        <!-- 3. วันที่จัดกิจกรรม -->
-                        <div class="col-md-6">
-                            <label class="form-label fw-bold text-warning small">
-                                <i class="fa-solid fa-calendar-day me-1"></i> วันที่จัดกิจกรรม
-                            </label>
-                            <input type="date" class="form-control bg-dark text-white border-secondary border-opacity-50 py-2 rounded-3" name="date" id="galDate" value="<?= date('Y-m-d') ?>">
-                        </div>
-                    </div>
-
-                    <!-- 4. ภาพปก (Cover Image) -->
-                    <div class="card border-secondary border-opacity-25 rounded-4 p-3 mb-4" style="background: rgba(255,255,255,0.03);">
-                        <label class="form-label fw-bold text-info small d-block mb-2">
-                            <i class="fa-solid fa-image me-1"></i> ภาพปกอัลบั้ม (Cover Image / Thumbnail)
+                    <!-- 3. วันที่จัดกิจกรรม -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-warning small">
+                            <i class="fa-solid fa-calendar-day me-1"></i> วันที่จัดกิจกรรม
                         </label>
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label class="small text-white-50 d-block mb-1">อัปโหลดไฟล์รูปปก (JPG / PNG):</label>
-                                <input type="file" class="form-control form-control-sm bg-dark text-white border-secondary border-opacity-50" name="cover_file" id="galCoverFile" accept="image/*">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="small text-white-50 d-block mb-1">หรือระบุลิงก์รูปภาพปก (URL):</label>
-                                <input type="text" class="form-control form-control-sm bg-dark text-white border-secondary border-opacity-50" name="cover_url" id="galCoverUrl" placeholder="https://...">
-                            </div>
-                        </div>
-                        <div id="coverPreviewContainer" class="mt-2 d-none">
-                            <img id="coverImgPreview" src="" alt="Cover Preview" class="rounded-3 shadow-sm border border-secondary" style="max-height: 120px; object-fit: cover;">
-                        </div>
-                    </div>
-
-                    <!-- 5. อัปโหลดรูปภาพกิจกรรมในชุด (Multiple Photos Upload) -->
-                    <div class="card border-secondary border-opacity-25 rounded-4 p-3 mb-4" style="background: rgba(14, 165, 233, 0.05); border-color: rgba(56, 189, 248, 0.3) !important;">
-                        <label class="form-label fw-bold text-warning small d-block mb-2">
-                            <i class="fa-solid fa-images me-1"></i> อัปโหลดรูปภาพในอัลบั้ม (เลือกได้หลายภาพในครั้งเดียว)
-                        </label>
-                        <div class="p-4 border border-dashed border-info border-opacity-50 rounded-3 text-center transition-all hover-bg-light" style="background: rgba(0,0,0,0.2);">
-                            <i class="fa-solid fa-cloud-arrow-up fs-2 text-info mb-2 d-block"></i>
-                            <span class="d-block text-white fw-bold mb-1">คลิกหรือเลือกหลายไฟล์เพื่อนำเข้าคลังภาพ</span>
-                            <small class="text-white-50 d-block mb-3">รองรับ JPG, PNG, WEBP หรือ HEIC (เลือกทีละหลายไฟล์ได้)</small>
-                            <input type="file" class="form-control bg-dark text-white border-info" name="gallery_photos[]" id="galMultiPhotos" accept="image/*" multiple>
-                        </div>
-
-                        <div class="mt-3">
-                            <label class="small text-white-50 d-block mb-1">เพิ่มด้วยลิงก์ URL (พิมพ์ URL คนละบรรทัด หรือคั่นด้วยลูกน้ำ):</label>
-                            <textarea class="form-control form-control-sm bg-dark text-white border-secondary border-opacity-50" name="external_urls" id="galExternalUrls" rows="2" placeholder="https://domain.com/photo1.jpg&#10;https://domain.com/photo2.jpg"></textarea>
-                        </div>
-                    </div>
-
-                    <!-- 6. รายการรูปภาพเดิมในอัลบั้ม (สำหรับการแก้ไข) -->
-                    <div id="existingPhotosCard" class="card border-secondary border-opacity-25 rounded-4 p-3 d-none" style="background: rgba(255,255,255,0.02);">
-                        <label class="form-label fw-bold text-success small d-block mb-2">
-                            <i class="fa-solid fa-photo-film me-1"></i> รูปภาพปัจจุบันในอัลบั้ม (<span id="existingCount">0</span> ภาพ) - คลิกไอคอนถังขยะเพื่อลบเฉพาะรูป
-                        </label>
-                        <div class="row g-2" id="existingPhotosGrid">
-                            <!-- Populated dynamically via JS -->
-                        </div>
+                        <input type="date" class="form-control bg-dark text-white border-secondary border-opacity-50 py-2 rounded-3" name="date" id="galDate" value="<?= date('Y-m-d') ?>">
                     </div>
                 </div>
 
-                <div class="modal-footer border-top border-secondary border-opacity-25 px-4 py-3 d-flex justify-content-between">
-                    <button type="button" class="btn btn-outline-secondary text-light rounded-pill px-4" data-bs-dismiss="modal">ยกเลิก</button>
-                    <button type="submit" class="btn btn-warning fw-bold text-dark rounded-pill px-5 shadow-sm" id="galBtnSave">
-                        <i class="fa-solid fa-floppy-disk me-2"></i>บันทึกอัลบั้มกิจกรรม
-                    </button>
+                <!-- 4. ภาพปก (Cover Image) -->
+                <div class="card border-secondary border-opacity-25 rounded-4 p-3 mb-3" style="background: rgba(255,255,255,0.03);">
+                    <label class="form-label fw-bold text-info small d-block mb-2">
+                        <i class="fa-solid fa-image me-1"></i> ภาพปกอัลบั้ม (Cover Image / Thumbnail)
+                    </label>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="small text-white-50 d-block mb-1">อัปโหลดไฟล์รูปปก (JPG / PNG):</label>
+                            <input type="file" class="form-control form-control-sm bg-dark text-white border-secondary border-opacity-50" name="cover_file" id="galCoverFile" accept="image/*">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="small text-white-50 d-block mb-1">หรือระบุลิงก์รูปภาพปก (URL):</label>
+                            <input type="text" class="form-control form-control-sm bg-dark text-white border-secondary border-opacity-50" name="cover_url" id="galCoverUrl" placeholder="https://...">
+                        </div>
+                    </div>
+                    <div id="coverPreviewContainer" class="mt-2 d-none">
+                        <img id="coverImgPreview" src="" alt="Cover Preview" class="rounded-3 shadow-sm border border-secondary" style="max-height: 120px; object-fit: cover;">
+                    </div>
                 </div>
-            </form>
-        </div>
+
+                <!-- 5. อัปโหลดรูปภาพกิจกรรมในชุด (Multiple Photos Upload) -->
+                <div class="card border-secondary border-opacity-25 rounded-4 p-3 mb-3" style="background: rgba(14, 165, 233, 0.05); border-color: rgba(56, 189, 248, 0.3) !important;">
+                    <label class="form-label fw-bold text-warning small d-block mb-2">
+                        <i class="fa-solid fa-images me-1"></i> อัปโหลดรูปภาพในอัลบั้ม (เลือกได้หลายภาพในครั้งเดียว)
+                    </label>
+                    <div class="p-3 border border-dashed border-info border-opacity-50 rounded-3 text-center transition-all hover-bg-light" style="background: rgba(0,0,0,0.2);">
+                        <i class="fa-solid fa-cloud-arrow-up fs-2 text-info mb-2 d-block"></i>
+                        <span class="d-block text-white fw-bold mb-1">คลิกหรือเลือกหลายไฟล์เพื่อนำเข้าคลังภาพ</span>
+                        <small class="text-white-50 d-block mb-3">รองรับ JPG, PNG, WEBP หรือ HEIC (เลือกทีละหลายไฟล์ได้)</small>
+                        <input type="file" class="form-control bg-dark text-white border-info" name="gallery_photos[]" id="galMultiPhotos" accept="image/*" multiple>
+                    </div>
+
+                    <div class="mt-3">
+                        <label class="small text-white-50 d-block mb-1">เพิ่มด้วยลิงก์ URL (พิมพ์ URL คนละบรรทัด หรือคั่นด้วยลูกน้ำ):</label>
+                        <textarea class="form-control form-control-sm bg-dark text-white border-secondary border-opacity-50" name="external_urls" id="galExternalUrls" rows="2" placeholder="https://domain.com/photo1.jpg&#10;https://domain.com/photo2.jpg"></textarea>
+                    </div>
+                </div>
+
+                <!-- 6. รายการรูปภาพเดิมในอัลบั้ม (สำหรับการแก้ไข) -->
+                <div id="existingPhotosCard" class="card border-secondary border-opacity-25 rounded-4 p-3 d-none" style="background: rgba(255,255,255,0.02);">
+                    <label class="form-label fw-bold text-success small d-block mb-2">
+                        <i class="fa-solid fa-photo-film me-1"></i> รูปภาพปัจจุบันในอัลบั้ม (<span id="existingCount">0</span> ภาพ) - คลิกไอคอนถังขยะเพื่อลบเฉพาะรูป
+                    </label>
+                    <div class="row g-2" id="existingPhotosGrid">
+                        <!-- Populated dynamically via JS -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer border-top border-secondary border-opacity-25 px-4 py-3 d-flex justify-content-between flex-shrink-0" style="background: rgba(15, 23, 42, 0.7);">
+                <button type="button" class="btn btn-outline-secondary text-light rounded-pill px-4" data-bs-dismiss="modal">ยกเลิก</button>
+                <button type="submit" class="btn btn-warning fw-bold text-dark rounded-pill px-5 shadow-sm" id="galBtnSave">
+                    <i class="fa-solid fa-floppy-disk me-2"></i>บันทึกอัลบั้มกิจกรรม
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 

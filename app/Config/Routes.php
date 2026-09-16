@@ -95,7 +95,23 @@ $routes->group('admin', ['namespace' => 'App\Controllers\Admin', 'filter' => 'au
     $routes->get('procurement/get-inline/(:any)', 'ProcurementManager::getInline/$1');
     $routes->post('procurement/save-inline', 'ProcurementManager::saveInline');
     $routes->post('procurement/delete-inline/(:any)', 'ProcurementManager::deleteInline/$1');
+
+    // Database & Hosting Table Manager Routes
+    $routes->get('database-manager', 'DatabaseManager::index');
+    $routes->post('database-manager/migrate', 'DatabaseManager::runMigrations');
+    $routes->post('database-manager/repair-columns', 'DatabaseManager::repairColumns');
+    $routes->post('database-manager/sync-data', 'DatabaseManager::syncData');
+    $routes->get('database-manager/inspect-table/(:any)', 'DatabaseManager::inspectTable/$1');
+    $routes->post('database-manager/reset-token', 'DatabaseManager::resetToken');
+    $routes->post('database-manager/execute-sql', 'DatabaseManager::executeSql');
+    $routes->post('database-manager/import-sql', 'DatabaseManager::importSqlFile');
+    $routes->get('database-manager/export-sql', 'DatabaseManager::exportSqlFile');
+    $routes->post('database-manager/optimize-tables', 'DatabaseManager::repairOptimizeTables');
 });
+
+// Direct Web-based Hosting Table Updater (Accessible with ?token=...)
+$routes->match(['get', 'post'], 'admin/database-manager/direct-update', 'Admin\DatabaseManager::directUpdate');
+$routes->match(['get', 'post'], 'update-db', 'Admin\DatabaseManager::directUpdate');
 
 /*
  * --------------------------------------------------------------------

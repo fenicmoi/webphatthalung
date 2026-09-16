@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="th" data-bs-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>คลังภาพกิจกรรมจังหวัดพัทลุง | Phatthalung Province Visual Archive</title>
+  <meta name="description" content="ศูนย์รวมภาพถ่ายกิจกรรม ภารกิจสำคัญ และงานบุญประเพณีของจังหวัดพัทลุง">
+
+  <!-- Google Font: Noto Sans Thai -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap 5.3.3 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Font Awesome 6.5.1 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ==================================================
+       1. TOP BAR
+       ================================================== -->
+  <header>
+    <div class="gov-topbar">
+      <div class="container-xl">
+        <div class="d-flex justify-content-between align-items-center">
+          
+          <!-- Left: Information (Desktop: full, Mobile: compact) -->
+          <div class="d-flex align-items-center gap-3">
+            <span class="d-none d-md-inline"><i class="fa-solid fa-building-columns me-1 text-warning"></i>ศูนย์ราชการจังหวัดพัทลุง</span>
+            <span class="d-none d-lg-inline text-white-50">|</span>
+            <span><i class="fa-solid fa-phone-volume me-1 text-warning"></i>สายด่วน <a href="tel:1567" class="fw-bold">1567</a> หรือ <a href="tel:074613007">074-613007</a></span>
+          </div>
+
+          <!-- Right: Accessibility & Tools -->
+          <div class="d-flex align-items-center gap-3">
+            <!-- Font Size Adjuster -->
+            <div class="d-none d-sm-flex align-items-center gap-1">
+              <span class="small me-1 text-white-50">ขนาดอักษร:</span>
+              <button type="button" class="topbar-tool-btn btn-font-size" data-size="0.9" title="ลดขนาดตัวอักษร">A-</button>
+              <button type="button" class="topbar-tool-btn btn-font-size active" data-size="1" title="ขนาดตัวอักษรปกติ">A</button>
+              <button type="button" class="topbar-tool-btn btn-font-size" data-size="1.15" title="เพิ่มขนาดตัวอักษร">A+</button>
+            </div>
+
+            <span class="text-white-50 d-none d-sm-inline">|</span>
+
+            <!-- Language -->
+            <div class="d-flex align-items-center gap-1">
+              <span class="badge bg-success-subtle text-success fw-bold px-2 py-1">TH</span>
+              <a href="#" class="small text-white-50 text-decoration-none px-1 hover-white">EN</a>
+            </div>
+
+            <span class="text-white-50">|</span>
+
+            <!-- Dark Mode Toggle -->
+            <a href="#" id="darkModeToggle" class="small text-decoration-none d-inline-flex align-items-center">
+              <i class="fa-solid fa-moon me-1"></i> โหมดมืด
+            </a>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================================================
+         2. NAVBAR
+         ================================================== -->
+    <nav class="navbar navbar-expand-lg gov-navbar sticky-top">
+      <div class="container-xl">
+        
+        <!-- Brand / Logo -->
+        <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+          <!-- Phatthalung Provincial Emblem SVG -->
+          <svg class="navbar-brand-logo" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="ตราสัญลักษณ์จังหวัดพัทลุง">
+            <circle cx="50" cy="50" r="46" fill="#003B30" stroke="#00A878" stroke-width="4"/>
+            <path d="M 20 75 C 35 55, 45 30, 50 18 C 55 30, 65 55, 80 75 Z" fill="#006B54" stroke="#EAF7F2" stroke-width="2"/>
+            <ellipse cx="50" cy="38" rx="6" ry="9" fill="#003B30" stroke="#fbbf24" stroke-width="2"/>
+            <circle cx="50" cy="38" r="3" fill="#fbbf24"/>
+            <path d="M 12 75 Q 50 82 88 75" stroke="#00A878" stroke-width="3" fill="none"/>
+          </svg>
+          <div>
+            <div class="brand-title-th">จังหวัดพัทลุง</div>
+            <div class="brand-title-en">PHATTHALUNG PROVINCE</div>
+          </div>
+        </a>
+
+        <!-- Hamburger Toggler for Mobile -->
+        <button class="navbar-toggler border-0 text-white" type="button" data-bs-toggle="collapse" data-bs-target="#govNavbarNav" aria-controls="govNavbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <i class="fa-solid fa-bars-staggered fs-4"></i>
+        </button>
+
+        <!-- Nav Links -->
+        <div class="collapse navbar-collapse" id="govNavbarNav">
+          <ul class="navbar-nav ms-auto align-items-lg-center gap-1 gap-lg-2">
+            <li class="nav-item">
+              <a class="nav-link" href="#"><i class="fa-solid fa-house me-1 small"></i>หน้าหลัก</a>
+            </li>
+
+            <!-- Dropdown: จังหวัดพัทลุง -->
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="provinceDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                จังหวัดพัทลุง
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="provinceDropdown">
+                <li><a class="dropdown-item" href="#"><i class="fa-solid fa-circle-info me-2 text-warning"></i>ข้อมูลทั่วไปจังหวัด</a></li>
+                <li><a class="dropdown-item" href="#"><i class="fa-solid fa-user-tie me-2 text-warning"></i>ทำเนียบผู้บริหาร</a></li>
+                <li><a class="dropdown-item" href="#"><i class="fa-solid fa-compass me-2 text-warning"></i>วิสัยทัศน์และยุทธศาสตร์</a></li>
+                <li><hr class="dropdown-divider border-secondary opacity-25"></li>
+                <li><a class="dropdown-item active" href="#"><i class="fa-solid fa-camera-retro me-2 text-warning"></i>คลังภาพกิจกรรม</a></li>
+              </ul>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link" href="#">บริการประชาชน e-Service</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">ข่าวประชาสัมพันธ์</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">ติดต่อเรา</a>
+            </li>
+            <li class="nav-item ms-lg-2 mt-2 mt-lg-0">
+              <a class="btn btn-nav-login d-inline-flex align-items-center gap-2" href="#">
+                <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                <span>Login</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <!-- ==================================================
+         3. HERO BANNER & 4. BREADCRUMB
+         ================================================== -->
+    <section class="gov-hero">
+      <div class="gov-hero-overlay"></div>
+      <div class="container-xl">
+        <div class="gov-hero-content">
+          <!-- 4. Breadcrumb -->
+          <nav aria-label="breadcrumb" class="gov-breadcrumb">
+            <ol class="breadcrumb mb-2">
+              <li class="breadcrumb-item">
+                <a href="#"><i class="fa-solid fa-house me-1"></i>หน้าหลัก</a>
+              </li>
+              <li class="breadcrumb-item active" aria-current="page">คลังภาพกิจกรรมจังหวัดพัทลุง</li>
+            </ol>
+          </nav>
+
+          <!-- 3. Title & Description -->
+          <h1 class="gov-hero-title mb-2">คลังภาพกิจกรรมจังหวัดพัทลุง</h1>
+          <p class="gov-hero-desc">
+            รวมภาพบรรยากาศกิจกรรมสำคัญ งานประเพณี และเรื่องราวของจังหวัดพัทลุง
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================================================
+         5. CATEGORY FILTER & 6. SEARCH
+         ================================================== -->
+    <section class="filter-search-section">
+      <div class="container-xl">
+        <div class="row align-items-center g-3">
+          
+          <!-- 5. Category Filter Pills (Desktop left, Mobile horizontal scroll) -->
+          <div class="col-12 col-lg-8 order-2 order-lg-1">
+            <div class="filter-pills-wrapper">
+              <button type="button" class="btn btn-filter-pill active" data-category="ทั้งหมด">
+                ทั้งหมด (18)
+              </button>
+              <button type="button" class="btn btn-filter-pill" data-category="ประเพณีและวัฒนธรรม">
+                ประเพณีและวัฒนธรรม (18)
+              </button>
+              <button type="button" class="btn btn-filter-pill" data-category="ท่องเที่ยวและเศรษฐกิจ">
+                ท่องเที่ยวและเศรษฐกิจ (0)
+              </button>
+              <button type="button" class="btn btn-filter-pill" data-category="กิจกรรมสาธารณประโยชน์">
+                กิจกรรมสาธารณประโยชน์ (0)
+              </button>
+              <button type="button" class="btn btn-filter-pill" data-category="การท่องเที่ยวและเศรษฐกิจ">
+                การท่องเที่ยวและเศรษฐกิจ (0)
+              </button>
+              <button type="button" class="btn btn-filter-pill" data-category="การศึกษานวัตกรรม">
+                การศึกษานวัตกรรม (0)
+              </button>
+            </div>
+          </div>
+
+          <!-- 6. Search Box (Desktop right, Mobile full width) -->
+          <div class="col-12 col-lg-4 order-1 order-lg-2">
+            <div class="input-group search-input-group">
+              <input type="text" id="searchInput" class="form-control" placeholder="ค้นหาชื่อกิจกรรม..." aria-label="ค้นหาชื่อกิจกรรม">
+              <button class="btn btn-search" type="button" id="searchBtn" aria-label="ค้นหา">
+                <i class="fa-solid fa-magnifying-glass"></i>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================================================
+         7. GALLERY GRID & 8. CARDS
+         ================================================== -->
+    <section class="gallery-grid-section py-4">
+      <div class="container-xl">
+        <!-- Cards Container (Populated dynamically by JavaScript) -->
+        <div class="row g-4" id="galleryGrid">
+          <!-- Dynamically generated gallery cards -->
+        </div>
+
+        <!-- Empty State Message -->
+        <div id="emptyState" class="text-center py-5 d-none">
+          <div class="mb-3">
+            <i class="fa-regular fa-folder-open text-muted" style="font-size: 3.5rem;"></i>
+          </div>
+          <h3 class="fw-bold mb-2">ไม่พบกิจกรรมที่ค้นหา</h3>
+          <p class="text-muted mb-3">กรุณาลองค้นหาด้วยคำอื่น หรือเลือกหมวดหมู่อื่น</p>
+          <button type="button" id="resetFilterBtn" class="btn btn-primary rounded-pill px-4" style="background-color: var(--primary); border: none;">
+            <i class="fa-solid fa-rotate-left me-1"></i> ล้างการค้นหา
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ==================================================
+       14. FLOATING ACTION BUTTONS
+       ================================================== -->
+  <aside aria-label="การติดต่อและผู้ช่วยอัจฉริยะ">
+    <!-- Bottom Left: ติดต่อเจ้าหน้าที่ -->
+    <div class="floating-action-left">
+      <a href="tel:074613007" class="btn btn-floating-officer">
+        <i class="fa-solid fa-headset text-success fs-5"></i>
+        <span>ติดต่อเจ้าหน้าที่</span>
+      </a>
+    </div>
+
+    <!-- Bottom Right: ถามน้องโสธร AI -->
+    <div class="floating-action-right">
+      <button type="button" class="btn btn-floating-ai" title="สอบถามผู้ช่วยอัจฉริยะประจำจังหวัด">
+        <span class="pulse-dot"></span>
+        <i class="fa-solid fa-robot fs-5"></i>
+        <span>ถามน้องโสธร AI</span>
+      </button>
+    </div>
+
+    <!-- Back to Top Button -->
+    <button type="button" id="backToTopBtn" class="btn-back-to-top" aria-label="กลับสู่ด้านบน" title="กลับสู่ด้านบน">
+      <i class="fa-solid fa-arrow-up"></i>
+    </button>
+  </aside>
+
+  <!-- ==================================================
+       FOOTER
+       ================================================== -->
+  <footer class="gov-footer">
+    <div class="container-xl">
+      <div class="row g-4">
+        
+        <!-- Col 1: About -->
+        <div class="col-lg-5 col-md-6">
+          <div class="d-flex align-items-center gap-2 mb-3">
+            <svg width="40" height="40" viewBox="0 0 100 100" fill="none">
+              <circle cx="50" cy="50" r="46" fill="#003B30" stroke="#00A878" stroke-width="4"/>
+              <path d="M 20 75 C 35 55, 45 30, 50 18 C 55 30, 65 55, 80 75 Z" fill="#006B54" stroke="#EAF7F2" stroke-width="2"/>
+            </svg>
+            <div>
+              <h5 class="fw-bold mb-0 text-white">ศาลากลางจังหวัดพัทลุง</h5>
+              <small class="text-white-50">Phatthalung Provincial Hall</small>
+            </div>
+          </div>
+          <p class="small text-white-50 mb-2">
+            เลขที่ 15 ถนนราเมศวร์ ตำบลคูหาสวรรค์ อำเภอเมืองพัทลุง จังหวัดพัทลุง 93000
+          </p>
+          <p class="small text-white-50 mb-0">
+            โทรศัพท์: 074-613007 | โทรสาร: 074-613409 | อีเมล: saraban_phatthalung@moi.go.th
+          </p>
+        </div>
+
+        <!-- Col 2: Quick Links -->
+        <div class="col-lg-3 col-md-6">
+          <h6 class="text-white fw-bold mb-3 border-start border-3 border-success ps-2">เมนูด่วน</h6>
+          <ul class="list-unstyled small d-flex flex-column gap-2 mb-0">
+            <li><a href="#"><i class="fa-solid fa-angle-right me-2 text-warning"></i>ระบบรับเรื่องร้องเรียนร้องทุกข์</a></li>
+            <li><a href="#"><i class="fa-solid fa-angle-right me-2 text-warning"></i>ศูนย์ข้อมูลข่าวสารราชการ</a></li>
+            <li><a href="#"><i class="fa-solid fa-angle-right me-2 text-warning"></i>ประกาศจัดซื้อจัดจ้าง e-GP</a></li>
+            <li><a href="#"><i class="fa-solid fa-angle-right me-2 text-warning"></i>ปฏิทินกิจกรรมจังหวัด</a></li>
+          </ul>
+        </div>
+
+        <!-- Col 3: Standards & Accessibility -->
+        <div class="col-lg-4 col-md-12">
+          <h6 class="text-white fw-bold mb-3 border-start border-3 border-success ps-2">มาตรฐานเว็บไซต์</h6>
+          <p class="small text-white-50 mb-3">
+            เว็บไซต์นี้พัฒนาตามมาตรฐานเว็บไซต์ภาครัฐ (Government Website Standard) และมาตรฐานการเข้าถึงข้อมูลสำหรับทุกคน (Web Content Accessibility Guidelines - WCAG 2.1)
+          </p>
+          <div class="d-flex gap-2">
+            <span class="badge bg-dark border border-secondary text-white-50 px-2 py-1">Bootstrap 5</span>
+            <span class="badge bg-dark border border-secondary text-white-50 px-2 py-1">HTML5 / W3C</span>
+            <span class="badge bg-dark border border-secondary text-white-50 px-2 py-1">SSL Encrypted</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Copyright -->
+      <div class="footer-bottom text-center">
+        <p class="mb-0">
+          สงวนลิขสิทธิ์ &copy; 2568 จังหวัดพัทลุง (Phatthalung Province). สงวนสิทธิ์ทุกประการ.
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ==================================================
+       13. MODAL (ดูรายละเอียดกิจกรรม)
+       ================================================== -->
+  <div class="modal fade gov-modal" id="detailModal" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1" id="modalCategory">
+              หมวดหมู่
+            </span>
+            <span class="small text-muted" id="modalDate">วันที่</span>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <img src="" alt="" id="modalImage" class="modal-image-preview">
+          <h2 class="h4 fw-bold mb-2 text-dark" id="modalTitle">ชื่อกิจกรรม</h2>
+          <div class="d-flex align-items-center gap-2 text-muted small mb-3">
+            <i class="fa-solid fa-location-dot text-success"></i>
+            <span id="modalLocation">สถานที่</span>
+            <span class="mx-1">&bull;</span>
+            <i class="fa-solid fa-camera text-secondary"></i>
+            <span id="modalPhotoCount">0 ภาพ</span>
+          </div>
+          <hr class="opacity-10 my-3">
+          <p class="text-secondary" id="modalDescription" style="line-height: 1.8;">รายละเอียดกิจกรรม...</p>
+        </div>
+        <div class="modal-footer border-0 pt-0">
+          <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">ปิดหน้าต่าง</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap 5.3.3 Bundle JS (with Popper) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Custom JavaScript -->
+  <script src="js/main.js"></script>
+</body>
+</html>

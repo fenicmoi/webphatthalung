@@ -165,6 +165,9 @@ try {
 }
 ?>
 
+<!-- 1.3 PR & PARTNER BANNERS 3D SLIDER (แถบแบนเนอร์ประชาสัมพันธ์และหน่วยงานสัมพันธ์) -->
+<?= $this->include('components/pr_banner_carousel') ?>
+
 <!-- 3. NEWS & MEDIA HUB (ศูนย์รวมข่าวสารและสื่อมัลติมีเดีย) -->
 <?php 
 try {
@@ -173,53 +176,6 @@ try {
     echo '<!-- news_media_hub error: ' . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8') . ' in ' . htmlspecialchars($e->getFile(), ENT_QUOTES, 'UTF-8') . ':' . $e->getLine() . ' -->';
 }
 ?>
-
-<!-- 2. PUBLIC e-SERVICES GRID (ซ่อนไว้ชั่วคราวตามคำขอ) -->
-<?php /*
-<section id="services" class="my-5 py-2">
-    <div class="d-flex flex-wrap align-items-end justify-content-between mb-4">
-        <div>
-            <h3 class="fw-bold mb-1"><i class="fa-solid fa-concierge-bell text-primary me-2"></i>ศูนย์บริการประชาชน (Online e-Services)</h3>
-            <p style="color: var(--text-secondary); margin: 0;">เมนูเข้าถึงรวดเร็วสำหรับยื่นเรื่องและตรวจสอบเอกสารสาธารณะ</p>
-        </div>
-        <small style="color: var(--text-muted);"><i class="fa-solid fa-lock text-success me-1"></i>ข้อมูลเข้ารหัสความปลอดภัยระดับ SSL</small>
-    </div>
-
-    <div class="row g-4">
-        <?php foreach ($services as $srv): ?>
-        <div class="col-md-6 col-lg-4">
-            <div class="card border-0 h-100 hover-lift d-flex flex-column justify-content-between p-4" 
-                 style="cursor: pointer; border-radius: 20px; background: var(--card-bg, #ffffff); box-shadow: 0 4px 15px rgba(0,0,0,0.03); transition: all 0.3s ease;" 
-                 onclick="<?= $srv['action'] ?>"
-                 onmouseover="this.style.boxShadow='0 10px 25px rgba(0,0,0,0.08)';"
-                 onmouseout="this.style.boxShadow='0 4px 15px rgba(0,0,0,0.03)';">
-                <div>
-                    <div class="d-flex align-items-center justify-content-between mb-3">
-                        <div style="width: 54px; height: 54px; border-radius: 16px; background: <?= $srv['color'] ?>15; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; color: <?= $srv['color'] ?>;">
-                            <i class="<?= $srv['icon'] ?>"></i>
-                        </div>
-                        <span style="color: var(--text-muted); font-size: 0.8rem; background: #f8fafc; padding: 4px 10px; border-radius: 30px;"><i class="fa-solid fa-arrow-right-to-bracket"></i> กดเข้าถึง</span>
-                    </div>
-                    <h5 class="fw-bold mb-2 text-dark"><?= $srv['title'] ?></h5>
-                    <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5; margin-bottom: 0;">
-                        <?= $srv['desc'] ?>
-                    </p>
-                </div>
-                <div class="mt-4 pt-3 border-top d-flex align-items-center justify-content-between" style="border-color: rgba(0,0,0,0.05) !important;">
-                    <span style="font-size: 0.8rem; color: <?= $srv['color'] ?>; font-weight: 600;">
-                        <i class="fa-regular fa-circle-check me-1"></i> บริการออนไลน์
-                    </span>
-                    <span class="text-primary fw-bold" style="font-size: 0.8rem;">อ่านคู่มือ <i class="fa-solid fa-chevron-right ms-1" style="font-size: 0.7rem;"></i></span>
-                </div>
-            </div>
-        </div>
-        <?php endforeach; ?>
-    </div>
-</section>
-*/ ?>
-
-<!-- 3.1 PR & PARTNER BANNERS SLIDER (แถบแบนเนอร์ประชาสัมพันธ์และหน่วยงานสัมพันธ์) -->
-<?= $this->include('components/pr_banner_carousel') ?>
 
 <!-- 4. GOVERNANCE & TRANSPARENCY HUB (ศูนย์ข้อมูลความโปร่งใสและจัดซื้อจัดจ้าง) -->
 <!-- ย้ายไปเข้าผ่านเมนูด้านบนแทนการแสดงผลหน้าหลัก -->

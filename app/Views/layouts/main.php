@@ -17,29 +17,46 @@
     <link rel="icon" type="image/png" href="<?= base_url('uploads/logo/logo_1787048018.png') ?>">
     <link rel="apple-touch-icon" href="<?= base_url('uploads/logo/logo_1787048018.png') ?>">
     
-    <!-- Google Fonts Preconnect (High-Speed Non-blocking) -->
+    <!-- Google Fonts (Preconnect + Non-blocking with font-display: swap) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Sarabun:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=Prompt:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Prompt:wght@500;600;700&family=Sarabun:wght@400;500;600;700&subset=thai,latin&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Prompt:wght@500;600;700&family=Sarabun:wght@400;500;600;700&subset=thai,latin&display=swap" media="print" onload="this.media='all'">
+    <noscript>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Prompt:wght@500;600;700&family=Sarabun:wght@400;500;600;700&subset=thai,latin&display=swap">
+    </noscript>
 
     <!-- Bootstrap 5.3 CSS CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     
-    <!-- FontAwesome 6 CDN (for Modern Icons) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- FontAwesome 6 CDN (Non-blocking with Noscript Fallback) -->
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" as="style">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    </noscript>
     
-    <!-- Custom Modern Stylesheet -->
-    <link rel="stylesheet" href="<?= base_url('assets/css/main.css?v=' . time()) ?>">
+    <!-- Custom Modern Stylesheet (Minified & Cache Busted) -->
+    <link rel="stylesheet" href="<?= function_exists('asset_min_url') ? asset_min_url('assets/css/main.css') : base_url('assets/css/main.css?v=' . time()) ?>">
     
     <?php 
-    $firstHero = function_exists('get_first_hero_image') ? get_first_hero_image() : null;
-    if ($firstHero): 
-        $preloadUrl = !empty($firstHero['webp_url']) ? $firstHero['webp_url'] : $firstHero['original_url'];
-        $preloadType = !empty($firstHero['webp_url']) ? 'image/webp' : 'image/jpeg';
+    ob_start();
+    $this->renderSection('head_preload');
+    $customPreload = ob_get_clean();
+
+    if (!empty(trim((string)$customPreload))) {
+        echo $customPreload . "\n";
+    } elseif (trim((string)uri_string(), '/') === '') {
+        // Only preload Hero slider on the homepage
+        $firstHero = function_exists('get_first_hero_image') ? get_first_hero_image() : null;
+        if ($firstHero) {
+            $preloadUrl = !empty($firstHero['webp_url']) ? $firstHero['webp_url'] : $firstHero['original_url'];
+            $preloadType = !empty($firstHero['webp_url']) ? 'image/webp' : 'image/jpeg';
+            echo '    <!-- Preload Hero LCP Image -->' . "\n";
+            echo '    <link rel="preload" as="image" href="' . esc($preloadUrl) . '" type="' . esc($preloadType) . '" fetchpriority="high">' . "\n";
+        }
+    }
     ?>
-    <!-- Preload Hero LCP Image -->
-    <link rel="preload" as="image" href="<?= $preloadUrl ?>" type="<?= $preloadType ?>" fetchpriority="high">
-    <?php endif; ?>
     
     <?php if (!empty($siteConfig['theme_accent'])): ?>
     <style>
@@ -52,38 +69,38 @@
 </head>
 <body>
     <div class="content-wrapper">
-        <!-- 0. Official Provincial Top Utility Bar (Dignified & Accessible) -->
-        <div class="gov-top-utility-bar d-none d-lg-block" style="background: #022c22; color: #cbd5e1; font-size: 0.8rem; padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.08);">
-            <div class="container d-flex justify-content-between align-items-center">
+        <!-- 0. Official Provincial Top Utility Bar (Dignified & Accessible - Height ~32px) -->
+        <div class="gov-top-utility-bar d-none d-lg-block" style="background: #003B30; color: #e2e8f0; font-size: 0.84rem; padding: 4px 0; min-height: 32px; border-bottom: 1px solid rgba(255,255,255,0.08); font-family: 'Prompt', sans-serif;">
+            <div class="container d-flex justify-content-between align-items-center" style="min-height: 24px;">
                 <div class="d-flex align-items-center gap-3">
                     <span><i class="fa-regular fa-calendar-check me-1.5 text-warning"></i><?= function_exists('thai_date') ? thai_date(date('Y-m-d'), 'day_full') : date('d/m/Y') ?></span>
                     <span class="opacity-40">•</span>
-                    <span><i class="fa-solid fa-phone me-1.5 text-success" style="color: #34d399 !important;"></i>สายด่วนศูนย์ดำรงธรรม 1567</span>
+                    <span><i class="fa-solid fa-phone me-1.5" style="color: #34d399 !important;"></i>สายด่วนศูนย์ดำรงธรรม 1567</span>
                     <span class="opacity-40">•</span>
                     <span><i class="fa-solid fa-landmark me-1.5 text-warning"></i>ศาลากลางจังหวัดพัทลุง โทร. 074-613409</span>
                 </div>
                 <div class="d-flex align-items-center gap-2">
                     <!-- Accessibility Font Size Adjuster -->
-                    <span class="text-white-50 small me-1">ขนาดตัวอักษร:</span>
-                    <button type="button" class="btn btn-xs btn-outline-light rounded px-1.5 py-0 font-btn" onclick="adjustPortalFontSize(-1)" style="font-size: 0.72rem; line-height: 1.3;" title="ลดขนาดตัวอักษร">ก-</button>
-                    <button type="button" class="btn btn-xs btn-outline-light rounded px-1.5 py-0 font-btn active-font" onclick="adjustPortalFontSize(0)" style="font-size: 0.75rem; line-height: 1.3;" title="ขนาดตัวอักษรปกติ">ก</button>
-                    <button type="button" class="btn btn-xs btn-outline-light rounded px-1.5 py-0 font-btn" onclick="adjustPortalFontSize(1)" style="font-size: 0.8rem; line-height: 1.3;" title="เพิ่มขนาดตัวอักษร">ก+</button>
+                    <span class="text-white-50 me-1" style="font-size: 0.82rem;">ขนาดตัวอักษร:</span>
+                    <button type="button" class="btn btn-xs btn-outline-light rounded px-2 py-0 font-btn" onclick="adjustPortalFontSize(-1)" style="font-size: 0.80rem; height: 22px; min-width: 22px; display: inline-flex; align-items: center; justify-content: center;" title="ลดขนาดตัวอักษร">ก-</button>
+                    <button type="button" class="btn btn-xs btn-outline-light rounded px-2 py-0 font-btn active-font" onclick="adjustPortalFontSize(0)" style="font-size: 0.82rem; height: 22px; min-width: 22px; display: inline-flex; align-items: center; justify-content: center;" title="ขนาดตัวอักษรปกติ">ก</button>
+                    <button type="button" class="btn btn-xs btn-outline-light rounded px-2 py-0 font-btn" onclick="adjustPortalFontSize(1)" style="font-size: 0.84rem; height: 22px; min-width: 22px; display: inline-flex; align-items: center; justify-content: center;" title="เพิ่มขนาดตัวอักษร">ก+</button>
                     <span class="opacity-40 mx-1">|</span>
                     <!-- Theme Toggle -->
-                    <button type="button" class="btn btn-xs btn-outline-light rounded px-2 py-0" onclick="App.theme.toggle()" title="สลับโหมดมืด/สว่าง" style="font-size: 0.75rem;">
+                    <button type="button" class="btn btn-xs btn-outline-light rounded px-2 py-0 d-inline-flex align-items-center justify-content-center" onclick="App.theme.toggle()" title="สลับโหมดมืด/สว่าง" style="font-size: 0.80rem; height: 22px; width: 26px;">
                         <i class="fa-solid fa-circle-half-stroke"></i>
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- Municipal Government Header -->
-        <header class="gov-header-wrapper">
-            <div class="gov-navbar">
+        <!-- Municipal Government Header (~76px Height) -->
+        <header class="gov-header-wrapper" style="min-height: 76px; display: flex; align-items: center;">
+            <div class="gov-navbar" style="min-height: 76px; width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 0 1rem; max-width: 1320px; margin: 0 auto;">
                 <!-- 1. Left Brand Identity -->
                 <div class="gov-brand-bar d-flex align-items-center justify-content-between">
-                    <a href="<?= base_url() ?>" class="gov-brand-ribbon">
-                        <div class="gov-logo-circle">
+                    <a href="<?= base_url() ?>" class="gov-brand-ribbon d-flex align-items-center gap-3">
+                        <div class="gov-logo-circle" style="width: 50px; height: 50px; border-radius: 50%; padding: 2px; display: flex; align-items: center; justify-content: center; background: #ffffff; border: 2px solid #00A878; box-shadow: 0 2px 8px rgba(0,0,0,0.15);">
                             <?php 
                             $siteLogo = function_exists('get_site_logo') ? get_site_logo() : ''; 
                             $rawLogoSetting = get_site_settings('site_logo');
@@ -94,20 +111,20 @@
                                     <?php if (!empty($logoSources['webp_url'])): ?>
                                         <source srcset="<?= $logoSources['webp_url'] ?>" type="image/webp">
                                     <?php endif; ?>
-                                    <img src="<?= htmlspecialchars($siteLogo) ?>" alt="ตราประจำจังหวัดพัทลุง" class="gov-logo-img" width="40" height="40" fetchpriority="high" decoding="async">
+                                    <img src="<?= htmlspecialchars($siteLogo) ?>" alt="ตราประจำจังหวัดพัทลุง" class="gov-logo-img" width="44" height="44" fetchpriority="high" decoding="async" style="object-fit: contain;">
                                 </picture>
                             <?php else: ?>
-                                <i class="fa-solid fa-building-columns text-primary" style="font-size: 1.5rem;"></i>
+                                <i class="fa-solid fa-building-columns text-success" style="font-size: 1.5rem;"></i>
                             <?php endif; ?>
                         </div>
-                        <div class="gov-title-stack">
-                            <span class="gov-title-main"><?= htmlspecialchars($siteConfig['site_title_th'] ?? 'จังหวัดพัทลุง') ?></span>
-                            <span class="gov-title-sub"><?= htmlspecialchars($siteConfig['site_title_en'] ?? $siteConfig['slogan'] ?? 'Phatthalung Provincial Digital Portal') ?></span>
+                        <div class="gov-title-stack d-flex flex-column justify-content-center">
+                            <span class="gov-title-main" style="font-size: 1.28rem; font-weight: 700; color: #ffffff; line-height: 1.2;"><?= htmlspecialchars($siteConfig['site_title_th'] ?? 'จังหวัดพัทลุง') ?></span>
+                            <span class="gov-title-sub" style="font-size: 0.78rem; font-weight: 500; color: rgba(255, 255, 255, 0.75); letter-spacing: 0.5px;">Phatthalung Province</span>
                         </div>
                     </a>
 
                     <button class="navbar-toggler d-xl-none border-0 p-2 me-2 text-white" type="button" onclick="toggleGovMobileNav()" aria-label="Toggle navigation">
-                        <i class="fa-solid fa-bars-staggered fa-lg" style="color: #60a5fa;"></i>
+                        <i class="fa-solid fa-bars-staggered fa-lg" style="color: #34d399;"></i>
                     </button>
                 </div>
 
@@ -251,11 +268,11 @@
     </div>
     </div>
 
-    <!-- Bootstrap 5.3 JS Bundle CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Bootstrap 5.3 JS Bundle CDN (Deferred - Non-blocking) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
     
-    <!-- Custom Application Interactive Script -->
-    <script src="<?= base_url('assets/js/app.js') ?>"></script>
+    <!-- Custom Application Interactive Script (Minified & Deferred) -->
+    <script src="<?= function_exists('asset_min_url') ? asset_min_url('assets/js/app.js') : base_url('assets/js/app.js') ?>" defer></script>
     
     <!-- Gov Portal Accessibility & Navigation Helpers -->
     <script>

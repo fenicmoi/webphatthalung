@@ -181,7 +181,7 @@
 
 <!-- ShadowBox Core JS Engine -->
 <script>
-const ShadowBox = (function() {
+var ShadowBox = (function() {
     let _gallery = [];
     let _currentIndex = 0;
     let _isZoomed = false;
@@ -355,7 +355,7 @@ const ShadowBox = (function() {
                 }
 
                 return {
-                    src: imgEl.src || parentAnchor?.href,
+                    src: imgEl.src || (parentAnchor ? parentAnchor.href : ''),
                     title: pageTitle,
                     caption: imgEl.getAttribute('alt') || `ภาพประกอบบทความ : ${pageTitle}`
                 };
@@ -371,4 +371,5 @@ const ShadowBox = (function() {
         toggleZoom: toggleZoom
     };
 })();
+window.ShadowBox = ShadowBox;
 </script>

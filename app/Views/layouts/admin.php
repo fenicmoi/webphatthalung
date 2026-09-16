@@ -12,17 +12,125 @@
     <link rel="icon" type="image/png" href="<?= base_url('uploads/logo/logo_1787048018.png') ?>">
     <link rel="apple-touch-icon" href="<?= base_url('uploads/logo/logo_1787048018.png') ?>">
 
-    <!-- Google Fonts Preconnect (High-Speed Non-blocking) -->
+    <!-- Google Fonts (Preconnect + Non-blocking with font-display: swap) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Sarabun:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=Prompt:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Prompt:wght@500;600;700&family=Sarabun:wght@400;500;600;700&subset=thai,latin&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Prompt:wght@500;600;700&family=Sarabun:wght@400;500;600;700&subset=thai,latin&display=swap" media="print" onload="this.media='all'">
+    <noscript>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Prompt:wght@500;600;700&family=Sarabun:wght@400;500;600;700&subset=thai,latin&display=swap">
+    </noscript>
 
-    <!-- Bootstrap 5.3 & FontAwesome -->
+    <!-- Bootstrap 5.3 & FontAwesome (Non-blocking) -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" as="style">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    </noscript>
     
-    <!-- Custom Design System -->
-    <link rel="stylesheet" href="<?= base_url('assets/css/main.css?v=' . time()) ?>">
+    <!-- Custom Design System (Minified & Cache Busted) -->
+    <link rel="stylesheet" href="<?= function_exists('asset_min_url') ? asset_min_url('assets/css/main.css') : base_url('assets/css/main.css?v=' . time()) ?>">
+    
+    <!-- Ergonomic UI Overrides for Admin Portal (High Contrast & Legibility) -->
+    <style>
+        /* 
+         * 🚀 THE MAGIC FIX FOR FONT SIZE ON LARGE SCREENS 🚀
+         * Bootstrap 5 relies on 'rem' for everything (fonts, margins, paddings, sizes).
+         * By scaling up the root html font-size, we proportionally enlarge the ENTIRE dashboard
+         * so the user doesn't have to zoom manually in the browser.
+         */
+        html {
+            font-size: 115% !important; /* Base size scales from 16px to ~18.4px globally */
+        }
+        body.admin-body-classic {
+            font-size: 1rem !important; /* Force body to use the new scaled rem size */
+        }
+
+        :root {
+            --sidebar-w: 320px;
+        }
+        .admin-sidebar {
+            width: var(--sidebar-w) !important;
+        }
+        .admin-main {
+            margin-left: var(--sidebar-w) !important;
+        }
+        
+        /* Typography Enhancements for 125% Scale / Farsightedness (สายตายาว 150) */
+        .sidebar-menu-list {
+            padding: 0.5rem 0.85rem !important;
+        }
+        .sidebar-menu-title {
+            font-size: 15px !important;
+            font-weight: 700 !important;
+            color: #cbd5e1 !important; 
+            padding: 1.25rem 0.5rem 0.5rem !important;
+            letter-spacing: 0.05em !important;
+        }
+        .sidebar-group-btn {
+            font-size: 17px !important; 
+            font-weight: 600 !important;
+            padding: 0.75rem 1rem !important;
+            color: #f8fafc !important;
+            margin-bottom: 0.35rem !important;
+            border-radius: 12px !important;
+        }
+        .sidebar-group-btn.has-active {
+            color: #ffffff !important;
+            background: rgba(255, 255, 255, 0.08) !important;
+        }
+        .sidebar-icon-box {
+            width: 38px !important;
+            height: 38px !important;
+            font-size: 1.15rem !important;
+            border-radius: 10px !important;
+        }
+        .sidebar-sublink {
+            font-size: 16px !important;
+            font-weight: 500 !important;
+            padding: 0.65rem 1rem !important;
+            color: #e2e8f0 !important;
+            margin-bottom: 0.25rem !important;
+            border-radius: 10px !important;
+        }
+        .sidebar-sublink:hover {
+            color: #ffffff !important;
+            background: rgba(255, 255, 255, 0.1) !important;
+        }
+        .sidebar-link-single {
+            font-size: 17px !important;
+            font-weight: 600 !important;
+            padding: 0.75rem 1rem !important;
+            color: #f8fafc !important;
+            border-radius: 12px !important;
+        }
+        .sidebar-profile {
+            padding: 1rem !important;
+            margin: 1rem 1rem 0.5rem !important;
+        }
+        .avatar-badge {
+            width: 44px !important;
+            height: 44px !important;
+            font-size: 1.15rem !important;
+            border-radius: 12px !important;
+        }
+        .sidebar-profile h6 {
+            font-size: 16px !important;
+            color: #ffffff !important;
+        }
+        .sidebar-profile small {
+            font-size: 14px !important;
+            color: #cbd5e1 !important;
+        }
+        .sidebar-footer .btn {
+            font-size: 16px !important;
+            padding: 0.6rem 0.75rem !important;
+        }
+        @media (max-width: 992px) {
+            .admin-main { margin-left: 0 !important; }
+        }
+    </style>
 </head>
 <body class="admin-body-classic">
     <div class="admin-wrapper">
@@ -39,7 +147,7 @@
                 <?php endif; ?>
                 <div class="d-flex flex-column">
                     <span style="font-size: 1rem; font-weight: 700; color: #ffffff; line-height: 1.2;">PHATTHALUNG</span>
-                    <span style="font-size: 0.7rem; font-weight: 600; color: #34d399; letter-spacing: 0.08em;">ADMIN PORTAL</span>
+                    <span style="font-size: 12px; font-weight: 600; color: #34d399; letter-spacing: 0.05em;">ADMIN PORTAL</span>
                 </div>
             </a>
 
@@ -47,10 +155,10 @@
             <div class="sidebar-profile">
                 <div class="avatar-badge"><?= session()->get('avatar_initials') ?? 'AD' ?></div>
                 <div style="overflow: hidden; flex: 1;">
-                    <h6 class="mb-0 fw-bold" style="text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">
+                    <h6 class="mb-0 fw-bold" style="text-overflow: ellipsis; white-space: nowrap; overflow: hidden; font-size: 14px;">
                         <?= session()->get('full_name') ?? 'ผู้ดูแลระบบ' ?>
                     </h6>
-                    <small style="color: #94a3b8; font-size: 0.72rem; display: flex; align-items: center;">
+                    <small style="color: #94a3b8; font-size: 13px; display: flex; align-items: center;">
                         <span class="status-dot"></span> <?= session()->get('role') === 'admin' ? 'Super Admin' : 'Officer' ?>
                     </small>
                 </div>
@@ -62,7 +170,7 @@
             $isProvinceActive = in_array($currMenu, ['executive_manager', 'governors', 'governor_policy', 'strategy_manager', 'project_manager']);
             $isCmsActive = in_array($currMenu, ['page_manager', 'menu_manager', 'banners', 'services', 'procurement', 'site_texts']);
             $isServicesActive = in_array($currMenu, ['mailbox_manager', 'contact_manager']);
-            $isSystemActive = in_array($currMenu, ['nora_ai', 'settings', 'users']);
+            $isSystemActive = in_array($currMenu, ['nora_ai', 'settings', 'users', 'database_manager']);
             ?>
 
             <!-- Sidebar Navigation Menu Items -->
@@ -70,7 +178,7 @@
                 <!-- Overview: Single Direct Link -->
                 <div class="sidebar-menu-title">
                     <span>ภาพรวมระบบ</span>
-                    <button type="button" class="btn btn-link p-0 text-muted" id="btnToggleAll" title="ย่อ/ขยายทุกกลุ่ม" style="font-size: 0.72rem; text-decoration: none; color: #64748b !important;">
+                    <button type="button" class="btn btn-link p-0" id="btnToggleAll" title="ย่อ/ขยายทุกกลุ่ม" style="font-size: 13px; text-decoration: none; color: #94a3b8 !important;">
                         <i class="fa-solid fa-arrows-up-down me-1"></i>ย่อ/ขยาย
                     </button>
                 </div>
@@ -192,8 +300,8 @@
                         </li>
                         <li>
                             <a href="<?= base_url('admin/service-banners') ?>" class="sidebar-sublink <?= $currMenu === 'services' ? 'active' : '' ?>">
-                                <i class="fa-solid fa-bullhorn"></i>
-                                <span>แบนเนอร์บริการประชาชน</span>
+                                <i class="fa-solid fa-bullhorn text-primary"></i>
+                                <span>แบนเนอร์ประชาสัมพันธ์ & หน่วยงานสัมพันธ์</span>
                             </a>
                         </li>
                         <li>
@@ -263,6 +371,12 @@
                             </a>
                         </li>
                         <li>
+                            <a href="<?= base_url('admin/database-manager') ?>" class="sidebar-sublink <?= $currMenu === 'database_manager' ? 'active' : '' ?>">
+                                <i class="fa-solid fa-database text-info"></i>
+                                <span>จัดการตาราง & ฐานข้อมูล</span>
+                            </a>
+                        </li>
+                        <li>
                             <a href="#users" onclick="App.toast('ระบบจัดการสิทธิ์เจ้าหน้าที่อยู่ในแผนอัปเดตถัดไป', 'info')" class="sidebar-sublink">
                                 <i class="fa-solid fa-users-gear"></i>
                                 <span>เจ้าหน้าที่ระบบ</span>
@@ -275,10 +389,10 @@
             <!-- Sidebar Footer -->
             <div class="sidebar-footer">
                 <div class="d-flex gap-2">
-                    <a href="<?= base_url() ?>" target="_blank" class="btn btn-sm flex-fill d-flex align-items-center justify-content-center gap-1.5 text-decoration-none" style="background: rgba(255, 255, 255, 0.08); color: #e2e8f0; font-size: 0.82rem; border-radius: 8px; padding: 0.45rem 0.5rem;" title="เปิดหน้าเว็บไซต์ประชาชน">
-                        <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 0.78rem;"></i> <span>หน้าเว็บประชาชน</span>
+                    <a href="<?= base_url() ?>" target="_blank" class="btn btn-sm flex-fill d-flex align-items-center justify-content-center gap-1.5 text-decoration-none" style="background: rgba(255, 255, 255, 0.08); color: #e2e8f0; font-size: 15px; border-radius: 8px; padding: 0.5rem 0.5rem;" title="เปิดหน้าเว็บไซต์ประชาชน">
+                        <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 0.85rem;"></i> <span>หน้าเว็บประชาชน</span>
                     </a>
-                    <a href="<?= base_url('logout') ?>" class="btn btn-sm d-flex align-items-center justify-content-center gap-1.5 text-decoration-none text-danger" style="background: rgba(239, 68, 68, 0.12); font-size: 0.82rem; border-radius: 8px; padding: 0.45rem 0.85rem; font-weight: 600;" title="ออกจากระบบ">
+                    <a href="<?= base_url('logout') ?>" class="btn btn-sm d-flex align-items-center justify-content-center gap-1.5 text-decoration-none text-danger" style="background: rgba(239, 68, 68, 0.12); font-size: 15px; border-radius: 8px; padding: 0.5rem 0.85rem; font-weight: 600;" title="ออกจากระบบ">
                         <i class="fa-solid fa-power-off"></i> <span>ออก</span>
                     </a>
                 </div>
@@ -324,9 +438,9 @@
         </div>
     </div>
 
-    <!-- Bootstrap 5.3 & App JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="<?= base_url('assets/js/app.js') ?>"></script>
+    <!-- Bootstrap 5.3 & App JS (Deferred - Non-blocking) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
+    <script src="<?= function_exists('asset_min_url') ? asset_min_url('assets/js/app.js') : base_url('assets/js/app.js') ?>" defer></script>
     <script>
         // 1. Mobile Sidebar Toggle
         document.getElementById('toggleSidebarBtn')?.addEventListener('click', function() {

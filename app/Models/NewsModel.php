@@ -11,7 +11,12 @@ class NewsModel extends Model
     protected $useAutoIncrement = true;
     protected $returnType = 'array';
 
-    protected $allowedFields = ['title', 'slug', 'category', 'content', 'thumbnail', 'status', 'views_count', 'author_id'];
+    protected $allowedFields = [
+        'title', 'slug', 'category', 'content', 'thumbnail',
+        'images_gallery', 'attachments', 'cover_fit',
+        'is_event', 'event_start_date', 'event_end_date', 'event_location', 'event_coordinates',
+        'status', 'views_count', 'author_id'
+    ];
 
     protected $useTimestamps = true;
     protected $createdField  = 'created_at';

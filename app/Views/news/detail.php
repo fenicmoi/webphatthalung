@@ -100,8 +100,12 @@ $coverSrc = !empty($news['cover_image']) ? ((strpos((string)$news['cover_image']
                 </div>
 
                 <!-- Main Cover Image -->
-                <div class="rounded-4 overflow-hidden shadow-xs mb-4 text-center article-cover-wrapper">
+                <div class="rounded-4 overflow-hidden shadow-xs mb-4 text-center article-cover-wrapper position-relative" style="cursor: pointer;" onclick="openNewsGallery(0)" title="คลิกเพื่อชมภาพขนาดใหญ่">
                     <img src="<?= $coverSrc ?>" class="w-100 article-cover-img" style="max-height: 520px; object-fit: <?= esc($news['cover_fit'] ?? 'cover') ?>;" alt="<?= esc($news['title']) ?>">
+                    <div class="position-absolute bottom-0 end-0 m-3 px-3 py-1.5 rounded-pill bg-dark bg-opacity-75 text-white small d-inline-flex align-items-center gap-1.5 shadow-sm" style="backdrop-filter: blur(8px); pointer-events: none;">
+                        <i class="fa-solid fa-magnifying-glass-plus text-warning"></i>
+                        <span>คลิกเพื่อดูภาพขนาดใหญ่</span>
+                    </div>
                 </div>
 
                 <!-- Event Calendar & GPS Navigation Spotlight Banner (if applicable) -->
@@ -189,21 +193,29 @@ $coverSrc = !empty($news['cover_image']) ? ((strpos((string)$news['cover_image']
                 <?php endif; ?>
 
                 <!-- EXTRA IMAGE GALLERY EXHIBITION -->
-                <?php if (!empty($news['images_gallery']) && is_array($news['images_gallery']) && count($news['images_gallery']) > 1): ?>
+                <?php 
+                $galleryImages = !empty($news['images_gallery']) && is_array($news['images_gallery']) ? $news['images_gallery'] : [];
+                if (count($galleryImages) > 1 || (count($galleryImages) === 1 && $galleryImages[0] !== ($news['cover_image'] ?? ''))): 
+                ?>
                     <div class="pt-4 border-top" style="border-color: rgba(0,0,0,0.06) !important;">
-                        <h5 class="fw-bold mb-3 d-flex align-items-center gap-2" style="color: #047857; font-size: 1.15rem;">
-                            <i class="fa-solid fa-camera-retro fs-4 text-success"></i>
-                            <span>ภาพบรรยากาศและแกลลอรีกิจกรรมเพิ่มเติม (<?= count($news['images_gallery']) ?> ภาพ)</span>
-                        </h5>
+                        <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+                            <h5 class="fw-bold m-0 d-flex align-items-center gap-2" style="color: #047857; font-size: 1.15rem;">
+                                <i class="fa-solid fa-camera-retro fs-4 text-success"></i>
+                                <span>ภาพบรรยากาศและแกลลอรีกิจกรรมเพิ่มเติม (<?= count($galleryImages) ?> ภาพ)</span>
+                            </h5>
+                            <button type="button" onclick="openNewsGallery(0)" class="btn btn-sm btn-outline-success rounded-pill px-3 py-1 fw-semibold small">
+                                <i class="fa-solid fa-expand me-1"></i> ดูอัลบั้มเต็ม
+                            </button>
+                        </div>
                         <div class="row g-3">
-                            <?php foreach ($news['images_gallery'] as $idx => $imgPath): 
+                            <?php foreach ($galleryImages as $idx => $imgPath): 
                                 $gSrc = (strpos((string)$imgPath, 'http') === 0) ? $imgPath : base_url($imgPath);
                             ?>
-                                <div class="col-6 col-md-4">
-                                    <a href="<?= $gSrc ?>" class="d-block overflow-hidden rounded-3 shadow-xs hover-zoom position-relative group-gallery-item" style="height: 150px; border: 1px solid rgba(0,0,0,0.08);" title="คลิกเพื่อชมภาพขนาดใหญ่">
+                                <div class="col-6 col-md-4 col-lg-3">
+                                    <a href="<?= $gSrc ?>" onclick="event.preventDefault(); openNewsGallery(<?= $idx ?>);" class="d-block overflow-hidden rounded-3 shadow-xs hover-zoom position-relative group-gallery-item" style="height: 150px; border: 1px solid rgba(0,0,0,0.08);" title="คลิกเพื่อชมภาพขนาดใหญ่">
                                         <img src="<?= $gSrc ?>" class="w-100 h-100 object-fit-cover" alt="Gallery <?= $idx + 1 ?>" loading="lazy">
                                         <div class="position-absolute bottom-0 start-0 end-0 p-2 text-center text-white small" style="background: linear-gradient(to top, rgba(0, 0, 0, 0.75), transparent);">
-                                            <i class="fa-solid fa-magnifying-glass-plus me-1 text-warning"></i> <span>ขยายภาพ</span>
+                                            <i class="fa-solid fa-magnifying-glass-plus me-1 text-warning"></i> <span>ภาพที่ <?= $idx + 1 ?></span>
                                         </div>
                                     </a>
                                 </div>
@@ -216,8 +228,15 @@ $coverSrc = !empty($news['cover_image']) ? ((strpos((string)$news['cover_image']
                 <div class="mt-5 pt-4 border-top d-flex flex-wrap align-items-center justify-content-between gap-3" style="border-color: rgba(0,0,0,0.06) !important;">
                     <div class="d-flex align-items-center gap-2">
                         <span class="text-secondary small fw-semibold">แชร์บทความนี้:</span>
-                        <a href="https://www.facebook.com/sharer/sharer.php?u=<?= urlencode(current_url()) ?>" target="_blank" class="btn btn-sm btn-outline-primary rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;"><i class="fa-brands fa-facebook-f"></i></a>
-                        <a href="https://social-plugins.line.me/lineit/share?url=<?= urlencode(current_url()) ?>" target="_blank" class="btn btn-sm btn-outline-success rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;"><i class="fa-brands fa-line"></i></a>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=<?= urlencode(current_url()) ?>" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-primary rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;" title="แชร์ไปยัง Facebook" aria-label="แชร์ไปยัง Facebook">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                        </a>
+                        <a href="https://social-plugins.line.me/lineit/share?url=<?= urlencode(current_url()) ?>" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-success rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;" title="แชร์ไปยัง LINE" aria-label="แชร์ไปยัง LINE">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M24 10.304c0-5.369-5.383-9.738-12-9.738-6.616 0-12 4.369-12 9.738 0 4.814 4.269 8.846 10.036 9.608.391.084.922.258 1.057.592.121.303.079.777.039 1.085l-.171 1.027c-.053.303-.242 1.186 1.039.645 1.281-.54 6.911-4.069 9.428-6.967 1.739-1.907 2.572-3.843 2.572-5.99z"/></svg>
+                        </a>
+                        <a href="https://twitter.com/intent/tweet?text=<?= urlencode($news['title'] ?? '') ?>&url=<?= urlencode(current_url()) ?>" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-dark rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;" title="แชร์ไปยัง X" aria-label="แชร์ไปยัง X">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                        </a>
                     </div>
                     <a href="<?= base_url('news') ?>" class="btn btn-outline-success px-4 py-2 rounded-pill fw-bold d-inline-flex align-items-center gap-2 shadow-xs" style="border-color: #047857; color: #047857; transition: all 0.2s ease;">
                         <i class="fa-solid fa-arrow-left"></i>
@@ -228,6 +247,29 @@ $coverSrc = !empty($news['cover_image']) ? ((strpos((string)$news['cover_image']
         </div>
     </div>
 </div>
+
+<script>
+function openNewsGallery(idx) {
+    <?php
+    $allMedia = !empty($news['images_gallery']) && is_array($news['images_gallery']) && !empty($news['images_gallery']) 
+        ? $news['images_gallery'] 
+        : (!empty($coverSrc) ? [$coverSrc] : []);
+    $allMediaUrls = array_values(array_map(function($p) {
+        return (strpos((string)$p, 'http') === 0) ? $p : base_url($p);
+    }, $allMedia));
+    ?>
+    const images = <?= json_encode($allMediaUrls) ?>;
+    const title = <?= json_encode($news['title'] ?? 'ภาพข่าวกิจกรรม') ?>;
+    
+    if (typeof ShadowBox !== 'undefined' && typeof ShadowBox.open === 'function') {
+        ShadowBox.open(images, idx || 0, title);
+    } else {
+        if (images && images[idx || 0]) {
+            window.open(images[idx || 0], '_blank');
+        }
+    }
+}
+</script>
 
 <style>
 /* ==========================================================================

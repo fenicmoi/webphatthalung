@@ -114,6 +114,9 @@ if (!function_exists('convert_to_webp_if_missing')) {
 
         $fcPath = defined('FCPATH') ? rtrim(FCPATH, '/\\') : realpath(__DIR__ . '/../../public');
         $cleanRel = ltrim($relativePath, '/\\');
+        if (str_starts_with($cleanRel, 'public/') || str_starts_with($cleanRel, 'public\\')) {
+            $cleanRel = substr($cleanRel, 7);
+        }
         $fullPath = $fcPath . DIRECTORY_SEPARATOR . str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $cleanRel);
 
         if (!is_file($fullPath)) {
@@ -249,6 +252,31 @@ if (!function_exists('get_first_hero_image')) {
         if (!$imgPath) return null;
 
         return get_image_sources($imgPath);
+    }
+}
+
+if (!function_exists('asset_min_url')) {
+    /**
+     * ดึง URL ของไฟล์ Asset โดยเลือกเวอร์ชัน Minified อัตโนมัติ (หากมี) เพื่อลดขนาดการดาวน์โหลด และทำ Cache Busting
+     */
+    function asset_min_url($path)
+    {
+        $clean = ltrim($path, '/\\');
+        $info = pathinfo($clean);
+        $ext = $info['extension'] ?? '';
+        $dir = $info['dirname'] !== '.' ? $info['dirname'] . '/' : '';
+        $minFile = $dir . $info['filename'] . '.min.' . $ext;
+        
+        $fcPath = defined('FCPATH') ? rtrim(FCPATH, '/\\') : realpath(__DIR__ . '/../../public');
+        $minFullPath = $fcPath . DIRECTORY_SEPARATOR . str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $minFile);
+
+        if (is_file($minFullPath)) {
+            return base_url($minFile . '?v=' . filemtime($minFullPath));
+        }
+
+        $fullPath = $fcPath . DIRECTORY_SEPARATOR . str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $clean);
+        $v = is_file($fullPath) ? filemtime($fullPath) : time();
+        return base_url($clean . '?v=' . $v);
     }
 }
 
@@ -590,20 +618,35 @@ if (!function_exists('get_site_news')) {
                 }
                 $rows = $builder->get()->getResultArray();
                 foreach ($rows as $row) {
+                    $imagesGallery = [];
+                    if (!empty($row['images_gallery'])) {
+                        $imagesGallery = is_array($row['images_gallery']) ? $row['images_gallery'] : json_decode($row['images_gallery'], true);
+                    }
+                    $attachments = [];
+                    if (!empty($row['attachments'])) {
+                        $attachments = is_array($row['attachments']) ? $row['attachments'] : json_decode($row['attachments'], true);
+                    }
+
                     $newsList[] = [
-                        'id'          => $row['id'],
-                        'title'       => $row['title'],
-                        'slug'        => !empty($row['slug']) ? $row['slug'] : ('news-' . $row['id']),
-                        'category'    => !empty($row['category']) ? $row['category'] : 'ข่าวประชาสัมพันธ์',
-                        'summary'     => mb_substr(strip_tags($row['content'] ?? ''), 0, 160, 'UTF-8') . '...',
-                        'content'     => $row['content'] ?? '',
-                        'cover_image' => !empty($row['thumbnail']) ? $row['thumbnail'] : 'assets/images/slider/sane_muanglung.png',
-                        'cover_fit'   => 'cover',
-                        'is_event'    => false,
-                        'views'       => (int)($row['views_count'] ?? 0),
-                        'created_at'  => $row['created_at'] ?? date('Y-m-d H:i:s'),
-                        'updated_at'  => $row['updated_at'] ?? date('Y-m-d H:i:s'),
-                        'active'      => ($row['status'] ?? 'published') === 'published',
+                        'id'                => $row['id'],
+                        'title'             => $row['title'],
+                        'slug'              => !empty($row['slug']) ? $row['slug'] : ('news-' . $row['id']),
+                        'category'          => !empty($row['category']) ? $row['category'] : 'ข่าวประชาสัมพันธ์',
+                        'summary'           => mb_substr(strip_tags($row['content'] ?? ''), 0, 160, 'UTF-8') . '...',
+                        'content'           => $row['content'] ?? '',
+                        'cover_image'       => !empty($row['thumbnail']) ? $row['thumbnail'] : 'assets/images/slider/sane_muanglung.png',
+                        'cover_fit'         => !empty($row['cover_fit']) ? $row['cover_fit'] : 'cover',
+                        'is_event'          => !empty($row['is_event']),
+                        'event_start_date'  => $row['event_start_date'] ?? '',
+                        'event_end_date'    => $row['event_end_date'] ?? '',
+                        'event_location'    => $row['event_location'] ?? '',
+                        'event_coordinates' => $row['event_coordinates'] ?? '',
+                        'images_gallery'    => is_array($imagesGallery) ? $imagesGallery : [],
+                        'attachments'       => is_array($attachments) ? $attachments : [],
+                        'views'             => (int)($row['views_count'] ?? 0),
+                        'created_at'        => $row['created_at'] ?? date('Y-m-d H:i:s'),
+                        'updated_at'        => $row['updated_at'] ?? date('Y-m-d H:i:s'),
+                        'active'            => ($row['status'] ?? 'published') === 'published',
                     ];
                 }
 
@@ -631,15 +674,23 @@ if (!function_exists('get_site_news')) {
                                     $existingRow = $db->table('news')->where('title', $item['title'])->get()->getRowArray();
                                     if (!$existingRow) {
                                         $db->table('news')->insert([
-                                            'title'       => mb_substr($item['title'], 0, 255),
-                                            'slug'        => $slug,
-                                            'category'    => mb_substr(!empty($item['category']) ? $item['category'] : 'ข่าวประชาสัมพันธ์', 0, 100),
-                                            'content'     => $item['content'] ?? '',
-                                            'thumbnail'   => mb_substr(!empty($item['cover_image']) ? $item['cover_image'] : 'assets/images/slider/sane_muanglung.png', 0, 255),
-                                            'status'      => 'published',
-                                            'views_count' => (int)($item['views'] ?? 0),
-                                            'created_at'  => $item['created_at'] ?? date('Y-m-d H:i:s'),
-                                            'updated_at'  => $item['updated_at'] ?? date('Y-m-d H:i:s'),
+                                            'title'             => mb_substr($item['title'], 0, 255),
+                                            'slug'              => $slug,
+                                            'category'          => mb_substr(!empty($item['category']) ? $item['category'] : 'ข่าวประชาสัมพันธ์', 0, 100),
+                                            'content'           => $item['content'] ?? '',
+                                            'thumbnail'         => mb_substr(!empty($item['cover_image']) ? $item['cover_image'] : 'assets/images/slider/sane_muanglung.png', 0, 255),
+                                            'cover_fit'         => $item['cover_fit'] ?? 'cover',
+                                            'is_event'          => !empty($item['is_event']) ? 1 : 0,
+                                            'event_start_date'  => !empty($item['event_start_date']) ? $item['event_start_date'] : null,
+                                            'event_end_date'    => !empty($item['event_end_date']) ? $item['event_end_date'] : null,
+                                            'event_location'    => !empty($item['event_location']) ? $item['event_location'] : null,
+                                            'event_coordinates' => !empty($item['event_coordinates']) ? $item['event_coordinates'] : null,
+                                            'images_gallery'    => !empty($item['images_gallery']) ? json_encode($item['images_gallery'], JSON_UNESCAPED_UNICODE) : null,
+                                            'attachments'       => !empty($item['attachments']) ? json_encode($item['attachments'], JSON_UNESCAPED_UNICODE) : null,
+                                            'status'            => 'published',
+                                            'views_count'       => (int)($item['views'] ?? 0),
+                                            'created_at'        => $item['created_at'] ?? date('Y-m-d H:i:s'),
+                                            'updated_at'        => $item['updated_at'] ?? date('Y-m-d H:i:s'),
                                         ]);
                                         $item['id'] = $db->insertID();
                                     } else {
@@ -691,14 +742,22 @@ if (!function_exists('save_site_news')) {
                         $slug = 'news-' . time() . '-' . mt_rand(10, 99);
                     }
                     $data = [
-                        'title'       => mb_substr($item['title'], 0, 255),
-                        'slug'        => mb_substr($slug, 0, 240),
-                        'category'    => mb_substr(!empty($item['category']) ? $item['category'] : 'ข่าวประชาสัมพันธ์', 0, 100),
-                        'content'     => $item['content'] ?? '',
-                        'thumbnail'   => mb_substr(!empty($item['cover_image']) ? $item['cover_image'] : 'assets/images/slider/sane_muanglung.png', 0, 255),
-                        'status'      => 'published',
-                        'views_count' => (int)($item['views'] ?? 0),
-                        'updated_at'  => $item['updated_at'] ?? date('Y-m-d H:i:s'),
+                        'title'             => mb_substr($item['title'], 0, 255),
+                        'slug'              => mb_substr($slug, 0, 240),
+                        'category'          => mb_substr(!empty($item['category']) ? $item['category'] : 'ข่าวประชาสัมพันธ์', 0, 100),
+                        'content'           => $item['content'] ?? '',
+                        'thumbnail'         => mb_substr(!empty($item['cover_image']) ? $item['cover_image'] : 'assets/images/slider/sane_muanglung.png', 0, 255),
+                        'cover_fit'         => !empty($item['cover_fit']) ? $item['cover_fit'] : 'cover',
+                        'is_event'          => !empty($item['is_event']) ? 1 : 0,
+                        'event_start_date'  => !empty($item['event_start_date']) ? $item['event_start_date'] : null,
+                        'event_end_date'    => !empty($item['event_end_date']) ? $item['event_end_date'] : null,
+                        'event_location'    => !empty($item['event_location']) ? $item['event_location'] : null,
+                        'event_coordinates' => !empty($item['event_coordinates']) ? $item['event_coordinates'] : null,
+                        'images_gallery'    => !empty($item['images_gallery']) ? json_encode($item['images_gallery'], JSON_UNESCAPED_UNICODE) : null,
+                        'attachments'       => !empty($item['attachments']) ? json_encode($item['attachments'], JSON_UNESCAPED_UNICODE) : null,
+                        'status'            => 'published',
+                        'views_count'       => (int)($item['views'] ?? 0),
+                        'updated_at'        => $item['updated_at'] ?? date('Y-m-d H:i:s'),
                     ];
                     if ($existing) {
                         $db->table('news')->where('id', $existing['id'])->update($data);
@@ -733,20 +792,84 @@ if (!function_exists('get_news_by_id')) {
                 }
                 $row = $builder->get()->getRowArray();
                 if ($row) {
+                    // Check if JSON cache has full media details (images_gallery, attachments)
+                    $jsonFallback = null;
+                    $writableDir = defined('WRITABLE') ? rtrim(\WRITABLE, '/\\') : realpath(__DIR__ . '/../../writable');
+                    $jsonPath = $writableDir . DIRECTORY_SEPARATOR . 'site_news.json';
+                    if (file_exists($jsonPath)) {
+                        $allJson = json_decode(file_get_contents($jsonPath), true);
+                        if (is_array($allJson)) {
+                            foreach ($allJson as $jItem) {
+                                if (strval($jItem['id'] ?? '') === strval($row['id']) || (!empty($row['slug']) && ($jItem['slug'] ?? '') === $row['slug']) || (!empty($row['title']) && ($jItem['title'] ?? '') === $row['title'])) {
+                                    $jsonFallback = $jItem;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    // Decode images_gallery
+                    $imagesGallery = [];
+                    if (!empty($row['images_gallery'])) {
+                        $imagesGallery = is_array($row['images_gallery']) ? $row['images_gallery'] : json_decode($row['images_gallery'], true);
+                    }
+                    if (empty($imagesGallery) && !empty($jsonFallback['images_gallery'])) {
+                        $imagesGallery = $jsonFallback['images_gallery'];
+                        // Sync to DB if row has missing images_gallery
+                        try {
+                            $db->table('news')->where('id', $row['id'])->update([
+                                'images_gallery' => json_encode($imagesGallery, JSON_UNESCAPED_UNICODE)
+                            ]);
+                        } catch (\Throwable $t) {}
+                    }
+                    if (!is_array($imagesGallery)) {
+                        $imagesGallery = [];
+                    }
+
+                    // Decode attachments
+                    $attachments = [];
+                    if (!empty($row['attachments'])) {
+                        $attachments = is_array($row['attachments']) ? $row['attachments'] : json_decode($row['attachments'], true);
+                    }
+                    if (empty($attachments) && !empty($jsonFallback['attachments'])) {
+                        $attachments = $jsonFallback['attachments'];
+                        try {
+                            $db->table('news')->where('id', $row['id'])->update([
+                                'attachments' => json_encode($attachments, JSON_UNESCAPED_UNICODE)
+                            ]);
+                        } catch (\Throwable $t) {}
+                    }
+                    if (!is_array($attachments)) {
+                        $attachments = [];
+                    }
+
+                    $coverFit = !empty($row['cover_fit']) ? $row['cover_fit'] : ($jsonFallback['cover_fit'] ?? 'cover');
+                    $isEvent = !empty($row['is_event']) || !empty($jsonFallback['is_event']);
+                    $eventStartDate = !empty($row['event_start_date']) ? $row['event_start_date'] : ($jsonFallback['event_start_date'] ?? '');
+                    $eventEndDate = !empty($row['event_end_date']) ? $row['event_end_date'] : ($jsonFallback['event_end_date'] ?? '');
+                    $eventLocation = !empty($row['event_location']) ? $row['event_location'] : ($jsonFallback['event_location'] ?? '');
+                    $eventCoordinates = !empty($row['event_coordinates']) ? $row['event_coordinates'] : ($jsonFallback['event_coordinates'] ?? '');
+
                     return [
-                        'id'          => $row['id'],
-                        'title'       => $row['title'],
-                        'slug'        => !empty($row['slug']) ? $row['slug'] : ('news-' . $row['id']),
-                        'category'    => !empty($row['category']) ? $row['category'] : 'ข่าวประชาสัมพันธ์',
-                        'summary'     => mb_substr(strip_tags($row['content'] ?? ''), 0, 160, 'UTF-8') . '...',
-                        'content'     => $row['content'] ?? '',
-                        'cover_image' => !empty($row['thumbnail']) ? $row['thumbnail'] : 'assets/images/slider/sane_muanglung.png',
-                        'cover_fit'   => 'cover',
-                        'is_event'    => false,
-                        'views'       => (int)($row['views_count'] ?? 0),
-                        'created_at'  => $row['created_at'] ?? date('Y-m-d H:i:s'),
-                        'updated_at'  => $row['updated_at'] ?? date('Y-m-d H:i:s'),
-                        'active'      => ($row['status'] ?? 'published') === 'published',
+                        'id'                => $row['id'],
+                        'title'             => $row['title'],
+                        'slug'              => !empty($row['slug']) ? $row['slug'] : ('news-' . $row['id']),
+                        'category'          => !empty($row['category']) ? $row['category'] : 'ข่าวประชาสัมพันธ์',
+                        'summary'           => mb_substr(strip_tags($row['content'] ?? ''), 0, 160, 'UTF-8') . '...',
+                        'content'           => $row['content'] ?? '',
+                        'cover_image'       => !empty($row['thumbnail']) ? $row['thumbnail'] : (!empty($jsonFallback['cover_image']) ? $jsonFallback['cover_image'] : 'assets/images/slider/sane_muanglung.png'),
+                        'cover_fit'         => $coverFit,
+                        'is_event'          => $isEvent,
+                        'event_start_date'  => $eventStartDate,
+                        'event_end_date'    => $eventEndDate,
+                        'event_location'    => $eventLocation,
+                        'event_coordinates' => $eventCoordinates,
+                        'images_gallery'    => $imagesGallery,
+                        'attachments'       => $attachments,
+                        'views'             => (int)($row['views_count'] ?? 0),
+                        'created_at'        => $row['created_at'] ?? date('Y-m-d H:i:s'),
+                        'updated_at'        => $row['updated_at'] ?? date('Y-m-d H:i:s'),
+                        'active'            => ($row['status'] ?? 'published') === 'published',
                     ];
                 }
             }
@@ -1076,36 +1199,91 @@ if (!function_exists('get_gallery_categories')) {
 
 if (!function_exists('get_gallery_albums')) {
     /**
-     * ดึงรายการอัลบั้มภาพกิจกรรมทั้งหมด หรือกรองตามหมวดหมู่และจำนวน
+     * ดึงรายการอัลบั้มภาพกิจกรรมทั้งหมด หรือกรองตามหมวดหมู่และจำนวน (ดึงจากฐานข้อมูล MySQL และมี Fallback เป็น JSON)
      */
     function get_gallery_albums($limit = null, $category = null, $activeOnly = true)
     {
         try {
             $model = new \App\Models\GalleryAlbumModel();
             $model->orderBy('created_at', 'DESC');
-            
-            if ($limit !== null && $limit > 0) {
-                $albums = $model->findAll($limit);
-            } else {
-                $albums = $model->findAll();
+            $dbAlbums = $model->findAll();
+
+            if (!empty($dbAlbums)) {
+                $photoModel = new \App\Models\GalleryPhotoModel();
+                $allPhotos = $photoModel->findAll();
+                $photosByAlbum = [];
+                foreach ($allPhotos as $p) {
+                    $photosByAlbum[$p['album_id']][] = $p['image_path'];
+                }
+
+                $result = [];
+                foreach ($dbAlbums as $item) {
+                    $cat = 'ประเพณีและวัฒนธรรม';
+                    $date = !empty($item['created_at']) ? substr($item['created_at'], 0, 10) : date('Y-m-d');
+                    $views = 1;
+
+                    if (!empty($item['description'])) {
+                        $descData = @json_decode($item['description'], true);
+                        if (is_array($descData)) {
+                            $cat = $descData['category'] ?? $cat;
+                            $date = $descData['date'] ?? $date;
+                            $views = $descData['views'] ?? $views;
+                        } elseif (is_string($item['description']) && trim($item['description']) !== '') {
+                            $cat = trim($item['description']);
+                        }
+                    }
+
+                    $pList = $photosByAlbum[$item['id']] ?? [];
+                    if (empty($pList) && !empty($item['cover_image'])) {
+                        $pList[] = $item['cover_image'];
+                    }
+
+                    $result[] = [
+                        'id'          => 'gal_' . $item['id'],
+                        'db_id'       => $item['id'],
+                        'title'       => $item['title'],
+                        'category'    => $cat,
+                        'date'        => $date,
+                        'views'       => $views,
+                        'cover_image' => $item['cover_image'],
+                        'photos'      => $pList,
+                        'active'      => true
+                    ];
+                }
+
+                if ($category !== null && $category !== 'all' && $category !== '') {
+                    $result = array_filter($result, static function($a) use ($category) {
+                        return strcasecmp(trim($a['category'] ?? ''), trim($category)) === 0;
+                    });
+                }
+
+                if ($limit !== null && $limit > 0) {
+                    $result = array_slice(array_values($result), 0, $limit);
+                }
+
+                return array_values($result);
             }
-            
-            return array_map(function($item) {
-                return [
-                    'id' => 'gal_' . $item['id'],
-                    'db_id' => $item['id'],
-                    'title' => $item['title'],
-                    'category' => 'ประเพณีและวัฒนธรรม', // mocked category for backward compat
-                    'date' => $item['created_at'],
-                    'views' => 0,
-                    'cover_image' => $item['cover_image'],
-                    'photos' => [], // lazy load or joined later
-                    'active' => true
-                ];
-            }, $albums);
-        } catch (\Throwable $e) {
-            return [];
+        } catch (\Throwable $e) {}
+
+        // Fallback: ดึงจากไฟล์ JSON หากยังไม่ได้เชื่อมต่อฐานข้อมูลหรือไม่มีข้อมูล
+        $writableDir = defined('WRITABLE') ? rtrim(\WRITABLE, '/\\') : realpath(__DIR__ . '/../../writable');
+        $jsonPath = $writableDir . DIRECTORY_SEPARATOR . 'gallery_albums.json';
+        $fallback = [];
+        if (is_file($jsonPath)) {
+            $fallback = @json_decode(file_get_contents($jsonPath), true) ?: [];
         }
+
+        if ($category !== null && $category !== 'all' && $category !== '') {
+            $fallback = array_filter($fallback, static function($a) use ($category) {
+                return strcasecmp(trim($a['category'] ?? ''), trim($category)) === 0;
+            });
+        }
+
+        if ($limit !== null && $limit > 0) {
+            $fallback = array_slice(array_values($fallback), 0, $limit);
+        }
+
+        return array_values($fallback);
     }
 }
 
@@ -1113,37 +1291,67 @@ if (!function_exists('get_gallery_by_id')) {
     function get_gallery_by_id($id)
     {
         try {
-            // $id could be like "gal_1" or "gal_256901"
-            $numericId = (int) preg_replace('/[^0-9]/', '', $id);
-            
-            $model = new \App\Models\GalleryAlbumModel();
-            $album = $model->find($numericId);
-            
-            if ($album) {
-                $photoModel = new \App\Models\GalleryPhotoModel();
-                $photos = $photoModel->where('album_id', $numericId)->findAll();
-                $photoUrls = array_column($photos, 'image_path');
-                
-                return [
-                    'id' => 'gal_' . $album['id'],
-                    'db_id' => $album['id'],
-                    'title' => $album['title'],
-                    'category' => 'ประเพณีและวัฒนธรรม',
-                    'date' => $album['created_at'],
-                    'views' => 0,
-                    'cover_image' => $album['cover_image'],
-                    'photos' => $photoUrls,
-                    'active' => true
-                ];
+            $numericId = (int) preg_replace('/[^0-9]/', '', (string)$id);
+            if ($numericId > 0) {
+                $model = new \App\Models\GalleryAlbumModel();
+                $album = $model->find($numericId);
+
+                if ($album) {
+                    $photoModel = new \App\Models\GalleryPhotoModel();
+                    $photos = $photoModel->where('album_id', $numericId)->findAll();
+                    $photoUrls = array_column($photos, 'image_path');
+                    if (empty($photoUrls) && !empty($album['cover_image'])) {
+                        $photoUrls[] = $album['cover_image'];
+                    }
+
+                    $cat = 'ประเพณีและวัฒนธรรม';
+                    $date = !empty($album['created_at']) ? substr($album['created_at'], 0, 10) : date('Y-m-d');
+                    $views = 1;
+
+                    if (!empty($album['description'])) {
+                        $descData = @json_decode($album['description'], true);
+                        if (is_array($descData)) {
+                            $cat = $descData['category'] ?? $cat;
+                            $date = $descData['date'] ?? $date;
+                            $views = $descData['views'] ?? $views;
+                        } elseif (is_string($album['description']) && trim($album['description']) !== '') {
+                            $cat = trim($album['description']);
+                        }
+                    }
+
+                    return [
+                        'id'          => 'gal_' . $album['id'],
+                        'db_id'       => $album['id'],
+                        'title'       => $album['title'],
+                        'category'    => $cat,
+                        'date'        => $date,
+                        'views'       => $views,
+                        'cover_image' => $album['cover_image'],
+                        'photos'      => $photoUrls,
+                        'active'      => true
+                    ];
+                }
             }
         } catch (\Throwable $e) {}
+
+        // Fallback: ตรวจสอบจากไฟล์ JSON
+        $writableDir = defined('WRITABLE') ? rtrim(\WRITABLE, '/\\') : realpath(__DIR__ . '/../../writable');
+        $jsonPath = $writableDir . DIRECTORY_SEPARATOR . 'gallery_albums.json';
+        if (is_file($jsonPath)) {
+            $jsonAlbums = @json_decode(file_get_contents($jsonPath), true) ?: [];
+            foreach ($jsonAlbums as $a) {
+                if ((string)($a['id'] ?? '') === (string)$id || (string)($a['db_id'] ?? '') === (string)$id) {
+                    return $a;
+                }
+            }
+        }
         return null;
     }
 }
 
 if (!function_exists('save_gallery_albums')) {
     /**
-     * บันทึกรายการอัลบั้มภาพลงไฟล์ JSON
+     * บันทึกรายการอัลบั้มภาพลงไฟล์ JSON (สำหรับ Cache / Fallback)
      */
     function save_gallery_albums(array $albums)
     {

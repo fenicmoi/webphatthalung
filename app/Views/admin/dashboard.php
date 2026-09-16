@@ -13,8 +13,8 @@ $stats = $stats ?? [
 <!-- Header Greeting -->
 <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
     <div>
-        <h4 class="fw-bold mb-1" style="color: #0f172a;">แผงควบคุมระบบ (Dashboard)</h4>
-        <p class="text-muted mb-0" style="font-size: 0.92rem;">
+        <h1 class="h1-page-title mb-1">แผงควบคุมระบบ (Dashboard)</h1>
+        <p class="body-lead mb-0">
             ภาพรวมสถิติและเครื่องมือบริหารจัดการเว็บไซต์จังหวัดพัทลุง
         </p>
     </div>
@@ -29,68 +29,100 @@ $stats = $stats ?? [
 <div class="row g-4 mb-4">
     <!-- Card 1: News -->
     <div class="col-sm-6 col-xl-3">
-        <div class="kpi-stat-card">
-            <div class="d-flex align-items-center justify-content-between mb-3">
-                <span class="text-muted fw-bold" style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;">ข่าวและกิจกรรม</span>
+        <div class="kpi-stat-card d-flex flex-column h-100">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <span class="kpi-card-label">ข่าวและกิจกรรม</span>
                 <div class="kpi-icon-box" style="background: #eff6ff; color: #2563eb;">
                     <i class="fa-solid fa-bullhorn"></i>
                 </div>
             </div>
-            <h3 class="fw-bold mb-1" style="color: #0f172a;"><?= $stats['news'] ?></h3>
-            <div class="d-flex align-items-center gap-1" style="font-size: 0.82rem; color: #10b981;">
+            <?php
+                $newsVal = preg_replace('/[^0-9,]/', '', $stats['news'] ?? '0');
+                $newsUnit = trim(str_replace($newsVal, '', $stats['news'] ?? 'เรื่อง'));
+                if (empty($newsUnit)) $newsUnit = 'เรื่อง';
+            ?>
+            <div class="kpi-number-wrap my-1">
+                <span class="kpi-number"><?= $newsVal ?></span>
+                <span class="kpi-unit"><?= $newsUnit ?></span>
+            </div>
+            <div class="kpi-card-footnote mt-auto pt-2" style="color: #047857;">
                 <i class="fa-solid fa-circle-check"></i>
-                <span>ข้อมูลจริงจากตาราง news (MySQL)</span>
+                <span>ข้อมูลล่าสุดจากระบบข่าวสาร</span>
             </div>
         </div>
     </div>
 
     <!-- Card 2: Service Requests & Complaints -->
     <div class="col-sm-6 col-xl-3">
-        <div class="kpi-stat-card">
-            <div class="d-flex align-items-center justify-content-between mb-3">
-                <span class="text-muted fw-bold" style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;">เรื่องติดต่อ & ร้องเรียน</span>
-                <div class="kpi-icon-box" style="background: #ecfdf5; color: #059669;">
+        <div class="kpi-stat-card d-flex flex-column h-100">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <span class="kpi-card-label" title="เรื่องติดต่อ & ร้องเรียน">เรื่องติดต่อ & ร้องเรียน</span>
+                <div class="kpi-icon-box" style="background: #ecfdf5; color: #047857;">
                     <i class="fa-solid fa-clipboard-check"></i>
                 </div>
             </div>
-            <h3 class="fw-bold mb-1" style="color: #0f172a;"><?= $stats['services_requests'] ?></h3>
-            <div class="d-flex align-items-center gap-1" style="font-size: 0.82rem; color: #059669;">
+            <?php
+                $reqVal = preg_replace('/[^0-9,]/', '', $stats['services_requests'] ?? '0');
+                $reqUnit = trim(str_replace($reqVal, '', $stats['services_requests'] ?? 'เรื่อง'));
+                if (empty($reqUnit)) $reqUnit = 'เรื่อง';
+            ?>
+            <div class="kpi-number-wrap my-1">
+                <span class="kpi-number"><?= $reqVal ?></span>
+                <span class="kpi-unit"><?= $reqUnit ?></span>
+            </div>
+            <div class="kpi-card-footnote mt-auto pt-2" style="color: #047857;">
                 <i class="fa-solid fa-inbox"></i>
-                <span>เรื่องติดต่อจากประชาชนในระบบ</span>
+                <span>เรื่องติดต่อจากประชาชน</span>
             </div>
         </div>
     </div>
 
     <!-- Card 3: System Users -->
     <div class="col-sm-6 col-xl-3">
-        <div class="kpi-stat-card">
-            <div class="d-flex align-items-center justify-content-between mb-3">
-                <span class="text-muted fw-bold" style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;">เจ้าหน้าที่ในระบบ</span>
-                <div class="kpi-icon-box" style="background: #f5f3ff; color: #7c3aed;">
+        <div class="kpi-stat-card d-flex flex-column h-100">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <span class="kpi-card-label">เจ้าหน้าที่ในระบบ</span>
+                <div class="kpi-icon-box" style="background: #f5f3ff; color: #6d28d9;">
                     <i class="fa-solid fa-user-shield"></i>
                 </div>
             </div>
-            <h3 class="fw-bold mb-1" style="color: #0f172a;"><?= $stats['users'] ?></h3>
-            <div class="d-flex align-items-center gap-1" style="font-size: 0.82rem; color: #64748b;">
+            <?php
+                $usersVal = preg_replace('/[^0-9,]/', '', $stats['users'] ?? '0');
+                $usersUnit = trim(str_replace($usersVal, '', $stats['users'] ?? 'ราย'));
+                if (empty($usersUnit)) $usersUnit = 'ราย';
+            ?>
+            <div class="kpi-number-wrap my-1">
+                <span class="kpi-number"><?= $usersVal ?></span>
+                <span class="kpi-unit"><?= $usersUnit ?></span>
+            </div>
+            <div class="kpi-card-footnote mt-auto pt-2" style="color: #334155;">
                 <i class="fa-solid fa-shield-halved text-primary"></i>
-                <span>บัญชีผู้ใช้งานจริงในตาราง users</span>
+                <span>จำนวนบัญชีผู้ใช้งานในระบบ</span>
             </div>
         </div>
     </div>
 
     <!-- Card 4: Monthly Visitors & News Views -->
     <div class="col-sm-6 col-xl-3">
-        <div class="kpi-stat-card">
-            <div class="d-flex align-items-center justify-content-between mb-3">
-                <span class="text-muted fw-bold" style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;">ยอดเข้าชมข่าวสาร</span>
-                <div class="kpi-icon-box" style="background: #fffbeb; color: #d97706;">
+        <div class="kpi-stat-card d-flex flex-column h-100">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <span class="kpi-card-label">ยอดเข้าชมข่าวสาร</span>
+                <div class="kpi-icon-box" style="background: #fffbeb; color: #b45309;">
                     <i class="fa-solid fa-signal"></i>
                 </div>
             </div>
-            <h3 class="fw-bold mb-1" style="color: #0f172a;"><?= $stats['monthly_visitors'] ?></h3>
-            <div class="d-flex align-items-center gap-1" style="font-size: 0.82rem; color: #10b981;">
+            <?php
+                $viewsVal = preg_replace('/[^0-9,]/', '', $stats['monthly_visitors'] ?? '0');
+                $viewsUnit = trim(str_replace($viewsVal, '', $stats['monthly_visitors'] ?? 'ครั้ง'));
+                if (empty($viewsUnit)) $viewsUnit = 'ครั้ง';
+            ?>
+            <div class="kpi-number-wrap my-1">
+                <span class="kpi-number"><?= $viewsVal ?></span>
+                <span class="kpi-unit"><?= $viewsUnit ?></span>
+            </div>
+            <div class="kpi-card-footnote mt-auto pt-2" style="color: #047857;">
                 <i class="fa-solid fa-eye"></i>
-                <span>ยอดเปิดอ่านบทความ & ข่าวสารรวม</span>
+                <span>ยอดเปิดอ่านบทความรวม</span>
             </div>
         </div>
     </div>
@@ -99,10 +131,10 @@ $stats = $stats ?? [
 <!-- Quick Category Hub -->
 <div class="mb-4">
     <div class="d-flex align-items-center justify-content-between mb-3">
-        <h6 class="fw-bold mb-0" style="color: #0f172a;">
+        <h2 class="h2-section-title mb-0">
             <i class="fa-solid fa-shapes text-emerald me-2"></i>หมวดหมู่การทำงานหลัก (System Management Hub)
-        </h6>
-        <span class="text-muted" style="font-size: 0.8rem;">เข้าถึงเครื่องมือจัดการแยกตามหมวดหมู่</span>
+        </h2>
+        <span class="section-subtext">เข้าถึงเครื่องมือจัดการแยกตามหมวดหมู่</span>
     </div>
     <div class="row g-3">
         <div class="col-6 col-md-4 col-xl">
@@ -159,7 +191,7 @@ $stats = $stats ?? [
         <div class="admin-card">
             <div class="admin-card-header d-flex flex-wrap align-items-center justify-content-between gap-2">
                 <div>
-                    <h6 class="fw-bold mb-0"><i class="fa-solid fa-newspaper text-primary me-2"></i>รายการข่าวสารล่าสุดในระบบ</h6>
+                    <h2 class="h2-section-title mb-0" style="font-size: 1.15rem;"><i class="fa-solid fa-newspaper text-primary me-2"></i>รายการข่าวสารล่าสุดในระบบ</h2>
                 </div>
                 <a href="<?= base_url('news') ?>" class="btn-modern-outline text-decoration-none" style="padding: 0.35rem 0.85rem; font-size: 0.82rem;">
                     <i class="fa-solid fa-arrow-up-right-from-square me-1"></i> จัดการข่าวทั้งหมด
@@ -225,7 +257,7 @@ $stats = $stats ?? [
         <!-- Quick System Links Card -->
         <div class="admin-card mb-4">
             <div class="admin-card-header">
-                <h6 class="fw-bold mb-0"><i class="fa-solid fa-bolt text-warning me-2"></i>เมนูลัด (Quick Shortcuts)</h6>
+                <h2 class="h2-section-title mb-0" style="font-size: 1.15rem;"><i class="fa-solid fa-bolt text-warning me-2"></i>เมนูลัด (Quick Shortcuts)</h2>
             </div>
             <div class="admin-card-body p-3">
                 <div class="d-grid gap-2">

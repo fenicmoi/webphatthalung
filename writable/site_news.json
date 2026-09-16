@@ -1,11 +1,11 @@
 [
     {
-        "id": 2,
-        "title": "test23",
-        "category": "ประกาศจัดซื้อจัดจ้าง (e-GP)",
-        "summary": "test23",
-        "content": "<p>test23<\/p>",
-        "cover_image": "uploads\/news\/news_1788944707_8655.jpg",
+        "id": 5,
+        "title": "sadfasdf",
+        "category": "ข่าวกิจกรรมจังหวัด",
+        "summary": "sadfasdfasdf",
+        "content": "<p>-<\/p>",
+        "cover_image": "uploads\/news\/news_1789366017_8284.jpg",
         "cover_fit": "cover",
         "is_event": false,
         "event_start_date": "",
@@ -13,9 +13,67 @@
         "event_location": "",
         "event_coordinates": "",
         "images_gallery": [
-            "uploads\/news\/news_1788944707_8655.jpg"
+            "uploads\/news\/news_1789366017_8284.jpg",
+            "uploads\/news\/news_1789366017_6270.jpg",
+            "uploads\/news\/news_1789366017_6191.jpg",
+            "uploads\/news\/news_1789366017_8369.jpg",
+            "uploads\/news\/news_1789366017_7958.jpg",
+            "uploads\/news\/news_1789366017_6995.jpg"
         ],
-        "attachments": [],
+        "attachments": [
+            {
+                "name": "พัฒนา5ด้าน.pdf",
+                "path": "uploads\/docs\/doc_1789366026_766.pdf",
+                "url": "http:\/\/localhost\/webphatthalung\/uploads\/docs\/doc_1789366026_766.pdf",
+                "size": "4 KB",
+                "icon": "fa-solid fa-file-pdf text-danger"
+            }
+        ],
+        "views": 6,
+        "created_at": "2026-09-14 06:07:09",
+        "updated_at": "2026-09-14 06:07:09",
+        "active": true
+    },
+    {
+        "id": "4",
+        "title": "[ทดสอบระบบ] ข่าวสารจำลองทดสอบกาtรบันทึกลง MySQL ณ 09\/09\/2026 09:05:38",
+        "slug": "test-news-1788944750-52",
+        "category": "ข่าวประชาสัมพันธ์",
+        "summary": "นี่คือเนื้อหาข่าวสำหรับทดสอบกระบวนการเขียนลง MySQL ตาราง news เพื่อตรวจเช็คความสมบูรณ์ของระบบ...",
+        "content": "<p>นี่คือเนื้อหาข่าวสำหรับทดสอบกระบวนการเขียนลง MySQL ตาราง news เพื่อตรวจเช็คความสมบูรณ์ของระบบ<\/p>",
+        "cover_image": "assets\/images\/slider\/sane_muanglung.png",
+        "cover_fit": "cover",
+        "is_event": false,
+        "views": 1,
+        "created_at": "2026-09-09 09:05:50",
+        "updated_at": "2026-09-09 09:05:50",
+        "active": true
+    },
+    {
+        "id": "3",
+        "title": "[ทดสอบระบบ] ข่าวสารจำลองทดสอบการบันทึกลง MySQL ณ 09\/09\/2026 09:05:28",
+        "slug": "test-news-1788944738-60",
+        "category": "ข่าวประชาสัมพันธ์",
+        "summary": "นี่คือเนื้อหาข่าวสำหรับทดสอบกระบวนการเขียนลง MySQL ตาราง news เพื่อตรวจเช็คความสมบูรณ์ของระบบ...",
+        "content": "<p>นี่คือเนื้อหาข่าวสำหรับทดสอบกระบวนการเขียนลง MySQL ตาราง news เพื่อตรวจเช็คความสมบูรณ์ของระบบ<\/p>",
+        "cover_image": "assets\/images\/slider\/sane_muanglung.png",
+        "cover_fit": "cover",
+        "is_event": false,
+        "views": 1,
+        "created_at": "2026-09-09 09:05:38",
+        "updated_at": "2026-09-09 09:05:38",
+        "active": true
+    },
+    {
+        "id": "2",
+        "title": "test23",
+        "slug": "test23",
+        "category": "ประกาศจัดซื้อจัดจ้าง (e-GP)",
+        "summary": "test23...",
+        "content": "<p>test23<\/p>",
+        "cover_image": "uploads\/news\/news_1788944707_8655.jpg",
+        "cover_fit": "cover",
+        "is_event": false,
         "views": 1,
         "created_at": "2026-09-09 09:05:12",
         "updated_at": "2026-09-09 09:05:12",

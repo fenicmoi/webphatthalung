@@ -303,15 +303,23 @@ class News extends BaseController
 
                 $authorId = session()->get('user_id') ?? session()->get('id') ?? null;
                 $dbData = [
-                    'title'       => mb_substr($title, 0, 255),
-                    'slug'        => mb_substr($slug, 0, 255),
-                    'category'    => mb_substr(!empty($category) ? $category : 'ข่าวประชาสัมพันธ์', 0, 100),
-                    'content'     => $content,
-                    'thumbnail'   => mb_substr(!empty($coverImage) ? $coverImage : 'assets/images/slider/sane_muanglung.png', 0, 255),
-                    'status'      => 'published',
-                    'views_count' => ($foundIndex >= 0 && isset($allNews[$foundIndex]['views'])) ? (int)$allNews[$foundIndex]['views'] : 1,
-                    'author_id'   => is_numeric($authorId) ? (int)$authorId : null,
-                    'updated_at'  => $now,
+                    'title'             => mb_substr($title, 0, 255),
+                    'slug'              => mb_substr($slug, 0, 255),
+                    'category'          => mb_substr(!empty($category) ? $category : 'ข่าวประชาสัมพันธ์', 0, 100),
+                    'content'           => $content,
+                    'thumbnail'         => mb_substr(!empty($coverImage) ? $coverImage : 'assets/images/slider/sane_muanglung.png', 0, 255),
+                    'cover_fit'         => trim((string)$this->request->getPost('cover_fit')) ?: 'cover',
+                    'is_event'          => $isEvent ? 1 : 0,
+                    'event_start_date'  => $isEvent ? ($eventStartDate ?: date('Y-m-d')) : null,
+                    'event_end_date'    => $isEvent ? ($eventEndDate ?: null) : null,
+                    'event_location'    => $isEvent ? $eventLocation : null,
+                    'event_coordinates' => $isEvent ? $eventCoordinates : null,
+                    'images_gallery'    => !empty($imagesGallery) ? json_encode($imagesGallery, JSON_UNESCAPED_UNICODE) : null,
+                    'attachments'       => !empty($attachments) ? json_encode($attachments, JSON_UNESCAPED_UNICODE) : null,
+                    'status'            => 'published',
+                    'views_count'       => ($foundIndex >= 0 && isset($allNews[$foundIndex]['views'])) ? (int)$allNews[$foundIndex]['views'] : 1,
+                    'author_id'         => is_numeric($authorId) ? (int)$authorId : null,
+                    'updated_at'        => $now,
                 ];
 
                 if ($existingDb) {
@@ -687,14 +695,22 @@ class News extends BaseController
                     $slug = mb_substr($slug, 0, 240);
 
                     $data = [
-                        'title'       => mb_substr($item['title'], 0, 255),
-                        'slug'        => $slug,
-                        'category'    => mb_substr(!empty($item['category']) ? $item['category'] : 'ข่าวประชาสัมพันธ์', 0, 100),
-                        'content'     => $item['content'] ?? '',
-                        'thumbnail'   => mb_substr(!empty($item['cover_image']) ? $item['cover_image'] : 'assets/images/slider/sane_muanglung.png', 0, 255),
-                        'status'      => 'published',
-                        'views_count' => (int)($item['views'] ?? 0),
-                        'updated_at'  => $item['updated_at'] ?? date('Y-m-d H:i:s'),
+                        'title'             => mb_substr($item['title'], 0, 255),
+                        'slug'              => $slug,
+                        'category'          => mb_substr(!empty($item['category']) ? $item['category'] : 'ข่าวประชาสัมพันธ์', 0, 100),
+                        'content'           => $item['content'] ?? '',
+                        'thumbnail'         => mb_substr(!empty($item['cover_image']) ? $item['cover_image'] : 'assets/images/slider/sane_muanglung.png', 0, 255),
+                        'cover_fit'         => $item['cover_fit'] ?? 'cover',
+                        'is_event'          => !empty($item['is_event']) ? 1 : 0,
+                        'event_start_date'  => !empty($item['event_start_date']) ? $item['event_start_date'] : null,
+                        'event_end_date'    => !empty($item['event_end_date']) ? $item['event_end_date'] : null,
+                        'event_location'    => !empty($item['event_location']) ? $item['event_location'] : null,
+                        'event_coordinates' => !empty($item['event_coordinates']) ? $item['event_coordinates'] : null,
+                        'images_gallery'    => !empty($item['images_gallery']) ? json_encode($item['images_gallery'], JSON_UNESCAPED_UNICODE) : null,
+                        'attachments'       => !empty($item['attachments']) ? json_encode($item['attachments'], JSON_UNESCAPED_UNICODE) : null,
+                        'status'            => 'published',
+                        'views_count'       => (int)($item['views'] ?? 0),
+                        'updated_at'        => $item['updated_at'] ?? date('Y-m-d H:i:s'),
                     ];
 
                     if ($existing) {
