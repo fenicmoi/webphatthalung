@@ -164,7 +164,7 @@
 
 <?= $this->section('scripts') ?>
 <script>
-let serviceBanners = <?= json_encode($banners ?? [], JSON_UNESCAPED_UNICODE) ?>;
+let serviceBanners = <?= json_encode($banners ?? [], JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
 
 function renderBannersList() {
     const container = document.getElementById('serviceBannersList');
@@ -302,22 +302,32 @@ function moveOrder(idx, dir) {
 }
 
 function addNewBanner() {
-    // Reset form fields
-    document.getElementById('newBannerTitle').value = '';
-    document.getElementById('newBannerBadge').value = 'บริการออนไลน์';
-    document.getElementById('newBannerBadgeColor').value = 'success';
-    document.getElementById('newBannerUrl').value = 'https://';
-    document.getElementById('newBannerTarget').value = '_blank';
-    document.getElementById('newBannerActive').value = '1';
-    document.getElementById('newBannerDesc').value = '';
-    document.getElementById('newBannerImagePath').value = 'assets/images/banners/eservice_citizen.png';
-    document.getElementById('newBannerPreview').src = '<?= base_url("assets/images/banners/eservice_citizen.png") ?>';
-    document.getElementById('newBannerFileInput').value = '';
-    
-    // Show Modal
-    const modalEl = document.getElementById('modalAddBanner');
-    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
-    modal.show();
+    try {
+        // Reset form fields
+        document.getElementById('newBannerTitle').value = '';
+        document.getElementById('newBannerBadge').value = 'บริการออนไลน์';
+        document.getElementById('newBannerBadgeColor').value = 'success';
+        document.getElementById('newBannerUrl').value = 'https://';
+        document.getElementById('newBannerTarget').value = '_blank';
+        document.getElementById('newBannerActive').value = '1';
+        document.getElementById('newBannerDesc').value = '';
+        document.getElementById('newBannerImagePath').value = 'assets/images/banners/eservice_citizen.png';
+        document.getElementById('newBannerPreview').src = '<?= base_url("assets/images/banners/eservice_citizen.png") ?>';
+        document.getElementById('newBannerFileInput').value = '';
+        
+        // Show Modal
+        const modalEl = document.getElementById('modalAddBanner');
+        if (typeof bootstrap !== 'undefined') {
+            const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+            modal.show();
+        } else {
+            console.error("Bootstrap is not loaded yet.");
+            alert("ไม่สามารถเปิดป๊อปอัปได้เนื่องจากโหลดสคริปต์ไม่สมบูรณ์ กรุณารีเฟรชหน้าต่าง");
+        }
+    } catch(e) {
+        console.error("Error in addNewBanner:", e);
+        alert("เกิดข้อผิดพลาด: " + e.message);
+    }
 }
 
 function previewAndUploadNewBanner(e) {
@@ -334,12 +344,10 @@ function previewAndUploadNewBanner(e) {
     const formData = new FormData();
     formData.append('image', file);
     
-    fetch('<?= base_url("admin/service-banners/upload") ?>', {
+    App.fetch('<?= base_url("admin/service-banners/upload") ?>', {
         method: 'POST',
-        headers: { 'X-Requested-With': 'XMLHttpRequest' },
         body: formData
     })
-    .then(res => res.json())
     .then(data => {
         spinner.classList.add('d-none');
         if (data.status === 'success') {
@@ -395,8 +403,10 @@ function submitNewBannerModal() {
     
     // Close modal
     const modalEl = document.getElementById('modalAddBanner');
-    const modal = bootstrap.Modal.getInstance(modalEl);
-    if (modal) modal.hide();
+    if (typeof bootstrap !== 'undefined') {
+        const modal = bootstrap.Modal.getInstance(modalEl);
+        if (modal) modal.hide();
+    }
     
     // Auto save
     saveAllServiceBanners();
@@ -422,14 +432,10 @@ function uploadBannerImage(e, idx) {
 
     const loader = App.showLoader ? App.showLoader('กำลังอัปโหลดรูปภาพ...') : null;
     
-    fetch('<?= base_url("admin/service-banners/upload") ?>', {
+    App.fetch('<?= base_url("admin/service-banners/upload") ?>', {
         method: 'POST',
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest'
-        },
         body: formData
     })
-    .then(res => res.json())
     .then(data => {
         if (loader && App.hideLoader) App.hideLoader(loader);
         if (data.status === 'success') {
@@ -456,14 +462,10 @@ function saveAllServiceBanners() {
 
     const loader = App.showLoader ? App.showLoader('กำลังบันทึกข้อมูลและซิงค์ขึ้นสู่เว็บจริง...') : null;
     
-    fetch('<?= base_url("admin/service-banners/save") ?>', {
+    App.fetch('<?= base_url("admin/service-banners/save") ?>', {
         method: 'POST',
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest'
-        },
         body: formData
     })
-    .then(res => res.json())
     .then(data => {
         if (loader && App.hideLoader) App.hideLoader(loader);
         if (data.status === 'success') {
@@ -482,13 +484,9 @@ function saveAllServiceBanners() {
 function resetServiceBanners() {
     if (confirm('คำเตือน: คุณแน่ใจหรือไม่ที่จะคืนค่าแบนเนอร์และลิงก์บริการทั้งหมดกลับสู่ค่าเริ่มต้นของระบบ?')) {
         const loader = App.showLoader ? App.showLoader('กำลังคืนค่าเริ่มต้น...') : null;
-        fetch('<?= base_url("admin/service-banners/reset") ?>', {
-            method: 'POST',
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
+        App.fetch('<?= base_url("admin/service-banners/reset") ?>', {
+            method: 'POST'
         })
-        .then(res => res.json())
         .then(data => {
             if (loader && App.hideLoader) App.hideLoader(loader);
             if (data.status === 'success') {
