@@ -22,6 +22,68 @@ $defaultQuote = 'รักเมืองลุง สร้างเมือ�
 $govQuote = function_exists('site_text') ? site_text('governor_policy_quote', (!empty($governor['quote']) ? $governor['quote'] : $defaultQuote), 'นโยบายและวิสัยทัศน์ผู้ว่าราชการจังหวัด', true) : (!empty($governor['quote']) ? $governor['quote'] : $defaultQuote);
 $govQuote = strip_tags((string)$govQuote);
 $govPhoto = !empty($governor['photo']) ? (strpos((string)$governor['photo'], 'http') === 0 ? $governor['photo'] : base_url($governor['photo'])) : base_url('uploads/executives/exec_1787543315_1787543315_5570c503c25f1ee9f002.jpg');
+
+// Prepare Top Provincial Executives List (ผู้ว่าฯ และรองผู้ว่าราชการจังหวัด)
+$topExecutives = [];
+if ($governor) {
+    $topExecutives[] = array_merge($governor, [
+        'name' => $govName,
+        'position' => $govPosition,
+        'quote' => $govQuote,
+        'photo' => $govPhoto,
+        'is_governor' => true,
+        'phone' => $governor['phone'] ?? '074-613409',
+        'email' => $governor['email'] ?? 'phatthalung@moi.go.th',
+    ]);
+}
+
+if (!empty($executives)) {
+    foreach ($executives as $ex) {
+        $exName = $ex['name'] ?? '';
+        $exPos = $ex['position'] ?? '';
+        if ($exName === $govName || $exPos === $govPosition) continue;
+        $exPhoto = !empty($ex['photo']) ? (strpos((string)$ex['photo'], 'http') === 0 ? $ex['photo'] : base_url($ex['photo'])) : '';
+        $topExecutives[] = array_merge($ex, [
+            'is_governor' => false,
+            'photo' => $exPhoto,
+            'quote' => !empty($ex['quote']) ? strip_tags((string)$ex['quote']) : 'ร่วมขับเคลื่อนการบริหารราชการและยกระดับการพัฒนาจังหวัดพัทลุงเพื่อประโยชน์สุขของพี่น้องประชาชน',
+            'phone' => $ex['phone'] ?? '074-613409',
+            'email' => $ex['email'] ?? 'phatthalung@moi.go.th',
+        ]);
+    }
+}
+
+// Fallback if deputy governors are not in $executives
+if (count($topExecutives) < 3) {
+    $fallbackList = [
+        [
+            'id' => 'exec-2',
+            'name' => 'นายธราวุธ ช่วยเกิด',
+            'position' => 'รองผู้ว่าราชการจังหวัดพัทลุง (ด้านเศรษฐกิจและสังคม)',
+            'quote' => 'ขับเคลื่อนงานราชการและบริหารการปกครองเพื่อผลประโยชน์สูงสุดของพี่น้องชาวพัทลุง',
+            'photo' => base_url('uploads/executives/exec_1787543811_1787543811_4407c907ad0b1649e32d.jpg'),
+            'phone' => '074-613409',
+            'email' => 'phatthalung@moi.go.th',
+            'is_governor' => false,
+        ],
+        [
+            'id' => 'exec-3',
+            'name' => 'นางสาวศรอนงค์ สงสมพันธ์',
+            'position' => 'รองผู้ว่าราชการจังหวัดพัทลุง',
+            'quote' => 'มุ่งมั่นพัฒนาคุณภาพชีวิต ส่งเสริมการศึกษา สาธารณสุข และความผาสุกของประชาชนชาวพัทลุง',
+            'photo' => base_url('uploads/executives/exec_1787542204_1787542204_8f8e25b35550eef0c3c5.png'),
+            'phone' => '074-613409',
+            'email' => 'phatthalung@moi.go.th',
+            'is_governor' => false,
+        ]
+    ];
+    $existingNames = array_column($topExecutives, 'name');
+    foreach ($fallbackList as $fb) {
+        if (!in_array($fb['name'], $existingNames)) {
+            $topExecutives[] = $fb;
+        }
+    }
+}
 ?>
 
 <section class="provincial-policy-section mb-5">
@@ -171,41 +233,57 @@ $govPhoto = !empty($governor['photo']) ? (strpos((string)$governor['photo'], 'ht
 
             <!-- Column 3: Governor's Leadership Vision (ส่วนที่ 3: นโยบายการบริหารงานของผู้ว่าฯ) -->
             <div class="col-12 col-xl-5 d-flex">
-                <div class="governor-vision-card p-3.5 p-lg-4 rounded-3 w-100 d-flex flex-column justify-content-between position-relative overflow-hidden shadow-xs">
+                <div class="governor-vision-card p-3.5 p-lg-4 rounded-4 w-100 d-flex flex-column justify-content-between position-relative overflow-hidden shadow-xs">
                     
                     <!-- Card Header -->
-                    <div class="gov-card-header mb-2 d-flex align-items-center justify-content-between">
+                    <div class="gov-card-header mb-3 pb-2 border-bottom d-flex align-items-center justify-content-between" style="border-color: rgba(4, 120, 87, 0.12) !important;">
                         <h5 class="fw-bold mb-0 text-success d-flex align-items-center gap-2" style="font-size: 1.15rem; color: #047857 !important;">
                             <i class="fa-solid fa-user-tie"></i>
                             <span>ผู้ว่าราชการจังหวัดพัทลุง</span>
                         </h5>
+                        <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1 small fw-medium" role="button" data-bs-toggle="modal" data-bs-target="#governorPortraitModal" onclick="openGovernorModal(0)" title="คลิกเพื่อดูภาพและข้อมูลคณะผู้บริหารระดับสูง">
+                            <i class="fa-solid fa-users-viewfinder me-1"></i> คณะผู้บริหาร
+                        </span>
                     </div>
 
                     <!-- Card Body: Quote & Portrait Side by Side -->
-                    <div class="d-flex align-items-center gap-3 my-auto">
+                    <div class="gov-card-body-flex d-flex align-items-center gap-3.5 my-auto">
                         <!-- Quote -->
                         <div class="gov-quote-wrap flex-grow-1">
+                            <div class="gov-quote-icon mb-1.5">
+                                <i class="fa-solid fa-quote-left"></i>
+                            </div>
                             <blockquote class="gov-quote-text mb-0">
                                 “<?= esc($govQuote) ?>”
                             </blockquote>
                         </div>
 
-                        <!-- Portrait Image -->
+                        <!-- Portrait Image (Clickable Lightbox Trigger) -->
                         <div class="gov-portrait-wrap flex-shrink-0 text-center">
-                            <div class="gov-portrait-frame shadow-sm rounded-3 overflow-hidden">
-                                <img src="<?= $govPhoto ?>" alt="<?= esc($govName) ?>" class="img-fluid">
+                            <div class="gov-portrait-frame rounded-4 overflow-hidden position-relative" role="button" data-bs-toggle="modal" data-bs-target="#governorPortraitModal" onclick="openGovernorModal(0)" title="คลิกเพื่อเปิดดูภาพขนาดใหญ่และคณะผู้บริหารระดับสูง" tabindex="0">
+                                <img src="<?= $govPhoto ?>" alt="<?= esc($govName) ?>" class="img-fluid" loading="lazy">
+                                <div class="gov-portrait-hover-hint d-flex align-items-center justify-content-center position-absolute inset-0 w-100 h-100">
+                                    <span class="badge rounded-pill bg-dark bg-opacity-80 text-white px-2.5 py-1.5 shadow-sm">
+                                        <i class="fa-solid fa-users-viewfinder me-1 text-warning"></i> ดูภาพขยาย &amp; คณะผู้บริหาร
+                                    </span>
+                                </div>
+                                <span class="gov-expand-badge position-absolute top-0 end-0 m-2 badge rounded-circle bg-dark bg-opacity-75 text-white d-flex align-items-center justify-content-center shadow-xs" style="width: 28px; height: 28px;">
+                                    <i class="fa-solid fa-expand" style="font-size: 0.72rem;"></i>
+                                </span>
                             </div>
                         </div>
                     </div>
 
                     <!-- Card Footer: Name & Office -->
-                    <div class="gov-card-footer mt-2 pt-2 border-top d-flex align-items-center justify-content-between" style="border-color: rgba(0,0,0,0.06) !important;">
-                        <a href="<?= base_url('governor-hall') ?>" class="text-decoration-none small fw-semibold text-success hover-underline">
-                            <i class="fa-solid fa-crown me-1"></i> ทำเนียบผู้ว่าราชการจังหวัด
+                    <div class="gov-card-footer mt-3 pt-2.5 border-top d-flex align-items-center justify-content-between" style="border-color: rgba(4, 120, 87, 0.12) !important;">
+                        <a href="<?= base_url('governor-hall') ?>" class="gov-hall-link text-decoration-none small fw-semibold text-success hover-underline d-inline-flex align-items-center gap-1.5">
+                            <i class="fa-solid fa-crown text-warning"></i>
+                            <span>ทำเนียบผู้ว่าราชการจังหวัด</span>
+                            <i class="fa-solid fa-arrow-right small opacity-75"></i>
                         </a>
-                        <div class="text-end">
-                            <span class="fw-bold text-dark d-block" style="font-size: 0.98rem;"><?= esc($govName) ?></span>
-                            <small class="text-muted d-block" style="font-size: 0.8rem;"><?= esc($govPosition) ?></small>
+                        <div class="text-end" role="button" data-bs-toggle="modal" data-bs-target="#governorPortraitModal" onclick="openGovernorModal(0)" title="คลิกเพื่อดูข้อมูลผู้ว่าราชการจังหวัดและรองผู้ว่าฯ">
+                            <span class="gov-footer-name fw-bold text-dark d-block"><?= esc($govName) ?></span>
+                            <small class="gov-footer-pos text-success fw-medium d-block"><?= esc($govPosition) ?></small>
                         </div>
                     </div>
 
@@ -220,6 +298,143 @@ $govPhoto = !empty($governor['photo']) ? (strpos((string)$governor['photo'], 'ht
     </div>
 
 </section>
+
+<!-- =========================================================================
+     EXECUTIVE OFFICIAL LIGHTBOX MODAL WITH TABS (กล่องดูภาพและข้อมูลผู้บริหารระดับสูง)
+     ========================================================================= -->
+<div class="modal fade" id="governorPortraitModal" tabindex="-1" aria-labelledby="governorPortraitModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 rounded-4 overflow-hidden shadow-2xl" style="background: #ffffff; border: 1.5px solid rgba(212, 175, 55, 0.4) !important;">
+            
+            <!-- Modal Header -->
+            <div class="modal-header py-3 px-4 text-white d-flex align-items-center justify-content-between" style="background: linear-gradient(135deg, #065f46 0%, #047857 60%, #10b981 100%); border-bottom: 2px solid #ffd700;">
+                <div class="d-flex align-items-center gap-2.5">
+                    <div class="gov-modal-icon-badge rounded-circle bg-white text-success d-flex align-items-center justify-content-center shadow-xs" style="width: 38px; height: 38px; font-size: 1.15rem;">
+                        <i class="fa-solid fa-users-viewfinder"></i>
+                    </div>
+                    <div>
+                        <h5 class="modal-title fw-bold mb-0 text-white" id="governorPortraitModalLabel" style="font-size: 1.15rem;">
+                            คณะผู้บริหารระดับสูง จังหวัดพัทลุง
+                        </h5>
+                        <small class="text-white-50" style="font-size: 0.8rem;">ศาลากลางจังหวัดพัทลุง • ผู้ว่าราชการจังหวัด และรองผู้ว่าราชการจังหวัด</small>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <!-- Executive Tabs Navigation Bar -->
+            <div class="exec-modal-tab-bar px-3 py-2.5 bg-light border-bottom d-flex flex-wrap gap-2 align-items-center">
+                <div class="small text-muted me-1 d-none d-sm-block fw-semibold" style="font-size: 0.82rem;">
+                    <i class="fa-solid fa-hand-pointer text-success me-1"></i> เลือกผู้บริหาร:
+                </div>
+                <ul class="nav nav-pills gap-2 flex-grow-1" id="execModalTabs" role="tablist">
+                    <?php foreach ($topExecutives as $idx => $ex): 
+                        $exPhoto = !empty($ex['photo']) ? (strpos((string)$ex['photo'], 'http') === 0 ? $ex['photo'] : base_url($ex['photo'])) : base_url('uploads/executives/exec_1787543315_1787543315_5570c503c25f1ee9f002.jpg');
+                        $isGov = !empty($ex['is_governor']);
+                        $roleBadgeText = $isGov ? 'ผู้ว่าฯ' : 'รองผู้ว่าฯ';
+                    ?>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link <?= $idx === 0 ? 'active' : '' ?> exec-tab-pill d-inline-flex align-items-center gap-2 rounded-pill shadow-xs" id="exec-tab-<?= $idx ?>" data-bs-toggle="pill" data-bs-target="#exec-pane-<?= $idx ?>" type="button" role="tab" aria-controls="exec-pane-<?= $idx ?>" aria-selected="<?= $idx === 0 ? 'true' : 'false' ?>">
+                            <div class="exec-tab-avatar rounded-circle overflow-hidden flex-shrink-0 shadow-2xs">
+                                <img src="<?= $exPhoto ?>" alt="<?= esc($ex['name']) ?>" class="w-100 h-100 object-fit-cover" style="object-position: top center;">
+                            </div>
+                            <span class="fw-bold"><?= esc($ex['name']) ?></span>
+                            <span class="badge <?= $isGov ? 'bg-warning text-dark' : 'bg-secondary bg-opacity-25 text-body' ?> rounded-pill small px-2 py-0.5" style="font-size: 0.68rem;"><?= $roleBadgeText ?></span>
+                        </button>
+                    </li>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
+
+            <!-- Modal Body: Tab Content for each Executive -->
+            <div class="modal-body p-0">
+                <div class="tab-content" id="execModalTabContent">
+                    <?php foreach ($topExecutives as $idx => $ex): 
+                        $exPhoto = !empty($ex['photo']) ? (strpos((string)$ex['photo'], 'http') === 0 ? $ex['photo'] : base_url($ex['photo'])) : base_url('uploads/executives/exec_1787543315_1787543315_5570c503c25f1ee9f002.jpg');
+                        $isGov = !empty($ex['is_governor']);
+                        $exQuote = !empty($ex['quote']) ? $ex['quote'] : ($isGov ? $govQuote : 'ร่วมขับเคลื่อนการบริหารราชการและยกระดับการพัฒนาจังหวัดพัทลุงเพื่อประโยชน์สุขของพี่น้องประชาชน');
+                        $exPhone = $ex['phone'] ?? '074-613409';
+                        $exEmail = $ex['email'] ?? 'phatthalung@moi.go.th';
+                    ?>
+                    <div class="tab-pane fade <?= $idx === 0 ? 'show active' : '' ?>" id="exec-pane-<?= $idx ?>" role="tabpanel" aria-labelledby="exec-tab-<?= $idx ?>" tabindex="0">
+                        <div class="row g-0 align-items-stretch">
+                            
+                            <!-- Left: High-Resolution Portrait -->
+                            <div class="col-12 col-md-5 d-flex flex-column align-items-center justify-content-center p-3 p-lg-4" style="background: linear-gradient(180deg, #f8fafc 0%, #eef5ee 100%); border-right: 1px solid rgba(4, 120, 87, 0.1);">
+                                <div class="gov-modal-img-frame rounded-3 overflow-hidden shadow-md position-relative w-100 text-center" style="max-width: 280px; min-height: 240px; background: #ffffff; border: 3px solid #ffffff; outline: 1.5px solid <?= $isGov ? 'rgba(212, 175, 55, 0.6)' : 'rgba(4, 120, 87, 0.4)' ?>;">
+                                    <img src="<?= $exPhoto ?>" alt="<?= esc($ex['name']) ?>" class="w-100 h-auto d-block mx-auto" style="object-fit: contain; max-height: 54vh;">
+                                </div>
+                                <div class="mt-3 d-flex gap-2">
+                                    <a href="<?= $exPhoto ?>" target="_blank" download class="btn btn-sm btn-outline-success rounded-pill px-3 py-1.5 fw-medium shadow-xs">
+                                        <i class="fa-solid fa-download me-1.5"></i> ดาวน์โหลดภาพทางการ
+                                    </a>
+                                    <a href="<?= $exPhoto ?>" target="_blank" class="btn btn-sm btn-light border rounded-pill px-2.5 py-1.5 text-muted" title="เปิดภาพต้นฉบับในแท็บใหม่">
+                                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- Right: Profile, Vision & Contact -->
+                            <div class="col-12 col-md-7 p-4 d-flex flex-column justify-content-between">
+                                <div>
+                                    <!-- Badge & Province Tag -->
+                                    <div class="d-flex align-items-center justify-content-between mb-2">
+                                        <span class="badge <?= $isGov ? 'bg-warning-subtle text-dark border border-warning' : 'bg-success-subtle text-success border border-success-subtle' ?> rounded-pill px-3 py-1 fw-semibold small">
+                                            <i class="fa-solid <?= $isGov ? 'fa-crown text-warning' : 'fa-user-tie text-success' ?> me-1"></i> <?= $isGov ? 'ผู้บริหารสูงสุดของจังหวัด' : 'ผู้บริหารระดับสูง' ?>
+                                        </span>
+                                        <span class="badge bg-light text-muted border rounded-pill px-2.5 py-1 small">
+                                            <i class="fa-solid fa-location-dot me-1 text-danger"></i> จังหวัดพัทลุง
+                                        </span>
+                                    </div>
+                                    
+                                    <h4 class="fw-bold text-dark mb-1" style="color: #0f172a !important;"><?= esc($ex['name']) ?></h4>
+                                    <h6 class="text-success fw-semibold mb-3.5" style="color: #047857 !important;"><?= esc($ex['position']) ?></h6>
+
+                                    <!-- Vision / Mission Blockquote -->
+                                    <div class="gov-modal-quote rounded-3 p-3.5 mb-3.5 position-relative" style="background: rgba(4, 120, 87, 0.04); border-left: 4px solid #047857; border-top: 1px solid rgba(4, 120, 87, 0.08); border-right: 1px solid rgba(4, 120, 87, 0.08); border-bottom: 1px solid rgba(4, 120, 87, 0.08);">
+                                        <div class="small fw-bold text-success mb-1.5 d-flex align-items-center gap-1.5">
+                                            <i class="fa-solid fa-quote-left"></i>
+                                            <span><?= $isGov ? 'วิสัยทัศน์และนโยบายการปฏิบัติราชการ' : 'แนวทางการปฏิบัติราชการ' ?></span>
+                                        </div>
+                                        <p class="mb-0 text-secondary" style="font-size: 0.95rem; line-height: 1.7; font-style: italic;">
+                                            “<?= esc($exQuote) ?>”
+                                        </p>
+                                    </div>
+
+                                    <!-- Key Contacts / Office Info -->
+                                    <div class="gov-modal-office small text-muted p-2.5 rounded-2 bg-light border">
+                                        <div class="d-flex align-items-center gap-2 mb-1">
+                                            <i class="fa-solid fa-building text-success"></i>
+                                            <span><strong>ที่ตั้ง:</strong> ศาลากลางจังหวัดพัทลุง ถนนราเมศวร์ ตำบลคูหาสวรรค์ อำเภอเมืองพัทลุง</span>
+                                        </div>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <i class="fa-solid fa-phone text-success"></i>
+                                            <span><strong>ติดต่อราชการ:</strong> <?= esc($exPhone) ?> (สำนักงานจังหวัดพัทลุง)</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Footer Actions -->
+                                <div class="pt-3 mt-3 border-top d-flex flex-wrap align-items-center justify-content-between gap-2" style="border-color: rgba(0,0,0,0.08) !important;">
+                                    <a href="<?= base_url('governor-hall') ?>" class="btn btn-success rounded-pill px-3.5 py-2 fw-medium shadow-xs d-inline-flex align-items-center gap-1.5">
+                                        <i class="fa-solid fa-crown text-warning"></i>
+                                        <span>ทำเนียบคณะผู้บริหาร</span>
+                                        <i class="fa-solid fa-arrow-right small ms-1"></i>
+                                    </a>
+                                    <button type="button" class="btn btn-outline-secondary rounded-pill px-3.5 py-2 fw-medium" data-bs-dismiss="modal">
+                                        <i class="fa-solid fa-xmark me-1"></i> ปิดหน้าต่าง
+                                    </button>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <style>
 /* ==========================================================================
@@ -483,48 +698,148 @@ $govPhoto = !empty($governor['photo']) ? (strpos((string)$governor['photo'], 'ht
 
 /* 4. Governor Vision Card */
 .governor-vision-card {
-    background: #fefefe;
-    background-image: linear-gradient(135deg, #ffffff 0%, #f7faf7 100%);
-    border: 1.5px solid #d1e7d1;
+    background: #ffffff;
+    background-image: linear-gradient(145deg, #ffffff 0%, #f7fbf7 60%, #eef7ee 100%);
+    border: 1.5px solid #c8e6c9;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(4, 120, 87, 0.06);
+    transition: all 0.3s ease;
+}
+
+.governor-vision-card:hover {
+    box-shadow: 0 8px 24px rgba(4, 120, 87, 0.1);
+}
+
+.gov-quote-icon {
+    color: #10b981;
+    font-size: 1.35rem;
+    opacity: 0.35;
+    line-height: 1;
 }
 
 .gov-quote-text {
-    font-size: 0.82rem;
-    color: #334155;
-    line-height: 1.55;
+    font-size: 0.88rem;
+    color: #1e293b;
+    line-height: 1.65;
     font-style: italic;
+    position: relative;
+    z-index: 2;
+    letter-spacing: 0.15px;
+}
+
+.gov-portrait-wrap {
     position: relative;
     z-index: 2;
 }
 
 .gov-portrait-frame {
-    width: 175px;
-    height: 215px;
+    width: 220px;
+    height: 275px;
     background: #f1f5f9;
-    border: 3px solid #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.14), 0 3px 8px rgba(0, 0, 0, 0.08);
+    border: 3.5px solid #ffffff;
+    outline: 2px solid rgba(212, 175, 55, 0.6); /* Regal gold frame */
+    border-radius: 14px;
+    box-shadow: 0 12px 28px -4px rgba(4, 120, 87, 0.2), 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: transform 0.35s ease, box-shadow 0.35s ease, outline-color 0.35s ease;
+    cursor: pointer;
 }
 
-@media (min-width: 1400px) {
-    .gov-portrait-frame {
-        width: 195px;
-        height: 235px;
-    }
+.gov-portrait-hover-hint {
+    background: rgba(4, 30, 18, 0.52);
+    backdrop-filter: blur(2px);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.25s ease;
+    z-index: 2;
+}
+
+.gov-portrait-frame:hover .gov-portrait-hover-hint {
+    opacity: 1;
+    visibility: visible;
+}
+
+.gov-expand-badge {
+    transition: transform 0.25s ease, background 0.25s ease;
+    z-index: 3;
+}
+
+.gov-portrait-frame:hover .gov-expand-badge {
+    transform: scale(1.15);
+    background: rgba(4, 120, 87, 0.95) !important;
+}
+
+.gov-portrait-frame:hover {
+    transform: translateY(-3px) scale(1.015);
+    outline-color: rgba(212, 175, 55, 0.9);
+    box-shadow: 0 16px 36px -4px rgba(4, 120, 87, 0.28), 0 6px 16px rgba(0, 0, 0, 0.1);
 }
 
 .gov-portrait-frame img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: center 8%;
+    display: block;
+}
+
+@media (min-width: 1400px) {
+    .gov-portrait-frame {
+        width: 240px;
+        height: 300px;
+    }
+    .gov-quote-text {
+        font-size: 0.92rem;
+        line-height: 1.7;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .gov-card-body-flex {
+        flex-direction: column-reverse;
+        text-align: center;
+    }
+    .gov-portrait-frame {
+        width: 190px;
+        height: 238px;
+        margin-bottom: 0.75rem;
+    }
+    .gov-card-footer {
+        flex-direction: column;
+        gap: 0.5rem;
+        text-align: center;
+    }
+    .gov-card-footer .text-end {
+        text-align: center !important;
+    }
+}
+
+.gov-hall-link {
+    transition: all 0.2s ease;
+    padding: 3px 6px;
+    border-radius: 6px;
+}
+
+.gov-hall-link:hover {
+    color: #065f46 !important;
+    background: rgba(4, 120, 87, 0.06);
+}
+
+.gov-footer-name {
+    font-size: 1.02rem;
+    color: #0f172a;
+    letter-spacing: 0.2px;
+}
+
+.gov-footer-pos {
+    font-size: 0.82rem;
 }
 
 .gov-watermark-seal {
     position: absolute;
     right: -10px;
     bottom: -15px;
-    font-size: 5.5rem;
-    color: rgba(4, 120, 87, 0.04);
+    font-size: 6rem;
+    color: rgba(4, 120, 87, 0.035);
     pointer-events: none;
     z-index: 1;
 }
@@ -580,5 +895,142 @@ $govPhoto = !empty($governor['photo']) ? (strpos((string)$governor['photo'], 'ht
 }
 [data-theme="dark"] .gov-portrait-frame {
     border-color: rgba(255, 255, 255, 0.2);
+    outline-color: rgba(212, 175, 55, 0.5);
+}
+[data-theme="dark"] .gov-footer-name {
+    color: #ffffff !important;
+}
+[data-theme="dark"] .gov-footer-pos {
+    color: #6ee7b7 !important;
+}
+
+/* Governor Modal Custom Styling */
+#governorPortraitModal .modal-content {
+    border-radius: 20px;
+    box-shadow: 0 25px 60px -10px rgba(4, 120, 87, 0.4);
+}
+
+#governorPortraitModal .modal-header {
+    border-radius: 20px 20px 0 0;
+}
+
+.gov-modal-img-frame {
+    transition: transform 0.3s ease;
+}
+
+.gov-modal-img-frame:hover {
+    transform: scale(1.02);
+}
+
+[data-theme="dark"] #governorPortraitModal .modal-content {
+    background: #143320 !important;
+    border-color: rgba(16, 185, 129, 0.35) !important;
+    color: #f1f5f9;
+}
+
+[data-theme="dark"] #governorPortraitModal .modal-body > .row > div:first-child {
+    background: #0f2416 !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-theme="dark"] #governorPortraitModal h4 {
+    color: #ffffff !important;
+}
+
+[data-theme="dark"] #governorPortraitModal .gov-modal-quote {
+    background: rgba(16, 185, 129, 0.12) !important;
+    border-color: rgba(16, 185, 129, 0.35) !important;
+}
+
+[data-theme="dark"] #governorPortraitModal .gov-modal-quote p {
+    color: #e2e8f0 !important;
+}
+
+[data-theme="dark"] #governorPortraitModal .gov-modal-office {
+    background: #0f2416 !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    color: #cbd5e1 !important;
+}
+
+/* Executive Modal Tabs Styling */
+.exec-modal-tab-bar {
+    background: #f8fafc;
+    border-bottom: 1px solid rgba(4, 120, 87, 0.12);
+}
+
+.exec-tab-pill {
+    background: #ffffff;
+    border: 1.5px solid #d1fae5 !important;
+    color: #1e293b !important;
+    font-size: 0.85rem;
+    padding: 6px 14px;
+    transition: all 0.25s ease;
+}
+
+.exec-tab-pill:hover {
+    background: #ecfdf5 !important;
+    border-color: #10b981 !important;
+    color: #047857 !important;
+    transform: translateY(-1px);
+}
+
+.exec-tab-pill.active {
+    background: linear-gradient(135deg, #047857 0%, #065f46 100%) !important;
+    color: #ffffff !important;
+    border-color: #047857 !important;
+    box-shadow: 0 4px 14px rgba(4, 120, 87, 0.28);
+}
+
+.exec-tab-pill.active .badge {
+    background: #ffd700 !important;
+    color: #14532d !important;
+}
+
+.exec-tab-avatar {
+    width: 28px;
+    height: 28px;
+    border: 1.5px solid #ffffff;
+}
+
+/* Dark mode for Executive Tabs */
+[data-theme="dark"] .exec-modal-tab-bar {
+    background: #0f2918 !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-theme="dark"] .exec-tab-pill {
+    background: #163820 !important;
+    border-color: rgba(16, 185, 129, 0.3) !important;
+    color: #f1f5f9 !important;
+}
+
+[data-theme="dark"] .exec-tab-pill:hover {
+    background: #1b4728 !important;
+    border-color: #34d399 !important;
+}
+
+[data-theme="dark"] .exec-tab-pill.active {
+    background: linear-gradient(135deg, #10b981 0%, #047857 100%) !important;
+    color: #ffffff !important;
+    border-color: #10b981 !important;
 }
 </style>
+
+<script>
+function openGovernorModal(tabIndex) {
+    var modalEl = document.getElementById('governorPortraitModal');
+    if (!modalEl) return;
+
+    var targetIdx = (typeof tabIndex === 'number') ? tabIndex : 0;
+    var tabTrigger = document.getElementById('exec-tab-' + targetIdx);
+    if (tabTrigger && typeof bootstrap !== 'undefined' && bootstrap.Tab) {
+        var tabInstance = bootstrap.Tab.getOrCreateInstance(tabTrigger);
+        tabInstance.show();
+    }
+
+    if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+        var modalInstance = bootstrap.Modal.getOrCreateInstance(modalEl);
+        modalInstance.show();
+    }
+}
+</script>

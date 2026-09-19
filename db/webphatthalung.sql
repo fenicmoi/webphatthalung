@@ -1,20 +1,16 @@
 -- ========================================================
--- webphatthalung Database Backup
--- Database: phatthalun_2026db
--- Generated on: 2026-09-04 08:08:12
--- Character Set: UTF-8
+-- Phatthalung Standalone Database Dump
+-- Database: `phatthalun_newdb2026`
+-- Exported on: 2026-09-19 10:04:12
 -- ========================================================
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
-
--- --------------------------------------------------------
--- Table structure for `citizen_contacts`
--- --------------------------------------------------------
+-- Table `citizen_contacts`
 DROP TABLE IF EXISTS `citizen_contacts`;
 CREATE TABLE `citizen_contacts` (
-  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `tracking_code` varchar(50) NOT NULL,
   `full_name` varchar(255) NOT NULL,
   `phone` varchar(50) NOT NULL,
@@ -34,19 +30,15 @@ CREATE TABLE `citizen_contacts` (
   UNIQUE KEY `tracking_code` (`tracking_code`),
   KEY `status` (`status`),
   KEY `category` (`category`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb3;
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
--- Dumping data for `citizen_contacts`
-INSERT INTO `citizen_contacts` (`id`, `tracking_code`, `full_name`, `phone`, `email`, `district`, `category`, `subject`, `message`, `attachment`, `status`, `officer_note`, `resolved_at`, `ip_address`, `created_at`, `updated_at`) VALUES
+INSERT INTO `citizen_contacts` (`id`, `tracking_code`, `full_name`, `phone`, `email`, `district`, `category`, `subject`, `message`, `attachment`, `status`, `officer_note`, `resolved_at`, `ip_address`, `created_at`, `updated_at`) VALUES 
 ('1', 'PTL-260831-78P3', 'สมมุติ  สุดหล่อ', '0815399135', 'fenics128@gmail.com', 'เมืองพัทลุง', 'general', 'ทดสอบการติดต่อของประชาชน', 'ทดสอบการทำงานของระบบ', NULL, 'resolved', 'เรียบร้อยครับ', '2026-08-31 08:38:23', '::1', '2026-08-31 08:36:04', '2026-08-31 08:38:23');
 
-
--- --------------------------------------------------------
--- Table structure for `emenscr_settings`
--- --------------------------------------------------------
+-- Table `emenscr_settings`
 DROP TABLE IF EXISTS `emenscr_settings`;
 CREATE TABLE `emenscr_settings` (
-  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `api_endpoint` varchar(255) NOT NULL DEFAULT 'https://emenscr.nesdc.go.th/api/v1/provincial/projects',
   `api_token` varchar(255) DEFAULT NULL,
   `province_code` varchar(50) NOT NULL DEFAULT '93',
@@ -59,31 +51,26 @@ CREATE TABLE `emenscr_settings` (
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb3;
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
--- Dumping data for `emenscr_settings`
-INSERT INTO `emenscr_settings` (`id`, `api_endpoint`, `api_token`, `province_code`, `province_name`, `auto_sync`, `sync_frequency`, `last_sync_status`, `last_sync_time`, `last_sync_message`, `created_at`, `updated_at`) VALUES
+INSERT INTO `emenscr_settings` (`id`, `api_endpoint`, `api_token`, `province_code`, `province_name`, `auto_sync`, `sync_frequency`, `last_sync_status`, `last_sync_time`, `last_sync_message`, `created_at`, `updated_at`) VALUES 
 ('1', 'https://emenscr.nesdc.go.th/api/v1/provincial/projects', '', '93', 'พัทลุง', '1', 'daily', 'success', '2026-08-24 02:51:57', 'เชื่อมโยงและซิงค์ข้อมูลชุดโครงการยุทธศาสตร์จังหวัดพัทลุงสำเร็จ (Baseline Dataset Synchronized) (จำนวน 16 โครงการ)', '2026-08-24 02:42:40', '2026-08-24 02:51:57');
 
-
--- --------------------------------------------------------
--- Table structure for `executives`
--- --------------------------------------------------------
+-- Table `executives`
 DROP TABLE IF EXISTS `executives`;
 CREATE TABLE `executives` (
-  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
   `position` varchar(255) DEFAULT NULL,
   `image_path` varchar(255) DEFAULT NULL,
-  `order_num` int NOT NULL DEFAULT '0',
+  `order_num` int(11) NOT NULL DEFAULT '0',
   `active` tinyint(1) NOT NULL DEFAULT '1',
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb3;
+) ENGINE=MyISAM AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
 
--- Dumping data for `executives`
-INSERT INTO `executives` (`id`, `name`, `position`, `image_path`, `order_num`, `active`, `created_at`, `updated_at`) VALUES
+INSERT INTO `executives` (`id`, `name`, `position`, `image_path`, `order_num`, `active`, `created_at`, `updated_at`) VALUES 
 ('1', 'นายสุจินต์ วาจากิจ', 'ผู้ว่าราชการจังหวัดพัทลุง', 'uploads/executives/exec_1785927173_1785927173_b938f363bbc5e18ce55a.png', '1', '1', '2026-08-14 09:02:52', '2026-08-14 09:02:52'),
 ('2', 'นายธราวุธ ช่วยเกิด', 'รองผู้ว่าราชการจังหวัดพัทลุง', 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=400&auto=format&fit=crop', '2', '1', '2026-08-14 09:02:52', '2026-08-14 09:02:52'),
 ('3', 'นางสาวศรอนงค์ สงสมพันธ์', 'รองผู้ว่าราชการจังหวัดพัทลุง', 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=400&auto=format&fit=crop', '3', '1', '2026-08-14 09:02:52', '2026-08-14 09:02:52'),
@@ -94,83 +81,48 @@ INSERT INTO `executives` (`id`, `name`, `position`, `image_path`, `order_num`, `
 ('8', 'นายธราวุธ ช่วยเกิด', 'รองผู้ว่าราชการจังหวัดพัทลุง (ด้านเศรษฐกิจและสังคม)', 'uploads/executives/exec_1787543811_1787543811_4407c907ad0b1649e32d.jpg', '2', '1', '2026-08-26 10:02:45', '2026-08-26 10:02:45'),
 ('9', 'นางสาวศรอนงค์ สงสมพันธ์', 'รองผู้ว่าราชการจังหวัดพัทลุง', 'uploads/executives/exec_1787542204_1787542204_8f8e25b35550eef0c3c5.png', '3', '1', '2026-08-26 10:02:45', '2026-08-26 10:02:45');
 
-
--- --------------------------------------------------------
--- Table structure for `gallery_albums`
--- --------------------------------------------------------
+-- Table `gallery_albums`
 DROP TABLE IF EXISTS `gallery_albums`;
 CREATE TABLE `gallery_albums` (
-  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
   `cover_image` varchar(255) DEFAULT NULL,
   `description` text,
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb3;
+) ENGINE=MyISAM AUTO_INCREMENT=21 DEFAULT CHARSET=utf8;
 
--- Dumping data for `gallery_albums`
-INSERT INTO `gallery_albums` (`id`, `title`, `cover_image`, `description`, `created_at`, `updated_at`) VALUES
-('1', 'งานประเพณีแข่งโพนและลากพระ จังหวัดพัทลุง ประจำปี 2569 ยกระดับมรดกวัฒนธรรมท้องถิ่นสู่สายตาสากล', 'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?auto=format&fit=crop&w=900&q=80', NULL, '2026-08-14 09:02:52', '2026-08-14 09:02:52'),
-('2', 'ผู้ว่าราชการจังหวัดนำทีมลงพื้นที่ตรวจเยี่ยม ยกระดับทะเลน้อยสู่พื้นที่ชุ่มน้ำ (Ramsar Site) เพื่ออนุรักษ์ควายน้ำมรดกเกษตรโลก', 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=900&q=80', NULL, '2026-08-14 09:02:52', '2026-08-14 09:02:52'),
-('3', 'กิจกรรมจิตอาสาทำความดีด้วยหัวใจ พัฒนาสิ่งแวดล้อมและปรับภูมิทัศน์ลำน้ำสายหลัก รอบเขาอกทะลุ', 'https://images.unsplash.com/photo-1511632765486-a01980e01a18?auto=format&fit=crop&w=900&q=80', NULL, '2026-08-14 09:02:52', '2026-08-14 09:02:52'),
-('4', 'งานส่งเสริมเศรษฐกิจการท่องเที่ยวเชิงนิเวศและสินค้า OTOP ปักษ์ใต้ ยุคดิจิทัล 5.0', 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=900&q=80', NULL, '2026-08-14 09:02:52', '2026-08-14 09:02:52'),
-('5', 'โครงการอบรมยกระดับเยาวชนและนักศึกษาจังหวัดพัทลุงสู่วิศวกรรมปัญญาประดิษฐ์ (AI) และทักษะดิจิทัลร่วมสมัย', 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=900&q=80', NULL, '2026-08-14 09:02:52', '2026-08-14 09:02:52'),
-('6', 'งานแถลงข่าวความพร้อมการจัดการแข่งขันกีฬากลุ่มภาคใต้และส่งเสริมการออกกำลังกายสู่เมืองสุขภาพดี (Healthy City)', 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=900&q=80', NULL, '2026-08-14 09:02:52', '2026-08-14 09:02:52'),
-('7', 'งานประเพณีแข่งโพนและลากพระ จังหวัดพัทลุง ประจำปี 2569 ยกระดับมรดกวัฒนธรรมท้องถิ่นสู่สายตาสากล', 'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?auto=format&fit=crop&w=900&q=80', NULL, '2026-08-26 00:44:55', '2026-08-26 00:44:55'),
-('8', 'ผู้ว่าราชการจังหวัดนำทีมลงพื้นที่ตรวจเยี่ยม ยกระดับทะเลน้อยสู่พื้นที่ชุ่มน้ำ (Ramsar Site) เพื่ออนุรักษ์ควายน้ำมรดกเกษตรโลก', 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=900&q=80', NULL, '2026-08-26 00:44:55', '2026-08-26 00:44:55'),
-('9', 'กิจกรรมจิตอาสาทำความดีด้วยหัวใจ พัฒนาสิ่งแวดล้อมและปรับภูมิทัศน์ลำน้ำสายหลัก รอบเขาอกทะลุ', 'https://images.unsplash.com/photo-1511632765486-a01980e01a18?auto=format&fit=crop&w=900&q=80', NULL, '2026-08-26 00:44:55', '2026-08-26 00:44:55'),
-('10', 'งานส่งเสริมเศรษฐกิจการท่องเที่ยวเชิงนิเวศและสินค้า OTOP ปักษ์ใต้ ยุคดิจิทัล 5.0', 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=900&q=80', NULL, '2026-08-26 00:44:55', '2026-08-26 00:44:55'),
-('11', 'โครงการอบรมยกระดับเยาวชนและนักศึกษาจังหวัดพัทลุงสู่วิศวกรรมปัญญาประดิษฐ์ (AI) และทักษะดิจิทัลร่วมสมัย', 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=900&q=80', NULL, '2026-08-26 00:44:55', '2026-08-26 00:44:55'),
-('12', 'งานแถลงข่าวความพร้อมการจัดการแข่งขันกีฬากลุ่มภาคใต้และส่งเสริมการออกกำลังกายสู่เมืองสุขภาพดี (Healthy City)', 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=900&q=80', NULL, '2026-08-26 00:44:55', '2026-08-26 00:44:55'),
-('13', 'งานประเพณีแข่งโพนและลากพระ จังหวัดพัทลุง ประจำปี 2569 ยกระดับมรดกวัฒนธรรมท้องถิ่นสู่สายตาสากล', 'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?auto=format&fit=crop&w=900&q=80', NULL, '2026-08-26 10:02:45', '2026-08-26 10:02:45'),
-('14', 'ผู้ว่าราชการจังหวัดนำทีมลงพื้นที่ตรวจเยี่ยม ยกระดับทะเลน้อยสู่พื้นที่ชุ่มน้ำ (Ramsar Site) เพื่ออนุรักษ์ควายน้ำมรดกเกษตรโลก', 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=900&q=80', NULL, '2026-08-26 10:02:45', '2026-08-26 10:02:45'),
-('15', 'กิจกรรมจิตอาสาทำความดีด้วยหัวใจ พัฒนาสิ่งแวดล้อมและปรับภูมิทัศน์ลำน้ำสายหลัก รอบเขาอกทะลุ', 'https://images.unsplash.com/photo-1511632765486-a01980e01a18?auto=format&fit=crop&w=900&q=80', NULL, '2026-08-26 10:02:45', '2026-08-26 10:02:45'),
-('16', 'งานส่งเสริมเศรษฐกิจการท่องเที่ยวเชิงนิเวศและสินค้า OTOP ปักษ์ใต้ ยุคดิจิทัล 5.0', 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=900&q=80', NULL, '2026-08-26 10:02:45', '2026-08-26 10:02:45'),
-('17', 'โครงการอบรมยกระดับเยาวชนและนักศึกษาจังหวัดพัทลุงสู่วิศวกรรมปัญญาประดิษฐ์ (AI) และทักษะดิจิทัลร่วมสมัย', 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=900&q=80', NULL, '2026-08-26 10:02:45', '2026-08-26 10:02:45'),
-('18', 'งานแถลงข่าวความพร้อมการจัดการแข่งขันกีฬากลุ่มภาคใต้และส่งเสริมการออกกำลังกายสู่เมืองสุขภาพดี (Healthy City)', 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=900&q=80', NULL, '2026-08-26 10:02:45', '2026-08-26 10:02:45');
+INSERT INTO `gallery_albums` (`id`, `title`, `cover_image`, `description`, `created_at`, `updated_at`) VALUES 
+('19', 'น้ำต้องถึง เกษตรต้องรอด', 'uploads/gallery/cover_1789101361_1789101361_2f74df2f19e18d67d15f.jpeg', '{\"category\":\"การท่องเที่ยวและเศรษฐกิจ\",\"date\":\"2026-09-11\",\"views\":1}', '2026-09-11 04:36:01', '2026-09-11 04:36:01'),
+('20', 'อ่างเก็บน้ำเขาหัวช้าง', 'uploads/gallery/cover_1789439833_1789439833_0daed36fac38a26c1845.jpg', '{\"category\":\"การท่องเที่ยวและเศรษฐกิจ\",\"date\":\"2026-09-15\",\"views\":1}', '2026-09-15 02:37:13', '2026-09-15 02:37:13');
 
-
--- --------------------------------------------------------
--- Table structure for `gallery_photos`
--- --------------------------------------------------------
+-- Table `gallery_photos`
 DROP TABLE IF EXISTS `gallery_photos`;
 CREATE TABLE `gallery_photos` (
-  `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `album_id` int unsigned NOT NULL,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `album_id` int(10) unsigned NOT NULL,
   `image_path` varchar(255) NOT NULL,
   `caption` varchar(255) DEFAULT NULL,
   `created_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `gallery_photos_album_id_foreign` (`album_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb3;
+) ENGINE=MyISAM AUTO_INCREMENT=25 DEFAULT CHARSET=utf8;
 
--- Dumping data for `gallery_photos`
-INSERT INTO `gallery_photos` (`id`, `album_id`, `image_path`, `caption`, `created_at`) VALUES
-('1', '1', 'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?auto=format&fit=crop&w=1200&q=80', NULL, '2026-08-14 09:02:52'),
-('2', '1', 'https://images.unsplash.com/photo-1518684079-3c830dcef090?auto=format&fit=crop&w=1200&q=80', NULL, '2026-08-14 09:02:52'),
-('3', '1', 'https://images.unsplash.com/photo-1528702748617-c64d49f918af?auto=format&fit=crop&w=1200&q=80', NULL, '2026-08-14 09:02:52'),
-('4', '1', 'https://images.unsplash.com/photo-1509099836639-18ba1795216d?auto=format&fit=crop&w=1200&q=80', NULL, '2026-08-14 09:02:52'),
-('5', '2', 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80', NULL, '2026-08-14 09:02:52'),
-('6', '2', 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=1200&q=80', NULL, '2026-08-14 09:02:52'),
-('7', '2', 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1200&q=80', NULL, '2026-08-14 09:02:52'),
-('8', '3', 'https://images.unsplash.com/photo-1511632765486-a01980e01a18?auto=format&fit=crop&w=1200&q=80', NULL, '2026-08-14 09:02:52'),
-('9', '3', 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80', NULL, '2026-08-14 09:02:52'),
-('10', '4', 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1200&q=80', NULL, '2026-08-14 09:02:52'),
-('11', '4', 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&q=80', NULL, '2026-08-14 09:02:52'),
-('12', '4', 'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?auto=format&fit=crop&w=1200&q=80', NULL, '2026-08-14 09:02:52'),
-('13', '5', 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=80', NULL, '2026-08-14 09:02:52'),
-('14', '5', 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=1200&q=80', NULL, '2026-08-14 09:02:52'),
-('15', '6', 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=1200&q=80', NULL, '2026-08-14 09:02:52'),
-('16', '6', 'https://images.unsplash.com/photo-1517649763962-0c623266ddc0?auto=format&fit=crop&w=1200&q=80', NULL, '2026-08-14 09:02:52');
+INSERT INTO `gallery_photos` (`id`, `album_id`, `image_path`, `caption`, `created_at`) VALUES 
+('24', '20', 'uploads/gallery/img_6aa8af591b533_1789439833_b4c81edd3fb41e918820.jpg', NULL, '2026-09-15 02:37:13'),
+('23', '20', 'uploads/gallery/img_6aa8af591af65_1789439833_0be98cecb5ccf03abb2d.jpg', NULL, '2026-09-15 02:37:13'),
+('22', '20', 'uploads/gallery/img_6aa8af591a93b_1789439833_038b57423d9f35381296.jpg', NULL, '2026-09-15 02:37:13'),
+('21', '20', 'uploads/gallery/img_6aa8af591a368_1789439833_4e037910020265d355f2.jpg', NULL, '2026-09-15 02:37:13'),
+('20', '20', 'uploads/gallery/img_6aa8af5919d81_1789439833_d289aeb01f7e940d123f.jpg', NULL, '2026-09-15 02:37:13'),
+('19', '20', 'uploads/gallery/img_6aa8af59196db_1789439833_824f229abd69cff6766b.jpg', NULL, '2026-09-15 02:37:13'),
+('18', '20', 'uploads/gallery/img_6aa8af5918fd0_1789439833_e9eaa06bdc6e3e706811.jpg', NULL, '2026-09-15 02:37:13'),
+('17', '19', 'uploads/gallery/img_6aa38531cd5b8_1789101361_ae4a834fe879f365cea6.jpeg', NULL, '2026-09-11 04:36:01');
 
-
--- --------------------------------------------------------
--- Table structure for `ita_documents`
--- --------------------------------------------------------
+-- Table `ita_documents`
 DROP TABLE IF EXISTS `ita_documents`;
 CREATE TABLE `ita_documents` (
-  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `oit_code` varchar(50) NOT NULL,
   `name` varchar(255) NOT NULL,
   `url` varchar(255) DEFAULT NULL,
@@ -179,10 +131,9 @@ CREATE TABLE `ita_documents` (
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb3;
+) ENGINE=MyISAM AUTO_INCREMENT=19 DEFAULT CHARSET=utf8;
 
--- Dumping data for `ita_documents`
-INSERT INTO `ita_documents` (`id`, `oit_code`, `name`, `url`, `year`, `status`, `created_at`, `updated_at`) VALUES
+INSERT INTO `ita_documents` (`id`, `oit_code`, `name`, `url`, `year`, `status`, `created_at`, `updated_at`) VALUES 
 ('1', 'O1', 'โครงสร้าง และทำเนียบผู้บริหารหน่วยงาน', 'executives', NULL, 'active', '2026-08-14 09:02:52', '2026-08-14 09:02:52'),
 ('2', 'O18', 'รายงานผลการใช้จ่ายงบประมาณประจำปี และรายงานความก้าวหน้าโครงการ', 'assets/docs/oit18_budget_report.pdf', NULL, 'active', '2026-08-14 09:02:52', '2026-08-14 09:02:52'),
 ('3', 'O34', 'แผนปฏิบัติการส่งเสริมคุณธรรม และการป้องกันการทุจริตประจำปีงบประมาณ', 'assets/docs/oit34_anticorruption_plan.pdf', NULL, 'active', '2026-08-14 09:02:52', '2026-08-14 09:02:52'),
@@ -202,24 +153,20 @@ INSERT INTO `ita_documents` (`id`, `oit_code`, `name`, `url`, `year`, `status`, 
 ('17', 'DAT-01', 'ชุดข้อมูลเชิงสถิติ: สถิติการให้บริการประชาชนผ่านระบบออนไลน์ e-Services', 'assets/docs/opendata_eservice_stats.csv', '2026', 'active', '2026-08-26 10:02:45', '2026-08-26 10:02:45'),
 ('18', 'DAT-02', 'ชุดข้อมูลเชิงสถิติ: ข้อมูลรายชื่อและสถานที่สำคัญทางวัฒนธรรมและส่งเสริมเศรษฐกิจชุมชน', 'assets/docs/opendata_tourism_landmarks.json', '2026', 'active', '2026-08-26 10:02:45', '2026-08-26 10:02:45');
 
-
--- --------------------------------------------------------
--- Table structure for `migrations`
--- --------------------------------------------------------
+-- Table `migrations`
 DROP TABLE IF EXISTS `migrations`;
 CREATE TABLE `migrations` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `version` varchar(255) NOT NULL,
   `class` varchar(255) NOT NULL,
   `group` varchar(255) NOT NULL,
   `namespace` varchar(255) NOT NULL,
-  `time` int NOT NULL,
-  `batch` int unsigned NOT NULL,
+  `time` int(11) NOT NULL,
+  `batch` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb3;
+) ENGINE=MyISAM AUTO_INCREMENT=20 DEFAULT CHARSET=utf8;
 
--- Dumping data for `migrations`
-INSERT INTO `migrations` (`id`, `version`, `class`, `group`, `namespace`, `time`, `batch`) VALUES
+INSERT INTO `migrations` (`id`, `version`, `class`, `group`, `namespace`, `time`, `batch`) VALUES 
 ('1', '2026-08-03-000001', 'App\\Database\\Migrations\\CreateUsersTable', 'default', 'App', '1786697524', '1'),
 ('2', '2026-08-03-000002', 'App\\Database\\Migrations\\CreateNewsTable', 'default', 'App', '1786697524', '1'),
 ('3', '2026-08-03-000003', 'App\\Database\\Migrations\\CreateServicesTable', 'default', 'App', '1786697524', '1'),
@@ -237,36 +184,52 @@ INSERT INTO `migrations` (`id`, `version`, `class`, `group`, `namespace`, `time`
 ('15', '2026-08-20-100000', 'App\\Database\\Migrations\\AddHeaderImageToPages', 'default', 'App', '1787197218', '5'),
 ('16', '2026-08-24-100000', 'App\\Database\\Migrations\\CreateProvincialProjectsTable', 'default', 'App', '1787538862', '6'),
 ('17', '2026-08-31-151500', 'App\\Database\\Migrations\\CreateCitizenContactsTable', 'default', 'App', '1788163913', '7'),
-('18', '2026-08-31-154500', 'App\\Database\\Migrations\\CreateOfficialEmailsTable', 'default', 'App', '1788165606', '8');
+('18', '2026-08-31-154500', 'App\\Database\\Migrations\\CreateOfficialEmailsTable', 'default', 'App', '1788165606', '8'),
+('19', '2026-09-14-100000', 'App\\Database\\Migrations\\AddMediaAndEventToNews', 'default', 'App', '1789439427', '9');
 
-
--- --------------------------------------------------------
--- Table structure for `news`
--- --------------------------------------------------------
+-- Table `news`
 DROP TABLE IF EXISTS `news`;
 CREATE TABLE `news` (
-  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
   `slug` varchar(255) NOT NULL,
   `category` varchar(100) NOT NULL DEFAULT 'ข่าวประชาสัมพันธ์',
   `content` text NOT NULL,
   `thumbnail` varchar(255) DEFAULT NULL,
+  `images_gallery` longtext,
+  `attachments` longtext,
+  `cover_fit` varchar(50) DEFAULT 'cover',
+  `is_event` tinyint(1) DEFAULT '0',
+  `event_start_date` varchar(50) DEFAULT NULL,
+  `event_end_date` varchar(50) DEFAULT NULL,
+  `event_location` varchar(255) DEFAULT NULL,
+  `event_coordinates` varchar(255) DEFAULT NULL,
   `status` enum('draft','published','archived') NOT NULL DEFAULT 'published',
-  `views_count` int NOT NULL DEFAULT '0',
-  `author_id` int unsigned DEFAULT NULL,
+  `views_count` int(11) NOT NULL DEFAULT '0',
+  `author_id` int(10) unsigned DEFAULT NULL,
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `slug` (`slug`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3;
+) ENGINE=MyISAM AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
 
+INSERT INTO `news` (`id`, `title`, `slug`, `category`, `content`, `thumbnail`, `images_gallery`, `attachments`, `cover_fit`, `is_event`, `event_start_date`, `event_end_date`, `event_location`, `event_coordinates`, `status`, `views_count`, `author_id`, `created_at`, `updated_at`) VALUES 
+('1', 'test', 'news-1788941937-88', 'ประกาศราชการ / แจ้งเตือน', '<p>asfasdfasdfasdf</p>', 'uploads/news/cover_fit_1788941144_928.jpg', NULL, NULL, 'cover', '0', NULL, NULL, NULL, NULL, 'published', '1', NULL, '2026-09-09 08:05:56', '2026-09-09 15:18:57'),
+('2', '[ทดสอบระบบ] ข่าวสารจำลองทดสอบการบันทึกลง MySQL ณ 09/09/2026 16:07:15', 'test-news-1788944846-70', 'ข่าวประชาสัมพันธ์', '<p>นี่คือเนื้อหาข่าวสำหรับทดสอบกระบวนการเขียนลง MySQL ตาราง news เพื่อตรวจเช็คความสมบูรณ์ของระบบ</p>', 'assets/images/slider/sane_muanglung.png', NULL, NULL, 'cover', '0', NULL, NULL, NULL, NULL, 'published', '1', NULL, '2026-09-09 16:07:26', '2026-09-09 16:07:26'),
+('3', 'ทดสอบ 3', 'ทดสอบ-3', 'ข่าวกิจกรรมจังหวัด', '<p>ฟหกดฟหกด</p>', 'uploads/news/cover_fit_1788945201_485.jpg', NULL, NULL, 'cover', '0', NULL, NULL, NULL, NULL, 'published', '1', '1', '2026-09-09 09:13:24', '2026-09-09 09:13:24'),
+('4', 'พัทลุงร่วมสร้าง “เด็ก 3D” มีวินัย คุณธรรม และทักษะชีวิต', 'พัทลุงร่วมสร้าง-เด็ก-3d-มีวินัย-คุณธรรม-และทักษะชีวิต', 'ข้อมูลทั่วไปจังหวัดพัทลุง', '<p><span style=\"background-color: rgb(255, 255, 255); color: rgb(8, 8, 9);\">นายสุจินต์ วาจากิจ ผู้ว่าราชการจังหวัดพัทลุง มอบนโยบายแก่หน่วยงานและภาคีเครือข่ายที่ร่วมเวทีบูรณาการ ความปลอดภัยของเด็กพัทลุง 3D ภายใต้โครงการขับเคลื่อนการบริหารจัดการการศึกษาในระดับภาคและกลุ่มจังหวัด กรณีศึกษา เด็กพัทลุง 3D : D วินัย D คุณธรรม D ทักษะชีวิต</span></p><p><span style=\"background-color: rgb(255, 255, 255); color: rgb(8, 8, 9);\">ผู้ว่าราชการจังหวัดพัทลุง เน้นย้ำว่า การพัฒนาเด็กไม่ใช่เพียงการมุ่งให้เด็ก เรียนเก่ง แต่ทุกฝ่ายต้องร่วมกันสร้างให้เด็กเป็นผู้ที่ มีวินัย มีคุณธรรม และมีทักษะชีวิต สามารถอยู่ร่วมกับผู้อื่นในสังคมได้อย่างมีความสุข</span></p><p><span style=\"background-color: rgb(255, 255, 255); color: rgb(8, 8, 9);\">พร้อมเน้นให้สถานศึกษาเป็นพื้นที่ปลอดภัย ครู ผู้ปกครอง และผู้เกี่ยวข้องต้องร่วมกันใส่ใจ สังเกต และดูแลเด็กอย่างใกล้ชิด เข้าใจความแตกต่างของเด็กแต่ละคน และร่วมกันป้องกันปัญหาการกลั่นแกล้ง ความรุนแรง และปัญหาที่อาจส่งผลกระทบต่อเด็กและเยาวชน</span></p><p><br></p>', 'uploads/news/news_1789099226_2831.jpeg', NULL, NULL, 'cover', '0', NULL, NULL, NULL, NULL, 'published', '1', '1', '2026-09-11 04:00:34', '2026-09-11 04:00:34'),
+('5', 'ตลาดนัดสวนหลวง ร.9  พัทลุง', 'ตลาดนัดสวนหลวง-ร9-พัทลุง', 'ข่าวกิจกรรมจังหวัด', '<p>เชิญเที่ยวตลาด สวนหลวง ร.9 พัทลุง</p>', 'uploads/news/news_1789101867_6024.jpeg', NULL, NULL, 'cover', '0', NULL, NULL, NULL, NULL, 'published', '1', '1', '2026-09-11 04:44:39', '2026-09-11 04:46:31'),
+('6', 'รายงานผลการขับเคลื่อนนโยบายสำคัญเร่งด่วนของกระทรวงมหาดไทย \"มหาดไทย ทำ ทัน ที ACTION 5 PLUS', 'รายงานผลการขับเคลื่อนนโยบายสำคัญเร่งด่วนของกระทรวงมหาดไทย-มหาดไทย-ทำ-ทัน-ที-action-5-plus', 'ประกาศราชการ / แจ้งเตือน', '<p>-</p>', 'uploads/news/news_1789362070_8674.jpg', '[\"uploads\\/news\\/news_1789439599_7208.jpg\",\"uploads\\/news\\/news_1789439600_3389.jpg\",\"uploads\\/news\\/news_1789439601_7378.jpg\",\"uploads\\/news\\/news_1789439604_7978.jpg\",\"uploads\\/news\\/news_1789439605_2750.jpg\",\"uploads\\/news\\/news_1789439605_1766.jpg\"]', '[{\"name\":\"เกณฑ์ราคากลางและคุณลักษณะพื้นฐานการจัดหาอุปกรณ์และระบบคอมพิวเตอร์ ฉบับปรับปรุง รายการที่ 1 - 11 เดือนพฤษภาคม 2569.pdf\",\"path\":\"uploads\\/docs\\/doc_1789439622_529.pdf\",\"url\":\"https:\\/\\/www.phatthalung.go.th\\/2026\\/uploads\\/docs\\/doc_1789439622_529.pdf\",\"size\":\"410.5 KB\",\"icon\":\"fa-solid fa-file-pdf text-danger\"}]', 'cover', '0', NULL, NULL, NULL, NULL, 'published', '1', '1', '2026-09-14 05:02:21', '2026-09-15 02:33:45'),
+('8', '[ทดสอบระบบ] ข่าวสารจำลองทดสอบกาtรบันทึกลง MySQL ณ 09/09/2026 09:05:38', 'ทดสอบระบบ-ข่าวสารจำลองทดสอบกาtรบันทึกลง-mysql-ณ-09092026-090538', 'ข่าวประชาสัมพันธ์', '<p>นี่คือเนื้อหาข่าวสำหรับทดสอบกระบวนการเขียนลง MySQL ตาราง news เพื่อตรวจเช็คความสมบูรณ์ของระบบ</p>', 'assets/images/slider/sane_muanglung.png', NULL, NULL, 'cover', '0', NULL, NULL, NULL, NULL, 'published', '1', NULL, '2026-09-09 09:05:50', '2026-09-09 09:05:50'),
+('9', '[ทดสอบระบบ] ข่าวสารจำลองทดสอบการบันทึกลง MySQL ณ 09/09/2026 09:05:28', 'ทดสอบระบบ-ข่าวสารจำลองทดสอบการบันทึกลง-mysql-ณ-09092026-090528', 'ข่าวประชาสัมพันธ์', '<p>นี่คือเนื้อหาข่าวสำหรับทดสอบกระบวนการเขียนลง MySQL ตาราง news เพื่อตรวจเช็คความสมบูรณ์ของระบบ</p>', 'assets/images/slider/sane_muanglung.png', NULL, NULL, 'cover', '0', NULL, NULL, NULL, NULL, 'published', '1', NULL, '2026-09-09 09:05:38', '2026-09-09 09:05:38'),
+('10', 'test23', 'test23', 'ประกาศจัดซื้อจัดจ้าง (e-GP)', '<p>test23</p>', 'uploads/news/news_1788944707_8655.jpg', NULL, NULL, 'cover', '0', NULL, NULL, NULL, NULL, 'published', '1', NULL, '2026-09-09 09:05:12', '2026-09-09 09:05:12'),
+('11', 'asdfasdf', 'asdfasdf', 'ประกาศจัดซื้อจัดจ้าง (e-GP)', '<p>asdfasdfasdfasdf</p>', 'uploads/news/news_1788939042_1258.jpg', NULL, NULL, 'cover', '0', NULL, NULL, NULL, NULL, 'published', '1', NULL, '2026-09-09 07:30:45', '2026-09-09 07:30:45'),
+('12', '“หลบบ้านเรา เขาเจียกเดือนสิบ”', 'หลบบ้านเรา-เขาเจียกเดือนสิบ', 'ส่งเสริมการท่องเที่ยว', '<p>-</p>', 'uploads/news/news_1789698172_3333.jpeg', '[\"uploads\\/news\\/news_1789698172_3333.jpeg\"]', NULL, 'cover', '1', '2026-10-07', '2026-10-07', 'ภูเขาเจียก', '7.611105506716536, 100.03066849222813', 'published', '1', '1', '2026-09-18 02:23:02', '2026-09-18 02:23:02');
 
--- --------------------------------------------------------
--- Table structure for `nora_knowledge`
--- --------------------------------------------------------
+-- Table `nora_knowledge`
 DROP TABLE IF EXISTS `nora_knowledge`;
 CREATE TABLE `nora_knowledge` (
-  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `intent` varchar(100) NOT NULL,
   `keywords` text,
   `answer_text` text NOT NULL,
@@ -274,10 +237,9 @@ CREATE TABLE `nora_knowledge` (
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb3;
+) ENGINE=MyISAM AUTO_INCREMENT=15 DEFAULT CHARSET=utf8;
 
--- Dumping data for `nora_knowledge`
-INSERT INTO `nora_knowledge` (`id`, `intent`, `keywords`, `answer_text`, `action_link`, `created_at`, `updated_at`) VALUES
+INSERT INTO `nora_knowledge` (`id`, `intent`, `keywords`, `answer_text`, `action_link`, `created_at`, `updated_at`) VALUES 
 ('1', 'แนะนำสถานที่ท่องเที่ยวให้หน่อย', 'แหล่งท่องเที่ยว,สถานที่ท่องเที่ยว,แนะนำแหล่งท่องเที่ยว,มาเมืองลุง,ข้อมูลด้านการท่องเที่ยว', 'ถ้าเกี่ยวกับการท่องเที่ยว น้องแนะนำให้ไปที่เว็บไซต์  \"มาเมืองลุง\" นะคะ', 'http://www.ma-muanglung.com', '2026-08-26 06:29:22', '2026-08-26 06:29:22'),
 ('2', 'คำขวัญประจำจังหวัดพัทลุงและมรดกทางวัฒนธรรมคืออะไร?', 'คำขวัญ, คำขวัญจังหวัด, พัทลุงคืออะไร, สวนขวัญเมือง, มรดก, โนรา, มโนราห์', '✨ **คำขวัญจังหวัดพัทลุง**: \"เมืองหนังโนรา อู่นาข้าว พราวน้ำตก แหล่งนกน้ำ ถ้ำเย็นตา ภูเขาอกทะลุ น้ำพุร้อน\"\n\nศิลปะการแสดง **\"โนรา\" (Nora)** ได้รับการขึ้นทะเบียนจาก UNESCO ให้เป็นมรดกทางวัฒนธรรมที่จับต้องไม่ได้ของมนุษยชาติ ซึ่งพัทลุงเป็นแผ่นดินต้นกำเนิดแห่งมนต์ขลังนี้ค่ะ ', 'http://www.ma-muanglung.go.th', '2026-08-26 06:29:22', '2026-08-26 06:29:22'),
 ('3', 'ติดต่อศาลากลางและหน่วยงานภายในจังหวัดได้อย่างไร?', 'เบอร์โทร, เบอร์ติดต่อ, ศาลากลาง, โทรศัพท์, ติดต่อจังหวัด, ศูนย์ดำรงธรรม, สายด่วน, ที่อยู่', '', 'citizen/complaints', '2026-08-26 06:29:22', '2026-08-26 06:29:22'),
@@ -293,13 +255,10 @@ INSERT INTO `nora_knowledge` (`id`, `intent`, `keywords`, `answer_text`, `action
 ('13', 'แนะนำสถานที่ท่องเที่ยวสุดฮิตในจังหวัดพัทลุงให้หน่อย', 'ท่องเที่ยว, ที่พัก, โรงแรม, คาเฟ่, ร้านอาหาร, งานประเพณี, เที่ยว, ทะเลน้อย, ล่องแก่ง, เขาอกทะลุ', '', 'http://www.ma-muanglung.com', '2026-08-26 10:02:45', '2026-08-26 10:02:45'),
 ('14', 'ติดต่อศาลากลางจังหวัดพัทลุงและหน่วยงานราชการได้อย่างไร?', 'เบอร์โทร, เบอร์ติดต่อ, ศาลากลาง, โทรศัพท์, ติดต่อจังหวัด, ศูนย์ดำรงธรรม, สายด่วน, ที่อยู่', '', 'citizen/complaints', '2026-08-26 10:02:45', '2026-08-26 10:02:45');
 
-
--- --------------------------------------------------------
--- Table structure for `official_emails`
--- --------------------------------------------------------
+-- Table `official_emails`
 DROP TABLE IF EXISTS `official_emails`;
 CREATE TABLE `official_emails` (
-  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `message_uid` varchar(100) NOT NULL,
   `sender_name` varchar(255) DEFAULT NULL,
   `sender_email` varchar(255) NOT NULL,
@@ -321,10 +280,9 @@ CREATE TABLE `official_emails` (
   KEY `is_read` (`is_read`),
   KEY `is_starred` (`is_starred`),
   KEY `category` (`category`)
-) ENGINE=MyISAM AUTO_INCREMENT=74 DEFAULT CHARSET=utf8mb3;
+) ENGINE=MyISAM AUTO_INCREMENT=74 DEFAULT CHARSET=utf8;
 
--- Dumping data for `official_emails`
-INSERT INTO `official_emails` (`id`, `message_uid`, `sender_name`, `sender_email`, `recipient_email`, `subject`, `body_plain`, `body_html`, `received_at`, `has_attachment`, `attachments_json`, `is_read`, `is_starred`, `category`, `created_at`, `updated_at`) VALUES
+INSERT INTO `official_emails` (`id`, `message_uid`, `sender_name`, `sender_email`, `recipient_email`, `subject`, `body_plain`, `body_html`, `received_at`, `has_attachment`, `attachments_json`, `is_read`, `is_starred`, `category`, `created_at`, `updated_at`) VALUES 
 ('1', 'moi-gov-1001', 'สำนักงานปลัดกระทรวงมหาดไทย', 'saraban_ops@moi.go.th', 'phatthalung@moi.go.th', 'ด่วนที่สุด! ซักซ้อมแนวทางขับเคลื่อนโครงการพัฒนาจังหวัดและกลุ่มจังหวัด ประจำปีงบประมาณ พ.ศ. 2570', 'เรียน ผู้ว่าราชการจังหวัดพัทลุง\n\nด้วยกระทรวงมหาดไทย ขอซักซ้อมแนวทางการจัดทำแผนปฏิบัติราชการประจำปีของจังหวัดและกลุ่มจังหวัดภาคใต้ฝั่งอ่าวไทย ขอให้จังหวัดดำเนินการรวบรวมข้อมูลโครงการให้สอดคล้องกับยุทธศาสตร์ชาติ 20 ปี และบันทึกผ่านระบบ e-MENSCR ภายในกำหนดเวลา\n\nจึงเรียนมาเพื่อโปรดพิจารณาดำเนินการ\nสำนักงานปลัดกระทรวงมหาดไทย', '<p><strong>เรียน ผู้ว่าราชการจังหวัดพัทลุง</strong></p><p>ด้วยกระทรวงมหาดไทย ขอซักซ้อมแนวทางการจัดทำแผนปฏิบัติราชการประจำปีของจังหวัดและกลุ่มจังหวัดภาคใต้ฝั่งอ่าวไทย ขอให้จังหวัดดำเนินการรวบรวมข้อมูลโครงการให้สอดคล้องกับยุทธศาสตร์ชาติ 20 ปี และบันทึกผ่านระบบ e-MENSCR ภายในกำหนดเวลา</p><p>จึงเรียนมาเพื่อโปรดพิจารณาดำเนินการ<br><strong>สำนักงานปลัดกระทรวงมหาดไทย</strong></p>', '2026-08-31 08:57:43', '1', '[{\"name\":\"แนวทางการจัดทำแผน_2570.pdf\",\"size\":1420000,\"type\":\"application\\/pdf\"}]', '1', '0', 'official', '2026-08-31 08:57:43', '2026-08-31 09:14:02'),
 ('2', 'moi-gov-1002', 'คุณวิรัช รัตนศิลป์ (ประชาชน อ.ควนขนุน)', 'wirat.rattana@gmail.com', 'phatthalung@moi.go.th', 'ขอความอนุเคราะห์ซ่อมแซมคอสะพานข้ามคลองลำปำ ชำรุดจากฝนตกหนัก', 'กราบเรียน ท่านผู้ว่าราชการจังหวัดพัทลุง\n\nเนื่องจากช่วงสัปดาห์ที่ผ่านมามีฝนตกหนักต่อเนื่อง ทำให้คอสะพานข้ามคลองลำปำ รอยต่อ ต.ทะเลน้อย - ต.พนางตุง เกิดการทรุดตัว รถจักรยานยนต์และรถยนต์สัญจรลำบากมาก เกรงว่าจะเกิดอุบัติเหตุแก่พี่น้องประชาชน จึงใคร่ขอความอนุเคราะห์หน่วยงานที่เกี่ยวข้องช่วยส่งทีมช่างเข้าตรวจสอบและซ่อมแซมเป็นการเร่งด่วนครับ\n\nขอขอบพระคุณเป็นอย่างสูง\nวิรัช รัตนศิลป์ (โทร 089-765-4321)', '<p><strong>กราบเรียน ท่านผู้ว่าราชการจังหวัดพัทลุง</strong></p><p>เนื่องจากช่วงสัปดาห์ที่ผ่านมามีฝนตกหนักต่อเนื่อง ทำให้คอสะพานข้ามคลองลำปำ รอยต่อ ต.ทะเลน้อย - ต.พนางตุง เกิดการทรุดตัว รถจักรยานยนต์และรถยนต์สัญจรลำบากมาก เกรงว่าจะเกิดอุบัติเหตุแก่พี่น้องประชาชน จึงใคร่ขอความอนุเคราะห์หน่วยงานที่เกี่ยวข้องช่วยส่งทีมช่างเข้าตรวจสอบและซ่อมแซมเป็นการเร่งด่วนครับ</p><p>ขอขอบพระคุณเป็นอย่างสูง<br><strong>วิรัช รัตนศิลป์ (โทร 089-765-4321)</strong></p>', '2026-08-30 08:57:43', '1', '[{\"name\":\"ภาพถ่ายคอสะพานทรุด.jpg\",\"size\":850000,\"type\":\"image\\/jpeg\"}]', '1', '0', 'citizen', '2026-08-31 08:57:43', '2026-08-31 08:58:15'),
 ('3', 'moi-gov-1003', 'กรมป้องกันและบรรเทาสาธารณภัย (ปภ.)', 'disaster_alert@disaster.go.th', 'phatthalung@moi.go.th', 'รายงานสถานการณ์สภาพอากาศและแจ้งเตือนเฝ้าระวังน้ำป่าไหลหลาก พื้นที่เทือกเขาบรรทัด', 'แจ้งเตือนกองอำนวยการป้องกันและบรรเทาสาธารณภัยจังหวัดพัทลุง\n\nกรมอุตุนิยมวิทยาคาดการณ์มรสุมตะวันออกเฉียงเหนือพัดปกคลุมอ่าวไทยและภาคใต้มีกำลังแรง ขอให้เฝ้าระวังพื้นที่ลาดเชิงเขาและชุมชนริมน้ำตก ในเขต อ.กงหรา อ.ศรีนครินทร์ และ อ.ตะโหมด ระหว่างวันที่ 1-4 กันยายน 2569\n\nกรมป้องกันและบรรเทาสาธารณภัย', '<p><strong>แจ้งเตือนกองอำนวยการป้องกันและบรรเทาสาธารณภัยจังหวัดพัทลุง</strong></p><p>กรมอุตุนิยมวิทยาคาดการณ์มรสุมตะวันออกเฉียงเหนือพัดปกคลุมอ่าวไทยและภาคใต้มีกำลังแรง ขอให้เฝ้าระวังพื้นที่ลาดเชิงเขาและชุมชนริมน้ำตก ในเขต อ.กงหรา อ.ศรีนครินทร์ และ อ.ตะโหมด ระหว่างวันที่ 1-4 กันยายน 2569</p><p><strong>กรมป้องกันและบรรเทาสาธารณภัย</strong></p>', '2026-08-29 08:57:43', '0', NULL, '1', '1', 'official', '2026-08-31 08:57:43', '2026-08-31 08:57:43'),
@@ -375,7 +333,7 @@ INSERT INTO `official_emails` (`id`, `message_uid`, `sender_name`, `sender_email
 ('48', 'ptl-16980', 'กลุ่มบริหารทั่วไป กองสวัสดิภาพสัตว์และสัตวแพทย์บริการ', 'vetservice01@dld.go.th', 'phatthalung@moi.go.th', ' ขอเชิญเป็นประธานในพิธีเปิดโครงการสัตวแพทย์พระราชทาน ในพระราชดำริสมเด็จพระนางเจ้าสิริกิติ์พระบรมราชินีนาถ พระบรมราชินีนาถ พระบรมราชชนีพันปีหลวง ในพื้นที่จังหวัดพัทลุง', '', '', '2026-08-14 06:39:17', '1', '[{\"name\":\"ผู้ว่าราชการจังหวัดพัทลุง.pdf\",\"size\":1018536,\"type\":\"3\\/PDF\"}]', '0', '0', 'official', '2026-08-31 09:24:27', '2026-08-31 09:24:27'),
 ('49', 'ptl-16979', 'WalkRunBike FightingSTROKE', 'walkrunbike.fightingstroke@gmail.com', 'phatthalung@moi.go.th', 'ขอเชิญประชุมเตรียมความพร้อมจัดโครงการแสงนำใจไทยทั้งชาติฯ ครั้งที่ 12 เฉลิมพระเกียรติ (กลุ่มภูมิภาค) ครั้งที่ 7/2569', '', '', '2026-08-14 04:46:19', '1', '[{\"name\":\"มท-ผู้ว่าราชการจังหวัด ทุกจังหวัด_เชิญประชุม-WRB12(7)_25.08.69.pdf\",\"size\":279572,\"type\":\"3\\/PDF\"},{\"name\":\"วาระการประชุม-WRB12(7)_25.08.69.pdf\",\"size\":425268,\"type\":\"3\\/PDF\"}]', '0', '0', 'inbox', '2026-08-31 09:24:28', '2026-08-31 09:24:28'),
 ('50', 'ptl-16978', 'กลุ่มนโยบายและยุทธศาสตร์ กยผ.', 'policy@dop.mail.go.th', 'phatthalung@moi.go.th', 'เรื่อง   การเลือกผู้แทนองค์กรเอกชนเพื่อเป็นกรรมการผู้ทรงคุณวุฒิในคณะกรรมการผู้สูงอายุแห่งชาติ', '', '', '2026-08-13 08:48:09', '1', '[{\"name\":\"นส.ถึง ผู้ว่าราชการจังหวัดทุกจังหวัด.pdf\",\"size\":2533106,\"type\":\"3\\/PDF\"}]', '0', '0', 'official', '2026-08-31 09:24:29', '2026-08-31 09:24:29');
-INSERT INTO `official_emails` (`id`, `message_uid`, `sender_name`, `sender_email`, `recipient_email`, `subject`, `body_plain`, `body_html`, `received_at`, `has_attachment`, `attachments_json`, `is_read`, `is_starred`, `category`, `created_at`, `updated_at`) VALUES
+INSERT INTO `official_emails` (`id`, `message_uid`, `sender_name`, `sender_email`, `recipient_email`, `subject`, `body_plain`, `body_html`, `received_at`, `has_attachment`, `attachments_json`, `is_read`, `is_starred`, `category`, `created_at`, `updated_at`) VALUES 
 ('51', 'ptl-16971', 'Natauda Sainui', 'naaa4140@gmail.com', 'phatthalung@moi.go.th', 'ขอความอนุเคราะห์ประชาสัมพันธ์การจัดประกวดร้องเพลงผู้สูงอายุโครงการนนเสียงวัยเก๋า KrabiContest ประจำปีงบประมาณ พ.ศ.๒๕๖๙', '', '', '2026-08-11 07:37:12', '1', '[{\"name\":\"ขอความอนุเคราะห์ประชาสัมพันธ์การจัดประก.pdf\",\"size\":8352862,\"type\":\"3\\/PDF\"}]', '0', '0', 'inbox', '2026-08-31 09:24:32', '2026-08-31 09:24:32'),
 ('52', 'ptl-16970', 'หน่วยวิจัยฯ มหาลัยนเรศวร', 'aei.rd.nu@gmail.com', 'phatthalung@moi.go.th', 'ขอเชิญเข้าร่วมการประชุมกลุ่มย่อย ครั้งที่ 2 โครงการศึกษาจัดทำแผนแม่บทการบริหารจัดการทรัพยากรน้ำในเขตลุ่มน้ำภาคใต้ฝั่งตะวันตก ปรับปรุงช่วงที่ 1 (พ.ศ.2566-2580)', '', '', '2026-08-11 04:15:23', '1', '[{\"name\":\"03.1 online จ.ตรัง-รวมเอก.pdf\",\"size\":3736506,\"type\":\"3\\/PDF\"}]', '0', '0', 'inbox', '2026-08-31 09:24:33', '2026-08-31 09:24:33'),
 ('53', 'ptl-16969', 'Google Cloud', 'googlecloud@google.com', 'phatthalung@moi.go.th', 'สมศักดิ์, to the starting grid: the McLaren Racing Lab is here', 'Final lap for registration: The F1 Lab starts soon!\r\n\r\n\r\nThree ways to accelerate your AI skills with Google Cloud Labs: OnAir\r\n\r\n\r\nAugust 13, 2026\r\n10:15 AM–1:00 PM ICT\r\n\r\nOnline\r\n\r\n\r\n\r\n------------------------------------------------------------------\r\n\r\n\r\nHi สมศักดิ์,\r\n\r\nThis is your final invitation to get to the starting line for the Google Cloud Labs: OnAir session, Build an AI-Powered F1 Analytics Agent with McLaren Racing. You’ll get straight into the terminal in this two-part lab:\r\n\r\n\r\n- Part 1: Precision Engineering. Build a data foundation in BigQuery using 70+ years of F1 history and configure Gemini Enterprise for source-grounded accuracy.\r\n - Part 2: The Multi-Agent Stack. Use ADK to build and deploy programmatic agents that query data and generate visualisations — all through a multi-agent architecture.\r\n\r\n\r\nRegister now <https://go.cloudplatformonline.com/ODA4LUdKVy0zMTQAAAGjjTuf83WvmUjciFGLmp1y7zE1wT1zu21NcvRnQ6ewX18cVNUjZ49wkHCLDvSLfYAyBDX2NNU=>\r\n\r\n\r\nComing up next \r\nDon’t let your momentum stall – secure your spot for our upcoming BigQuery sessions on September 10, 2026.\r\n\r\n\r\n- Introduction to the Conversational Analytics in BigQuery (Introductory): Build and publish custom data agents that deliver trusted, conversational AI-driven insights across your organisation. Register now <https://go.cloudplatformonline.com/ODA4LUdKVy0zMTQAAAGjjTuf83CB-h5jqCpubUa9D6IOpnq6Yes8AkwLkyckiDT8Fv8I9yxmQYF4X-N-ob6kodBkTwg=>.\r\n - AI-Assisted Data Science with BigQuery (Intermediate): Master multimodal data science workflows to engineer visual search tools and automate Python models. Register now <https://go.cloudplatformonline.com/ODA4LUdKVy0zMTQAAAGjjTuf8_IoFMcqaR2jYqTQpmSnKY5slg1LXtn3AT9B1Z4dgvcQ1Wgnb_oMYUcNcrXxLjT4GJ4=>.\r\n\r\n\r\nTriple the skills. Triple the validation. \r\nAttending three Google Cloud Labs: OnAir gives you a 3X advantage. In all our labs, live experts will guide the session and troubleshoot in real time – so you can earn official Credly badges.\r\n\r\n\r\nSee you there,\r\n The Google Cloud Team\r\n\r\n---------------------------------------------------------------------\r\n\r\n\r\nLearn in your language.\r\nThe session will be streamed with multi-language channels offering helpful live real-time subtitles in 한국어, Bahasa Indonesia, 繁體中文, 简体中文, 日本語, แบบไทย, tiếng Việt and English language.\r\n\r\n\r\n© 2026 Google Asia Pacific Pte. Ltd.\r\n 70 Pasir Panjang Road, #03-71, Mapletree Business City, Singapore 117371\r\n\r\n\r\nIf you no longer wish to receive emails from Google Cloud, or would like to customize your communication preferences, please click here <https://cloud.google.com/preferences/?Opt_In_Events__c=Yes&Opt_In_Newsletter__c=Yes&Opt_In_Offers__c=Yes&Opt_In_Products__c=Yes&Opt_In_Research__c=Yes&preferenceCenterSubscription1=Yes&preferenceCenterSubscription2=Yes&preferenceCenterSubscription3=Yes&preferenceCenterSubscription4=Yes>.\r\nBlog\r\n<https://go.cloudplatformonline.com/ODA4LUdKVy0zMTQAAAGjjTuf84mY-hOUD0BYap39DgQUfnDtBpcjcSPi7NP9WNo34fGt_TQ5dclWbG2lgQ39lsBaOWo=>\r\n\r\nGitHub\r\n<https://go.cloudplatformonline.com/ODA4LUdKVy0zMTQAAAGjjTuf87FMpcQi7iTTa-BsCq9ecjB7Rld8NZD3LIQH8gFTS7osgmrOwxB29r9xbrvvdK1g-UM=>\r\n\r\nLinkedIn\r\n<https://go.cloudplatformonline.com/ODA4LUdKVy0zMTQAAAGjjTuf8zhP2kuKy1nWFvmvjSKSFmv0J4Ehg7gfGBL0uTSTw2ohl0xjH-opqpV1eHYF0QonTRk=>\r\n\r\nTwitter\r\n<https://go.cloudplatformonline.com/ODA4LUdKVy0zMTQAAAGjjTuf84w6pyfagcW-XMZiaa4Z0c2WMqqwIy_2w-6f49ro0vM9i9i0m18cY7ihWNqABmJP_Do=>\r\n\r\nFacebook\r\n<https://go.cloudplatformonline.com/ODA4LUdKVy0zMTQAAAGjjTuf8_RVsmDZAcXEdMLmYE4I6pCPhKetIvwTIvj_R0deiv0ngxl91s_rvSq_RkWh93xFGCM=>\r\n\r\nYouTube\r\n<https://go.cloudplatformonline.com/ODA4LUdKVy0zMTQAAAGjjTuf8-Z3GJKNMc60Vpy34qbV9iaf7yEfISKxRM0eeTdtHisC4SlV2qftBCYbOdHePmxnTdw=>\r\n\r\n.', '<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\r\n<html lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:o=\"urn:schemas-microsoft-com:office:office\">\r\n<head> \r\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"> \r\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"> \r\n<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\"> \r\n<!-- New V5 Google Cloud Email Template modified by @shakti 26/03/25 --> \r\n<!--[if gte mso 9]>\r\n<style>\r\nli { text-indent: -1em; }\r\n</style>\r\n<![endif]--> \r\n<!--[if gte mso 9]><xml>\r\n<o:OfficeDocumentSettings>\r\n<o:AllowPNG/>\r\n<o:PixelsPerInch>96</o:PixelsPerInch>\r\n</o:OfficeDocumentSettings>\r\n</xml><![endif]--> \r\n<!--[if mso]>\r\n<style>\r\nspan, td, table, div, p, h1, h2, h3, h4, h5, h6, a {\r\nfont-family: \'Google Sans\',\'Noto Sans JP\',Arial,sans-serif !important;\r\n}\r\n</style>\r\n<![endif]--> \r\n<!--[if gte mso 9]>\r\n<style>\r\nbody,table,th,td,p,span {\r\n-ms-text-size:100%;\r\nmso-table-lspace: 0pt !important;\r\nmso-table-rspace: 0pt !important;\r\nmargin: 0 auto !important;\r\n}\r\ntable {\r\npadding: 0 !important;}\r\n</style>\r\n<![endif]--> \r\n<!-- EM TITLE -->  \r\n<!-- HEADER -->  \r\n<!-- HERO MODULE OPTIONS -->                \r\n<!-- FOR BACKGROUND IMAGE ON IMAGE BACKGROUND CENTERED TEXT BLOCK MODULE -->  \r\n<!-- INTRO PADDING DEPENDING ON HERO\'S -->  \r\n<!-- CTA Module Padding-->  \r\n<!-- CTA & LINKS -->           \r\n<!-- CUSTOM CSS OPTION FOR DEVS -->  \r\n<!-- CONFIRMATION MARKUP -->    \r\n<!-- COLOR ACCENTS -->     \r\n<!-- Font Weight -->    \r\n<!-- IMAGE CARDS -->    \r\n<!-- RTL -->    \r\n<!-- Two Columns Section CTA\'s -->   \r\n<!-- Footer -->   \r\n<!-- Tout -->  \r\n<!-- Testimonial -->      \r\n<!-- Spacer -->   \r\n<title>Google Cloud Labs: OnAir | Build an AI-Powered F1 Analytics Agent with McLaren Racing</title> \r\n<style type=\"text/css\">\r\n  @font-face {\r\n    font-family: \'Google Sans\';\r\n    font-style: normal;\r\n    font-weight: 400;\r\n    mso-font-alt: Arial;\r\n    src: local(\'Google Sans Regular\'), local(\'GoogleSans-Regular\'), url(\'https://fonts.gstatic.com/s/googlesans/v6/4UaGrENHsxJlGDuGo1OIlL3Owps.ttf\') format(\'truetype\');\r\n  }\r\n  @font-face {\r\n    font-family: \'Google Sans\';\r\n    font-style: normal;\r\n    font-weight: 500;\r\n    mso-font-alt: Arial;\r\n    src: local(\'Google Sans Medium\'), local(\'GoogleSans-Medium\'), url(\'https://fonts.gstatic.com/s/googlesans/v6/4UabrENHsxJlGDuGo1OIlLU94YtzCwM.ttf\') format(\'truetype\');\r\n  }\r\n  @font-face {\r\n    font-family: \'Google Sans\';\r\n    font-style: normal;\r\n    font-weight: 700;\r\n    mso-font-alt: Arial;\r\n    src: local(\'Google Sans Bold\'), local(\'GoogleSans-Bold\'), url(\'https://fonts.gstatic.com/s/googlesans/v6/4UabrENHsxJlGDuGo1OIlLV154tzCwM.ttf\') format(\'truetype\');\r\n  }\r\n  @font-face {\r\n    font-family: \'Google Sans Text\';\r\n    font-weight: 700;\r\n    mso-font-alt: Arial;\r\n    font-style: normal;\r\n    src: url(\'https://lp.cloudplatformonline.com/rs/808-GJW-314/images/googlesanstext-bold-webfont.woff2\') format(\'woff2\'),\r\n        url(\'https://lp.cloudplatformonline.com/rs/808-GJW-314/images/googlesanstext-bold-webfont.woff\') format(\'woff\'),\r\n        url(\'https://lp.cloudplatformonline.com/rs/808-GJW-314/images/GoogleSansText-Bold.ttf\') format(\'truetype\');\r\n  }\r\n  @font-face {\r\n    font-family: \'Google Sans Text\';\r\n    font-style: normal;\r\n    font-weight: 500;\r\n    mso-font-alt: Arial;\r\n    src: url(\'https://lp.cloudplatformonline.com/rs/808-GJW-314/images/googlesanstext-medium-webfont.woff2\') format(\'woff2\'),\r\n        url(\'https://lp.cloudplatformonline.com/rs/808-GJW-314/images/googlesanstext-medium-webfont.woff\') format(\'woff\'),\r\n        url(\'https://lp.cloudplatformonline.com/rs/808-GJW-314/images/GoogleSansText-Medium.ttf\') format(\'truetype\');\r\n  }\r\n  @font-face {\r\n    font-family: \'Google Sans Text\';\r\n    font-style: normal;\r\n    font-weight: 400;\r\n    mso-font-alt: Arial;\r\n    src: url(\'https://lp.cloudplatformonline.com/rs/808-GJW-314/images/googlesanstext-regular-webfont.woff2\') format(\'woff2\'),\r\n        url(\'https://lp.cloudplatformonline.com/rs/808-GJW-314/images/googlesanstext-regular-webfont.woff\') format(\'woff\'),\r\n        url(\'https://lp.cloudplatformonline.com/rs/808-GJW-314/images/GoogleSansText-Regular.ttf\') format(\'truetype\');\r\n  }\r\n  @font-face {\r\n    font-family: \'Google Sans Display\';\r\n    font-style: normal;\r\n    font-weight: 700;\r\n    mso-font-alt: Arial;\r\n    src: url(\'https://lp.cloudplatformonline.com/rs/808-GJW-314/images/googlesansdisplay-bold-webfont.woff2\') format(\'woff2\'),\r\n        url(\'https://lp.cloudplatformonline.com/rs/808-GJW-314/images/googlesansdisplay-bold-webfont.woff\') format(\'woff\'),\r\n        url(\'https://lp.cloudplatformonline.com/rs/808-GJW-314/images/GoogleSansDisplay-Bold.ttf\') format(\'truetype\');\r\n  }\r\n  @font-face {\r\n    font-family: \'Google Sans Display\';\r\n    src: url(\'https://lp.cloudplatformonline.com/rs/808-GJW-314/images/googlesansdisplay-regular-webfont.woff2\') format(\'woff2\'),\r\n        url(\'https://lp.cloudplatformonline.com/rs/808-GJW-314/images/googlesansdisplay-regular-webfont.woff\') format(\'woff\'),\r\n        url(\'https://lp.cloudplatformonline.com/rs/808-GJW-314/images/GoogleSansDisplay-Regular.ttf\') format(\'truetype\');\r\n    font-weight: 400;\r\n    font-style: normal;\r\n    mso-font-alt: Arial;\r\n  }\r\n  @font-face {\r\n    font-family: \'Noto Sans JP\';\r\n    font-style: normal;\r\n    font-weight: 500;\r\n    src: url(\'https://lp.cloudplatformonline.com/rs/808-GJW-314/images/noto-sans-jp-v24-latin_japanese-500.woff\');\r\n    src: local(\'Noto Sans Japanese Medium\'), local(\'NotoSansJapanese-Medium\'),\r\n    url(\'https://lp.cloudplatformonline.com/rs/808-GJW-314/images/noto-sans-jp-v24-latin_japanese-500.eot?#iefix\') format(\'embedded-opentype\'),\r\n    url(\'https://lp.cloudplatformonline.com/rs/808-GJW-314/images/noto-sans-jp-v24-latin_japanese-500.woff2\') format(\'woff2\'),\r\n    url(\'https://lp.cloudplatformonline.com/rs/808-GJW-314/images/noto-sans-jp-v24-latin_japanese-500.woff\') format(\'woff\'),\r\n    url(\'https://lp.cloudplatformonline.com/rs/808-GJW-314/images/noto-sans-jp-v24-latin_japanese-500.ttf\') format(\'truetype\'),\r\n    url(\'https://lp.cloudplatformonline.com/rs/808-GJW-314/images/noto-sans-jp-v24-latin_japanese-500.svg#NotoSansJP\') format(\'svg\');\r\n  }\r\n  @font-face {\r\n    font-family: \'Noto Sans JP\';\r\n    font-style: normal;\r\n    font-weight: 400;\r\n    src: url(\'https://lp.cloudplatformonline.com/rs/808-GJW-314/images/noto-sans-jp-v24-latin_japanese-regular.woff\');\r\n    src: local(\'Noto Sans Japanese Regular\'), local(\'NotoSansJapanese-Regular\'),\r\n    url(\'https://lp.cloudplatformonline.com/rs/808-GJW-314/images/noto-sans-jp-v24-latin_japanese-regular.eot?#iefix\') format(\'embedded-opentype\'),\r\n    url(\'https://lp.cloudplatformonline.com/rs/808-GJW-314/images/noto-sans-jp-v24-latin_japanese-regular.woff2\') format(\'woff2\'),\r\n    url(\'https://lp.cloudplatformonline.com/rs/808-GJW-314/images/noto-sans-jp-v24-latin_japanese-regular.woff\') format(\'woff\'),\r\n    url(\'https://lp.cloudplatformonline.com/rs/808-GJW-314/images/noto-sans-jp-v24-latin_japanese-regular.ttf\') format(\'truetype\'),\r\n    url(\'https://lp.cloudplatformonline.com/rs/808-GJW-314/images/noto-sans-jp-v24-latin_japanese-regular.svg#NotoSansJP\') format(\'svg\');\r\n  }\r\n  @font-face {\r\n    font-family: \'Noto Sans JP\';\r\n    font-style: normal;\r\n    font-weight: 700;\r\n    src: url(\'https://lp.cloudplatformonline.com/rs/808-GJW-314/images/noto-sans-jp-v24-latin_japanese-700.woff\');\r\n    src: local(\'Noto Sans Japanese Bold\'), local(\'NotoSansJapanese-Bold\'),\r\n    url(\'https://lp.cloudplatformonline.com/rs/808-GJW-314/images/noto-sans-jp-v24-latin_japanese-700.eot?#iefix\') format(\'embedded-opentype\'),\r\n    url(\'https://lp.cloudplatformonline.com/rs/808-GJW-314/images/noto-sans-jp-v24-latin_japanese-700.woff2\') format(\'woff2\'),\r\n    url(\'https://lp.cloudplatformonline.com/rs/808-GJW-314/images/noto-sans-jp-v24-latin_japanese-700.woff\') format(\'woff\'),\r\n    url(\'https://lp.cloudplatformonline.com/rs/808-GJW-314/images/noto-sans-jp-v24-latin_japanese-700.ttf\') format(\'truetype\'),\r\n    url(\'https://lp.cloudplatformonline.com/rs/808-GJW-314/images/noto-sans-jp-v24-latin_japanese-700.svg#NotoSansJP\') format(\'svg\');\r\n  }\r\n  /* CLIENT-SPECIFIC STYLES */\r\n  body, table, th, td { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; color: #5F6368; font-family: \'Google Sans\',\'Noto Sans JP\',Arial,sans-serif; font-weight: 400; font-size: 14px;}\r\n  table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; border-spacing: 0; color: #5F6368; font-family: \'Google Sans\',\'Noto Sans JP\',Arial,sans-serif;  font-size: 14px;}\r\n  img { -ms-interpolation-mode: bicubic; }\r\n  /* RESET STYLES */\r\n  img { border: 0; outline: none; text-decoration: none;}\r\n  table { border-collapse: collapse !important; }\r\n  body,\r\n  html {\r\n    margin: 0 !important;\r\n    padding: 0 !important;\r\n    width: 100% !important;\r\n    font-family: \'Google Sans\',\'Noto Sans JP\',Arial,sans-serif;\r\n    font-size: 14px;\r\n  }\r\n  a {text-decoration: underline;}\r\n  /* iOS BLUE LINKS */\r\n  a[x-apple-data-detectors] {\r\n    color: inherit !important;\r\n    font-size: inherit !important;\r\n    font-family: inherit !important;\r\n    font-weight: inherit !important;\r\n    line-height: inherit !important;\r\n    text-decoration: none !important;\r\n  }\r\n  /* Samsung blue links */\r\n  #MessageViewBody a {\r\n    color: inherit;\r\n    text-decoration: none;\r\n    font-size: inherit;\r\n    font-family: inherit;\r\n    font-weight: inherit;\r\n    line-height: inherit;\r\n  }\r\n  h1,\r\n  h2,\r\n  h3,\r\n  h4,\r\n  h5,\r\n  h6,\r\n  p {\r\n    margin: 0;\r\n    padding: 0;\r\n  }\r\n  /* SAMSUNG CENTER FIX */\r\n  #MessageViewBody,\r\n  #MessageWebViewDiv {\r\n    width: 100% !important;\r\n    margin: 0 auto !important;\r\n  }\r\n  /* ANDROID CENTER FIX */\r\n  div[style*=\"margin: 16px 0;\"] { margin: 0 !important; }\r\n  \r\n  /* HERO HEADER VERTICAL ALIGNMENT FIX */\r\n  .h177 {\r\n    height: 177px;\r\n  }\r\n  \r\n  .h112 {\r\n    height: 112px;\r\n  }\r\n  \r\n  .h212 {\r\n    height:212px;\r\n  }\r\n  \r\n</style> \r\n<style type=\"text/css\">\r\n@media (prefers-color-scheme: dark) {\r\n    .lightBackground {\r\n      background-color: #dddddd !important;\r\n    }}\r\na {\r\n    color: #1a73e8 !important;\r\n    text-decoration: underline;\r\n  }\r\n  a.whiteText {\r\n    color: #ffffff !important;\r\n  }\r\n  @media (prefers-color-scheme: dark) {\r\n    .lightImage {\r\n      color: #202124 !important;\r\n    }\r\n  }\r\n  @media (max-width: 600px) {\r\n    .container {\r\n      width: 95% !important;\r\n    }\r\n    .inner-container {\r\n      padding-left: 25px !important;\r\n      padding-right: 25px !important;\r\n    }\r\n    .inner-container-alt {\r\n      padding-left: 25px !important;\r\n      padding-right: 25px !important;\r\n    }\r\n    .inner-container.social-container {\r\n      padding-left: 10px !important;\r\n      padding-right: 10px !important;\r\n    }\r\n    img {\r\n      height: auto !important;\r\n      max-width: 100% !important;\r\n    }\r\n    img.logo {\r\n      width: 140px !important;\r\n    }\r\n    img.workspace-logo {\r\n      width: 127px !important;\r\n    }\r\n    img.partner-logo {\r\n      max-height: 30px !important;\r\n      width: auto !important;\r\n    }\r\n    .header {\r\n      padding: 24px 10px !important;\r\n    }\r\n    .workspace-header {\r\n      padding: 0 10px !important;\r\n    }\r\n    .h-logos {\r\n      width: 150px !important;\r\n    }\r\n    .h-logos2 {\r\n      width: 150px !important;\r\n    }\r\n    .showMobileHeaderCTA {\r\n      display: block !important;\r\n      width: 100% !important;\r\n    }\r\n    .width50 {\r\n      width: 50% !important;\r\n    }\r\n    h1.headline {\r\n      font-size: 24px !important;\r\n      line-height: 32px !important;\r\n    }\r\n    .headline-icon {\r\n      width: 50px !important;\r\n    }\r\n    .hom {\r\n      display: none !important;\r\n    }\r\n    .heroLocationText {\r\n      font-size: 16px !important;\r\n      line-height: 24px !important;\r\n    }\r\n    .heroLocationDateTime {\r\n      font-size: 20px !important;\r\n      line-height: 26px !important;\r\n    }\r\n    .heroFrameImg {\r\n      width: 95% !important;\r\n    }\r\n    .bgColorWhite {\r\n      background-color: #ffffff !important;\r\n    }\r\n    .bgColorGray {\r\n      background-color: #F1F3F4 !important;\r\n    }\r\n    .heroFullPadding {\r\n      padding-top: 113px !important;\r\n    }\r\n    .heroFullInnerPadding {\r\n      padding: 32px 16px 40px 16px !important;\r\n    }\r\n    .fullPhotoMobile {\r\n      height: 165px !important;\r\n      background-size:cover !important;\r\n      background-position: 100% 90% !important;\r\n    }\r\n    .mobileH1 {\r\n      display: block !important;\r\n      mso-hide: none !important;\r\n    }\r\n    .alignLeft {\r\n      direction: ltr !important;\r\n      text-align: left !important;\r\n    }\r\n    .mobile-height {\r\n      height: auto !important;\r\n    }\r\n    .mobile-map-img {\r\n      width: 100% !important;\r\n      display:block !important;\r\n      max-height:100% !important;\r\n      overflow:visible !important;\r\n    }\r\n    .mobile-pa-hero-img {\r\n      padding-bottom: 24px !important;\r\n      width: 100% !important;\r\n      display:block !important;\r\n      max-height:100% !important;\r\n      overflow:visible !important;\r\n    }\r\n    .mobile-map-img img{\r\n      width: 100% !important;\r\n    }\r\n    .width100 {\r\n      width: 100% !important;\r\n      max-width: 100% !important;\r\n    }\r\n    .mobile-block {\r\n      display: block !important;\r\n    }\r\n    .pad-t24 {\r\n      padding-top: 24px !important;\r\n    }\r\n    .pad-r0 {\r\n      padding-right: 0 !important;\r\n    }\r\n    .pad-t0 {\r\n      padding-top: 0 !important;\r\n    }\r\n    .pad-b40 {\r\n      padding-bottom: 40px !important;\r\n    }\r\n    .pad-b16 {\r\n      padding-bottom: 16px !important;\r\n    }\r\n    .pad-b12 {\r\n      padding-bottom: 12px !important;\r\n    }\r\n    .pad-b24 {\r\n      padding-bottom: 24px !important;\r\n    }\r\n    .pad-b20 {\r\n      padding-bottom: 20px !important;\r\n    }\r\n    .pad-b32 {\r\n      padding-bottom: 32px !important;\r\n    }\r\n    .pad-t16 {\r\n      padding-top: 16px !important;\r\n    }\r\n    .pad-t24 {\r\n      padding-top: 24px !important;\r\n    } \r\n    .pad-l15 {\r\n      padding-left: 15px !important;\r\n    }\r\n    .pad-l10 {\r\n      padding-left: 10px !important;\r\n    }\r\n    .pad-l0 {\r\n      padding-left: 0 !important;\r\n    }\r\n    .pad-all0 {\r\n      padding-top: 0 !important;\r\n      padding-bottom: 0 !important;\r\n      padding-left: 0 !important;\r\n      padding-right: 0 !important;\r\n    }\r\n    .pad-location {\r\n      padding-top: 20px !important;\r\n      padding-left: 0 !important;\r\n    }\r\n    .pad-img-features {\r\n      padding-top: 16px !important;\r\n      padding-bottom: 24px !important;\r\n    }\r\n    .pad-map-cal1 {\r\n      padding: 24px 25px 14px 25px !important;\r\n      width: auto !important;\r\n    }\r\n    .pad-map-cal2 {\r\n      padding: 0 25px 20px 25px !important;\r\n      width: auto !important;\r\n    }\r\n    .pad-map-cal3 {\r\n      padding: 20px 25px 20px 25px !important;\r\n      width: auto !important;\r\n    }\r\n    .line-height16 {\r\n      line-height: 16px !important;\r\n    }\r\n    .line-height24 {\r\n      line-height: 24px !important;\r\n    } \r\n    .time {\r\n      width: 100% !important;\r\n      display: block !important;\r\n      border-bottom: none !important;\r\n      padding-bottom: 0!important;\r\n    }\r\n    .info {\r\n      width: 100% !important;\r\n      display: block !important;\r\n      padding-top: 0 !important;\r\n    }\r\n    .column {\r\n      max-width: 50% !important;\r\n      width: 49% !important;\r\n    }\r\n    .contents {\r\n      width: 90% !important;\r\n    }\r\n    .three-column img {\r\n      width: 100% !important;\r\n      max-width: 100% !important;\r\n    }\r\n    .p-column {\r\n      max-width: 50% !important;\r\n      width: 49% !important;\r\n      padding-bottom: 20px !important;\r\n    }\r\n    .partner-column img {\r\n      width: 100% !important;\r\n      max-width: 100% !important;\r\n    }\r\n    .prefooter-parent {\r\n      padding-bottom: 22px !important;\r\n    }\r\n    .no-float {\r\n      float: none !important;\r\n    }\r\n      /* HEADER VERTICAL ALIGNMENT FIX */\r\n    .h177 {\r\n      height: auto;\r\n    }\r\n    .h112 {\r\n      height: auto;\r\n    }\r\n\r\n    .h212 {\r\n      height: auto;\r\n    }    \r\n    \r\n  }\r\n  @media screen and (max-width: 380px) {\r\n    img.partner-logo {\r\n      max-height: 20px !important;\r\n      width: auto !important;\r\n    }\r\n  }\r\n  @media screen and (max-width: 350px) {\r\n    .column {\r\n      max-width: 100% !important;\r\n      width: 100% !important;\r\n      text-align: center !important;\r\n    }\r\n    .contents {\r\n      width: 100% !important;\r\n    }\r\n    .three-column img {\r\n      width: 80% !important;\r\n      max-width: 80% !important;\r\n      margin: 0 auto !important;\r\n    }\r\n  }\r\n  img.no-arrow + div{\r\n    display: none !important;\r\n  }\r\n  \r\n</style> \r\n</head> \r\n<body style=\"width: 100%; margin:0; padding:0 !important; background-color: #f8f9fa;\" bgcolor=\"#f8f9fa\"><style type=\"text/css\">div#emailPreHeader{ display: none !important; }</style><div id=\"emailPreHeader\" style=\"mso-hide:all; visibility:hidden; opacity:0; color:transparent; mso-line-height-rule:exactly; line-height:0; font-size:0px; overflow:hidden; border-width:0; display:none !important;\">3X your technical edge with Labs: OnAir</div> \r\n<center style=\"width: 100%; table-layout: fixed;\"> \r\n<div style=\"background-color:#f8f9fa; width: 100%; max-width: 600px; margin: 0 auto;\" bgcolor=\"#f8f9fa\"> \r\n<!--[if mso]>\r\n<table role=\"presentation\" width=\"600\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" align=\"center\" style=\"background-color:#f8f9fa;\" bgcolor=\"#f8f9fa\">\r\n<tr>\r\n<td>\r\n<![endif]--> \r\n<table role=\"presentation\" width=\"600\" class=\"container\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" align=\"center\" style=\"max-width:600px; width:600px; word-break: break-word; Margin: 0 auto;\" bgcolor=\"#FFFFFF\"> \r\n<tbody>\r\n<tr> \r\n<td class=\"mktoContainer\" id=\"moduleContainer\" align=\"center\" valign=\"top\" bgcolor=\"#ffffff\" style=\"background-color: #ffffff;\">\r\n<table role=\"presentation\" class=\"mktoModule\" id=\"headerCloudLogoModule\" width=\"600\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" align=\"center\" style=\"max-width:600px; width:100%; background: #f8f9fa;\"> \r\n<tbody> \r\n<tr> \r\n<td valign=\"top\" style=\"padding:24px 24px 24px 30px;\" class=\"header mktoText\" id=\"header-logo\">\r\n<table role=\"presentation\" width=\"600\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" align=\"left\" style=\"max-width:600px; width:100%;\"> \r\n<tbody> \r\n<tr> \r\n<td dir=\"ltr\" valign=\"middle\" class=\"h-logos pad-l15\" width=\"300\" align=\"left\" style=\"font-family: \'Google Sans\',\'Noto Sans JP\',Arial,sans-serif; font-size: 14px; vertical-align: middle; width: 300px; text-align: left; padding-left: 20px;\"> <img src=\"https://lp.cloudplatformonline.com/rs/808-GJW-314/images/google-cloud-2021-em.png\" alt=\"Google Cloud\" class=\"logo no-arrow\" height=\"32\" style=\"max-height: 32px; display: block;\"> </td> \r\n</tr> \r\n</tbody> \r\n</table></td> \r\n</tr> \r\n</tbody> \r\n</table>\r\n<table role=\"presentation\" class=\"mktoModule\" id=\"heroNoFrameModulecb485ed4-e188-48e9-83dd-3f5194020706\" align=\"center\" width=\"600\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"max-width:600px; width:100%;\"> \r\n<tbody> \r\n<tr> \r\n<td valign=\"top\" class=\"inner-container\" style=\"padding: 32px 50px 20px 50px;\"> \r\n<table role=\"presentation\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\"> \r\n<tbody> \r\n<tr> \r\n<td style=\"width: 100%;\"> \r\n<!--[if (gte mso 9)|(IE)]>\r\n                \r\n<table dir=\"rtl\" width=\"235\" align=\"right\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\">\r\n<tr>\r\n<td dir=\"ltr\"><![endif]--> \r\n<table role=\"presentation\" class=\"width100\" width=\"235\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" align=\"right\" dir=\"rtl\"> \r\n<tbody> \r\n<tr> \r\n<td class=\"pad-b24\" align=\"right\" valign=\"top\"> \r\n<div class=\"mktoImg\" id=\"heroNoFrameImageeb4a7220-de89-4f1d-a828-845ee2c8d1e4\"> \r\n<img src=\"https://lp.cloudplatformonline.com/rs/808-GJW-314/images/08_Creative LOA Hub Solutions_1300x1200-10 %281%29.jpg?version=0\" class=\"width100\" width=\"235\" alt=\"\" border=\"0\" style=\"display:block; width:100%; max-width:235px;\"> \r\n</div> </td> \r\n</tr> \r\n</tbody> \r\n</table> \r\n<!--[if gte mso 9]></td>\r\n<td valign=\"top\" dir=\"ltr\"><![endif]--> \r\n<table role=\"presentation\" class=\"width100\" width=\"265\" style=\"width:265px;\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" align=\"left\" dir=\"ltr\"> \r\n<tbody> \r\n<tr> \r\n<td dir=\"ltr\" align=\"left\" valign=\"middle\" class=\"pad-r0 h177\" style=\"padding-right: 19px;\" height=\"177\"> <h1 class=\"mktoText headline\" id=\"heroNoFrameTitled8078516-fa7e-45f2-8362-8e193247d05b\" style=\"font-family:\'Google Sans Display\',\'Google Sans\',\'Noto Sans JP\',Arial,sans-serif; font-size:32px; line-height:40px; color: #202124; font-weight: bold; margin: 0; padding: 0; text-align: left;\">Final lap for registration: The F1 Lab starts soon!</h1> </td> \r\n</tr> \r\n</tbody> \r\n</table> \r\n<!--[if gte mso 9]></td>\r\n</tr>\r\n</table>\r\n<![endif]--> </td> \r\n</tr> \r\n</tbody> \r\n</table> \r\n<!-- END OF HERO IMAGE AND HEADLINE --> \r\n<!-- SUBHEADER AND EVENT INFO --> \r\n<table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" align=\"left\" style=\"width:100%;\"> \r\n<tbody> \r\n<tr style=\"mso-hide: none;\"> \r\n<td dir=\"ltr\" valign=\"top\" style=\"padding: 24px 0 0; width: 100%;mso-hide: none;\"> <p class=\"mktoText\" id=\"heroNoFrameSubheadlineb67d886c-2e5f-46cd-908a-6d1b926aba06\" style=\"font-family: \'Google Sans\',\'Noto Sans JP\',Arial,sans-serif; font-size: 16px; line-height: 24px; color: #5F6368; text-align: left; margin: 0; padding: 0;mso-hide: none;\">Three ways to accelerate your AI skills with Google&nbsp;Cloud Labs: OnAir</p> </td> \r\n</tr> \r\n<tr style=\"mso-hide: none;\"> \r\n<td dir=\"ltr\" style=\"mso-hide: none;\"> \r\n<table role=\"presentation\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"mso-hide: none;\"> \r\n<tbody> \r\n<tr style=\"mso-hide: none;\"> \r\n<th dir=\"ltr\" class=\"width100 mobile-block\" valign=\"top\" style=\"padding: 24px 0 0; padding-right: 24px; text-align: left; font-weight: normal; mso-hide: none;\"> <p class=\"date mktoText\" id=\"heroNoFrameDate42aedee3-79d9-47b4-8361-edb66b81bac7\" style=\"color:#5F6368; font-family: \'Google Sans\',\'Noto Sans JP\',Arial,sans-serif; font-weight: 400; font-size: 18px; line-height: 21px; margin: 0; padding: 0; mso-hide: none;\">August 13, 2026</p> </th> \r\n<th dir=\"ltr\" class=\"width100 mobile-block\" valign=\"top\" style=\"padding: 24px 0 0; text-align: left; font-weight: normal; mso-hide: none;\"> <p class=\"time mktoText\" id=\"heroNoFrameTime86ab1d81-1f21-4f78-b4d3-25774a942997\" style=\"color: #5F6368; font-family: \'Google Sans\',\'Noto Sans JP\',Arial,sans-serif; font-weight: 400; font-size: 18px; line-height: 21px; margin: 0; padding: 0; mso-hide: none;\">10:15 AM–1:00 PM ICT</p> </th> \r\n</tr> \r\n</tbody> \r\n</table> </td> \r\n</tr> \r\n<tr style=\"mso-hide: none;\"> \r\n<td dir=\"ltr\" valign=\"top\" style=\"padding: 24px 0 0;mso-hide: none;\"> \r\n<table role=\"presentation\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"mso-hide: none;\"> \r\n<tbody> \r\n<tr style=\"mso-hide: none;\"> \r\n<td dir=\"ltr\" valign=\"top\" style=\"font-family: \'Google Sans\',\'Noto Sans JP\',Arial,sans-serif; height: 21px; padding-right: 16px;text-align: left;mso-hide: none;\"> <img src=\"https://lp.cloudplatformonline.com/rs/808-GJW-314/images/cs4-icon-location-email.png\" alt=\"\" height=\"21\" style=\"height: 21px !important;\"> </td> \r\n<td dir=\"ltr\" class=\"mktoText heroLocationText\" id=\"heroNoFrameLocationcc3c4df9-72f1-438a-b706-4f90de0d50c4\" valign=\"top\" style=\"color: #5F6368; font-family: \'Google Sans\',\'Noto Sans JP\',Arial,sans-serif; font-weight: 400; font-size: 14px; line-height: 21px; text-align: left;mso-hide: none;\">Online</td> \r\n</tr> \r\n</tbody> \r\n</table> </td> \r\n</tr> \r\n<tr style=\"display: none !important; mso-hide:all;\"> \r\n<td dir=\"ltr\" valign=\"top\" style=\"width: 100%;padding: 24px 0 0; display: none !important; mso-hide:all;\"> \r\n<table role=\"presentation\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" align=\"left\" style=\"display: none !important; mso-hide:all;\"> \r\n<tbody> \r\n<tr style=\"display: none !important; mso-hide:all;\"> \r\n<th class=\"mobile-block width100 pad-b24\" style=\"font-weight: normal; text-align: left; display: none !important; mso-hide:all;\"> \r\n<table role=\"presentation\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"display: none !important; mso-hide:all;\"> \r\n<tbody> \r\n<tr style=\"display: none !important; mso-hide:all;\"> \r\n<td class=\"mktoText\" id=\"heroNoFrameCTA8c9c9fb9-e4d9-4a74-923d-522fe8b3c823\" dir=\"ltr\" bgcolor=\"#1a73e8\" style=\"border-radius: 4px; display: none !important; mso-hide:all;\"><a class=\"whiteText\" href=\r\n\"https://go.cloudplatformonline.com/ODA4LUdKVy0zMTQAAAGjjTuf81JRNTRftuAvpSDsKpkPiLi6yM-umNGZPUBvkZ6OBGSrG_gdYCZle2JQsgWjsaoV6HY=\" target=\"_blank\" style=\"font-family: \'Google Sans\',\'Noto Sans JP\',Arial,sans-serif; color: #ffffff; text-decoration: none; font-size: 14px; letter-spacing: 1px; font-weight: bold; -webkit-border-radius: 4px; border-radius: 4px; border: 1px solid #1a73e8; margin: 0; padding: 14px 16px 14px 16px; display: inline-block;\"\r\n></a></td> \r\n</tr> \r\n</tbody> \r\n</table> </th> \r\n<th class=\"mobile-block width100 pad-l0 mktoText\" id=\"heroNoFrameOptOut272b9466-879b-4ee1-b0d5-5c4164d80b74\" style=\"font-weight: normal; text-align: left; padding-left: 24px; display: none !important; mso-hide:all;\" valign=\"middle\"></th> \r\n</tr> \r\n</tbody> \r\n</table> </td> \r\n</tr> \r\n</tbody> \r\n</table> </td> \r\n</tr> \r\n</tbody> \r\n</table>\r\n<table role=\"presentation\" class=\"mktoModule\" id=\"bodyCopyModule\" width=\"600\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" align=\"center\" style=\"max-width:600px; width:100%;\"> \r\n<tbody> \r\n<tr> \r\n<td dir=\"ltr\" valign=\"top\" style=\"padding:8px 50px 8px 50px;\" class=\"inner-container\"> <p class=\"mktoText\" id=\"bodyCopy\" style=\"font-family: \'Google Sans Text\',\'Noto Sans JP\',Arial,sans-serif; font-size: 14px; line-height: 24px; color: #5F6368; margin: 0; padding: 0; text-align: left;\">Hi สมศักดิ์,</p> </td> \r\n</tr> \r\n</tbody> \r\n</table>\r\n<table role=\"presentation\" class=\"mktoModule\" id=\"bodyCopyModule8368210c-e393-4f6a-9af6-15410dd469f6\" width=\"600\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" align=\"center\" style=\"max-width:600px; width:100%;\"> \r\n<tbody> \r\n<tr> \r\n<td dir=\"ltr\" valign=\"top\" style=\"padding:8px 50px 8px 50px;\" class=\"inner-container\"> <p class=\"mktoText\" id=\"bodyCopy52f820e7-4867-49e3-9c59-54dcf850b2b5\" style=\"font-family: \'Google Sans Text\',\'Noto Sans JP\',Arial,sans-serif; font-size: 14px; line-height: 24px; color: #5F6368; margin: 0; padding: 0; text-align: left;\">This is your final invitation to get to the starting line for the <strong>Google&nbsp;Cloud Labs: OnAir session, Build an AI-Powered F1 Analytics Agent with McLaren Racing</strong>. You’ll get straight into the terminal in this two-part lab:</p> </td> \r\n</tr> \r\n</tbody> \r\n</table>\r\n<table role=\"presentation\" class=\"mktoModule\" id=\"unorderedListModule16920095-1b96-4994-93fa-64eac651aecc\" width=\"600\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" align=\"center\" style=\"max-width:600px; width:100%;\"> \r\n<tbody> \r\n<tr> \r\n<td dir=\"ltr\" valign=\"top\" style=\"padding:8px 50px 8px 50px;\" class=\"inner-container\"> \r\n<div class=\"mktoText\" id=\"UnorderedList8b89d406-25a3-43a1-b81d-a81309c95d09\" style=\"font-family: \'Google Sans Text\',\'Noto Sans JP\',Arial,sans-serif; font-size: 14px; line-height: 24px; color: #5F6368; margin: 0; padding: 0; text-align: left;\">\r\n<ul style=\"padding: 0; margin: 0; margin-left: 20px;\"> \r\n<li><strong>Part 1: Precision Engineering</strong>. Build a data foundation in BigQuery using 70+ years of F1 history and configure Gemini Enterprise for source-grounded accuracy.</li> \r\n<li><strong>Part 2: The Multi-Agent Stack</strong>. Use ADK to build and deploy programmatic agents that query data and generate visualisations — all through a multi-agent architecture.</li> \r\n</ul>\r\n</div> </td> \r\n</tr> \r\n</tbody> \r\n</table>\r\n<table role=\"presentation\" class=\"mktoModule\" id=\"ctaModule469cb013-6ed2-44d5-8f97-4c3ef2785eda\" width=\"600\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" align=\"center\" style=\"max-width:600px; width:100%;\"> \r\n<tbody> \r\n<tr> \r\n<td valign=\"top\" style=\"padding:16px 50px 16px 50px;\" class=\"inner-container\"> \r\n<table role=\"presentation\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" align=\"left\"> \r\n<tbody> \r\n<tr> \r\n<td class=\"mktoText\" id=\"ctaModuleContent25cab38f-0b33-43a3-8b1f-fa095dd801a7\" dir=\"ltr\" bgcolor=\"#1a73e8\" style=\"border-radius: 3px;\"> \r\n<!-- NOTE: If using dynamic content replace the 2 variables with your link and text --> <a role=\"button\" class=\"whiteText\" href=\r\n\"https://go.cloudplatformonline.com/ODA4LUdKVy0zMTQAAAGjjTuf873WHZpjqo8czcQ2vWe_uKGoccUkOVP-_79j-TTzy4fKIK85eiocpELWJQ4sVFP6Tv0=\" target=\"_blank\" style=\"font-family: \'Google Sans\',\'Noto Sans JP\',Arial,sans-serif; color: #ffffff; text-decoration: none; font-size: 14px; letter-spacing: 1px; font-weight: 500; -webkit-border-radius: 3px; border-radius: 3px; border: 1px solid #1a73e8; padding: 14px 16px 14px 16px; display: inline-block;\"\r\n>Register now</a></td> \r\n</tr> \r\n</tbody> \r\n</table> </td> \r\n</tr> \r\n</tbody> \r\n</table>\r\n<table role=\"presentation\" class=\"mktoModule\" id=\"bodyCopyModulec20c879c-56c6-42f0-a5ce-1c96c2ceea5c\" width=\"600\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" align=\"center\" style=\"max-width:600px; width:100%;\"> \r\n<tbody> \r\n<tr> \r\n<td dir=\"ltr\" valign=\"top\" style=\"padding:8px 50px 8px 50px;\" class=\"inner-container\"> <p class=\"mktoText\" id=\"bodyCopya028d177-39bc-45d2-bc56-31ccf0adf226\" style=\"font-family: \'Google Sans Text\',\'Noto Sans JP\',Arial,sans-serif; font-size: 14px; line-height: 24px; color: #5F6368; margin: 0; padding: 0; text-align: left;\"><strong>Coming up next </strong><br>Don’t let your momentum stall – secure your spot for our upcoming BigQuery sessions on September 10, 2026.</p> </td> \r\n</tr> \r\n</tbody> \r\n</table>\r\n<table role=\"presentation\" class=\"mktoModule\" id=\"unorderedListModule8357b593-bec0-4065-ac3f-9f339a1ecf83\" width=\"600\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" align=\"center\" style=\"max-width:600px; width:100%;\"> \r\n<tbody> \r\n<tr> \r\n<td dir=\"ltr\" valign=\"top\" style=\"padding:8px 50px 8px 50px;\" class=\"inner-container\"> \r\n<div class=\"mktoText\" id=\"UnorderedList6491c42e-0d24-4b6e-87ed-59c2e9d497ee\" style=\"font-family: \'Google Sans Text\',\'Noto Sans JP\',Arial,sans-serif; font-size: 14px; line-height: 24px; color: #5F6368; margin: 0; padding: 0; text-align: left;\"> \r\n<ul style=\"padding: 0; margin: 0; margin-left: 20px;\"> \r\n<li><strong>Introduction to the Conversational Analytics in BigQuery (Introductory)</strong>: Build and publish custom data agents that deliver trusted, conversational AI-driven insights across your organisation. <a href=\r\n\"https://go.cloudplatformonline.com/ODA4LUdKVy0zMTQAAAGjjTuf8wDHljTk1LrIKuoleS7T2F2BzB0-kQZDOWwAICM9axM7-Rp2C_mXQPMPumWLhO49bOc=\" target=\"_blank\" id=\"\"\r\n>Register now</a>.</li> \r\n<li><strong>AI-Assisted Data Science with BigQuery (Intermediate)</strong>: Master multimodal data science workflows to engineer visual search tools and automate Python models. <a href=\r\n\"https://go.cloudplatformonline.com/ODA4LUdKVy0zMTQAAAGjjTuf8_VPJr86cTV8YF7ky8Po6Hj5S2Druagp41mamYA6cGDd__a3n6xLAUXrfXMrPN23Iv4=\" target=\"_blank\"\r\n>Register now</a>.</li> \r\n</ul> \r\n</div> </td> \r\n</tr> \r\n</tbody> \r\n</table>\r\n<table role=\"presentation\" class=\"mktoModule\" id=\"bodyCopyModuledc81377f-2927-4cb6-9c72-d303b21f94c4\" width=\"600\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" align=\"center\" style=\"max-width:600px; width:100%;\"> \r\n<tbody> \r\n<tr> \r\n<td dir=\"ltr\" valign=\"top\" style=\"padding:8px 50px 8px 50px;\" class=\"inner-container\"> <p class=\"mktoText\" id=\"bodyCopy028b9cbc-efd0-4318-ae23-d14b74b204a8\" style=\"font-family: \'Google Sans Text\',\'Noto Sans JP\',Arial,sans-serif; font-size: 14px; line-height: 24px; color: #5F6368; margin: 0; padding: 0; text-align: left;\"><strong>Triple the skills. Triple the validation. </strong><br>Attending three Google&nbsp;Cloud Labs: OnAir gives you a 3X advantage. In all our labs, live experts will guide the session and troubleshoot in real time – so you can earn official <strong>Credly badges</strong>.</p> </td> \r\n</tr> \r\n</tbody> \r\n</table>\r\n<table role=\"presentation\" class=\"mktoModule\" id=\"signOffModule\" width=\"600\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" align=\"center\" style=\"max-width:600px; width:100%;\"> \r\n<tbody> \r\n<tr> \r\n<td dir=\"ltr\" valign=\"top\" style=\"padding:8px 50px 30px 50px;\" class=\"inner-container\"> \r\n<div class=\"mktoText\" id=\"signOffContent\" style=\"font-family: \'Google Sans\',\'Noto Sans JP\',Arial,sans-serif; font-size: 14px; line-height: 24px; color: #5F6368; margin: 0; padding: 0; text-align: left;\">\r\nSee you there,\r\n<br> \r\n<strong>The Google Cloud Team</strong>\r\n</div> </td> \r\n</tr> \r\n</tbody> \r\n</table>\r\n<table role=\"presentation\" class=\"mktoModule\" id=\"promoBoxNoIconModule6d8d228b-792f-47c5-a329-20c3742b75db\" width=\"600\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" align=\"center\" style=\"max-width:600px; width:100%;\"> \r\n<tbody> \r\n<tr> \r\n<td valign=\"top\" style=\"padding: 16px 50px 18px 50px;\" class=\"inner-container-alt\"> \r\n<table role=\"presentation\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" align=\"right\" width=\"100%\" bgcolor=\"#F8F9FA\" style=\"background-color: #F8F9FA;\"> \r\n<tbody> \r\n<tr> \r\n<td style=\"padding: 20px 50px 20px 24px;\" class=\"inner-container\"> \r\n<table role=\"presentation\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" align=\"left\"> \r\n<tbody> \r\n<tr> \r\n<td dir=\"ltr\" valign=\"top\" class=\"mktoText\" id=\"promoBoxNoIconContent616b538c-6275-46e7-ab0a-4aaeebfc3333\"><p style=\"margin: 0; padding: 0; font-family: \'Google Sans\',\'Noto Sans JP\',Arial,sans-serif; font-size: 14px; line-height: 24px;\"><strong><span style=\"color: #1a73e8;\">Learn in your language.</span></strong><br>The session will be streamed with multi-language channels offering helpful live real-time subtitles in <strong>한국어, Bahasa Indonesia, 繁體中文, 简体中文, 日本語, แบบไทย, tiếng Việt</strong> and <strong>English</strong> language.</p></td> \r\n</tr> \r\n</tbody> \r\n</table> </td> \r\n</tr> \r\n</tbody> \r\n</table> </td> \r\n</tr> \r\n</tbody> \r\n</table>\r\n<table role=\"presentation\" class=\"mktoModule\" id=\"imgFullWidthModule8de7c9f1-0172-48a0-8777-0335cd91d66a\" width=\"600\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" align=\"center\" style=\"max-width:600px; width:100%;\"> \r\n<tbody> \r\n<tr> \r\n<td valign=\"top\" style=\"padding:0px 0px 0px 0px;\" class=\"\"> \r\n<div class=\"mktoText\" id=\"fullImgc64c2f42-d2d0-41f6-b583-0008671668dd\">\r\n<img class=\"width100\" src=\"https://lp.cloudplatformonline.com/rs/808-GJW-314/images/GC_Progress_Bar_Gradient_2026.jpg?version=0\" alt=\"\" border=\"0\" width=\"600\" height=\"7\" style=\"display: block; width: 600px; height: 7px;\">\r\n</div> </td> \r\n</tr> \r\n</tbody> \r\n</table>\r\n<table role=\"presentation\" class=\"mktoModule\" id=\"footerModule\" width=\"600\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" align=\"center\" style=\"max-width:600px; width:100%; background: #f8f9fa;\"> \r\n<tbody> \r\n<tr> \r\n<td valign=\"top\" style=\"padding: 40px 50px 0 50px;\" class=\"inner-container\"> \r\n<table role=\"presentation\" width=\"600\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"max-width:600px; width:100%;\"> \r\n<tbody> \r\n<tr> \r\n<td> \r\n<table role=\"presentation\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"width: 100%;\"> \r\n<tbody> \r\n<tr> \r\n<td dir=\"ltr\" align=\"left\" style=\"padding-bottom: 16px;\"> \r\n<table role=\"presentation\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" width=\"100%\" style=\"width: 100%;\"> \r\n<tbody> \r\n<tr> \r\n<td dir=\"ltr\" align=\"left\" valign=\"middle\" style=\"vertical-align: middle;\"> <img class=\"no-arrow mktoImg\" id=\"footerLogo\" src=\"https://lp.cloudplatformonline.com/rs/808-GJW-314/images/google-cloud-a11y.png\" alt=\"Google Cloud\" width=\"140\" style=\"width: 140px; display: block; margin: 0; border: \r\nnone;\" mktolockimgsize=\"false\"> </td> \r\n<td dir=\"ltr\" align=\"right\" valign=\"middle\" style=\"vertical-align: middle; display: none !important; mso-hide:all;\"> <img class=\"no-arrow mktoImg\" id=\"footerIcons\" src=\"https://lp.cloudplatformonline.com/rs/808-GJW-314/images/hh-img2.png\" width=\"137\" style=\"width: 137px; display: block; margin: 0; border: none; display: none !important; mso-hide:all;\" mktolockimgsize=\"false\"> </td> \r\n</tr> \r\n</tbody> \r\n</table> </td> \r\n</tr> \r\n<tr> \r\n<td dir=\"ltr\" style=\"font-family: \'Google Sans Text\',\'Noto Sans JP\',Arial,sans-serif; font-size: 12px; font-weight: 400; line-height: 18px; color: #5F6368; margin: 0; padding: 0; text-align: left; padding-bottom: 18px;\"> \r\n<div class=\"mktoText\" id=\"footer-copyright-address\">\r\n &copy; 2026 Google Asia Pacific Pte. Ltd.<br /> 70 Pasir Panjang Road, #03-71, Mapletree Business City, Singapore 117371 \r\n</div> \r\n<div> \r\n<br> \r\n</div> \r\n<div class=\"mktoText\" id=\"footer-copy\">\r\n If you no longer wish to receive emails from Google Cloud, or would like to customize your communication preferences, please click \r\n<a href=\r\n\"https://cloud.google.com/preferences/?Opt_In_Events__c=Yes&amp;Opt_In_Newsletter__c=Yes&amp;Opt_In_Offers__c=Yes&amp;Opt_In_Products__c=Yes&amp;Opt_In_Research__c=Yes&amp;preferenceCenterSubscription1=Yes&amp;preferenceCenterSubscription2=Yes&amp;preferenceCenterSubscription3=Yes&amp;preferenceCenterSubscription4=Yes\" class=\"mktNoTrack\" style=\"text-decoration: underline; color: #1a73e8;\" target=\"_blank\"\r\n>here</a>. \r\n<!--https://lp.cloudplatformonline.com/UnsubscribePage.html?mkt_unsubscribe=1&mkt_tok=ODA4LUdKVy0zMTQAAAGjjTuf8xUPzubCwMMg_8po6KHga1Jqkwdb5-0tQA7gpjaPoS7kLShitpKV8z42AzhhfHNSbIZxFkSrtu-GobFJuQhrKrJt0DLPOxYEx9tipvbmlAnGsNIw--> \r\n</div> </td> \r\n</tr> \r\n</tbody> \r\n</table> </td> \r\n</tr> \r\n</tbody> \r\n</table> </td> \r\n</tr> \r\n<tr> \r\n<td valign=\"top\" style=\"padding:0 50px 40px 35px;\" class=\"inner-container social-container\"> \r\n<table role=\"presentation\" width=\"600\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"max-width:600px; width:100%;\"> \r\n<tbody> \r\n<tr> \r\n<td> \r\n<table role=\"presentation\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"width: 100%;\"> \r\n<tbody> \r\n<tr> \r\n<td align=\"left\"> \r\n<div class=\"mktoText\" id=\"footerlinks\"> \r\n<table role=\"presentation\" class=\"footer-icon-table\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"width: auto;\"> \r\n<tbody> \r\n<tr> \r\n<td width=\"48\" style=\"width: 48px; font-family: \'Roboto\', Arial, sans-serif;\"><a href=\r\n\"https://go.cloudplatformonline.com/ODA4LUdKVy0zMTQAAAGjjTuf84mY-hOUD0BYap39DgQUfnDtBpcjcSPi7NP9WNo34fGt_TQ5dclWbG2lgQ39lsBaOWo=\"\r\n><img src=\"https://lp.cloudplatformonline.com/rs/808-GJW-314/images/blog-a11y.png\" alt=\"Blog\" border=\"0\" height=\"48\" style=\"height: 48px;\" constrain=\"true\" imagepreview=\"false\"></a></td> \r\n<td width=\"48\" style=\"width: 48px; padding-left: 10px; font-family: \'Roboto\', Arial, sans-serif;\"><a href=\r\n\"https://go.cloudplatformonline.com/ODA4LUdKVy0zMTQAAAGjjTuf87FMpcQi7iTTa-BsCq9ecjB7Rld8NZD3LIQH8gFTS7osgmrOwxB29r9xbrvvdK1g-UM=\"\r\n><img src=\"https://lp.cloudplatformonline.com/rs/808-GJW-314/images/github-a11y.png\" alt=\"GitHub\" border=\"0\" height=\"48\" style=\"height: 48px;\" constrain=\"true\" imagepreview=\"false\"></a></td> \r\n<td width=\"48\" style=\"width: 48px; padding-left: 10px; font-family: \'Roboto\', Arial, sans-serif;\"><a href=\r\n\"https://go.cloudplatformonline.com/ODA4LUdKVy0zMTQAAAGjjTuf8zhP2kuKy1nWFvmvjSKSFmv0J4Ehg7gfGBL0uTSTw2ohl0xjH-opqpV1eHYF0QonTRk=\"\r\n><img src=\"https://lp.cloudplatformonline.com/rs/808-GJW-314/images/linkedin-a11y.png\" alt=\"LinkedIn\" border=\"0\" height=\"48\" style=\"height: 48px;\"></a></td> \r\n<td width=\"48\" style=\"width: 48px; padding-left: 10px; font-family: \'Roboto\', Arial, sans-serif;\"><a href=\r\n\"https://go.cloudplatformonline.com/ODA4LUdKVy0zMTQAAAGjjTuf84w6pyfagcW-XMZiaa4Z0c2WMqqwIy_2w-6f49ro0vM9i9i0m18cY7ihWNqABmJP_Do=\"\r\n><img src=\"https://lp.cloudplatformonline.com/rs/808-GJW-314/images/logo_twitter_x.png?version=2\" alt=\"Twitter\" border=\"0\" height=\"48\" style=\"height: 48px;\"></a></td> \r\n<td width=\"48\" style=\"width: 48px; padding-left: 10px; font-family: \'Roboto\', Arial, sans-serif;\"><a href=\r\n\"https://go.cloudplatformonline.com/ODA4LUdKVy0zMTQAAAGjjTuf8_RVsmDZAcXEdMLmYE4I6pCPhKetIvwTIvj_R0deiv0ngxl91s_rvSq_RkWh93xFGCM=\"\r\n><img src=\"https://lp.cloudplatformonline.com/rs/808-GJW-314/images/facebook-a11y.png\" alt=\"Facebook\" border=\"0\" height=\"48\" style=\"height: 48px;\"></a></td> \r\n<td width=\"48\" style=\"width: 48px; padding-left: 10px; font-family: \'Roboto\', Arial, sans-serif;\"><a href=\r\n\"https://go.cloudplatformonline.com/ODA4LUdKVy0zMTQAAAGjjTuf8-Z3GJKNMc60Vpy34qbV9iaf7yEfISKxRM0eeTdtHisC4SlV2qftBCYbOdHePmxnTdw=\"\r\n><img src=\"https://lp.cloudplatformonline.com/rs/808-GJW-314/images/youtube-a11y.png\" alt=\"YouTube\" border=\"0\" height=\"48\" style=\"height: 48px;\"></a></td> \r\n</tr> \r\n</tbody> \r\n</table> \r\n</div> </td> \r\n</tr> \r\n</tbody> \r\n</table> </td> \r\n</tr> \r\n</tbody> \r\n</table> </td> \r\n</tr> \r\n</tbody> \r\n</table></td> \r\n</tr> \r\n</tbody>\r\n</table> \r\n<!--[if mso]>\r\n</td>\r\n</tr>\r\n</table>\r\n<![endif]--> \r\n</div> \r\n</center>  \r\n<a href=\r\n\"https://go.cloudplatformonline.com/ODA4LUdKVy0zMTQAAAGjjTuf8-0u-m7lAMXpqJ-VT1jGocwSuoo7rekwV8fmSRZprqOACqAkPFqYXa1QaiUBvAOoyhI=\"\r\n></a>\r\n<img src=\"https://go.cloudplatformonline.com/trk?t=1&mid=ODA4LUdKVy0zMTQAAAGjjTuf87xlRlNdfnhBhZWC3VQLhbORK9jY775IybSHCypJkq7aTx2nL-C7TIXKtrYGH9HvJCX0wqpKM6qOeZQtL-Kc14-TTBcpf3Ht8AfDrjZ6mejAXUQglwSNjTNeeR-VaFPRbPQx9qeIVU3wSuf_QhEGGj8gRIcZIg\" width=\"1\" height=\"1\" style=\"display:none !important;\" alt=\"\" />\r\n</body>\r\n</html>', '2026-08-11 00:39:52', '0', NULL, '0', '0', 'inbox', '2026-08-31 09:24:33', '2026-08-31 09:24:33'),
@@ -400,41 +358,34 @@ INSERT INTO `official_emails` (`id`, `message_uid`, `sender_name`, `sender_email
 ('72', 'srb-7703', 'ระบบงานสารบรรณ', 'saraban@opm.go.th', 'saraban_phatthalung@moi.go.th', 'นร 0109/282 ลงวันที่ 25/08/2569 แจ้งคำสั่งแต่งตั้งคณะอนุกรรมการแก้ไขปัญหาการตัดโค่นไม้ยางพาราที่หมดสภาพเพื่อปลูกใหม่ในท้องที่จังหวัดพัทลุง ', '', '', '2026-08-26 03:13:34', '0', NULL, '0', '0', 'official', '2026-08-31 09:24:49', '2026-08-31 09:24:49'),
 ('73', 'srb-7702', 'ระบบงานสารบรรณ', 'saraban@opm.go.th', 'saraban_phatthalung@moi.go.th', 'ด่วนที่สุด : นร 0109/271 ลงวันที่ 25/08/2569 ขอเชิญประชุมเตรียมความพร้อมในการรับเรื่องร้องทุกข์ตามบัญชานายกรัฐมนตรี', '', '', '2026-08-26 02:26:22', '0', NULL, '0', '0', 'official', '2026-08-31 09:24:49', '2026-08-31 09:24:49');
 
-
--- --------------------------------------------------------
--- Table structure for `pages`
--- --------------------------------------------------------
+-- Table `pages`
 DROP TABLE IF EXISTS `pages`;
 CREATE TABLE `pages` (
-  `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `parent_id` int unsigned DEFAULT NULL,
-  `order_num` int DEFAULT '0',
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `parent_id` int(10) unsigned DEFAULT NULL,
+  `order_num` int(11) DEFAULT '0',
   `title` varchar(255) NOT NULL,
   `slug` varchar(255) NOT NULL,
   `header_image` varchar(255) DEFAULT NULL,
   `content` longtext,
-  `views` int unsigned NOT NULL DEFAULT '0',
+  `views` int(10) unsigned NOT NULL DEFAULT '0',
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `slug` (`slug`)
-) ENGINE=MyISAM AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb3;
+) ENGINE=MyISAM AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 
--- Dumping data for `pages`
-INSERT INTO `pages` (`id`, `parent_id`, `order_num`, `title`, `slug`, `header_image`, `content`, `views`, `created_at`, `updated_at`) VALUES
-('1', NULL, '0', 'ข้อมูลทั่วไปจังหวัด', 'general', 'uploads/pages/header_1787197577_7804.png', '<p><img src=\"../uploads/pages/page_1787280116_8602.png\" alt=\"\" width=\"2752\" height=\"1536\"></p>', '41', '2026-08-19 09:24:22', '2026-09-02 09:07:16'),
+INSERT INTO `pages` (`id`, `parent_id`, `order_num`, `title`, `slug`, `header_image`, `content`, `views`, `created_at`, `updated_at`) VALUES 
+('1', NULL, '0', 'ข้อมูลทั่วไปจังหวัด', 'general', 'uploads/pages/header_1787197577_7804.png', '<p><img src=\"../uploads/pages/page_1787280116_8602.png\" alt=\"\" width=\"2752\" height=\"1536\"></p>', '45', '2026-08-19 09:24:22', '2026-09-02 09:07:16'),
 ('2', '1', '1', 'ข้อมูลทางประวัติศาสตร์', 'history', NULL, '<p><strong><span class=\"font-green\">จังหวัดพัทลุง</span>&nbsp;เป็นจังหวัดหนึ่งในภาคใต้ของประเทศไทย ที่มีประวัติความเป็นมาอันยาวนาน ตั้งแต่สมัยก่อนประวัติศาสตร์ ดังปรากฏหลักฐานจากการค้นพบขวานหินขัดในท้องที่ทั่วไปหลายอำเภอในสมัยศรีวิชัย (พุทธศตวรรษที่ 13 &ndash;14) บริเวณเมืองพัทลุงเป็นแหล่งชุมชนที่ได้รับวัฒนธรรมอินเดียในด้านพระพุทธศาสนาลัทธิมหายาน มีหลักฐานค้นพบ เช่น พระพิมพ์ดินดิบจำนวนมากเป็นรูปพระโพธิสัตว์ รูปเทวดาโดยค้นพบบริเวณถ้ำคูหาสวรรค์ และถ้ำเขาอกทะลุ<br><br>ต่อมาในพุทธศตวรรษที่ 19 เมืองพัทลุงได้ตั้งขึ้นอย่างมั่นคงภายใต้การปกครองของกรุงศรีอยุธยา ในสมัย พระบรมไตรโลกนาถ ได้ปรากฏชื่อเมืองพัทลุง ในกฎหมายพระอัยการนาทหารหัวเมือง พ.ศ.1998 ระบุว่าเมืองพัทลุง มีฐานะเป็นเมืองชั้นตรี ซึ่งนับได้ว่าเป็นหัวเมืองหนึ่งของพระราชอาณาจักรทางใต้ ที่ตั้งเมืองพัทลุงในระยะเริ่มแรกนั้น เชื่อกันว่า ตั้งอยู่ที่เมืองสทิงพระ จังหวัดสงขลาในปัจจุบัน มักจะประสบปัญหาโดนโจมตีจากกลุ่มโจรสลัดมาเลย์ อยู่เสมอ โดยเฉพาะอย่างยิ่งกลุ่มโจรสลัดราแจะอารูและอุยงคตนะ ได้เข้าปล้นสดมภ์โจมตีเผาทำลายเมืองอยู่เนืองๆ<br><br>ในรัชสมัยพระเจ้าทรงธรรม ด๊ะโต๊ะโมกอล ชาวมุสลิมที่อพยพมาจากเมืองสาเลห์ บริเวณหมู่เกาะชวา ซึ่งเป็น ต้นตระกูลของสุลต่านสุไลมาน แห่งเมืองสงขลาได้เข้ามาตั้งถิ่นฐานค้าขาย ณ หัวเขาแดง แล้วตั้งประชาคมมุสลิมขึ้น ตรงนั้นอย่างสงบ ไม่มีการขัดแย้งกับชาวเมืองที่อยู่มาก่อน ปักหลักอยู่ยาวนานจนมีผู้คนอพยพมาอาศัยอยู่มากขึ้น ในที่สุดก็พัฒนาขึ้นมาเป็นเมืองท่าปลอดภาษี มีเรือสำเภาแวะเข้ามาซื้อ</strong></p>\r\n<p><strong>ประวัติศาสตร์จังหวัดพัทลุง: จากชุมชนโบราณสู่เมืองแห่งวัฒนธรรม</strong></p>\r\n<p>บทนำ: จังหวัดพัทลุงเป็นเมืองเก่าแก่ที่มีประวัติศาสตร์ยาวนานนับพันปี เป็นหนึ่งในศูนย์กลางทางศาสนา วัฒนธรรม และการปกครองที่สำคัญของภาคใต้ ข้อมูลในหน้านี้ได้รวบรวมลำดับเหตุการณ์และแหล่งโบราณคดีที่สำคัญ เพื่อเป็นแหล่งเรียนรู้ทางประวัติศาสตร์ที่สมบูรณ์แบบสำหรับทุกคน</p>\r\n<h3 data-path-to-node=\"3\">1. ลำดับพัฒนาการทางประวัติศาสตร์</h3>\r\n<ul data-path-to-node=\"4\">\r\n<li>\r\n<p data-path-to-node=\"4,0,0\"><strong data-path-to-node=\"4,0,0\" data-index-in-node=\"0\">ยุคก่อนประวัติศาสตร์ (ร่องรอยชุมชนแรกเริ่ม):</strong> จากการสำรวจถ้ำและเพิงผาต่างๆ นักโบราณคดีได้ค้นพบเครื่องมือเครื่องใช้ยุคหินใหม่ เช่น ขวานหินขัด (ขวานฟ้า) และเศษเครื่องปั้นดินเผา ซึ่งเป็นหลักฐานยืนยันว่ามีกลุ่มชนตั้งถิ่นฐานและหาของป่าบริเวณรอบทะเลสาบมาตั้งแต่ 2,500 - 4,000 ปีที่แล้ว</p>\r\n</li>\r\n<li>\r\n<p data-path-to-node=\"4,1,0\"><strong data-path-to-node=\"4,1,0\" data-index-in-node=\"0\">ยุคประวัติศาสตร์ตอนต้น (อิทธิพลอินเดียและอาณาจักรศรีวิชัย):</strong> ราวพุทธศตวรรษที่ 13-14 พื้นที่พัทลุงรับอิทธิพลจากศาสนาพราหมณ์-ฮินดูและพุทธศาสนามหายาน ชุมชนโบราณขยายตัวเป็นเมืองท่าสำคัญ โดยมีศูนย์กลางความเชื่อและเครือข่ายการค้าอยู่ที่บริเวณวัดพระบรมธาตุเจดีย์เขียนบางแก้ว</p>\r\n</li>\r\n<li>\r\n<p data-path-to-node=\"4,2,0\"><strong data-path-to-node=\"4,2,0\" data-index-in-node=\"0\">ยุคอยุธยา (เมืองสิบสองนักษัตรและป้อมปราการตะวันตก):</strong> พัทลุงมีฐานะเป็นเมืองบริวารของนครศรีธรรมราช โดยใช้ตราสัญลักษณ์ \"ปีมะเส็ง\"<br>(งูเล็ก) ในยุคนี้พัทลุงต้องเผชิญภัยคุกคามจากโจรสลัดและสงคราม จึงมีการย้ายศูนย์กลางเมืองไปตั้งมั่นที่ \"เมืองเก่าชัยบุรี\" และมีการสร้างป้อมปราการคูเมืองที่แข็งแรง</p>\r\n</li>\r\n<li>\r\n<p data-path-to-node=\"4,3,0\"><strong data-path-to-node=\"4,3,0\" data-index-in-node=\"0\">ยุครัตนโกสินทร์ (ยุคการปกครองท้องถิ่นและการปฏิรูป):</strong> ศูนย์กลางเมืองได้ย้ายมาที่ตำบลลำปำ เป็นยุคที่ปกครองโดยกลุ่มเจ้าเมือง ก่อนที่ในสมัยพระบาทสมเด็จพระจุลจอมเกล้าเจ้าอยู่หัว (รัชกาลที่ 5) จะมีการปฏิรูปการปกครองเป็นระบบมณฑลเทศาภิบาล และย้ายศูนย์กลางเมืองมายังที่ตั้งปัจจุบัน</p>\r\n</li>\r\n</ul>\r\n<h3 data-path-to-node=\"5\">2. แหล่งโบราณคดีและสถานที่สำคัญทางประวัติศาสตร์</h3>\r\n<table data-path-to-node=\"6\">\r\n<thead>\r\n<tr>\r\n<td><strong>สถานที่สำคัญ</strong></td>\r\n<td><strong>ยุคสมัยทางประวัติศาสตร์</strong></td>\r\n<td><strong>ความสำคัญและสิ่งที่ค้นพบ</strong></td>\r\n</tr>\r\n</thead>\r\n<tbody>\r\n<tr>\r\n<td><span data-path-to-node=\"6,1,0,0\"><strong data-path-to-node=\"6,1,0,0\" data-index-in-node=\"0\">วัดพระบรมธาตุเจดีย์เขียนบางแก้ว</strong></span></td>\r\n<td><span data-path-to-node=\"6,1,1,0\">ศรีวิชัย - อยุธยา</span></td>\r\n<td><span data-path-to-node=\"6,1,2,0\">ศูนย์กลางศาสนา พบโบราณวัตถุเช่น ศิวลึงค์ ฐานโยนี และเครื่องถ้วยชามโบราณ</span></td>\r\n</tr>\r\n<tr>\r\n<td><span data-path-to-node=\"6,2,0,0\"><strong data-path-to-node=\"6,2,0,0\" data-index-in-node=\"0\">วนอุทยานเมืองเก่าชัยบุรี</strong></span></td>\r\n<td><span data-path-to-node=\"6,2,1,0\">อยุธยาตอนปลาย</span></td>\r\n<td><span data-path-to-node=\"6,2,2,0\">ซากกำแพงเมืองและป้อมปราการรูปดาว ซึ่งออกแบบโดยวิศวกรชาวฝรั่งเศส</span></td>\r\n</tr>\r\n<tr>\r\n<td><span data-path-to-node=\"6,3,0,0\"><strong data-path-to-node=\"6,3,0,0\" data-index-in-node=\"0\">วังเจ้าเมืองพัทลุง (ลำปำ)</strong></span></td>\r\n<td><span data-path-to-node=\"6,3,1,0\">รัตนโกสินทร์ตอนต้น</span></td>\r\n<td><span data-path-to-node=\"6,3,2,0\">กลุ่มอาคารวังเก่าและวังใหม่ สะท้อนสถาปัตยกรรมและระบบการปกครองในอดีต</span></td>\r\n</tr>\r\n<tr>\r\n<td><span data-path-to-node=\"6,4,0,0\"><strong data-path-to-node=\"6,4,0,0\" data-index-in-node=\"0\">เขาอกทะลุ</strong></span></td>\r\n<td><span data-path-to-node=\"6,4,1,0\">สัญลักษณ์ทางภูมิศาสตร์</span></td>\r\n<td><span data-path-to-node=\"6,4,2,0\">ภูเขาศักดิ์สิทธิ์ที่เป็นทั้งจุดสังเกตการเดินทางและสัญลักษณ์ประจำจังหวัด</span></td>\r\n</tr>\r\n</tbody>\r\n</table>\r\n<h3 data-path-to-node=\"8\">3. เกร็ดความรู้และมรดกทางวัฒนธรรม</h3>\r\n<ul data-path-to-node=\"9\">\r\n<li>\r\n<p data-path-to-node=\"9,0,0\"><strong data-path-to-node=\"9,0,0\" data-index-in-node=\"0\">พลวัตของการอพยพ:</strong> ประวัติศาสตร์ของพัทลุงคือเรื่องราวของการปรับตัว ศูนย์กลางเมืองเคยถูกย้ายมาแล้วหลายแห่ง ได้แก่ โคกเมืองบางแก้ว, บ้านควนแร่, เขาชัยบุรี, ตำบลลำปำ ก่อนจะมาบรรจบที่ตำบลคูหาสวรรค์ในปัจจุบัน</p>\r\n</li>\r\n<li>\r\n<p data-path-to-node=\"9,1,0\"><strong data-path-to-node=\"9,1,0\" data-index-in-node=\"0\">ศูนย์กลางแห่งศิลปะการแสดง:</strong> นอกเหนือจากมรดกทางโบราณคดี พัทลุงยังได้รับการยกย่องให้เป็นอู่ข้าวอู่น้ำทางวัฒนธรรม โดยเป็นต้นกำเนิดของศิลปะการแสดงที่ยิ่งใหญ่ของภาคใต้ ทั้ง \"โนรา\" และ \"หนังตะลุง\"</p>\r\n</li>\r\n<li>\r\n<p data-path-to-node=\"9,2,0\"><strong data-path-to-node=\"9,2,0\" data-index-in-node=\"0\">ตราประจำจังหวัด:</strong> ใช้รูปภูเขาอกทะลุ ซึ่งเป็นแลนด์มาร์กทางธรรมชาติที่โดดเด่นและผูกพันกับตำนานพื้นบ้านของชาวพัทลุงมาอย่างยาวนาน</p>\r\n</li>\r\n</ul>\r\n<p>&nbsp;</p>', '2', '2026-08-19 09:29:21', '2026-08-20 03:37:09'),
 ('3', '1', '2', 'สัญลักษณ์ประจำจังหวัด', 'mascot', NULL, '<p><img style=\"display: block; margin-left: auto; margin-right: auto;\" src=\"../uploads/pages/page_1787199395_5105.png\" alt=\"\" width=\"316\" height=\"318\"></p>\r\n<p style=\"text-align: center;\"><strong>โลโก้จังหวัด</strong> <br>เป็นรูปภูเขาอกทะลุสูงเด่น อยู่บนที่ราบมองเห็นจากที่ไกลได้ทุกทิศ บนยอด<br>เขามีเจดีย์เก่าสร้างเอาไว้องค์หนึ่ง ซึ่งในปัจจุบันนี้ยังเหลือ เฉพาะฐาน ชาวเมืองจึง<br>ถือเอาภูเขาอกทะลุเป็นสัญลักษณ์ประจําาจังหวัดพัทลุง</p>\r\n<p style=\"text-align: center;\">〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️</p>\r\n<p style=\"text-align: center;\"><img style=\"border-width: 1px; border-style: dotted;\" src=\"../uploads/pages/page_1787199437_9892.jpg\" alt=\"\" width=\"410\" height=\"229\"></p>\r\n<p style=\"text-align: center;\"><strong>คำขวัญจังหวัด</strong></p>\r\n<p style=\"text-align: center;\">เมืองหนังโนรา&nbsp; อู่นาข้าว พราวน้ำตก แหล่งนกน้ำ<br>ทะเลสาบงาม เขาอกทะลุ น้ำพุร้อน</p>\r\n<p style=\"text-align: center;\">〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️</p>\r\n<p style=\"text-align: center;\"><img src=\"../uploads/pages/page_1787199484_3925.jpg\" alt=\"\" width=\"376\" height=\"231\"></p>\r\n<p style=\"text-align: center;\">ธงประจำจังหวัด<br>พื้นธงสีม่วง มีตราจังหวัดคือภูเขาอกทะลุและมีแแถบสีเหลือง</p>\r\n<p style=\"text-align: center;\">〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️</p>\r\n<p style=\"text-align: center;\"><img src=\"../uploads/pages/page_1787203872_9663.jpeg\" alt=\"\" width=\"383\" height=\"288\"></p>\r\n<p style=\"text-align: center;\">ต้นไม้/ดอกไม้ประจำจังหวัด<br>ต้นพะยอม&nbsp;</p>', '0', '2026-08-20 03:23:22', '2026-08-20 05:31:31'),
 ('6', NULL, '0', 'ยุทธศาสตร์การพัฒนาจังหวัด', 'development', NULL, '', '2', '2026-08-21 03:09:35', '2026-08-24 09:16:55'),
 ('5', NULL, '0', 'แผนที่จังหวัดพัทลุง', 'gismap', NULL, '', '0', '2026-08-20 04:45:03', '2026-08-20 04:45:03');
 
-
--- --------------------------------------------------------
--- Table structure for `procurements`
--- --------------------------------------------------------
+-- Table `procurements`
 DROP TABLE IF EXISTS `procurements`;
 CREATE TABLE `procurements` (
-  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
   `budget` decimal(15,2) DEFAULT NULL,
   `method` varchar(100) DEFAULT NULL,
@@ -445,10 +396,9 @@ CREATE TABLE `procurements` (
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb3;
+) ENGINE=MyISAM AUTO_INCREMENT=28 DEFAULT CHARSET=utf8;
 
--- Dumping data for `procurements`
-INSERT INTO `procurements` (`id`, `title`, `budget`, `method`, `category`, `status`, `doc_path`, `published_date`, `created_at`, `updated_at`) VALUES
+INSERT INTO `procurements` (`id`, `title`, `budget`, `method`, `category`, `status`, `doc_path`, `published_date`, `created_at`, `updated_at`) VALUES 
 ('1', 'ประกาศประกวดราคาซื้อครุภัณฑ์ยานพาหนะและขนส่ง สำหรับสำนักงานจังหวัดพัทลุง ด้วยวิธีประกวดราคาอิเล็กทรอนิกส์ (e-bidding)', '2450000.00', NULL, 'ประกาศจัดซื้อจัดจ้าง', 'active', 'assets/docs/egp_sample_101.pdf', '2026-08-04', '2026-08-14 09:02:52', '2026-08-14 09:02:52'),
 ('2', 'ประกาศผู้ชนะการเสนอราคา ซื้อระบบสื่อสารไร้สายความเร็วสูง สำหรับโครงการ Smart Phatthalung โดยวิธีคัดเลือก', '1800000.00', NULL, 'ประกาศจัดซื้อจัดจ้าง', 'active', 'assets/docs/egp_sample_102.pdf', '2026-08-02', '2026-08-14 09:02:52', '2026-08-14 09:02:52'),
 ('3', 'ประกาศเผยแพร่แผนการจัดซื้อจัดจ้าง โครงการก่อสร้างและปรับปรุงเส้นทางจักรยานส่งเสริมการท่องเที่ยวทะเลน้อย', '5600000.00', NULL, 'ประกาศจัดซื้อจัดจ้าง', 'active', 'assets/docs/egp_sample_103.pdf', '2026-08-01', '2026-08-14 09:02:52', '2026-08-14 09:02:52'),
@@ -477,24 +427,21 @@ INSERT INTO `procurements` (`id`, `title`, `budget`, `method`, `category`, `stat
 ('26', 'ประกาศผลการลงนามในสัญญาจ้างเหมาโครงการปรับปรุงเครือข่ายความปลอดภัยไซเบอร์ภาคสาธารณะ สัญญาเลขที่ 45/2569', '3150000.00', NULL, 'ประกาศสัญญา/ข้อตกลง', 'active', 'assets/docs/egp_contract_045.pdf', '2026-07-30', '2026-08-26 10:02:45', '2026-08-26 10:02:45'),
 ('27', 'ประกาศข้อตกลงการตรวจรับพัสดุ งานซื้อครุภัณฑ์ส่งเสริมคุณภาพชีวิตผู้สูงอายุและผู้พิการในพื้นที่จังหวัดพัทลุง', '1200000.00', NULL, 'ประกาศสัญญา/ข้อตกลง', 'active', 'assets/docs/egp_contract_044.pdf', '2026-07-25', '2026-08-26 10:02:45', '2026-08-26 10:02:45');
 
-
--- --------------------------------------------------------
--- Table structure for `provincial_projects`
--- --------------------------------------------------------
+-- Table `provincial_projects`
 DROP TABLE IF EXISTS `provincial_projects`;
 CREATE TABLE `provincial_projects` (
-  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `emenscr_code` varchar(100) DEFAULT NULL,
-  `fiscal_year` int NOT NULL DEFAULT '2568',
+  `fiscal_year` int(11) NOT NULL DEFAULT '2568',
   `project_name` varchar(255) NOT NULL,
   `agency` varchar(255) NOT NULL,
-  `pillar_number` int NOT NULL DEFAULT '1',
+  `pillar_number` int(11) NOT NULL DEFAULT '1',
   `pillar_title` varchar(255) DEFAULT NULL,
   `budget` decimal(15,2) NOT NULL DEFAULT '0.00',
   `disbursed_budget` decimal(15,2) NOT NULL DEFAULT '0.00',
   `objectives` text,
   `kpis` text,
-  `progress_pct` int NOT NULL DEFAULT '0',
+  `progress_pct` int(11) NOT NULL DEFAULT '0',
   `status` enum('pending','in_progress','completed','delayed') NOT NULL DEFAULT 'in_progress',
   `status_desc` text,
   `district` varchar(100) NOT NULL DEFAULT 'เมืองพัทลุง',
@@ -512,10 +459,9 @@ CREATE TABLE `provincial_projects` (
   KEY `fiscal_year` (`fiscal_year`),
   KEY `district` (`district`),
   KEY `status` (`status`)
-) ENGINE=MyISAM AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb3;
+) ENGINE=MyISAM AUTO_INCREMENT=17 DEFAULT CHARSET=utf8;
 
--- Dumping data for `provincial_projects`
-INSERT INTO `provincial_projects` (`id`, `emenscr_code`, `fiscal_year`, `project_name`, `agency`, `pillar_number`, `pillar_title`, `budget`, `disbursed_budget`, `objectives`, `kpis`, `progress_pct`, `status`, `status_desc`, `district`, `subdistrict`, `location_name`, `latitude`, `longitude`, `photos`, `documents`, `is_featured`, `last_sync_at`, `created_at`, `updated_at`) VALUES
+INSERT INTO `provincial_projects` (`id`, `emenscr_code`, `fiscal_year`, `project_name`, `agency`, `pillar_number`, `pillar_title`, `budget`, `disbursed_budget`, `objectives`, `kpis`, `progress_pct`, `status`, `status_desc`, `district`, `subdistrict`, `location_name`, `latitude`, `longitude`, `photos`, `documents`, `is_featured`, `last_sync_at`, `created_at`, `updated_at`) VALUES 
 ('1', '68-9300-0101', '2568', 'โครงการส่งเสริมและยกระดับการผลิตข้าวสังข์หยดพัทลุงและพืชอัตลักษณ์สู่มาตรฐานเกษตรอินทรีย์สากล', 'สำนักงานเกษตรจังหวัดพัทลุง', '1', 'เกษตรมูลค่าสูง & อาหารปลอดภัย', '14500000.00', '12325000.00', 'เพื่อขยายพื้นที่ปลูกข้าวสังข์หยดอินทรีย์ GI พัฒนาบรรจุภัณฑ์อัจฉริยะ และขยายตลาดส่งออกพรีเมียม', '1. เกษตรกรผ่านการรับรองมาตรฐาน Organic Thailand เพิ่มขึ้น 500 ราย\\n2. มูลค่าจำหน่ายผลผลิตเพิ่มขึ้นร้อยละ 20', '85', 'in_progress', 'อยู่ระหว่างการตรวจประเมินแปลงอินทรีย์รอบสุดท้าย และส่งมอบเครื่องจักรแปรรูปบรรจุสุญญากาศ', 'ควนขนุน', 'ทะเลน้อย', 'ศูนย์ส่งเสริมเกษตรอินทรีย์ควนขนุน และแปลงนาเกษตรแปลงใหญ่', '7.73450000', '100.01230000', '[\"https:\\/\\/images.unsplash.com\\/photo-1586201375761-83865001e31c?w=800&auto=format&fit=crop&q=80\",\"https:\\/\\/images.unsplash.com\\/photo-1500937386664-56d1dfef3854?w=800&auto=format&fit=crop&q=80\"]', '[{\"title\":\"เอกสารสรุปโครงการและแผนการดำเนินงาน.pdf\",\"file_url\":\"uploads\\/strategy\\/phatthalung_dev_plan_2566_2570.pdf\",\"file_size\":\"2.4 MB\"}]', '1', '2026-08-24 02:51:57', '2026-08-24 02:42:40', '2026-08-24 02:51:57'),
 ('2', '68-9300-0102', '2568', 'โครงการพัฒนาศูนย์เรียนรู้และเส้นทางท่องเที่ยวเชิงนิเวศมรดกทางการเกษตรโลก (GIAHS) ควายน้ำทะเลน้อย', 'สำนักงานการท่องเที่ยวและกีฬาจังหวัดพัทลุง', '2', 'การท่องเที่ยวเชิงนิเวศ & วัฒนธรรมสร้างสรรค์', '28000000.00', '25200000.00', 'ปรับปรุงภูมิทัศน์ท่าเทียบเรือท่องเที่ยวสะพานเฉลิมพระเกียรติฯ 80 พรรษา และติดตั้งป้ายดิจิทัลสื่อความหมายมรดกโลก', '1. นักท่องเที่ยวเข้าเยี่ยมชมศูนย์เรียนรู้ไม่น้อยกว่า 150,000 คน/ปี\\n2. รายได้จากการท่องเที่ยวชุมชนทะเลน้อยเพิ่มขึ้นร้อยละ 15', '90', 'in_progress', 'ก่อสร้างทางเดินชมธรรมชาติดาดฟ้าเรือนรับรองและหอชมนกเสร็จสมบูรณ์ 90%', 'ควนขนุน', 'ทะเลน้อย', 'เขตห้ามล่าสัตว์ป่าทะเลน้อย และสะพานเฉลิมพระเกียรติฯ 80 พรรษา', '7.77720000', '100.12640000', '[\"https:\\/\\/images.unsplash.com\\/photo-1507525428034-b723cf961d3e?w=800&auto=format&fit=crop&q=80\",\"https:\\/\\/images.unsplash.com\\/photo-1469854523086-cc02fe5d8800?w=800&auto=format&fit=crop&q=80\"]', '[{\"title\":\"แผนผังปรับปรุงภูมิทัศน์และศูนย์การเรียนรู้ GIAHS.pdf\",\"file_url\":\"uploads\\/strategy\\/action_plan_2568.pdf\",\"file_size\":\"4.8 MB\"}]', '1', '2026-08-24 02:51:57', '2026-08-24 02:42:40', '2026-08-24 02:51:57'),
 ('3', '68-9300-0103', '2568', 'โครงการพัฒนาเมืองน้ำพุร้อนสุขภาพบำบัดและเวลเนสระดับนานาชาติ เขาชัยสน (Khao Chaison Wellness Spa)', 'องค์การบริหารส่วนจังหวัดพัทลุง ร่วมกับ สำนักงานสาธารณสุขจังหวัด', '2', 'การท่องเที่ยวเชิงนิเวศ & วัฒนธรรมสร้างสรรค์', '35000000.00', '35000000.00', 'ยกระดับบ่อน้ำร้อนธรรมชาติเขาชัยสน สู่ศูนย์บริการวารีบำบัด นวดแผนไทย และสปาเพื่อสุขภาพมาตรฐานสากล', '1. มีผู้รับบริการสุขภาพและนักท่องเที่ยวทั้งไทยและต่างชาติเพิ่มขึ้น 200,000 คน\\n2. สร้างรายได้หมุนเวียนให้แก่ผู้ประกอบการในอำเภอเขาชัยสนไม่ต่ำกว่า 60 ล้านบาท/ปี', '100', 'completed', 'ก่อสร้างอาคารวารีบำบัด บ่อแช่ส่วนตัว และสวนพักผ่อนเสร็จสิ้น เปิดให้บริการเต็มรูปแบบแล้ว', 'เขาชัยสน', 'เขาชัยสน', 'บ่อน้ำร้อนเขาชัยสน ตำบลเขาชัยสน', '7.45280000', '100.13360000', '[\"https:\\/\\/images.unsplash.com\\/photo-1540555700478-4be289fbecef?w=800&auto=format&fit=crop&q=80\"]', '[{\"title\":\"รายงานผลการตรวจรับและส่งมอบงานอาคารวารีบำบัด.pdf\",\"file_url\":\"uploads\\/strategy\\/action_plan_2568.pdf\",\"file_size\":\"3.1 MB\"}]', '1', '2026-08-24 02:51:57', '2026-08-24 02:42:40', '2026-08-24 02:51:57'),
@@ -533,13 +479,10 @@ INSERT INTO `provincial_projects` (`id`, `emenscr_code`, `fiscal_year`, `project
 ('15', '67-9300-0302', '2567', 'โครงการปรับปรุงและฟื้นฟูอ่างเก็บน้ำป่าพะยอมเพื่อการเกษตรและการท่องเที่ยว', 'ที่ทำการปกครองอำเภอศรีบรรพต', '4', 'การบริหารจัดการทรัพยากรธรรมชาติ & ลุ่มน้ำทะเลสาบ', '14000000.00', '14000000.00', 'สร้างสันอ่างเก็บน้ำ ลู่วิ่งออกกำลังกาย และปลูกป่าต้นน้ำ 500 ไร่', '1. เพิ่มพื้นที่ป่าต้นน้ำและพื้นที่สันทนาการของประชาชน', '100', 'completed', 'โครงการเสร็จสิ้นสมบูรณ์ 100%', 'ศรีบรรพต', 'เขาย่า', 'อ่างเก็บน้ำป่าพะยอม ตำบลเขาย่า', '7.71670000', '99.88330000', NULL, NULL, '0', '2026-08-24 02:51:57', '2026-08-24 02:42:40', '2026-08-24 02:51:57'),
 ('16', '67-9300-0303', '2567', 'โครงการส่งเสริมเกษตรกรชาวสวนยางพาราและปาล์มน้ำมันสู่มาตรฐานการทำสวนยั่งยืน (FSC/RSPO)', 'การยางแห่งประเทศไทย สาขาพัทลุง', '1', 'เกษตรมูลค่าสูง & อาหารปลอดภัย', '11000000.00', '11000000.00', 'รับรองมาตรฐานสวนยางพาราอย่างยั่งยืนเพื่อส่งออกตลาดยุโรป (EUDR)', '1. พื้นที่สวนยางพาราผ่านการรับรอง FSC ไม่น้อยกว่า 25,000 ไร่', '100', 'completed', 'ตรวจประเมินผ่านเกณฑ์ FSC ครบตามเป้าหมาย', 'บางแก้ว', 'ท่ามะเดื่อ', 'สหกรณ์การเกษตรบางแก้ว จำกัด', '7.43330000', '100.18330000', NULL, NULL, '0', '2026-08-24 02:51:57', '2026-08-24 02:42:40', '2026-08-24 02:51:57');
 
-
--- --------------------------------------------------------
--- Table structure for `search_indexes`
--- --------------------------------------------------------
+-- Table `search_indexes`
 DROP TABLE IF EXISTS `search_indexes`;
 CREATE TABLE `search_indexes` (
-  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `source_type` varchar(50) NOT NULL,
   `source_id` varchar(50) NOT NULL,
   `title` varchar(255) NOT NULL,
@@ -549,10 +492,9 @@ CREATE TABLE `search_indexes` (
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=87 DEFAULT CHARSET=utf8mb3;
+) ENGINE=MyISAM AUTO_INCREMENT=87 DEFAULT CHARSET=utf8;
 
--- Dumping data for `search_indexes`
-INSERT INTO `search_indexes` (`id`, `source_type`, `source_id`, `title`, `description`, `url`, `image_url`, `created_at`, `updated_at`) VALUES
+INSERT INTO `search_indexes` (`id`, `source_type`, `source_id`, `title`, `description`, `url`, `image_url`, `created_at`, `updated_at`) VALUES 
 ('1', 'procurement', '1', 'ประกาศประกวดราคาซื้อครุภัณฑ์ยานพาหนะและขนส่ง สำหรับสำนักงานจังหวัดพัทลุง ด้วยวิธีประกวดราคาอิเล็กทรอนิกส์ (e-bidding)', 'ประกาศจัดซื้อจัดจ้าง หมวดหมู่: ประกาศจัดซื้อจัดจ้าง งบประมาณ: 2,450,000.00 บาท', 'assets/docs/egp_sample_101.pdf', NULL, '2026-08-26 10:02:46', '2026-08-26 10:02:46'),
 ('2', 'procurement', '2', 'ประกาศผู้ชนะการเสนอราคา ซื้อระบบสื่อสารไร้สายความเร็วสูง สำหรับโครงการ Smart Phatthalung โดยวิธีคัดเลือก', 'ประกาศจัดซื้อจัดจ้าง หมวดหมู่: ประกาศจัดซื้อจัดจ้าง งบประมาณ: 1,800,000.00 บาท', 'assets/docs/egp_sample_102.pdf', NULL, '2026-08-26 10:02:46', '2026-08-26 10:02:46'),
 ('3', 'procurement', '3', 'ประกาศเผยแพร่แผนการจัดซื้อจัดจ้าง โครงการก่อสร้างและปรับปรุงเส้นทางจักรยานส่งเสริมการท่องเที่ยวทะเลน้อย', 'ประกาศจัดซื้อจัดจ้าง หมวดหมู่: ประกาศจัดซื้อจัดจ้าง งบประมาณ: 5,600,000.00 บาท', 'assets/docs/egp_sample_103.pdf', NULL, '2026-08-26 10:02:46', '2026-08-26 10:02:46'),
@@ -603,7 +545,7 @@ INSERT INTO `search_indexes` (`id`, `source_type`, `source_id`, `title`, `descri
 ('48', 'executive', '3', 'นางสาวศรอนงค์ สงสมพันธ์', 'ตำแหน่ง: รองผู้ว่าราชการจังหวัดพัทลุง', '#', 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=400&auto=format&fit=crop', '2026-08-26 10:02:46', '2026-08-26 10:02:46'),
 ('49', 'executive', '4', 'นายสุจินต์ วาจากิจ', 'ตำแหน่ง: ผู้ว่าราชการจังหวัดพัทลุง', '#', 'uploads/executives/exec_1787543315_1787543315_5570c503c25f1ee9f002.jpg', '2026-08-26 10:02:46', '2026-08-26 10:02:46'),
 ('50', 'executive', '5', 'นายธราวุธ ช่วยเกิด', 'ตำแหน่ง: รองผู้ว่าราชการจังหวัดพัทลุง (ด้านเศรษฐกิจและสังคม)', '#', 'uploads/executives/exec_1787543811_1787543811_4407c907ad0b1649e32d.jpg', '2026-08-26 10:02:46', '2026-08-26 10:02:46');
-INSERT INTO `search_indexes` (`id`, `source_type`, `source_id`, `title`, `description`, `url`, `image_url`, `created_at`, `updated_at`) VALUES
+INSERT INTO `search_indexes` (`id`, `source_type`, `source_id`, `title`, `description`, `url`, `image_url`, `created_at`, `updated_at`) VALUES 
 ('51', 'executive', '6', 'นางสาวศรอนงค์ สงสมพันธ์', 'ตำแหน่ง: รองผู้ว่าราชการจังหวัดพัทลุง', '#', 'uploads/executives/exec_1787542204_1787542204_8f8e25b35550eef0c3c5.png', '2026-08-26 10:02:46', '2026-08-26 10:02:46'),
 ('52', 'executive', '7', 'นายสุจินต์ วาจากิจ', 'ตำแหน่ง: ผู้ว่าราชการจังหวัดพัทลุง', '#', 'uploads/executives/exec_1787543315_1787543315_5570c503c25f1ee9f002.jpg', '2026-08-26 10:02:46', '2026-08-26 10:02:46'),
 ('53', 'executive', '8', 'นายธราวุธ ช่วยเกิด', 'ตำแหน่ง: รองผู้ว่าราชการจังหวัดพัทลุง (ด้านเศรษฐกิจและสังคม)', '#', 'uploads/executives/exec_1787543811_1787543811_4407c907ad0b1649e32d.jpg', '2026-08-26 10:02:46', '2026-08-26 10:02:46'),
@@ -641,27 +583,21 @@ INSERT INTO `search_indexes` (`id`, `source_type`, `source_id`, `title`, `descri
 ('85', 'gallery', '17', 'โครงการอบรมยกระดับเยาวชนและนักศึกษาจังหวัดพัทลุงสู่วิศวกรรมปัญญาประดิษฐ์ (AI) และทักษะดิจิทัลร่วมสมัย', 'อัลบั้มภาพกิจกรรม', '#', 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=900&q=80', '2026-08-26 10:02:46', '2026-08-26 10:02:46'),
 ('86', 'gallery', '18', 'งานแถลงข่าวความพร้อมการจัดการแข่งขันกีฬากลุ่มภาคใต้และส่งเสริมการออกกำลังกายสู่เมืองสุขภาพดี (Healthy City)', 'อัลบั้มภาพกิจกรรม', '#', 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=900&q=80', '2026-08-26 10:02:46', '2026-08-26 10:02:46');
 
-
--- --------------------------------------------------------
--- Table structure for `services`
--- --------------------------------------------------------
+-- Table `services`
 DROP TABLE IF EXISTS `services`;
 CREATE TABLE `services` (
-  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `service_name` varchar(200) NOT NULL,
   `description` varchar(300) DEFAULT NULL,
   `icon_class` varchar(100) NOT NULL DEFAULT 'fa-solid fa-laptop-file',
   `external_url` varchar(255) NOT NULL,
   `is_active` tinyint(1) NOT NULL DEFAULT '1',
-  `sort_order` int NOT NULL DEFAULT '0',
+  `sort_order` int(11) NOT NULL DEFAULT '0',
   `created_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-
--- --------------------------------------------------------
--- Table structure for `settings`
--- --------------------------------------------------------
+-- Table `settings`
 DROP TABLE IF EXISTS `settings`;
 CREATE TABLE `settings` (
   `setting_key` varchar(100) NOT NULL,
@@ -669,15 +605,41 @@ CREATE TABLE `settings` (
   `setting_group` varchar(50) NOT NULL DEFAULT 'general',
   `updated_at` datetime DEFAULT NULL,
   PRIMARY KEY (`setting_key`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
+INSERT INTO `settings` (`setting_key`, `setting_value`, `setting_group`, `updated_at`) VALUES 
+('site_title_th', 'จังหวัดพัทลุง', 'general', '2026-09-15 02:31:33'),
+('site_title_en', 'Phatthalung Province', 'general', '2026-09-15 02:31:33'),
+('slogan', 'เมืองหนังโนราห์ อู่นาข้าว พราวน้ำตก แหล่งนกน้ำ ทะเลสาบงาม เขาอกทะลุ น้ำพุร้อน', 'general', '2026-09-15 02:31:33'),
+('contact_email', 'phatthalung@moi.go.th', 'general', '2026-09-15 02:31:33'),
+('contact_phone', '074-613409', 'general', '2026-09-15 02:31:33'),
+('address', 'ศาลากลางจังหวัดพัทลุง ถนนราเมศวร์ ตำบลคูหาสวรรค์ อำเภอเมืองพัทลุง 93000', 'general', '2026-09-15 02:31:33'),
+('maintenance_mode', '0', 'general', '2026-09-15 02:31:33'),
+('public_register', '1', 'general', '2026-09-15 02:31:33'),
+('csrf_protection', '1', 'general', '2026-09-15 02:31:33'),
+('default_theme', 'light', 'general', '2026-09-15 02:31:33'),
+('theme_accent', '#3acf3c', 'general', '2026-09-15 02:31:33'),
+('fb_url', 'https://www.facebook.com/phatthalungPR', 'general', '2026-09-15 02:31:33'),
+('line_id', '@phatthalung_connect', 'general', '2026-09-15 02:31:33'),
+('line_channel_access_token', '', 'general', '2026-09-15 02:31:33'),
+('line_admin_group_id', '', 'general', '2026-09-15 02:31:33'),
+('mailbox_user', 'phatthalung@moi.go.th', 'general', '2026-09-15 02:31:33'),
+('mailbox_host', 'mail.moi.go.th', 'general', '2026-09-15 02:31:33'),
+('mailbox_port', '993', 'general', '2026-09-15 02:31:33'),
+('mailbox_protocol', 'imap', 'general', '2026-09-15 02:31:33'),
+('mailbox_encryption', 'ssl', 'general', '2026-09-15 02:31:33'),
+('mailbox_password', '', 'general', '2026-09-15 02:31:33'),
+('mailbox_saraban_user', 'saraban_phatthalung@moi.go.th', 'general', '2026-09-15 02:31:33'),
+('mailbox_saraban_host', 'mail.moi.go.th', 'general', '2026-09-15 02:31:33'),
+('mailbox_saraban_port', '993', 'general', '2026-09-15 02:31:33'),
+('mailbox_saraban_password', '', 'general', '2026-09-15 02:31:33'),
+('seo_keywords', 'จังหวัดพัทลุง, ทะเลน้อย, บริการประชาชนออนไลน์, ศูนย์ดำรงธรรม, ข่าวประกวดราคา', 'general', '2026-09-15 02:31:33'),
+('site_logo', 'uploads/logo/logo_1787048018.webp', 'general', '2026-09-15 02:31:33');
 
--- --------------------------------------------------------
--- Table structure for `site_banners`
--- --------------------------------------------------------
+-- Table `site_banners`
 DROP TABLE IF EXISTS `site_banners`;
 CREATE TABLE `site_banners` (
-  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(255) DEFAULT NULL,
   `subtitle` varchar(255) DEFAULT NULL,
   `badge_title` varchar(100) DEFAULT NULL,
@@ -697,10 +659,9 @@ CREATE TABLE `site_banners` (
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb3;
+) ENGINE=MyISAM AUTO_INCREMENT=17 DEFAULT CHARSET=utf8;
 
--- Dumping data for `site_banners`
-INSERT INTO `site_banners` (`id`, `title`, `subtitle`, `badge_title`, `badge_icon`, `bg_type`, `image_path`, `floating_img_path`, `floating_pos`, `floating_anim`, `card_placement`, `desc`, `button_text`, `button_url`, `button_icon`, `style_class`, `active`, `created_at`, `updated_at`) VALUES
+INSERT INTO `site_banners` (`id`, `title`, `subtitle`, `badge_title`, `badge_icon`, `bg_type`, `image_path`, `floating_img_path`, `floating_pos`, `floating_anim`, `card_placement`, `desc`, `button_text`, `button_url`, `button_icon`, `style_class`, `active`, `created_at`, `updated_at`) VALUES 
 ('1', 'เสน่ห์เมืองลุง \"เขา ป่า นา เล\"', NULL, 'มาเมืองลุง', 'fa-solid fa-star', 'image', 'assets/images/slider/sane_muanglung.png', NULL, NULL, NULL, NULL, 'สัมผัสความอุดมสมบูรณ์ของระบบนิเวศและวัฒนธรรม นำเที่ยวทะเลน้อย ควายน้ำ ยอักษะ และวิถีเกษตรกรรม พร้อมระบบจองท่องเที่ยวชุมชนแบบอัจฉริยะ', 'สำรวจเลย', 'www.ma-muanglung.com', 'fa-solid fa-compass', 'slide-bg-sane-muanglung', '1', '2026-08-14 08:56:11', '2026-08-14 08:56:11'),
 ('2', 'SMART LIVING', 'การสร้างชีวิตอัจฉริยะ เพื่อประชาชน', 'นายสุจินต์วาจากิจ', 'fa-solid fa-globe', 'custom_layer', 'uploads/slider/slide_1785814816_541.jpg', 'uploads/slider/slide_1785905504_335.png', 'right_center', 'pulse_glow', 'split_left', 'เขา ป่า นาเลย', 'สำรวจเลย', '#services', 'fa-solid fa-arrow-right', 'slide-bg-living', '1', '2026-08-14 08:56:11', '2026-08-14 08:56:11'),
 ('3', 'SMART TOURISM', 'สวรรค์ท่องเที่ยวธรรมชาติ ทะเลน้อย มรดกเกษตรโลก', 'ECO & HERITAGE CITY', 'fa-solid fa-tree', 'kinetic_nature', '', NULL, NULL, NULL, NULL, 'สัมผัสประสบการณ์ท่องเที่ยวมิติดิจิทัล เช็คความปลอดภัย ลานจอดรถ และจองบริการท่องเที่ยวชุมชนผ่านแพลตฟอร์มไร้รอยต่อ', 'เปิดโลกท่องเที่ยว', '#tourism', 'fa-solid fa-compass', 'slide-bg-tourism', '1', '2026-08-14 08:56:11', '2026-08-14 08:56:11'),
@@ -718,13 +679,10 @@ INSERT INTO `site_banners` (`id`, `title`, `subtitle`, `badge_title`, `badge_ico
 ('15', 'SMART TOURISM', 'สวรรค์ท่องเที่ยวธรรมชาติ ทะเลน้อย มรดกเกษตรโลก', 'ECO & HERITAGE CITY', 'fa-solid fa-tree', 'kinetic_nature', '', NULL, NULL, NULL, NULL, 'สัมผัสประสบการณ์ท่องเที่ยวมิติดิจิทัล เช็คความปลอดภัย ลานจอดรถ และจองบริการท่องเที่ยวชุมชนผ่านแพลตฟอร์มไร้รอยต่อ', 'เปิดโลกท่องเที่ยว', '#tourism', 'fa-solid fa-compass', 'slide-bg-tourism', '1', '2026-08-26 10:02:45', '2026-08-26 10:02:45'),
 ('16', 'SMART GOVERNANCE', 'ภาครัฐโปร่งใส รวดเร็ว ตรวจสอบได้ทุกขั้นตอน', 'DIGITAL GOVERNANCE', 'fa-solid fa-landmark', 'kinetic_gov', 'uploads/slider/slide_1786692484_292.jpg', NULL, NULL, NULL, NULL, 'ยื่นเรื่องร้องทุกข์ ติดตามผลการดำเนินงาน และดาวน์โหลดแบบฟอร์มหนังสือราชการผ่านเว็บพอร์ตัล ลดขั้นตอน สะดวกสบาย โดยไม่ต้องเดินทาง', 'ยื่นคำร้องออนไลน์', '#pdpa', 'fa-solid fa-paper-plane', 'slide-bg-governance', '1', '2026-08-26 10:02:45', '2026-08-26 10:02:45');
 
-
--- --------------------------------------------------------
--- Table structure for `users`
--- --------------------------------------------------------
+-- Table `users`
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
-  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `username` varchar(100) NOT NULL,
   `email` varchar(255) NOT NULL,
   `password_hash` varchar(255) NOT NULL,
@@ -736,6 +694,10 @@ CREATE TABLE `users` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3;
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+
+INSERT INTO `users` (`id`, `username`, `email`, `password_hash`, `role`, `full_name`, `avatar`, `created_at`, `updated_at`) VALUES 
+('1', 'admin', 'admin@phatthalung.go.th', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin', 'ดร.สุเทพ ผู้ดูแลระบบสูงสุด', NULL, '2026-09-09 10:42:39', '2026-09-09 10:42:39'),
+('2', 'officer', 'officer@phatthalung.go.th', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'officer', 'สมใจ ปฏิบัติการศูนย์ดำรงธรรม', NULL, '2026-09-09 10:42:39', '2026-09-09 10:42:39');
 
 SET FOREIGN_KEY_CHECKS = 1;
