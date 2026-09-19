@@ -57,6 +57,7 @@ $essentialFiles = [
     'app/Views/layouts/main.php',
     'app/Views/layouts/admin.php',
     'app/Views/components/news_media_hub.php',
+    'app/Views/components/provincial_policy_hub.php',
     'app/Views/components/pr_banner_carousel.php',
     'app/Views/components/smart_floating_dock.php',
     'app/Views/components/gallery_studio.php',
