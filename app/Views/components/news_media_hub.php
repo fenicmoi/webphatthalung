@@ -38,93 +38,123 @@ try {
    Clean Editorial News & Media Hub (Calm, Readable, Emerald-Themed)
    ========================================================================== */
 
-/* 1. Main Navigation Tabs (Underline Minimalist) */
+/* 1. Main Navigation Tabs (Modern Clean Underline Style) */
+.nav-underline-custom {
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+.nav-underline-custom::-webkit-scrollbar {
+    display: none;
+}
+
 .news-media-tab-trigger {
-    color: #64748b !important;
+    color: #475569 !important;
     background: transparent !important;
     border: none !important;
-    padding: 10px 4px !important;
-    margin-right: 2rem !important;
-    font-weight: 500 !important;
-    font-size: 1.02rem;
-    transition: all 0.2s ease !important;
-    border-radius: 0 !important;
-    border-bottom: 2px solid transparent !important;
+    padding: 10px 18px !important;
+    font-weight: 600 !important;
+    font-size: 1.05rem;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    border-radius: 12px 12px 0 0 !important;
+    border-bottom: 3px solid transparent !important;
     white-space: nowrap;
+    position: relative;
 }
 .news-media-tab-trigger:hover {
     color: #047857 !important;
+    background: rgba(16, 185, 129, 0.05) !important;
     border-bottom-color: rgba(4, 120, 87, 0.3) !important;
 }
 .news-media-tab-trigger.active {
     color: #047857 !important;
-    border-bottom: 2px solid #047857 !important;
+    border-bottom: 3px solid #047857 !important;
     font-weight: 700 !important;
+    background: rgba(16, 185, 129, 0.08) !important;
 }
 
 [data-theme="dark"] .news-media-tab-trigger {
     color: #94a3b8 !important;
 }
+[data-theme="dark"] .news-media-tab-trigger:hover {
+    color: #34d399 !important;
+    background: rgba(16, 185, 129, 0.1) !important;
+}
 [data-theme="dark"] .news-media-tab-trigger.active {
     color: #34d399 !important;
+    background: rgba(16, 185, 129, 0.15) !important;
     border-bottom-color: #34d399 !important;
 }
 
-/* 2. Category Sub-tabs - Soft Pill Chips */
+/* 2. Category Sub-tabs - Sleek Pill Chips */
 .news-cat-btn {
-    border: 1px solid #e2e8f0 !important;
-    background: #f8fafc;
-    color: #475569 !important;
-    transition: all 0.2s ease;
+    border: 1px solid rgba(16, 185, 129, 0.2) !important;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(8px);
+    color: #334155 !important;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     font-weight: 500;
-    padding: 6px 16px !important;
-    font-size: 0.85rem !important;
+    padding: 7px 18px !important;
+    font-size: 0.86rem !important;
     border-radius: 50px !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
 }
 .news-cat-btn:hover {
     background: #ecfdf5 !important;
     color: #047857 !important;
-    border-color: #a7f3d0 !important;
+    border-color: #059669 !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(4, 120, 87, 0.12) !important;
 }
 .news-cat-btn.active {
-    background: #047857 !important;
+    background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
     color: #ffffff !important;
     font-weight: 600;
-    border-color: #047857 !important;
-    box-shadow: 0 4px 12px rgba(4, 120, 87, 0.2) !important;
+    border-color: transparent !important;
+    box-shadow: 0 6px 18px rgba(4, 120, 87, 0.28) !important;
+    transform: translateY(-1px);
 }
 
 [data-theme="dark"] .news-cat-btn {
     border: 1px solid rgba(255, 255, 255, 0.12) !important;
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(30, 41, 59, 0.8);
     color: #cbd5e1 !important;
 }
+[data-theme="dark"] .news-cat-btn:hover {
+    background: rgba(16, 185, 129, 0.15) !important;
+    color: #34d399 !important;
+    border-color: #10b981 !important;
+}
 [data-theme="dark"] .news-cat-btn.active {
-    background: #059669 !important;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
     color: #ffffff !important;
-    border-color: #059669 !important;
+    border-color: transparent !important;
+    box-shadow: 0 6px 18px rgba(16, 185, 129, 0.3) !important;
 }
 
-/* 3. News Card System (Calm, Flat & Non-Distracting) */
+/* 3. News Card System (Elevated GovTech Architecture) */
 .gov-news-card {
     background: #ffffff;
-    border-radius: 16px;
-    border: 1px solid #edf2f7;
-    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    border-radius: 20px;
+    border: 1px solid rgba(226, 232, 240, 0.85);
+    box-shadow: 0 4px 16px -2px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease;
     overflow: hidden;
     height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    position: relative;
 }
 .gov-news-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 28px -6px rgba(4, 120, 87, 0.1);
-    border-color: rgba(16, 185, 129, 0.35);
+    transform: translateY(-6px);
+    box-shadow: 0 20px 38px -10px rgba(4, 120, 87, 0.16), 0 8px 16px -4px rgba(0, 0, 0, 0.04);
+    border-color: rgba(16, 185, 129, 0.45);
 }
 
 .gov-news-img-wrap {
-    height: 185px;
+    height: 195px;
     background: #f1f5f9;
     overflow: hidden;
     position: relative;
@@ -133,15 +163,43 @@ try {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.35s ease;
+    transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .gov-news-card:hover .gov-news-img-wrap img {
-    transform: scale(1.04);
+    transform: scale(1.06);
+}
+
+/* Subtle gradient shade on image bottom for sleek depth */
+.gov-news-img-wrap::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(0,0,0,0.3) 100%);
+    pointer-events: none;
+}
+
+/* Category pill floating over image */
+.gov-news-floating-cat {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 2;
+    background: rgba(15, 23, 42, 0.72);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: #ffffff;
+    font-size: 0.73rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 50px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    letter-spacing: 0.2px;
 }
 
 .gov-news-title {
     color: #1e293b;
-    font-weight: 600;
+    font-weight: 700;
     font-size: 1.05rem;
     line-height: 1.5;
     transition: color 0.2s ease;
@@ -151,7 +209,7 @@ try {
     line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    min-height: 3rem;
+    min-height: 3.1rem;
 }
 .gov-news-card:hover .gov-news-title {
     color: #047857;
@@ -162,22 +220,21 @@ try {
     font-size: 0.8rem;
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 0.85rem;
 }
-
-.gov-news-cat-tag {
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: #047857;
-    background: #ecfdf5;
-    padding: 3px 10px;
-    border-radius: 20px;
-    display: inline-block;
+.gov-news-meta span {
+    display: inline-flex;
+    align-items: center;
+    background: #f8fafc;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-weight: 500;
 }
 
 [data-theme="dark"] .gov-news-card {
     background: #1e293b;
     border-color: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
 }
 [data-theme="dark"] .gov-news-title {
     color: #f8fafc;
@@ -185,18 +242,20 @@ try {
 [data-theme="dark"] .gov-news-card:hover .gov-news-title {
     color: #34d399;
 }
-[data-theme="dark"] .gov-news-cat-tag {
-    background: rgba(16, 185, 129, 0.2);
-    color: #34d399;
+[data-theme="dark"] .gov-news-meta {
+    color: #94a3b8;
+}
+[data-theme="dark"] .gov-news-meta span {
+    background: rgba(15, 23, 42, 0.6);
+    color: #cbd5e1;
 }
 
 /* 4. Hub Interactive Calendar Styling (High Dimension & Equal 7-Column Layout) */
 .hub-calendar-wrapper {
     background: #ffffff;
     border-radius: 18px;
-    border: 1px solid #cbd5e1;
+    border: 1px solid #e2e8f0;
     overflow: hidden;
-    width: 100%;
     box-shadow: 0 10px 30px -5px rgba(2, 44, 34, 0.08), 0 4px 12px -2px rgba(0, 0, 0, 0.03);
 }
 .hub-cal-weekdays {
@@ -327,31 +386,59 @@ try {
     color: #cbd5e1;
 }
 
-/* News Hub Container with Mathematical Seamless Woven Pattern */
+/* ==========================================================================
+   5. News Hub Container - Luxury Seamless Ambient Mesh & Glassmorphic Canvas
+   แก้ปัญหาพื้นหลังต่อกันไม่เนียน ด้วย Gradient Mesh แสงนุ่มระดับพรีเมียม
+   ========================================================================== */
 .news-media-hub-card {
     position: relative;
-    border-radius: 24px;
-    border: 1.5px solid #d1e7dd !important;
-    background-color: #f6faf7;
+    border-radius: 30px;
+    border: 1.5px solid rgba(16, 185, 129, 0.22) !important;
+    background-color: #ffffff;
     background-image: 
-        linear-gradient(180deg, rgba(255, 255, 255, 0.80) 0%, rgba(255, 255, 255, 0.90) 100%),
-        url('<?= base_url('assets/images/banners/phatthalung_woven_pattern.svg?v=3') ?>');
-    background-size: 80px 80px;
-    background-repeat: repeat;
-    background-position: top center;
-    box-shadow: 0 10px 30px rgba(4, 120, 87, 0.06);
+        radial-gradient(1000px circle at 0% 0%, rgba(16, 185, 129, 0.08) 0%, transparent 60%),
+        radial-gradient(900px circle at 100% 100%, rgba(5, 150, 105, 0.06) 0%, transparent 55%),
+        radial-gradient(700px circle at 50% 25%, rgba(240, 253, 244, 0.75) 0%, transparent 70%),
+        linear-gradient(180deg, #ffffff 0%, #fbfdfc 100%);
+    box-shadow: 0 24px 60px -15px rgba(2, 44, 34, 0.09), 0 4px 16px -2px rgba(0, 0, 0, 0.02);
     overflow: hidden;
+    backdrop-filter: blur(16px);
+}
+
+/* Elegant decorative subtle backdrop accents */
+.news-media-hub-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #059669 0%, #10b981 50%, #34d399 100%);
+    border-radius: 30px 30px 0 0;
+    z-index: 1;
+}
+
+.news-media-hub-card::after {
+    content: "";
+    position: absolute;
+    bottom: -60px;
+    right: -40px;
+    width: 320px;
+    height: 320px;
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.06) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 0;
 }
 
 [data-theme="dark"] .news-media-hub-card {
     background-color: #0f172a;
     background-image: 
-        linear-gradient(180deg, rgba(15, 23, 42, 0.86) 0%, rgba(15, 23, 42, 0.93) 100%),
-        url('<?= base_url('assets/images/banners/phatthalung_woven_pattern.svg?v=3') ?>');
-    background-size: 80px 80px;
-    background-repeat: repeat;
-    background-position: top center;
-    border-color: rgba(255, 255, 255, 0.12) !important;
+        radial-gradient(1000px circle at 0% 0%, rgba(16, 185, 129, 0.14) 0%, transparent 60%),
+        radial-gradient(900px circle at 100% 100%, rgba(5, 150, 105, 0.1) 0%, transparent 55%),
+        linear-gradient(180deg, #0f172a 0%, #111e33 100%);
+    border-color: rgba(16, 185, 129, 0.25) !important;
+    box-shadow: 0 24px 60px -15px rgba(0, 0, 0, 0.6);
 }
 </style>
 
@@ -456,9 +543,12 @@ try {
                             <div class="col-md-6 col-lg-4 news-card-item" data-category="<?= esc($rawCat) ?>">
                                 <div class="gov-news-card">
                                     
-                                    <!-- Image Header (Clean & Uncluttered) -->
+                                    <!-- Image Header with Floating Category Badge -->
                                     <a href="<?= base_url('news/detail/' . $item['id']) ?>" class="d-block gov-news-img-wrap position-relative">
                                         <img src="<?= $coverImg ?>" alt="<?= esc($item['title']) ?>" loading="lazy">
+                                        <span class="gov-news-floating-cat">
+                                            <i class="fa-solid fa-tag me-1" style="font-size: 0.68rem; opacity: 0.85;"></i><?= esc($catLabel) ?>
+                                        </span>
                                     </a>
 
                                     <!-- Content Body -->
