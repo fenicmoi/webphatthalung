@@ -69,7 +69,10 @@ $essentialFiles = [
     'app/Views/governor_hall.php',
     'app/Views/strategy_portal.php',
     'app/Helpers/settings_helper.php',
+    'app/Views/admin/service_banners.php',
+    'app/Controllers/Admin/ServiceBannerManager.php',
     'writable/site_banners.json',
+    'writable/service_banners.json',
     'writable/site_settings.json',
     'writable/gallery_albums.json',
     'writable/site_texts.json'
