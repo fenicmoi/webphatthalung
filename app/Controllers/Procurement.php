@@ -53,16 +53,22 @@ class Procurement extends BaseController
             // Fallback check in standard procurement items
             $item = get_procurement_by_id($id);
             if ($item) {
+                $docUrl = '#';
+                if (!empty($item['attachment_url'])) {
+                    $docUrl = (strpos($item['attachment_url'], 'http') === 0) ? $item['attachment_url'] : base_url($item['attachment_url']);
+                }
+
                 $targetProject = [
-                    'project_id'   => $item['project_code'] ?? $item['id'],
+                    'id'           => (string)$item['id'],
+                    'project_id'   => $item['id'],
                     'project_name' => $item['title'],
-                    'dept_name'    => $item['department'] ?? 'สำนักงานจังหวัดพัทลุง',
-                    'procure_unit' => $item['department'] ?? 'สำนักงานจังหวัดพัทลุง',
-                    'budget'       => (float)($item['budget'] ?? 0),
-                    'method'       => $item['category'] ?? 'เฉพาะเจาะจง',
-                    'status'       => $item['status'] ?? 'ประกาศเชิญชวน',
-                    'date'         => !empty($item['created_at']) ? date('d/m/Y', strtotime($item['created_at'])) : date('d/m/Y'),
-                    'doc_url'      => 'https://www.gprocurement.go.th'
+                    'dept_name'    => 'สำนักงานจังหวัดพัทลุง',
+                    'procure_unit' => 'จังหวัดพัทลุง',
+                    'budget'       => (float)preg_replace('/[^0-9.]/', '', $item['budget'] ?? '0'),
+                    'method'       => 'ทั่วไป',
+                    'status'       => $item['category'] ?? 'ประกาศจัดซื้อจัดจ้าง',
+                    'date'         => !empty($item['date']) ? date('d/m/Y', strtotime($item['date'])) : date('d/m/Y'),
+                    'doc_url'      => $docUrl
                 ];
             }
         }

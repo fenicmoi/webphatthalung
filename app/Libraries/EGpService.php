@@ -2,18 +2,15 @@
 
 namespace App\Libraries;
 
+use App\Models\ProcurementModel;
+
 class EGpService
 {
     private string $cacheFile;
-    private int $cacheTtl = 3600; // 1 hour cache
-    private string $apiToken = 'NvNx9mzEsd0xm43yDgokPxmQqVw20VCf';
+    private int $cacheTtl = 300; // 5 minutes cache
 
     public function __construct(?string $token = null)
     {
-        if (!empty($token)) {
-            $this->apiToken = $token;
-        }
-
         $writableDir = defined('WRITABLE') ? rtrim(\WRITABLE, '/\\') : realpath(__DIR__ . '/../../writable');
         if (!is_dir($writableDir)) {
             @mkdir($writableDir, 0777, true);
@@ -22,7 +19,7 @@ class EGpService
     }
 
     /**
-     * Get official e-GP procurement projects specifically for Phatthalung Province
+     * ดึงข้อมูลโครงการจัดซื้อจัดจ้างจริงจากฐานข้อมูล procurements
      */
     public function getPhatthalungProjects(bool $forceRefresh = false): array
     {
@@ -40,13 +37,13 @@ class EGpService
     }
 
     /**
-     * Fetch from Open Data / e-GP API or load real Phatthalung procurement records
+     * ดึงข้อมูลจริงจากตาราง procurements และอัปเดตแคช
      */
     public function refreshProjects(): array
     {
         $projects = $this->getRealPhatthalungProjects();
 
-        // Cache result
+        // บันทึกแคช
         @file_put_contents($this->cacheFile, json_encode($projects, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 
         return $projects;
@@ -129,16 +126,18 @@ class EGpService
         $data = [];
         foreach ($paged as $idx => $row) {
             $currentNo = $start + $idx + 1;
+            $docUrl = !empty($row['doc_url']) ? $row['doc_url'] : '#';
             $detailUrl = base_url('procurement/detail/' . ($row['project_id'] ?? ''));
+            $targetUrl = ($docUrl !== '#') ? $docUrl : $detailUrl;
 
             $data[] = [
                 'no'           => '<span class="text-secondary fw-bold">' . $currentNo . '</span>',
-                'dept_name'    => '<span class="fw-semibold text-dark">' . esc($row['dept_name'] ?? '-') . '</span>',
-                'procure_unit' => esc($row['procure_unit'] ?? $row['dept_name'] ?? '-'),
-                'project_name' => '<a href="' . $detailUrl . '" class="text-dark text-decoration-none hover-primary fw-medium" style="line-height: 1.55; display: block;">' . esc($row['project_name'] ?? $row['title'] ?? '-') . '</a>',
-                'budget'       => number_format((float)($row['budget'] ?? 0), 2),
-                'status'       => '<span class="text-dark" style="font-size: 0.88rem; line-height: 1.4; display: inline-block;">' . esc($row['status'] ?? '-') . '</span>',
-                'action'       => '<a href="' . $detailUrl . '" class="egp-doc-btn shadow-xs" title="ดูรายละเอียดโครงการ"><i class="fa-solid fa-file-lines" style="font-size: 1.1rem; color: #0f172a;"></i></a>'
+                'dept_name'    => '<span class="fw-semibold text-dark">' . esc($row['dept_name'] ?? 'สำนักงานจังหวัดพัทลุง') . '</span>',
+                'procure_unit' => esc($row['procure_unit'] ?? $row['dept_name'] ?? 'สำนักงานจังหวัดพัทลุง'),
+                'project_name' => '<a href="' . $targetUrl . '" target="_blank" class="text-dark text-decoration-none hover-primary fw-medium" style="line-height: 1.55; display: block;">' . esc($row['project_name'] ?? $row['title'] ?? '-') . '</a>',
+                'budget'       => ((float)($row['budget'] ?? 0) > 0) ? number_format((float)$row['budget'], 2) : '-',
+                'status'       => '<span class="badge bg-primary-subtle text-primary border" style="font-size: 0.85rem; font-weight: 500;">' . esc($row['status'] ?? '-') . '</span>',
+                'action'       => '<a href="' . $targetUrl . '" target="_blank" class="egp-doc-btn shadow-xs" title="ดูเอกสารแนบ / รายละเอียด"><i class="fa-solid fa-file-pdf text-danger" style="font-size: 1.15rem;"></i></a>'
             ];
         }
 
@@ -151,227 +150,49 @@ class EGpService
     }
 
     /**
-     * Real verified e-GP Procurement records of Phatthalung Province agencies
+     * ดึงข้อมูลโครงการจัดซื้อจัดจ้างจริงจากฐานข้อมูล MySQL (ตาราง procurements)
      */
     public function getRealPhatthalungProjects(): array
     {
-        return [
-            [
-                'no'           => 1,
-                'dept_name'    => 'เทศบาลตำบลปรางหมู่',
-                'procure_unit' => 'เทศบาลตำบลปรางหมู่',
-                'project_name' => 'จ้างซ่อมรถบรรทุกขยะ หมายเลขทะเบียน ๘๐-๖๑๖๒ พัทลุง โดยวิธีเฉพาะเจาะจง (เลขที่โครงการ : 69089468595)',
-                'project_id'   => '69089468595',
-                'budget'       => 13400.00,
-                'status'       => 'อนุมัติสั่งซื้อสั่งจ้างและประกาศผู้ชนะการเสนอราคา',
-                'method'       => 'เฉพาะเจาะจง',
-                'date'         => date('d/m/Y', strtotime('-1 days')),
-                'doc_url'      => 'https://www.gprocurement.go.th'
-            ],
-            [
-                'no'           => 2,
-                'dept_name'    => 'โรงเรียนวัดธาราสถิตย์',
-                'procure_unit' => 'โรงเรียนวัดธาราสถิตย์',
-                'project_name' => 'ซื้อวัสดุ อุปกรณ์ ตามโครงการจัดการเรียนรู้กลุ่มสาระการเรียนรู้สังคมศึกษา ศาสนา และวัฒนธรรม จำนวน 16 รายการ โดยวิธีเฉพาะเจาะจง (เลขที่โครงการ : 69089523784)',
-                'project_id'   => '69089523784',
-                'budget'       => 5900.00,
-                'status'       => 'จัดทำสัญญา/บริหารสัญญา',
-                'method'       => 'เฉพาะเจาะจง',
-                'date'         => date('d/m/Y', strtotime('-2 days')),
-                'doc_url'      => 'https://www.gprocurement.go.th'
-            ],
-            [
-                'no'           => 3,
-                'dept_name'    => 'โรงเรียนวัดธาราสถิตย์',
-                'procure_unit' => 'โรงเรียนวัดธาราสถิตย์',
-                'project_name' => 'ซื้อวัสดุ อุปกรณ์ ตามโครงการกิจกรรมพัฒนาผู้เรียน กลุ่มสาระการเรียนรู้ศิลปะ(ชุมนุมดนตรีสากล) จำนวน 4 รายการ โดยวิธีเฉพาะเจาะจง (เลขที่โครงการ : 69089495964)',
-                'project_id'   => '69089495964',
-                'budget'       => 2995.00,
-                'status'       => 'จัดทำสัญญา/บริหารสัญญา',
-                'method'       => 'เฉพาะเจาะจง',
-                'date'         => date('d/m/Y', strtotime('-2 days')),
-                'doc_url'      => 'https://www.gprocurement.go.th'
-            ],
-            [
-                'no'           => 4,
-                'dept_name'    => 'เทศบาลตำบลแม่ขรี',
-                'procure_unit' => 'เทศบาลตำบลแม่ขรี',
-                'project_name' => 'จ้างติดแถบสติกเกอร์สะท้อนแสง รถเครน หมายเลขทะเบียน ๘๐-๔๐๔๖ จำนวน ๑ งาน โดยวิธีเฉพาะเจาะจง (เลขที่โครงการ : 69089448550)',
-                'project_id'   => '69089448550',
-                'budget'       => 2400.00,
-                'status'       => 'จัดทำสัญญา/บริหารสัญญา',
-                'method'       => 'เฉพาะเจาะจง',
-                'date'         => date('d/m/Y', strtotime('-3 days')),
-                'doc_url'      => 'https://www.gprocurement.go.th'
-            ],
-            [
-                'no'           => 5,
-                'dept_name'    => 'สำนักงานสาธารณสุขจังหวัดพัทลุง',
-                'procure_unit' => 'โรงพยาบาลพัทลุง',
-                'project_name' => 'ซื้อเวชภัณฑ์ยา (ยาและสารอาหารทางหลอดเลือดดำ) จำนวน ๖ รายการ โดยวิธีเฉพาะเจาะจง (เลขที่โครงการ : 69089412351)',
-                'project_id'   => '69089412351',
-                'budget'       => 145000.00,
-                'status'       => 'จัดทำสัญญา/บริหารสัญญา',
-                'method'       => 'เฉพาะเจาะจง',
-                'date'         => date('d/m/Y', strtotime('-3 days')),
-                'doc_url'      => 'https://www.gprocurement.go.th'
-            ],
-            [
-                'no'           => 6,
-                'dept_name'    => 'สำนักงานโยธาธิการและผังเมืองจังหวัดพัทลุง',
-                'procure_unit' => 'สำนักงานโยธาธิการและผังเมืองจังหวัดพัทลุง',
-                'project_name' => 'ประกวดราคาจ้างก่อสร้างปรับปรุงภูมิทัศน์และศูนย์บริการนักท่องเที่ยวเชิงอนุรักษ์หาดแสนสุขลำปำ ตำบลลำปำ อำเภอเมืองพัทลุง จังหวัดพัทลุง ด้วยวิธีประกวดราคาอิเล็กทรอนิกส์ (e-bidding) (เลขที่โครงการ : 69089389201)',
-                'project_id'   => '69089389201',
-                'budget'       => 12500000.00,
-                'status'       => 'ประกาศเชิญชวน',
-                'method'       => 'e-Bidding',
-                'date'         => date('d/m/Y', strtotime('-4 days')),
-                'doc_url'      => 'https://www.gprocurement.go.th'
-            ],
-            [
-                'no'           => 7,
-                'dept_name'    => 'องค์การบริหารส่วนจังหวัดพัทลุง',
-                'procure_unit' => 'กองช่าง องค์การบริหารส่วนจังหวัดพัทลุง',
-                'project_name' => 'ประกวดราคาจ้างก่อสร้างปรับปรุงผิวจราจรลาดยางแอสฟัลท์ติกคอนกรีต สายบ้านควนกุฎ - บ้านหัวป่าเขียว อำเภอควนขนุน จังหวัดพัทลุง ด้วยวิธีประกวดราคาอิเล็กทรอนิกส์ (e-bidding) (เลขที่โครงการ : 69089311289)',
-                'project_id'   => '69089311289',
-                'budget'       => 6400000.00,
-                'status'       => 'ประกาศผู้ชนะการเสนอราคา',
-                'method'       => 'e-Bidding',
-                'date'         => date('d/m/Y', strtotime('-5 days')),
-                'doc_url'      => 'https://www.gprocurement.go.th'
-            ],
-            [
-                'no'           => 8,
+        try {
+            $model = new ProcurementModel();
+            $items = $model->where('status', 'active')
+                           ->orderBy('published_date', 'DESC')
+                           ->orderBy('id', 'DESC')
+                           ->findAll();
+        } catch (\Throwable $e) {
+            $items = [];
+        }
+
+        $projects = [];
+        foreach ($items as $idx => $item) {
+            $docUrl = '#';
+            if (!empty($item['doc_path'])) {
+                if (strpos($item['doc_path'], 'http') === 0) {
+                    $docUrl = $item['doc_path'];
+                } else {
+                    $docUrl = base_url($item['doc_path']);
+                }
+            }
+
+            $dateStr = !empty($item['published_date']) ? date('d/m/Y', strtotime($item['published_date'])) : date('d/m/Y');
+
+            $projects[] = [
+                'no'           => $idx + 1,
+                'id'           => (string)$item['id'],
+                'project_id'   => (string)$item['id'],
                 'dept_name'    => 'สำนักงานจังหวัดพัทลุง',
-                'procure_unit' => 'สำนักงานจังหวัดพัทลุง',
-                'project_name' => 'จ้างดำเนินโครงการส่งเสริมและพัฒนานวัตกรรมการแปรรูปผลิตภัณฑ์อัตลักษณ์พัทลุงสู่สากล โดยวิธีเฉพาะเจาะจง (เลขที่โครงการ : 69089299410)',
-                'project_id'   => '69089299410',
-                'budget'       => 480000.00,
-                'status'       => 'จัดทำสัญญา/บริหารสัญญา',
-                'method'       => 'เฉพาะเจาะจง',
-                'date'         => date('d/m/Y', strtotime('-6 days')),
-                'doc_url'      => 'https://www.gprocurement.go.th'
-            ],
-            [
-                'no'           => 9,
-                'dept_name'    => 'เทศบาลเมืองพัทลุง',
-                'procure_unit' => 'กองสาธารณสุขและสิ่งแวดล้อม เทศบาลเมืองพัทลุง',
-                'project_name' => 'ซื้อน้ำมันเชื้อเพลิงและหล่อลื่นสำหรับยานพาหนะและเครื่องจักรกล ประจำเดือน โดยวิธีเฉพาะเจาะจง (เลขที่โครงการ : 69089255104)',
-                'project_id'   => '69089255104',
-                'budget'       => 92500.00,
-                'status'       => 'จัดทำสัญญา/บริหารสัญญา',
-                'method'       => 'เฉพาะเจาะจง',
-                'date'         => date('d/m/Y', strtotime('-7 days')),
-                'doc_url'      => 'https://www.gprocurement.go.th'
-            ],
-            [
-                'no'           => 10,
-                'dept_name'    => 'แขวงทางหลวงพัทลุง',
-                'procure_unit' => 'แขวงทางหลวงพัทลุง กรมทางหลวง',
-                'project_name' => 'จ้างเหมาบำรุงรักษาและปรับปรุงจุดเสี่ยงอุบัติเหตุทางหลวง ทางหลวงหมายเลข ๔ ตอน ท่ามิหรำ - ห้วยทราย โดยวิธีเฉพาะเจาะจง (เลขที่โครงการ : 69089188320)',
-                'project_id'   => '69089188320',
-                'budget'       => 495000.00,
-                'status'       => 'จัดทำสัญญา/บริหารสัญญา',
-                'method'       => 'เฉพาะเจาะจง',
-                'date'         => date('d/m/Y', strtotime('-8 days')),
-                'doc_url'      => 'https://www.gprocurement.go.th'
-            ],
-            [
-                'no'           => 11,
-                'dept_name'    => 'เทศบาลตำบลควนขนุน',
-                'procure_unit' => 'กองการศึกษา เทศบาลตำบลควนขนุน',
-                'project_name' => 'ซื้ออาหารเสริม (นม) โรงเรียน ประจำภาคเรียนที่ ๑ ปีการศึกษา ๒๕๖๘ โดยวิธีเฉพาะเจาะจง (เลขที่โครงการ : 69089154219)',
-                'project_id'   => '69089154219',
-                'budget'       => 285400.00,
-                'status'       => 'จัดทำสัญญา/บริหารสัญญา',
-                'method'       => 'เฉพาะเจาะจง',
-                'date'         => date('d/m/Y', strtotime('-9 days')),
-                'doc_url'      => 'https://www.gprocurement.go.th'
-            ],
-            [
-                'no'           => 12,
-                'dept_name'    => 'โรงพยาบาลควนขนุน',
-                'procure_unit' => 'กลุ่มงานเภสัชกรรม โรงพยาบาลควนขนุน',
-                'project_name' => 'ซื้อเวชภัณฑ์ที่มิใช่ยาและวัสดุการแพทย์ ประจำไตรมาส โดยวิธีเฉพาะเจาะจง (เลขที่โครงการ : 69089123005)',
-                'project_id'   => '69089123005',
-                'budget'       => 84600.00,
-                'status'       => 'จัดทำสัญญา/บริหารสัญญา',
-                'method'       => 'เฉพาะเจาะจง',
-                'date'         => date('d/m/Y', strtotime('-10 days')),
-                'doc_url'      => 'https://www.gprocurement.go.th'
-            ],
-            [
-                'no'           => 13,
-                'dept_name'    => 'องค์การบริหารส่วนตำบลนาโหนด',
-                'procure_unit' => 'กองช่าง อบต.นาโหนด',
-                'project_name' => 'จ้างก่อสร้างถนนคอนกรีตเสริมเหล็ก สายบ้านนาโหนด - บ้านทุ่งลาน หมู่ที่ ๓ โดยวิธีเฉพาะเจาะจง (เลขที่โครงการ : 69089098114)',
-                'project_id'   => '69089098114',
-                'budget'       => 460000.00,
-                'status'       => 'อนุมัติสั่งซื้อสั่งจ้างและประกาศผู้ชนะการเสนอราคา',
-                'method'       => 'เฉพาะเจาะจง',
-                'date'         => date('d/m/Y', strtotime('-11 days')),
-                'doc_url'      => 'https://www.gprocurement.go.th'
-            ],
-            [
-                'no'           => 14,
-                'dept_name'    => 'ที่ทำการปกครองอำเภอศรีบรรพต',
-                'procure_unit' => 'ที่ทำการปกครองอำเภอศรีบรรพต',
-                'project_name' => 'ซื้อวัสดุสำนักงานและงานทะเบียนราษฎร ประจำปีงบประมาณ โดยวิธีเฉพาะเจาะจง (เลขที่โครงการ : 69089055432)',
-                'project_id'   => '69089055432',
-                'budget'       => 35000.00,
-                'status'       => 'จัดทำสัญญา/บริหารสัญญา',
-                'method'       => 'เฉพาะเจาะจง',
-                'date'         => date('d/m/Y', strtotime('-12 days')),
-                'doc_url'      => 'https://www.gprocurement.go.th'
-            ],
-            [
-                'no'           => 15,
-                'dept_name'    => 'สำนักงานส่งเสริมการปกครองท้องถิ่นจังหวัดพัทลุง',
-                'procure_unit' => 'สถจ.พัทลุง',
-                'project_name' => 'จ้างเหมาบริการจัดอบรมพัฒนาศักยภาพบุคลากรองค์กรปกครองส่วนท้องถิ่นในจังหวัดพัทลุง โดยวิธีเฉพาะเจาะจง (เลขที่โครงการ : 69089012876)',
-                'project_id'   => '69089012876',
-                'budget'       => 120000.00,
-                'status'       => 'จัดทำสัญญา/บริหารสัญญา',
-                'method'       => 'เฉพาะเจาะจง',
-                'date'         => date('d/m/Y', strtotime('-13 days')),
-                'doc_url'      => 'https://www.gprocurement.go.th'
-            ],
-            [
-                'no'           => 16,
-                'dept_name'    => 'สำนักงานเกษตรและสหกรณ์จังหวัดพัทลุง',
-                'procure_unit' => 'กลุ่มยุทธศาสตร์พัฒนาการเกษตร',
-                'project_name' => 'ซื้อปุ๋ยอินทรีย์ชีวภาพเพื่อสนับสนุนเกษตรกรผู้ปลูกข้าวแปลงใหญ่ โดยวิธีเฉพาะเจาะจง (เลขที่โครงการ : 69088987102)',
-                'project_id'   => '69088987102',
-                'budget'       => 240000.00,
-                'status'       => 'อนุมัติสั่งซื้อสั่งจ้างและประกาศผู้ชนะการเสนอราคา',
-                'method'       => 'เฉพาะเจาะจง',
-                'date'         => date('d/m/Y', strtotime('-14 days')),
-                'doc_url'      => 'https://www.gprocurement.go.th'
-            ],
-            [
-                'no'           => 17,
-                'dept_name'    => 'โรงเรียนพัทลุง',
-                'procure_unit' => 'กลุ่มบริหารงบประมาณและสินทรัพย์ โรงเรียนพัทลุง',
-                'project_name' => 'ซื้อหนังสือเรียนและแบบเรียน ประจำปีการศึกษา ๒๕๖๘ โดยวิธีเฉพาะเจาะจง (เลขที่โครงการ : 69088944510)',
-                'project_id'   => '69088944510',
-                'budget'       => 498000.00,
-                'status'       => 'จัดทำสัญญา/บริหารสัญญา',
-                'method'       => 'เฉพาะเจาะจง',
-                'date'         => date('d/m/Y', strtotime('-15 days')),
-                'doc_url'      => 'https://www.gprocurement.go.th'
-            ],
-            [
-                'no'           => 18,
-                'dept_name'    => 'โครงการชลประทานพัทลุง',
-                'procure_unit' => 'ฝ่ายจัดสรรน้ำและปรับปรุงระบบชลประทาน',
-                'project_name' => 'จ้างเหมาขุดลอกคลองระบายน้ำเพื่อป้องกันอุทกภัย ตำบลเขาชัยสน อำเภอเขาชัยสน จังหวัดพัทลุง โดยวิธีคัดเลือก (เลขที่โครงการ : 69088911029)',
-                'project_id'   => '69088911029',
-                'budget'       => 3200000.00,
-                'status'       => 'ประกาศเชิญชวน',
-                'method'       => 'วิธีคัดเลือก',
-                'date'         => date('d/m/Y', strtotime('-16 days')),
-                'doc_url'      => 'https://www.gprocurement.go.th'
-            ]
-        ];
+                'procure_unit' => 'จังหวัดพัทลุง',
+                'project_name' => $item['title'],
+                'title'        => $item['title'],
+                'budget'       => (float)($item['budget'] ?? 0),
+                'status'       => !empty($item['category']) ? $item['category'] : 'ประกาศจัดซื้อจัดจ้าง',
+                'method'       => !empty($item['method']) ? $item['method'] : 'ทั่วไป',
+                'date'         => $dateStr,
+                'doc_url'      => $docUrl
+            ];
+        }
+
+        return $projects;
     }
 }

@@ -118,8 +118,13 @@
                     <button type="button" onclick="window.print()" class="btn btn-outline-dark rounded-pill px-4 py-2 fw-bold d-inline-flex align-items-center gap-2">
                         <i class="fa-solid fa-print"></i> พิมพ์เอกสาร
                     </button>
+                    <?php if (!empty($project['doc_url']) && $project['doc_url'] !== '#'): ?>
+                        <a href="<?= esc($project['doc_url']) ?>" target="_blank" class="btn btn-danger rounded-pill px-4 py-2 fw-bold d-inline-flex align-items-center gap-2 shadow-sm">
+                            <i class="fa-solid fa-file-pdf"></i> ดาวน์โหลด / เปิดดูประกาศ (PDF)
+                        </a>
+                    <?php endif; ?>
                     <a href="https://www.gprocurement.go.th" target="_blank" class="btn btn-primary rounded-pill px-4 py-2 fw-bold d-inline-flex align-items-center gap-2 shadow-sm">
-                        <i class="fa-solid fa-arrow-up-right-from-square"></i> เปิดระบบ e-GP กรมบัญชีกลาง
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i> ระบบ e-GP กรมบัญชีกลาง
                     </a>
                 </div>
             </div>
