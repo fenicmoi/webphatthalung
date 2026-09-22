@@ -13,7 +13,7 @@
         <button type="button" class="btn btn-outline-warning fw-bold px-3 py-2" onclick="resetServiceBanners()" style="border-radius: 12px;">
             <i class="fa-solid fa-rotate-left me-1"></i> คืนค่าเริ่มต้น
         </button>
-        <button type="button" class="btn btn-success fw-bold px-4 py-2 shadow-sm d-flex align-items-center gap-2" onclick="addNewBanner()" style="border-radius: 12px; background: linear-gradient(135deg, #10b981, #059669); border: none;">
+        <button type="button" class="btn btn-success fw-bold px-4 py-2 shadow-sm d-flex align-items-center gap-2" onclick="addNewBanner()" data-bs-toggle="modal" data-bs-target="#modalAddBanner" style="border-radius: 12px; background: linear-gradient(135deg, #10b981, #059669); border: none;">
             <i class="fa-solid fa-plus-circle fs-5"></i> เพิ่มแบนเนอร์ใหม่
         </button>
         <button type="button" class="btn-modern px-4 py-2 shadow-lg" onclick="saveAllServiceBanners()">
@@ -160,9 +160,6 @@
     </div>
 </div>
 
-<?= $this->endSection() ?>
-
-<?= $this->section('scripts') ?>
 <script>
 let serviceBanners = <?= json_encode($banners ?? [], JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
 
@@ -502,8 +499,10 @@ function resetServiceBanners() {
 }
 
 // Initial Render on Load
-document.addEventListener('DOMContentLoaded', () => {
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', renderBannersList);
+} else {
     renderBannersList();
-});
+}
 </script>
 <?= $this->endSection() ?>

@@ -19,7 +19,7 @@ class ServiceBannerManager extends BaseController
         $data = [
             'title'      => 'จัดการแบนเนอร์ศูนย์บริการประชาชนและลิงก์ระบบ | Phatthalung Admin',
             'activeMenu' => 'services',
-            'banners'    => get_service_banners(false)
+            'banners'    => array_values(get_service_banners(false))
         ];
 
         return view('admin/service_banners', $data);
