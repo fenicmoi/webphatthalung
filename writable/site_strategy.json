@@ -221,5 +221,25 @@
             "is_featured": false,
             "updated_at": "2025-11-20"
         }
-    ]
+    ],
+    "plan_books": {
+        "book_5yr": {
+            "title": "แผนพัฒนาจังหวัดพัทลุง",
+            "period": "พ.ศ. 2566 - 2570",
+            "type_label": "แผนพัฒนาจังหวัด 5 ปี",
+            "vision_text": "\"เมืองแห่งความยั่งยืน ด้านเศรษฐกิจ สังคม และความมั่นคง ทรัพยากรธรรมชาติและสิ่งแวดล้อม\"\r\n(Sustainability Phatthalung)",
+            "button_text": "เปิดอ่านแผนพัฒนา 5 ปี",
+            "cover_theme": "emerald",
+            "url": "uploads\/strategy\/book_5yr_1790327558_1790327559_12091a7a1c13f890545a.pdf"
+        },
+        "book_1yr": {
+            "title": "แผนปฏิบัติราชการประจำปี",
+            "period": "พ.ศ. 2570",
+            "type_label": "แผนปฏิบัติราชการ 1 ปี",
+            "vision_text": "\"ขับเคลื่อนโครงการและงบประมาณตามยุทธศาสตร์ สู่การปฏิบัติจริงเพื่อประโยชน์สุขของประชาชน\"",
+            "button_text": "เปิดอ่านแผนปฏิบัติราชการ 2570",
+            "cover_theme": "royal_blue",
+            "url": "uploads\/strategy\/book_1yr_1790327559_1790327559_6534e8b7e1a3f2b23f44.pdf"
+        }
+    }
 }

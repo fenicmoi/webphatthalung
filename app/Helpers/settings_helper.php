@@ -1530,6 +1530,13 @@ if (!function_exists('get_document_categories')) {
                 'gradient' => 'linear-gradient(135deg, #d97706, #f59e0b)',
                 'badge' => 'warning'
             ],
+            'risk' => [
+                'name' => 'การบริหารความเสี่ยง',
+                'icon' => 'fa-solid fa-triangle-exclamation',
+                'desc' => 'แผนบริหารความเสี่ยงการทุจริต การประเมินความเสี่ยงสินบน และรายงานผลการดำเนินการ',
+                'gradient' => 'linear-gradient(135deg, #c2410c, #ea580c)',
+                'badge' => 'warning'
+            ],
             'ict' => [
                 'name' => 'คู่มือ นโยบายดิจิทัล และ ICT',
                 'icon' => 'fa-solid fa-laptop-code',
@@ -2348,6 +2355,28 @@ if (!function_exists('get_site_strategy')) {
         if (file_exists($jsonPath)) {
             $data = json_decode(file_get_contents($jsonPath), true);
             if (!empty($data)) {
+                if (empty($data['plan_books'])) {
+                    $data['plan_books'] = [
+                        'book_5yr' => [
+                            'title' => 'แผนพัฒนาจังหวัดพัทลุง',
+                            'period' => 'พ.ศ. 2566 - 2570',
+                            'type_label' => 'แผนพัฒนาจังหวัด 5 ปี',
+                            'vision_text' => "\"เมืองแห่งความยั่งยืน ด้านเศรษฐกิจ สังคม และความมั่นคง ทรัพยากรธรรมชาติและสิ่งแวดล้อม\"\n(Sustainability Phatthalung)",
+                            'button_text' => 'เปิดอ่านแผนพัฒนา 5 ปี',
+                            'cover_theme' => 'emerald',
+                            'url' => 'strategy'
+                        ],
+                        'book_1yr' => [
+                            'title' => 'แผนปฏิบัติราชการประจำปี',
+                            'period' => 'พ.ศ. 2570',
+                            'type_label' => 'แผนปฏิบัติราชการ 1 ปี',
+                            'vision_text' => "\"ขับเคลื่อนโครงการและงบประมาณตามยุทธศาสตร์ สู่การปฏิบัติจริงเพื่อประโยชน์สุขของประชาชน\"",
+                            'button_text' => 'เปิดอ่านแผนปฏิบัติราชการ 2570',
+                            'cover_theme' => 'royal_blue',
+                            'url' => 'strategy'
+                        ]
+                    ];
+                }
                 return $data;
             }
         }

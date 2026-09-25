@@ -6,172 +6,182 @@
     $categories = $categories ?? [];
 ?>
 
-<div class="container-fluid px-4 py-4">
-    <!-- Header Section -->
-    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+<!-- Hero Cockpit Header -->
+<div class="glass-card mb-4 p-4 p-md-5 position-relative overflow-hidden" style="border-radius: 28px; background: linear-gradient(135deg, rgba(59, 130, 246, 0.12) 0%, rgba(16, 185, 129, 0.10) 50%, rgba(245, 158, 11, 0.08) 100%); border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow);">
+    <div class="position-absolute" style="top: -40px; right: -30px; font-size: 15rem; color: rgba(59, 130, 246, 0.04); pointer-events: none; z-index: 0;">
+        <i class="fa-solid fa-user-tie"></i>
+    </div>
+    
+    <div class="position-relative z-1 d-flex flex-wrap justify-content-between align-items-center gap-4">
         <div>
-            <div class="d-flex align-items-center gap-2 mb-1">
-                <span class="badge bg-primary text-white px-3 py-1.5 rounded-pill fw-bold">
-                    <i class="fa-solid fa-user-tie me-1"></i> Current Executive Leadership
-                </span>
-                <span class="text-muted small">ระบบจัดการข้อมูลคณะผู้บริหารปัจจุบันและผังโครงสร้าง</span>
+            <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-2" style="background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.3); color: #2563eb; font-size: 0.85rem; font-weight: 600;">
+                <i class="fa-solid fa-sitemap"></i> Executive Leadership & Organizational Chart
             </div>
-            <h3 class="fw-bold mb-0 text-dark">จัดการคณะผู้บริหารปัจจุบัน</h3>
+            <h2 class="fw-bold mb-2" style="color: var(--text-primary); letter-spacing: -0.5px;">
+                ทำเนียบคณะผู้บริหารจังหวัดพัทลุง (Leadership Directory)
+            </h2>
+            <p class="text-secondary mb-0" style="font-size: 1rem; max-width: 760px;">
+                บริหารจัดการข้อมูลคณะผู้บริหารระดับสูง ผู้ว่าราชการจังหวัด รองผู้ว่าราชการจังหวัด และหัวหน้าส่วนราชการ พร้อมกำหนดตำแหน่งผังโครงสร้างบนหน้าเว็บไซต์แบบเรียลไทม์
+            </p>
         </div>
-        <div class="d-flex align-items-center gap-2">
-            <a href="<?= base_url('executives') ?>" target="_blank" class="btn btn-outline-dark rounded-pill px-3 py-2 fw-bold d-flex align-items-center gap-2">
-                <i class="fa-solid fa-arrow-up-right-from-square"></i> ดูหน้าแสดงผลทำเนียบ
+
+        <div class="d-flex flex-wrap align-items-center gap-2">
+            <a href="<?= base_url('executives') ?>" target="_blank" class="btn btn-outline-secondary px-3 py-2 rounded-4 fw-medium d-flex align-items-center gap-2 shadow-sm transition-all" style="border-width: 1.5px; background: var(--bg-surface);">
+                <i class="fa-solid fa-arrow-up-right-from-square"></i> <span>ดูหน้าผังทำเนียบ</span>
             </a>
-            <button type="button" onclick="ExecutiveStudio.open()" class="btn btn-primary rounded-pill px-4 py-2 fw-bold d-flex align-items-center gap-2 shadow-sm hover-scale">
-                <i class="fa-solid fa-user-plus"></i> + เพิ่มรายนามผู้บริหาร
+            <button type="button" onclick="ExecutiveStudio.open()" class="btn btn-primary px-4 py-2 rounded-4 fw-bold d-flex align-items-center gap-2 shadow transition-all" style="background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); border: none; font-size: 1rem;">
+                <i class="fa-solid fa-user-plus"></i> <span>เพิ่มรายนามผู้บริหาร</span>
             </button>
         </div>
     </div>
 
-    <!-- Stats Row -->
-    <div class="row g-3 mb-4">
-        <div class="col-12 col-sm-6 col-xl-4">
-            <div class="card border-0 rounded-4 shadow-sm p-4 bg-white">
-                <div class="d-flex align-items-center justify-content-between">
-                    <div>
-                        <span class="text-muted small fw-bold d-block">จำนวนผู้บริหารในระบบ</span>
-                        <h3 class="fw-bold mb-0 text-dark"><?= count($executives) ?> <small class="fs-6 text-muted">ท่าน</small></h3>
-                    </div>
-                    <div class="rounded-circle p-3 bg-primary bg-opacity-10 text-primary">
-                        <i class="fa-solid fa-users fs-3"></i>
-                    </div>
+    <!-- Quick Stats Row inside Cockpit -->
+    <div class="position-relative z-1 row g-3 mt-3 pt-3 border-top" style="border-color: var(--glass-border) !important;">
+        <div class="col-6 col-lg-3">
+            <div class="p-3 rounded-4" style="background: var(--glass-bg); border: 1px solid var(--glass-border);">
+                <div class="text-secondary small fw-medium mb-1"><i class="fa-solid fa-users text-primary me-1"></i> จำนวนผู้บริหารในระบบ</div>
+                <div class="d-flex align-items-baseline gap-2">
+                    <span class="fs-4 fw-bold" style="color: var(--text-primary);"><?= count($executives) ?></span>
+                    <span class="small text-secondary">ท่าน</span>
                 </div>
             </div>
         </div>
-        <div class="col-12 col-sm-6 col-xl-4">
-            <div class="card border-0 rounded-4 shadow-sm p-4 bg-white">
-                <div class="d-flex align-items-center justify-content-between">
-                    <div>
-                        <span class="text-muted small fw-bold d-block">ผู้ว่าราชการจังหวัดปัจจุบัน</span>
-                        <h5 class="fw-bold mb-0 text-primary" style="font-size: 1.1rem;">
-                            <?= !empty($executives[0]['name']) ? esc($executives[0]['name']) : 'ยังไม่ได้ระบุ' ?>
-                        </h5>
-                    </div>
-                    <div class="rounded-circle p-3 bg-warning bg-opacity-10 text-warning">
-                        <i class="fa-solid fa-crown fs-3"></i>
-                    </div>
+        <div class="col-6 col-lg-3">
+            <div class="p-3 rounded-4" style="background: var(--glass-bg); border: 1px solid var(--glass-border);">
+                <div class="text-secondary small fw-medium mb-1"><i class="fa-solid fa-crown text-warning me-1"></i> ผู้ว่าราชการจังหวัดปัจจุบัน</div>
+                <div class="fs-6 fw-bold text-truncate" style="color: var(--text-primary);" title="<?= !empty($executives[0]['name']) ? esc($executives[0]['name']) : 'ยังไม่ได้ระบุ' ?>">
+                    <?= !empty($executives[0]['name']) ? esc($executives[0]['name']) : 'ยังไม่ได้ระบุ' ?>
                 </div>
             </div>
         </div>
-        <div class="col-12 col-sm-6 col-xl-4">
-            <div class="card border-0 rounded-4 shadow-sm p-4 bg-white">
-                <div class="d-flex align-items-center justify-content-between">
-                    <div>
-                        <span class="text-muted small fw-bold d-block">รูปแบบการแสดงผล</span>
-                        <h6 class="fw-bold mb-0 text-dark">Grid แถว & คอลัมน์ (ขอบทอง)</h6>
-                    </div>
-                    <div class="rounded-circle p-3 bg-success bg-opacity-10 text-success">
-                        <i class="fa-solid fa-table-cells-large fs-3"></i>
-                    </div>
+        <div class="col-6 col-lg-3">
+            <div class="p-3 rounded-4" style="background: var(--glass-bg); border: 1px solid var(--glass-border);">
+                <div class="text-secondary small fw-medium mb-1"><i class="fa-solid fa-layer-group text-info me-1"></i> ผังโครงสร้าง (Layout)</div>
+                <div class="d-flex align-items-center gap-2 mt-1">
+                    <span class="badge bg-primary-subtle text-primary rounded-pill px-3 py-1">Grid แถว & คอลัมน์</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="p-3 rounded-4" style="background: var(--glass-bg); border: 1px solid var(--glass-border);">
+                <div class="text-secondary small fw-medium mb-1"><i class="fa-solid fa-eye text-success me-1"></i> แสดงบนหน้าแรก</div>
+                <div class="d-flex align-items-baseline gap-2">
+                    <?php $featuredCount = count(array_filter($executives, fn($e) => !empty($e['featured']))); ?>
+                    <span class="fs-4 fw-bold text-success"><?= $featuredCount ?></span>
+                    <span class="small text-secondary">ท่าน (Featured)</span>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Main Table Card -->
-    <div class="card border-0 rounded-4 shadow-sm bg-white overflow-hidden">
-        <div class="card-header bg-white p-4 border-bottom d-flex flex-wrap align-items-center justify-content-between gap-3">
-            <div>
-                <h5 class="fw-bold mb-0 text-dark">รายนามคณะผู้บริหารและตำแหน่งผังโครงสร้าง</h5>
-                <small class="text-muted">จัดเรียงตาม แถว (Row) และ คอลัมน์ (Column) จากซ้ายไปขวา</small>
-            </div>
-            <div class="d-flex gap-2">
-                <span class="badge bg-light text-dark border px-3 py-2 rounded-pill">
-                    <i class="fa-solid fa-info-circle text-primary me-1"></i> แถว 1 = ผู้ว่าฯ, แถว 2 = รองผู้ว่าฯ
-                </span>
-            </div>
+<!-- Main Table Card -->
+<div class="glass-card rounded-4 overflow-hidden shadow-sm" style="border: 1px solid var(--glass-border); background: var(--bg-surface);">
+    <div class="p-4 border-bottom d-flex flex-wrap align-items-center justify-content-between gap-3" style="border-color: var(--glass-border) !important;">
+        <div>
+            <h5 class="fw-bold mb-1" style="color: var(--text-primary);">
+                <i class="fa-solid fa-id-badge text-primary me-2"></i>รายนามคณะผู้บริหารและลำดับผังโครงสร้าง
+            </h5>
+            <div class="text-secondary small">จัดเรียงตาม แถว (Row) และ คอลัมน์ (Column) จากซ้ายไปขวา (เช่น แถว 1 = ผู้ว่าฯ, แถว 2 = รองผู้ว่าฯ)</div>
         </div>
+        <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-secondary-subtle text-secondary rounded-pill px-3 py-1.5">
+                รวมทั้งหมด <?= count($executives) ?> รายการ
+            </span>
+        </div>
+    </div>
 
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-                <thead class="bg-light text-muted small text-uppercase">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="small text-secondary" style="background: rgba(0,0,0,0.02);">
+                <tr>
+                    <th class="ps-4 table-nowrap" style="width: 80px;">รูปถ่าย</th>
+                    <th style="min-width: 260px;">ชื่อ-นามสกุล & ตำแหน่ง</th>
+                    <th class="text-center table-nowrap" style="width: 140px;">ตำแหน่งผัง (Grid)</th>
+                    <th class="table-nowrap">หมวดหมู่</th>
+                    <th style="min-width: 200px;">ข้อมูลติดต่อ</th>
+                    <th class="text-center table-nowrap" style="width: 110px;">หน้าแรก</th>
+                    <th class="pe-4 text-end table-nowrap" style="width: 170px;">การจัดการ</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if (empty($executives)): ?>
                     <tr>
-                        <th class="ps-4 py-3" style="width: 80px;">รูปถ่าย</th>
-                        <th class="py-3">ชื่อ-นามสกุล & ตำแหน่ง</th>
-                        <th class="py-3 text-center" style="width: 140px;">ตำแหน่งผัง (Grid)</th>
-                        <th class="py-3">หมวดหมู่</th>
-                        <th class="py-3">ข้อมูลติดต่อ</th>
-                        <th class="py-3 text-center" style="width: 100px;">หน้าแรก</th>
-                        <th class="pe-4 py-3 text-end" style="width: 180px;">จัดการ</th>
+                        <td colspan="7" class="text-center py-5 text-secondary">
+                            <i class="fa-solid fa-users-slash fs-1 d-block mb-3 opacity-50"></i>
+                            <h6 class="fw-bold mb-1" style="color: var(--text-primary);">ยังไม่มีข้อมูลผู้บริหารในระบบ</h6>
+                            <p class="small text-secondary mb-3">กดปุ่ม <strong>"+ เพิ่มรายนามผู้บริหาร"</strong> ด้านบนเพื่อเริ่มบันทึกข้อมูล</p>
+                            <button type="button" onclick="ExecutiveStudio.open()" class="btn btn-sm btn-primary rounded-pill px-4 py-2 fw-bold">
+                                <i class="fa-solid fa-plus me-1"></i> เพิ่มผู้บริหารท่านแรก
+                            </button>
+                        </td>
                     </tr>
-                </thead>
-                <tbody>
-                    <?php if (empty($executives)): ?>
+                <?php else: ?>
+                    <?php foreach ($executives as $ex): ?>
                         <tr>
-                            <td colspan="7" class="text-center py-5 text-muted">
-                                <i class="fa-solid fa-users-slash fs-1 d-block mb-3 opacity-25"></i>
-                                ยังไม่มีข้อมูลผู้บริหารในระบบ กรุณากดปุ่ม "+ เพิ่มรายนามผู้บริหาร" ด้านบน
+                            <td class="ps-4">
+                                <div class="position-relative" style="width: 52px; height: 52px;">
+                                    <img src="<?= !empty($ex['photo']) ? (strpos($ex['photo'], 'http') === 0 ? esc($ex['photo']) : base_url($ex['photo'])) : 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop' ?>" 
+                                         alt="<?= esc($ex['name']) ?>" 
+                                         class="rounded-circle shadow-sm" 
+                                         style="width: 52px; height: 52px; object-fit: cover; object-position: top center; border: 2.5px solid var(--accent-gold, #f59e0b);">
+                                </div>
+                            </td>
+                            <td>
+                                <div class="fw-bold" style="color: var(--text-primary); font-size: 1rem;"><?= esc($ex['name']) ?></div>
+                                <div class="text-secondary small mt-0.5"><?= esc($ex['position']) ?></div>
+                            </td>
+                            <td class="text-center table-nowrap">
+                                <span class="badge bg-primary-subtle text-primary fw-bold px-2.5 py-1 rounded-pill" style="font-size: 0.82rem;">
+                                    แถว <?= (int)($ex['row_num'] ?? 1) ?> : คอลัมน์ <?= (int)($ex['col_num'] ?? 1) ?>
+                                </span>
+                                <small class="text-secondary d-block mt-0.5" style="font-size: 0.75rem;">(ลำดับ: <?= (int)($ex['order_num'] ?? 1) ?>)</small>
+                            </td>
+                            <td class="table-nowrap">
+                                <span class="badge bg-light text-secondary border px-2.5 py-1 rounded-pill small" style="border-color: var(--glass-border) !important;">
+                                    <?= esc($ex['category'] ?? 'คณะผู้บริหารระดับสูง') ?>
+                                </span>
+                            </td>
+                            <td>
+                                <div class="small">
+                                    <?php if (!empty($ex['phone'])): ?>
+                                        <div class="mb-0.5"><i class="fa-solid fa-phone text-success me-1"></i> <a href="tel:<?= esc($ex['phone']) ?>" class="text-decoration-none text-secondary"><?= esc($ex['phone']) ?></a></div>
+                                    <?php endif; ?>
+                                    <?php if (!empty($ex['email'])): ?>
+                                        <div><i class="fa-solid fa-envelope text-danger me-1"></i> <a href="mailto:<?= esc($ex['email']) ?>" class="text-decoration-none text-secondary"><?= esc($ex['email']) ?></a></div>
+                                    <?php endif; ?>
+                                    <?php if (empty($ex['phone']) && empty($ex['email'])): ?>
+                                        <span class="text-secondary opacity-50">-</span>
+                                    <?php endif; ?>
+                                </div>
+                            </td>
+                            <td class="text-center table-nowrap">
+                                <?php if (!empty($ex['featured'])): ?>
+                                    <span class="badge bg-success-subtle text-success rounded-pill px-2.5 py-1 fw-bold">
+                                        <i class="fa-solid fa-check me-1"></i> แสดง
+                                    </span>
+                                <?php else: ?>
+                                    <span class="badge bg-secondary-subtle text-secondary rounded-pill px-2.5 py-1">ซ่อน</span>
+                                <?php endif; ?>
+                            </td>
+                            <td class="pe-4 text-end table-nowrap">
+                                <div class="d-flex justify-content-end align-items-center gap-1.5">
+                                    <a href="<?= base_url('executives/detail/' . esc($ex['id'])) ?>" target="_blank" class="btn btn-sm btn-outline-secondary rounded-pill px-2.5 py-1" title="ดูประวัติและพิมพ์ PDF">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </a>
+                                    <button type="button" onclick="ExecutiveStudio.open('<?= $ex['id'] ?>')" class="btn btn-sm btn-outline-primary rounded-pill px-2.5 py-1 fw-medium" title="แก้ไข">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                    </button>
+                                    <button type="button" onclick="ExecutiveStudio.deleteItem('<?= $ex['id'] ?>', '<?= esc($ex['name'], 'js') ?>')" class="btn btn-sm btn-outline-danger rounded-pill px-2.5 py-1" title="ลบ">
+                                        <i class="fa-solid fa-trash-can"></i>
+                                    </button>
+                                </div>
                             </td>
                         </tr>
-                    <?php else: ?>
-                        <?php foreach ($executives as $ex): ?>
-                            <tr>
-                                <td class="ps-4">
-                                    <div class="position-relative" style="width: 52px; height: 52px;">
-                                        <img src="<?= !empty($ex['photo']) ? (strpos($ex['photo'], 'http') === 0 ? esc($ex['photo']) : base_url($ex['photo'])) : 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop' ?>" 
-                                             alt="<?= esc($ex['name']) ?>" 
-                                             class="rounded-circle border border-2 border-warning shadow-sm" 
-                                             style="width: 52px; height: 52px; object-fit: cover; object-position: top center;">
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="fw-bold text-dark fs-6"><?= esc($ex['name']) ?></div>
-                                    <div class="text-muted small"><?= esc($ex['position']) ?></div>
-                                </td>
-                                <td class="text-center">
-                                    <span class="badge bg-primary bg-opacity-10 text-primary fw-bold px-2 py-1 rounded-pill">
-                                        แถว <?= (int)($ex['row_num'] ?? 1) ?> : คอลัมน์ <?= (int)($ex['col_num'] ?? 1) ?>
-                                    </span>
-                                    <small class="text-muted d-block" style="font-size: 0.72rem;">(ลำดับ: <?= (int)($ex['order_num'] ?? 1) ?>)</small>
-                                </td>
-                                <td>
-                                    <span class="badge bg-light text-dark border px-2 py-1 rounded-pill small">
-                                        <?= esc($ex['category'] ?? 'คณะผู้บริหารระดับสูง') ?>
-                                    </span>
-                                </td>
-                                <td>
-                                    <div class="small">
-                                        <?php if (!empty($ex['phone'])): ?>
-                                            <div><i class="fa-solid fa-phone text-success me-1"></i> <?= esc($ex['phone']) ?></div>
-                                        <?php endif; ?>
-                                        <?php if (!empty($ex['email'])): ?>
-                                            <div><i class="fa-solid fa-envelope text-danger me-1"></i> <?= esc($ex['email']) ?></div>
-                                        <?php endif; ?>
-                                    </div>
-                                </td>
-                                <td class="text-center">
-                                    <?php if (!empty($ex['featured'])): ?>
-                                        <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-2 py-1">
-                                            <i class="fa-solid fa-check me-1"></i> แสดง
-                                        </span>
-                                    <?php else: ?>
-                                        <span class="badge bg-secondary bg-opacity-10 text-muted rounded-pill px-2 py-1">ซ่อน</span>
-                                    <?php endif; ?>
-                                </td>
-                                <td class="pe-4 text-end">
-                                    <div class="btn-group">
-                                        <a href="<?= base_url('executives/detail/' . esc($ex['id'])) ?>" target="_blank" class="btn btn-sm btn-outline-secondary rounded-pill px-2 me-1" title="ดูประวัติและพิมพ์ PDF">
-                                            <i class="fa-solid fa-eye"></i>
-                                        </a>
-                                        <button type="button" onclick="ExecutiveStudio.open('<?= $ex['id'] ?>')" class="btn btn-sm btn-outline-primary rounded-pill px-2 me-1" title="แก้ไข">
-                                            <i class="fa-solid fa-pen-to-square"></i>
-                                        </button>
-                                        <button type="button" onclick="ExecutiveStudio.deleteItem('<?= $ex['id'] ?>', '<?= esc($ex['name'], 'js') ?>')" class="btn btn-sm btn-outline-danger rounded-pill px-2" title="ลบ">
-                                            <i class="fa-solid fa-trash-can"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
-                </tbody>
-            </table>
-        </div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </tbody>
+        </table>
     </div>
 </div>
 

@@ -7,6 +7,25 @@ $missions = $missions ?? [];
 $kpis = $kpis ?? [];
 $pillars = $pillars ?? [];
 $documents = $documents ?? [];
+$planBooks = $planBooks ?? ($strategy['plan_books'] ?? []);
+$book5yr = $planBooks['book_5yr'] ?? [
+    'title' => 'แผนพัฒนาจังหวัดพัทลุง',
+    'period' => 'พ.ศ. 2566 - 2570',
+    'type_label' => 'แผนพัฒนาจังหวัด 5 ปี',
+    'vision_text' => "\"เมืองแห่งความยั่งยืน ด้านเศรษฐกิจ สังคม และความมั่นคง ทรัพยากรธรรมชาติและสิ่งแวดล้อม\"\n(Sustainability Phatthalung)",
+    'button_text' => 'เปิดอ่านแผนพัฒนา 5 ปี',
+    'cover_theme' => 'emerald',
+    'url' => 'strategy'
+];
+$book1yr = $planBooks['book_1yr'] ?? [
+    'title' => 'แผนปฏิบัติราชการประจำปี',
+    'period' => 'พ.ศ. 2570',
+    'type_label' => 'แผนปฏิบัติราชการ 1 ปี',
+    'vision_text' => "\"ขับเคลื่อนโครงการและงบประมาณตามยุทธศาสตร์ สู่การปฏิบัติจริงเพื่อประโยชน์สุขของประชาชน\"",
+    'button_text' => 'เปิดอ่านแผนปฏิบัติราชการ 2570',
+    'cover_theme' => 'royal_blue',
+    'url' => 'strategy'
+];
 ?>
 
 <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
@@ -43,6 +62,11 @@ $documents = $documents ?? [];
     <li class="nav-item" role="presentation">
         <button class="nav-link rounded-pill px-4 py-2 fw-bold" id="tab-docs-btn" data-bs-toggle="pill" data-bs-target="#tab-docs" type="button" role="tab">
             <i class="fa-solid fa-folder-open me-1.5 text-info"></i> แผนพัฒนาฯ & แผนประจำปี (<?= count($documents ?? []) ?>)
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link rounded-pill px-4 py-2 fw-bold" id="tab-planbooks-btn" data-bs-toggle="pill" data-bs-target="#tab-planbooks" type="button" role="tab">
+            <i class="fa-solid fa-book-journal-whills me-1.5 text-danger"></i> ปกสมุดแผน 3D หน้าแรก (5 ปี & 1 ปี)
         </button>
     </li>
 </ul>
@@ -325,6 +349,153 @@ $documents = $documents ?? [];
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- TAB 5: DUAL PLAN BOOKS (5 YEARS & 1 YEAR) 3D COVERS -->
+    <!-- ======================================================== -->
+    <div class="tab-pane fade" id="tab-planbooks" role="tabpanel">
+        <form id="planBooksForm" enctype="multipart/form-data">
+            <div class="row g-4">
+                
+                <!-- Book 1: แผนพัฒนาจังหวัด 5 ปี -->
+                <div class="col-12 col-xl-6">
+                    <div class="admin-card h-100 border-2 shadow-sm rounded-4 overflow-hidden" style="border-color: #10b981 !important;">
+                        <div class="admin-card-header text-white d-flex justify-content-between align-items-center py-3 px-4" style="background: linear-gradient(135deg, #065f46 0%, #059669 100%);">
+                            <h6 class="mb-0 fw-bold d-flex align-items-center gap-2 text-white">
+                                <i class="fa-solid fa-book-bookmark text-warning fs-5"></i>
+                                <span>เล่มที่ 1: แผนพัฒนาจังหวัด 5 ปี (ระยะปานกลาง)</span>
+                            </h6>
+                            <span class="badge bg-warning text-dark fw-bold px-2.5 py-1">Emerald 3D Cover</span>
+                        </div>
+                        <div class="admin-card-body p-4 bg-white">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">ชื่อแผนบนหน้าปก <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control fw-bold" name="book_5yr_title" value="<?= esc($book5yr['title'] ?? 'แผนพัฒนาจังหวัดพัทลุง') ?>" required>
+                            </div>
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">ช่วงระยะเวลา (พ.ศ.) <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control text-success fw-bold" name="book_5yr_period" value="<?= esc($book5yr['period'] ?? 'พ.ศ. 2566 - 2570') ?>" required placeholder="พ.ศ. 2566 - 2570">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">ป้ายกำกับประเภทแผน</label>
+                                    <input type="text" class="form-control" name="book_5yr_type_label" value="<?= esc($book5yr['type_label'] ?? 'แผนพัฒนาจังหวัด 5 ปี') ?>" placeholder="แผนพัฒนาจังหวัด 5 ปี">
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">ข้อความวิสัยทัศน์ / คำขวัญบนหน้าปก</label>
+                                <textarea class="form-control" name="book_5yr_vision_text" rows="3"><?= esc($book5yr['vision_text'] ?? '') ?></textarea>
+                                <small class="text-muted">ข้อความสั้นกระชับสำหรับแสดงบนรูปเล่มสมุด 3D</small>
+                            </div>
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">ข้อความบนปุ่มเปิดอ่าน</label>
+                                    <input type="text" class="form-control" name="book_5yr_button_text" value="<?= esc($book5yr['button_text'] ?? 'เปิดอ่านแผนพัฒนา 5 ปี') ?>">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">ธีมสีปกสมุด 3D</label>
+                                    <select class="form-select" name="book_5yr_cover_theme">
+                                        <option value="emerald" <?= ($book5yr['cover_theme'] ?? '') === 'emerald' ? 'selected' : '' ?>>เขียวมรกต (Royal Emerald) - แนะนำ</option>
+                                        <option value="royal_blue" <?= ($book5yr['cover_theme'] ?? '') === 'royal_blue' ? 'selected' : '' ?>>น้ำเงินรอยัลบลู (Regal Sapphire)</option>
+                                        <option value="gold" <?= ($book5yr['cover_theme'] ?? '') === 'gold' ? 'selected' : '' ?>>สีทองอร่าม (Royal Gold)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">ลิงก์เปิดอ่าน (URL หรือ path เอกสาร)</label>
+                                <input type="text" class="form-control" name="book_5yr_url" value="<?= esc($book5yr['url'] ?? 'strategy') ?>">
+                                <small class="text-muted">ใส่ <code>strategy</code> เพื่อไปหน้ายุทธศาสตร์ หรือระบุ URL / path เอกสาร</small>
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label fw-bold">อัปโหลดไฟล์ PDF ฉบับเต็ม (ถ้าต้องการเปลี่ยนไฟล์)</label>
+                                <input type="file" class="form-control" name="book_5yr_pdf" accept=".pdf">
+                                <?php if (!empty($book5yr['url']) && strpos($book5yr['url'], 'uploads/') !== false): ?>
+                                    <div class="mt-2 small text-success p-2 rounded bg-success-subtle border border-success-subtle">
+                                        <i class="fa-solid fa-file-pdf me-1"></i> ไฟล์ปัจจุบัน: <a href="<?= base_url($book5yr['url']) ?>" target="_blank" class="fw-bold text-success text-decoration-underline"><?= esc($book5yr['url']) ?></a>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Book 2: แผนปฏิบัติราชการ 1 ปี -->
+                <div class="col-12 col-xl-6">
+                    <div class="admin-card h-100 border-2 shadow-sm rounded-4 overflow-hidden" style="border-color: #2563eb !important;">
+                        <div class="admin-card-header text-white d-flex justify-content-between align-items-center py-3 px-4" style="background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);">
+                            <h6 class="mb-0 fw-bold d-flex align-items-center gap-2 text-white">
+                                <i class="fa-solid fa-file-contract text-warning fs-5"></i>
+                                <span>เล่มที่ 2: แผนปฏิบัติราชการประจำปี 1 ปี</span>
+                            </h6>
+                            <span class="badge bg-info text-dark fw-bold px-2.5 py-1">Sapphire 3D Cover</span>
+                        </div>
+                        <div class="admin-card-body p-4 bg-white">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">ชื่อแผนบนหน้าปก <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control fw-bold" name="book_1yr_title" value="<?= esc($book1yr['title'] ?? 'แผนปฏิบัติราชการประจำปี') ?>" required>
+                            </div>
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">ปีงบประมาณ (พ.ศ.) <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control text-primary fw-bold" name="book_1yr_period" value="<?= esc($book1yr['period'] ?? 'พ.ศ. 2570') ?>" required placeholder="พ.ศ. 2570 (เปลี่ยนเป็น 2571, 2572 ได้)">
+                                    <small class="text-muted">เปลี่ยนปีได้ทุกปี เช่น 2570, 2571 ฯลฯ</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">ป้ายกำกับประเภทแผน</label>
+                                    <input type="text" class="form-control" name="book_1yr_type_label" value="<?= esc($book1yr['type_label'] ?? 'แผนปฏิบัติราชการ 1 ปี') ?>" placeholder="แผนปฏิบัติราชการ 1 ปี">
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">ข้อความ / เป้าหมายบนหน้าปก</label>
+                                <textarea class="form-control" name="book_1yr_vision_text" rows="3"><?= esc($book1yr['vision_text'] ?? '') ?></textarea>
+                                <small class="text-muted">ข้อความสั้นกระชับสำหรับแสดงบนรูปเล่มสมุด 3D</small>
+                            </div>
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">ข้อความบนปุ่มเปิดอ่าน</label>
+                                    <input type="text" class="form-control" name="book_1yr_button_text" value="<?= esc($book1yr['button_text'] ?? 'เปิดอ่านแผนปฏิบัติราชการ 2570') ?>">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">ธีมสีปกสมุด 3D</label>
+                                    <select class="form-select" name="book_1yr_cover_theme">
+                                        <option value="royal_blue" <?= ($book1yr['cover_theme'] ?? '') === 'royal_blue' ? 'selected' : '' ?>>น้ำเงินรอยัลบลู (Regal Sapphire) - แนะนำ</option>
+                                        <option value="emerald" <?= ($book1yr['cover_theme'] ?? '') === 'emerald' ? 'selected' : '' ?>>เขียวมรกต (Royal Emerald)</option>
+                                        <option value="purple" <?= ($book1yr['cover_theme'] ?? '') === 'purple' ? 'selected' : '' ?>>ม่วงรอยัล (Royal Purple)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">ลิงก์เปิดอ่าน (URL หรือ path เอกสาร)</label>
+                                <input type="text" class="form-control" name="book_1yr_url" value="<?= esc($book1yr['url'] ?? 'strategy') ?>">
+                                <small class="text-muted">ใส่ <code>strategy</code> หรือ path PDF เอกสาร</small>
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label fw-bold">อัปโหลดไฟล์ PDF ฉบับเต็ม (ถ้าต้องการเปลี่ยนไฟล์)</label>
+                                <input type="file" class="form-control" name="book_1yr_pdf" accept=".pdf">
+                                <?php if (!empty($book1yr['url']) && strpos($book1yr['url'], 'uploads/') !== false): ?>
+                                    <div class="mt-2 small text-primary p-2 rounded bg-primary-subtle border border-primary-subtle">
+                                        <i class="fa-solid fa-file-pdf me-1"></i> ไฟล์ปัจจุบัน: <a href="<?= base_url($book1yr['url']) ?>" target="_blank" class="fw-bold text-primary text-decoration-underline"><?= esc($book1yr['url']) ?></a>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Action Bar -->
+            <div class="card mt-4 border-0 shadow-sm rounded-4 p-3 bg-white d-flex flex-row justify-content-between align-items-center flex-wrap gap-3">
+                <div class="d-flex align-items-center gap-2 text-muted">
+                    <i class="fa-solid fa-circle-check text-success fs-5"></i>
+                    <span>ระบบจะอัปเดตหน้าพอร์ทัลจังหวัดทันที ประชาชนจะสามารถเลือกสลับดูได้ทั้ง <strong>แผน 5 ปี</strong> และ <strong>แผน 1 ปี</strong></span>
+                </div>
+                <button type="button" class="btn btn-primary px-4 py-2.5 fw-bold rounded-pill shadow-sm d-inline-flex align-items-center gap-2" id="btnSavePlanBooks" onclick="savePlanBooks()">
+                    <i class="fa-solid fa-floppy-disk"></i> บันทึกข้อมูลสมุดแผนทั้ง 2 เล่ม
+                </button>
+            </div>
+        </form>
     </div>
 
 </div>
@@ -849,6 +1020,33 @@ function filterAdminDocs() {
             row.style.display = 'none';
         }
     });
+}
+
+async function savePlanBooks() {
+    const form = document.getElementById('planBooksForm');
+    const formData = new FormData(form);
+    const btn = document.getElementById('btnSavePlanBooks');
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i> กำลังบันทึก...';
+
+    try {
+        const res = await App.fetch('<?= base_url("admin/strategy/save-plan-books") ?>', {
+            method: 'POST',
+            body: formData
+        });
+        if (res.status === 'success') {
+            App.toast(res.message || 'บันทึกข้อมูลหน้าปกสมุดแผนพัฒนาสำเร็จ', 'success');
+            setTimeout(() => location.reload(), 800);
+        } else {
+            App.toast(res.message || 'เกิดข้อผิดพลาดในการบันทึก', 'error');
+        }
+    } catch (e) {
+        App.toast('เกิดข้อผิดพลาด: ' + e.message, 'error');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-floppy-disk me-1"></i> บันทึกข้อมูลสมุดแผนทั้ง 2 เล่ม';
+    }
 }
 </script>
 

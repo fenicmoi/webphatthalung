@@ -22,7 +22,8 @@ class StrategyManager extends BaseController
             'missions' => $strategy['missions'] ?? [],
             'kpis' => $strategy['kpis'] ?? [],
             'pillars' => $strategy['pillars'] ?? [],
-            'documents' => $strategy['documents'] ?? []
+            'documents' => $strategy['documents'] ?? [],
+            'planBooks' => $strategy['plan_books'] ?? []
         ];
 
         return view('admin/strategy_manager', $data);
@@ -402,4 +403,62 @@ class StrategyManager extends BaseController
             'message' => 'ลบเอกสารเรียบร้อยแล้ว'
         ]);
     }
+
+    /**
+     * บันทึกข้อมูลหน้าปกสมุดแผนพัฒนา 5 ปี และ แผนปฏิบัติราชการ 1 ปี
+     */
+    public function savePlanBooks()
+    {
+        helper(['settings']);
+        $strategy = get_site_strategy();
+        $planBooks = $strategy['plan_books'] ?? [];
+
+        $books = ['book_5yr', 'book_1yr'];
+        $uploadDir = FCPATH . 'uploads/strategy/';
+        if (!is_dir($uploadDir)) {
+            @mkdir($uploadDir, 0777, true);
+        }
+
+        foreach ($books as $key) {
+            $existing = $planBooks[$key] ?? [];
+            $title = trim((string)($this->request->getPost($key . '_title') ?? ($existing['title'] ?? '')));
+            $period = trim((string)($this->request->getPost($key . '_period') ?? ($existing['period'] ?? '')));
+            $typeLabel = trim((string)($this->request->getPost($key . '_type_label') ?? ($existing['type_label'] ?? '')));
+            $visionText = trim((string)($this->request->getPost($key . '_vision_text') ?? ($existing['vision_text'] ?? '')));
+            $buttonText = trim((string)($this->request->getPost($key . '_button_text') ?? ($existing['button_text'] ?? '')));
+            $coverTheme = trim((string)($this->request->getPost($key . '_cover_theme') ?? ($existing['cover_theme'] ?? 'emerald')));
+            $url = trim((string)($this->request->getPost($key . '_url') ?? ($existing['url'] ?? 'strategy')));
+
+            // Check if file uploaded for this book
+            $file = $this->request->getFile($key . '_pdf');
+            if ($file && $file->isValid() && !$file->hasMoved()) {
+                $ext = strtolower($file->getClientExtension());
+                if (in_array($ext, ['pdf', 'doc', 'docx', 'zip', 'rar'])) {
+                    $newName = $key . '_' . time() . '_' . $file->getRandomName();
+                    $file->move($uploadDir, $newName);
+                    $url = 'uploads/strategy/' . $newName;
+                }
+            }
+
+            $planBooks[$key] = [
+                'title' => $title,
+                'period' => $period,
+                'type_label' => $typeLabel,
+                'vision_text' => $visionText,
+                'button_text' => $buttonText,
+                'cover_theme' => $coverTheme,
+                'url' => $url,
+            ];
+        }
+
+        $strategy['plan_books'] = $planBooks;
+        save_site_strategy($strategy);
+
+        return $this->response->setJSON([
+            'status' => 'success',
+            'message' => 'บันทึกข้อมูลหน้าปกสมุดแผนพัฒนา (5 ปี & 1 ปี) เรียบร้อยแล้ว',
+            'plan_books' => $planBooks
+        ]);
+    }
 }
+

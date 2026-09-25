@@ -4,94 +4,323 @@
 <?php 
 $parent_pages = $parent_pages ?? []; 
 $pages = $pages ?? []; 
+
+$totalPages = count($pages);
+$parentCount = 0;
+$subCount = 0;
+$totalViews = 0;
+foreach ($pages as $p) {
+    if (!empty($p['parent_id'])) {
+        $subCount++;
+    } else {
+        $parentCount++;
+    }
+    $totalViews += (int)($p['views'] ?? 0);
+}
 ?>
-<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
-    <div>
-        <h4 class="fw-bold mb-1" style="color: #0f172a;">จัดการหน้าเว็บไซต์ (Static Pages)</h4>
-        <p class="text-muted mb-0" style="font-size: 0.92rem;">
-            สร้างและแก้ไขหน้าเนื้อหาคงที่ พร้อมระบบหน้าย่อย (Tabs) อัตโนมัติ
-        </p>
+
+<!-- 1. Majestic Hero Cockpit Banner -->
+<div class="dashboard-hero d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-4 mb-4">
+    <div class="d-flex align-items-center gap-3.5 z-1">
+        <div style="width: 60px; height: 60px; border-radius: 18px; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255, 255, 255, 0.25); box-shadow: 0 8px 20px rgba(0,0,0,0.15);">
+            <i class="fa-solid fa-file-lines" style="font-size: 1.85rem; color: #34d399;"></i>
+        </div>
+        <div>
+            <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
+                <h1 class="h2 text-white fw-bold mb-0" style="font-size: 1.75rem; letter-spacing: -0.01em;">
+                    จัดการหน้าเว็บไซต์ (Static Pages & Sub-tabs CMS)
+                </h1>
+                <span class="badge rounded-pill px-2.5 py-1" style="background: rgba(16, 185, 129, 0.25); border: 1px solid rgba(52, 211, 153, 0.35); color: #6ee7b7; font-size: 0.85rem;">
+                    <i class="fa-solid fa-layer-group me-1"></i>ระบบแท็บย่อยอัตโนมัติ
+                </span>
+            </div>
+            <p class="mb-0 text-white-50 d-flex flex-wrap align-items-center gap-2" style="font-size: 1rem;">
+                <span>สร้างและแก้ไขหน้าเนื้อหาคงที่ ข้อมูลหน่วยงาน กฎหมาย และยุทธศาสตร์</span>
+                <span>&bull;</span>
+                <span style="color: #6ee7b7;">รองรับการจัดแท็บซ้อนหลายระดับ</span>
+            </p>
+        </div>
     </div>
-    <div>
-        <button class="btn btn-modern" onclick="openPageModal()">
-            <i class="fa-solid fa-plus me-1"></i> สร้างหน้าใหม่
+
+    <!-- Right Quick Actions -->
+    <div class="d-flex flex-wrap align-items-center gap-2 z-1">
+        <button type="button" class="btn rounded-pill px-3.5 py-2.5 fw-bold d-flex align-items-center gap-2 text-decoration-none shadow-sm" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; border: 1px solid rgba(255,255,255,0.2);" onclick="openPageModal()">
+            <i class="fa-solid fa-circle-plus"></i>
+            <span>สร้างหน้าเพจใหม่</span>
         </button>
+        <button type="button" class="btn rounded-pill px-3 py-2.5 fw-bold text-white shadow-sm d-flex align-items-center gap-1.5" style="background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); backdrop-filter: blur(8px);" onclick="openIconPickerForGeneral()">
+            <i class="fa-solid fa-icons text-warning"></i>
+            <span class="d-none d-sm-inline">คลังไอคอน</span>
+        </button>
+        <a href="<?= base_url('admin/menu') ?>" class="btn rounded-pill px-3 py-2.5 fw-bold text-white shadow-sm d-flex align-items-center gap-1.5" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);">
+            <i class="fa-solid fa-compass"></i>
+            <span class="d-none d-sm-inline">ผูกกับเมนูบาร์</span>
+        </a>
     </div>
 </div>
 
-<div class="admin-card">
-    <div class="admin-card-header d-flex justify-content-between align-items-center">
-        <h6 class="mb-0 fw-bold"><i class="fa-solid fa-list-check me-2 text-primary"></i> รายชื่อหน้าเว็บไซต์ทั้งหมด</h6>
-        <span class="badge bg-light text-muted border"><?= count($pages ?? []) ?> รายการ</span>
+<!-- 2. Master KPI Summary Cards (4 Cards) -->
+<div class="row g-4 mb-4">
+    <!-- Card 1: Total Pages -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="kpi-stat-card-v2">
+            <div class="card-accent-bar" style="background: linear-gradient(90deg, #10b981 0%, #059669 100%);"></div>
+            <i class="fa-solid fa-copy watermark-icon"></i>
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <span class="kpi-card-label fw-bold">หน้าทั้งหมด (Total Pages)</span>
+                <div class="kpi-icon-box" style="background: rgba(16, 185, 129, 0.12); color: #059669;">
+                    <i class="fa-solid fa-file-lines"></i>
+                </div>
+            </div>
+            <div class="kpi-number-wrap my-1">
+                <span class="kpi-number" style="color: #047857;"><?= number_format($totalPages) ?></span>
+                <span class="kpi-unit">หน้า</span>
+            </div>
+            <div class="d-flex align-items-center justify-content-between mt-auto pt-3 border-top" style="border-color: #f1f5f9 !important;">
+                <span class="badge rounded-pill bg-success-subtle text-success fw-bold px-2 py-1" style="font-size: 0.85rem;">
+                    <i class="fa-solid fa-check me-1"></i>เผยแพร่ในระบบ
+                </span>
+                <span class="text-muted small fw-semibold">รวมทุกหมวด</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card 2: Parent Pages -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="kpi-stat-card-v2">
+            <div class="card-accent-bar" style="background: linear-gradient(90deg, #3b82f6 0%, #1d4ed8 100%);"></div>
+            <i class="fa-solid fa-layer-group watermark-icon"></i>
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <span class="kpi-card-label fw-bold">หน้าหลัก (Parent Pages)</span>
+                <div class="kpi-icon-box" style="background: rgba(59, 130, 246, 0.12); color: #2563eb;">
+                    <i class="fa-solid fa-sitemap"></i>
+                </div>
+            </div>
+            <div class="kpi-number-wrap my-1">
+                <span class="kpi-number" style="color: #1d4ed8;"><?= number_format($parentCount) ?></span>
+                <span class="kpi-unit">หน้า</span>
+            </div>
+            <div class="d-flex align-items-center justify-content-between mt-auto pt-3 border-top" style="border-color: #f1f5f9 !important;">
+                <span class="badge rounded-pill bg-primary-subtle text-primary fw-bold px-2 py-1" style="font-size: 0.85rem;">
+                    <i class="fa-solid fa-crown me-1"></i>เมนูเพจหลัก
+                </span>
+                <span class="text-muted small fw-semibold">มี URL อิสระ</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card 3: Sub-tabs -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="kpi-stat-card-v2">
+            <div class="card-accent-bar" style="background: linear-gradient(90deg, #8b5cf6 0%, #6d28d9 100%);"></div>
+            <i class="fa-solid fa-folder-tree watermark-icon"></i>
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <span class="kpi-card-label fw-bold">หน้าแท็บย่อย (Sub-tabs)</span>
+                <div class="kpi-icon-box" style="background: rgba(139, 92, 246, 0.12); color: #7c3aed;">
+                    <i class="fa-solid fa-table-columns"></i>
+                </div>
+            </div>
+            <div class="kpi-number-wrap my-1">
+                <span class="kpi-number" style="color: #6d28d9;"><?= number_format($subCount) ?></span>
+                <span class="kpi-unit">แท็บ</span>
+            </div>
+            <div class="d-flex align-items-center justify-content-between mt-auto pt-3 border-top" style="border-color: #f1f5f9 !important;">
+                <span class="badge rounded-pill bg-purple-subtle text-purple fw-bold px-2 py-1" style="background: #f3e8ff; color: #7c3aed; font-size: 0.85rem;">
+                    <i class="fa-solid fa-turn-up fa-rotate-90 me-1"></i>ซ้อนในหน้าหลัก
+                </span>
+                <span class="text-muted small fw-semibold">สลับแท็บอัตโนมัติ</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card 4: Total Views -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="kpi-stat-card-v2">
+            <div class="card-accent-bar" style="background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);"></div>
+            <i class="fa-solid fa-eye watermark-icon"></i>
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <span class="kpi-card-label fw-bold">ยอดเปิดอ่านสะสม (Views)</span>
+                <div class="kpi-icon-box" style="background: rgba(245, 158, 11, 0.12); color: #d97706;">
+                    <i class="fa-solid fa-chart-simple"></i>
+                </div>
+            </div>
+            <div class="kpi-number-wrap my-1">
+                <span class="kpi-number" style="color: #d97706;"><?= number_format($totalViews) ?></span>
+                <span class="kpi-unit">ครั้ง</span>
+            </div>
+            <div class="d-flex align-items-center justify-content-between mt-auto pt-3 border-top" style="border-color: #f1f5f9 !important;">
+                <span class="badge rounded-pill bg-warning-subtle text-warning-emphasis fw-bold px-2 py-1" style="font-size: 0.85rem;">
+                    <i class="fa-solid fa-fire me-1 text-warning"></i>สถิติทั่วเว็บไซต์
+                </span>
+                <span class="text-muted small fw-semibold">ความสนใจประชาชน</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 3. Smart Search & Filter Bar -->
+<div class="card border-0 rounded-4 shadow-xs p-3.5 mb-4 bg-white">
+    <div class="row g-3 align-items-center">
+        <div class="col-lg-7">
+            <div class="input-group">
+                <span class="input-group-text bg-white border-end-0 text-muted"><i class="fa-solid fa-magnifying-glass"></i></span>
+                <input type="text" id="pageSearchInput" class="form-control border-start-0" placeholder="พิมพ์ค้นหาชื่อหน้าเว็บไซต์ หรือลิงก์ (Slug)..." style="font-size: 0.98rem;" oninput="filterPageTable(this.value)">
+                <button type="button" class="btn btn-outline-secondary" onclick="document.getElementById('pageSearchInput').value=''; filterPageTable('');" title="ล้างการค้นหา">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+        </div>
+        <div class="col-lg-5">
+            <div class="d-flex flex-wrap gap-2 justify-content-lg-end">
+                <button type="button" class="btn btn-sm btn-primary rounded-pill px-3 py-1.5 fw-bold page-filter-btn active" onclick="setPageTypeFilter('all', this)">
+                    ทั้งหมด (<?= number_format($totalPages) ?>)
+                </button>
+                <button type="button" class="btn btn-sm btn-light border text-secondary rounded-pill px-3 py-1.5 fw-bold page-filter-btn" onclick="setPageTypeFilter('parent', this)">
+                    <i class="fa-solid fa-crown me-1 text-warning"></i>เฉพาะหน้าหลัก (<?= number_format($parentCount) ?>)
+                </button>
+                <button type="button" class="btn btn-sm btn-light border text-secondary rounded-pill px-3 py-1.5 fw-bold page-filter-btn" onclick="setPageTypeFilter('sub', this)">
+                    <i class="fa-solid fa-turn-up fa-rotate-90 me-1 text-purple"></i>เฉพาะแท็บย่อย (<?= number_format($subCount) ?>)
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 4. Records Table Container -->
+<div class="admin-card overflow-hidden">
+    <div class="admin-card-header d-flex flex-wrap align-items-center justify-content-between gap-2">
+        <div>
+            <h2 class="h2-section-title mb-0" style="font-size: 1.2rem;">
+                <i class="fa-solid fa-list-check text-primary me-2"></i>รายชื่อหน้าเว็บไซต์ทั้งหมดในระบบ
+            </h2>
+            <small class="text-muted">คลิกที่ลิงก์เพื่อเปิดดูหน้าเว็บไซต์จริง หรือกดปุ่มแก้ไขเพื่อปรับแต่งเนื้อหา</small>
+        </div>
+        <span class="badge bg-light text-dark border px-3 py-1.5 rounded-pill fw-bold" id="pageCountBadge" style="font-size: 0.9rem;">
+            <?= count($pages) ?> รายการ
+        </span>
     </div>
     
-    <div class="admin-card-body p-0">
-        <div class="table-responsive">
-            <table class="table table-modern mb-0" id="pagesTable">
-                <thead>
+    <div class="table-responsive">
+        <table class="table table-modern mb-0 align-middle" id="pagesTable">
+            <thead>
+                <tr>
+                    <th class="table-nowrap ps-4" style="width: 8%;">ID</th>
+                    <th style="min-width: 320px;">หัวข้อหน้าเพจ (Page Title)</th>
+                    <th class="table-nowrap" style="width: 25%;">ที่อยู่ลิงก์ (URL Slug)</th>
+                    <th class="table-nowrap text-center" style="width: 14%;">ยอดเปิดอ่าน</th>
+                    <th class="table-nowrap text-end pe-4" style="width: 16%;">การจัดการ</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if (empty($pages)): ?>
                     <tr>
-                        <th width="6%">ID</th>
-                        <th width="38%">หัวข้อหน้าเพจ (Title)</th>
-                        <th width="24%">ลิงก์ (Slug)</th>
-                        <th width="14%" class="text-center">ยอดเข้าชม</th>
-                        <th width="18%" class="text-end pe-4">จัดการ</th>
+                        <td colspan="5" class="text-center py-5 text-muted">
+                            <div style="width: 64px; height: 64px; border-radius: 50%; background: #f1f5f9; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; color: #94a3b8;">
+                                <i class="fa-regular fa-folder-open" style="font-size: 1.8rem;"></i>
+                            </div>
+                            <h6 class="fw-bold text-dark mb-1">ยังไม่มีหน้าเว็บไซต์ในระบบ</h6>
+                            <p class="small text-muted mb-0">กดปุ่ม "สร้างหน้าเพจใหม่" ด้านบนเพื่อเริ่มสร้างหน้าแรกของคุณ</p>
+                        </td>
                     </tr>
-                </thead>
-                <tbody>
-                    <?php if (empty($pages)): ?>
-                        <tr>
-                            <td colspan="5" class="text-center py-5 text-muted">
-                                <i class="fa-regular fa-folder-open mb-2 d-block" style="font-size: 2rem; opacity: 0.5;"></i>
-                                ยังไม่มีหน้าเว็บไซต์ในระบบ กดปุ่ม "สร้างหน้าใหม่" ด้านบนเพื่อเริ่มสร้าง
+                <?php else: ?>
+                    <?php foreach ($pages as $p): 
+                        $isSub = !empty($p['parent_id']);
+                        $parentTitle = '';
+                        if ($isSub) {
+                            foreach ($parent_pages as $par) {
+                                if ($par['id'] == $p['parent_id']) {
+                                    $parentTitle = $par['title'];
+                                    break;
+                                }
+                            }
+                        }
+                    ?>
+                        <tr class="page-row" data-type="<?= $isSub ? 'sub' : 'parent' ?>" data-title="<?= esc(mb_strtolower($p['title'])) ?>" data-slug="<?= esc(mb_strtolower($p['slug'])) ?>">
+                            <td class="ps-4 table-nowrap">
+                                <span class="badge bg-light text-muted border font-monospace px-2 py-1" style="font-size: 0.88rem;">
+                                    #<?= $p['id'] ?>
+                                </span>
                             </td>
-                        </tr>
-                    <?php else: ?>
-                        <?php foreach ($pages as $p): ?>
-                            <tr>
-                                <td class="text-muted"><?= $p['id'] ?></td>
-                                <td>
-                                    <?php if (!empty($p['parent_id'])): ?>
-                                        <div class="d-flex align-items-center ms-3">
-                                            <span class="text-muted me-2"><i class="fa-solid fa-turn-up fa-rotate-90"></i></span>
-                                            <span class="fw-medium text-secondary"><?= esc($p['title']) ?></span>
-                                            <span class="badge bg-light text-muted border ms-2" style="font-size: 0.7rem;">แท็บย่อย</span>
+                            <td>
+                                <?php if ($isSub): ?>
+                                    <div class="d-flex align-items-start gap-2 ps-3 border-start border-3 border-primary-subtle">
+                                        <div style="width: 32px; height: 32px; border-radius: 8px; background: #f3e8ff; color: #7c3aed; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 0.9rem;">
+                                            <i class="fa-solid fa-turn-up fa-rotate-90"></i>
                                         </div>
-                                    <?php else: ?>
-                                        <span class="fw-bold text-dark"><?= esc($p['title']) ?></span>
-                                    <?php endif; ?>
-                                </td>
-                                <td>
-                                    <a href="<?= base_url('page/' . esc($p['slug'])) ?>" target="_blank" class="text-decoration-none badge bg-light text-primary border px-2 py-1">
-                                        /page/<?= esc($p['slug']) ?> <i class="fa-solid fa-arrow-up-right-from-square ms-1" style="font-size:0.65rem;"></i>
-                                    </a>
-                                </td>
-                                <td class="text-center font-monospace" style="font-size: 0.9rem;"><?= number_format($p['views']) ?></td>
-                                <td class="text-end pe-4">
-                                    <button type="button" class="btn btn-sm btn-outline-primary me-1" onclick="editPage(<?= $p['id'] ?>)" title="แก้ไข">
-                                        <i class="fa-solid fa-pen-to-square me-1"></i> แก้ไข
+                                        <div>
+                                            <span class="fw-bold text-dark" style="font-size: 1.05rem;"><?= esc($p['title']) ?></span>
+                                            <div class="d-flex align-items-center gap-1.5 mt-0.5">
+                                                <span class="badge bg-purple-subtle text-purple border rounded-pill px-2 py-0.5" style="background: #f3e8ff; color: #7c3aed; font-size: 0.75rem;">
+                                                    แท็บย่อย
+                                                </span>
+                                                <?php if (!empty($parentTitle)): ?>
+                                                    <small class="text-muted text-truncate" style="max-width: 250px;">
+                                                        ซ้อนใน: <strong><?= esc($parentTitle) ?></strong>
+                                                    </small>
+                                                <?php endif; ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <?php else: ?>
+                                    <div class="d-flex align-items-center gap-2.5">
+                                        <div style="width: 36px; height: 36px; border-radius: 10px; background: rgba(16, 185, 129, 0.12); color: #047857; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 1.05rem;">
+                                            <i class="fa-solid fa-file-lines"></i>
+                                        </div>
+                                        <div>
+                                            <span class="fw-bold text-dark" style="font-size: 1.08rem;"><?= esc($p['title']) ?></span>
+                                            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-0.5 ms-1" style="font-size: 0.75rem;">
+                                                หน้าหลัก
+                                            </span>
+                                        </div>
+                                    </div>
+                                <?php endif; ?>
+                            </td>
+                            <td class="table-nowrap">
+                                <a href="<?= base_url('page/' . esc($p['slug'])) ?>" target="_blank" class="badge bg-light text-primary border px-2.5 py-1.5 rounded-pill text-decoration-none fw-semibold" style="font-size: 0.88rem;" title="เปิดดูหน้าเว็บจริง">
+                                    <i class="fa-solid fa-link me-1"></i>/page/<?= esc($p['slug']) ?> <i class="fa-solid fa-arrow-up-right-from-square ms-1" style="font-size: 0.7rem;"></i>
+                                </a>
+                            </td>
+                            <td class="table-nowrap text-center">
+                                <span class="badge bg-light text-dark border rounded-pill px-2.5 py-1 fw-bold font-monospace" style="font-size: 0.92rem;">
+                                    <i class="fa-solid fa-eye text-warning me-1"></i><?= number_format($p['views']) ?>
+                                </span>
+                            </td>
+                            <td class="table-nowrap text-end pe-4">
+                                <div class="d-inline-flex align-items-center gap-1.5">
+                                    <button type="button" class="btn btn-sm btn-primary rounded-pill px-3 py-1.5 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-xs" onclick="editPage(<?= $p['id'] ?>)">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                        <span>แก้ไข</span>
                                     </button>
-                                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="deletePage(<?= $p['id'] ?>, '<?= esc($p['title']) ?>')" title="ลบ">
+                                    <button type="button" class="btn btn-sm btn-light border text-danger rounded-circle p-2" onclick="deletePage(<?= $p['id'] ?>, '<?= esc($p['title']) ?>')" title="ลบหน้านี้">
                                         <i class="fa-solid fa-trash"></i>
                                     </button>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
-                </tbody>
-            </table>
-        </div>
+                                </div>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </tbody>
+        </table>
     </div>
 </div>
 
 <!-- Modal สำหรับสร้าง/แก้ไขเพจ -->
 <div class="modal fade" id="pageModal" aria-hidden="true" data-bs-backdrop="static">
     <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content border-0 shadow-lg">
-            <div class="modal-header bg-light border-bottom">
-                <h5 class="modal-title fw-bold" id="pageModalTitle"><i class="fa-solid fa-pen me-2"></i> สร้าง/แก้ไขหน้าเว็บไซต์</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="modal-content border-0 rounded-4 shadow-lg overflow-hidden">
+            <div class="modal-header border-bottom px-4 py-3" style="background: linear-gradient(135deg, #064e3b 0%, #047857 100%); color: white;">
+                <div class="d-flex align-items-center gap-2.5">
+                    <div style="width: 40px; height: 40px; border-radius: 10px; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                    </div>
+                    <div>
+                        <h5 class="modal-title fw-bold mb-0 text-white" id="pageModalTitle">สร้าง/แก้ไขหน้าเว็บไซต์</h5>
+                        <small style="color: #a7f3d0;">ระบุหัวข้อ กำหนดโครงสร้างแท็บ และเขียนเนื้อหาด้วย Rich Text</small>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body p-4">
+            <div class="modal-body p-4 bg-light">
                 <form id="pageForm">
                     <input type="hidden" id="pageId" name="id">
                     
@@ -311,6 +540,61 @@ $pages = $pages ?? [];
 let pageModal;
 let iconPickerModal;
 let selectedIconClass = 'fa-solid fa-landmark';
+
+let currentPageTypeFilter = 'all';
+let currentSearchQuery = '';
+
+function filterPageTable(query) {
+    currentSearchQuery = (query || '').toLowerCase().trim();
+    applyPageFilters();
+}
+
+function setPageTypeFilter(type, btn) {
+    currentPageTypeFilter = type;
+    document.querySelectorAll('.page-filter-btn').forEach(b => {
+        b.classList.remove('btn-primary', 'active', 'shadow-xs');
+        b.classList.add('btn-light', 'border', 'text-secondary');
+    });
+    if (btn) {
+        btn.classList.remove('btn-light', 'border', 'text-secondary');
+        btn.classList.add('btn-primary', 'active', 'shadow-xs');
+    }
+    applyPageFilters();
+}
+
+function applyPageFilters() {
+    let visibleCount = 0;
+    const rows = document.querySelectorAll('.page-row');
+    rows.forEach(row => {
+        const type = row.getAttribute('data-type');
+        const title = row.getAttribute('data-title') || '';
+        const slug = row.getAttribute('data-slug') || '';
+
+        const matchesType = (currentPageTypeFilter === 'all') || (type === currentPageTypeFilter);
+        const matchesQuery = (!currentSearchQuery) || title.includes(currentSearchQuery) || slug.includes(currentSearchQuery);
+
+        if (matchesType && matchesQuery) {
+            row.style.display = '';
+            visibleCount++;
+        } else {
+            row.style.display = 'none';
+        }
+    });
+
+    const badge = document.getElementById('pageCountBadge');
+    if (badge) badge.innerText = `พบ ${visibleCount} รายการ`;
+}
+
+function openIconPickerForGeneral() {
+    if (!iconPickerModal) {
+        const iconModalEl = document.getElementById('iconPickerModal');
+        iconPickerModal = new bootstrap.Modal(iconModalEl, { focus: false, keyboard: true });
+    }
+    if (typeof renderIconsGrid === 'function') {
+        renderIconsGrid('all');
+    }
+    iconPickerModal.show();
+}
 
 // ป้องกัน Bootstrap 5 Modal ขัดขวาง Focus จาก TinyMCE
 document.addEventListener('focusin', (e) => {

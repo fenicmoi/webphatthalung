@@ -32,44 +32,59 @@
     <!-- Custom Design System (Minified & Cache Busted) -->
     <link rel="stylesheet" href="<?= function_exists('asset_min_url') ? asset_min_url('assets/css/main.css') : base_url('assets/css/main.css?v=' . time()) ?>">
     
-    <!-- Ergonomic UI Overrides for Admin Portal (High Contrast & Legibility) -->
-    <style>
-        /* 
-         * 🚀 THE MAGIC FIX FOR FONT SIZE ON LARGE SCREENS 🚀
-         * Bootstrap 5 relies on 'rem' for everything (fonts, margins, paddings, sizes).
-         * By scaling up the root html font-size, we proportionally enlarge the ENTIRE dashboard
-         * so the user doesn't have to zoom manually in the browser.
-         */
-        html {
-            font-size: 115% !important; /* Base size scales from 16px to ~18.4px globally */
-        }
-        body.admin-body-classic {
-            font-size: 1rem !important; /* Force body to use the new scaled rem size */
-        }
+    <!-- Immediate Font Scale & Family Loader (Zero FOUC) -->
+    <script>
+        (function() {
+            try {
+                var savedScale = localStorage.getItem('admin_font_scale') || '115';
+                var savedFont = localStorage.getItem('admin_font_family') || 'Sarabun';
+                document.documentElement.style.setProperty('--admin-font-scale', (parseInt(savedScale, 10) / 100).toString());
+                document.documentElement.style.setProperty('--admin-font-family', savedFont === 'Prompt' ? "'Prompt', sans-serif" : "'Sarabun', 'Prompt', sans-serif");
+            } catch(e) {}
+        })();
+    </script>
 
+    <!-- Ergonomic UI Overrides for Admin Portal (High Contrast & Dynamic Legibility) -->
+    <style>
         :root {
+            --admin-font-scale: 1.15;
+            --admin-font-family: 'Sarabun', 'Prompt', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             --sidebar-w: 320px;
         }
+
+        html {
+            /* Dynamic Ergonomic Scaling with calc */
+            font-size: calc(16px * var(--admin-font-scale, 1.15)) !important;
+        }
+        body.admin-body-classic {
+            font-family: var(--admin-font-family) !important;
+            font-size: 1rem !important; /* Force body to use the scaled rem size */
+            line-height: 1.65;
+            color: #1e293b;
+            background-color: #f8fafc;
+        }
+
         .admin-sidebar {
             width: var(--sidebar-w) !important;
         }
         .admin-main {
             margin-left: var(--sidebar-w) !important;
+            font-size: 1rem;
         }
         
-        /* Typography Enhancements for 125% Scale / Farsightedness (สายตายาว 150) */
+        /* Typography Enhancements for Admin Sidebar (Scalable with rem) */
         .sidebar-menu-list {
             padding: 0.5rem 0.85rem !important;
         }
         .sidebar-menu-title {
-            font-size: 15px !important;
+            font-size: 0.95rem !important;
             font-weight: 700 !important;
             color: #cbd5e1 !important; 
             padding: 1.25rem 0.5rem 0.5rem !important;
             letter-spacing: 0.05em !important;
         }
         .sidebar-group-btn {
-            font-size: 17px !important; 
+            font-size: 1.05rem !important; 
             font-weight: 600 !important;
             padding: 0.75rem 1rem !important;
             color: #f8fafc !important;
@@ -87,7 +102,7 @@
             border-radius: 10px !important;
         }
         .sidebar-sublink {
-            font-size: 16px !important;
+            font-size: 0.98rem !important;
             font-weight: 500 !important;
             padding: 0.65rem 1rem !important;
             color: #e2e8f0 !important;
@@ -99,7 +114,7 @@
             background: rgba(255, 255, 255, 0.1) !important;
         }
         .sidebar-link-single {
-            font-size: 17px !important;
+            font-size: 1.05rem !important;
             font-weight: 600 !important;
             padding: 0.75rem 1rem !important;
             color: #f8fafc !important;
@@ -116,17 +131,86 @@
             border-radius: 12px !important;
         }
         .sidebar-profile h6 {
-            font-size: 16px !important;
+            font-size: 1.02rem !important;
             color: #ffffff !important;
         }
         .sidebar-profile small {
-            font-size: 14px !important;
+            font-size: 0.88rem !important;
             color: #cbd5e1 !important;
         }
         .sidebar-footer .btn {
-            font-size: 16px !important;
+            font-size: 1rem !important;
             padding: 0.6rem 0.75rem !important;
         }
+
+        /* Font Control Toolbar & Modal Elements */
+        .font-control-bar {
+            background: #ffffff !important;
+            border: 1px solid #e2e8f0 !important;
+            gap: 2px;
+        }
+        .font-control-bar .btn-link {
+            line-height: 1;
+            padding: 0.35rem 0.55rem !important;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+        .font-control-bar .btn-link:hover {
+            background: #f1f5f9;
+        }
+        .font-preset-card {
+            border: 2px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            background: #ffffff;
+            height: 100%;
+            position: relative;
+        }
+        .font-preset-card:hover {
+            border-color: #93c5fd;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.08);
+        }
+        .font-preset-card.active {
+            border-color: #2563eb;
+            background: #eff6ff;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+        .font-preset-card .preset-check {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: none;
+            color: #2563eb;
+            font-size: 1.15rem;
+        }
+        .font-preset-card.active .preset-check {
+            display: block;
+        }
+        .font-family-card {
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 0.85rem 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #ffffff;
+        }
+        .font-family-card:hover {
+            border-color: #93c5fd;
+        }
+        .font-family-card.active {
+            border-color: #2563eb;
+            background: #eff6ff;
+        }
+        .font-preview-box {
+            background: #f8fafc;
+            border: 1px dashed #cbd5e1;
+            border-radius: 14px;
+            padding: 1.25rem;
+        }
+
         @media (max-width: 992px) {
             .admin-main { margin-left: 0 !important; }
         }
@@ -420,13 +504,31 @@
                 </div>
 
                 <div class="d-flex align-items-center gap-2">
-                    <a href="<?= base_url() ?>" target="_blank" class="btn-modern-outline d-none d-sm-inline-flex align-items-center gap-2 text-decoration-none" style="padding: 0.35rem 0.85rem; font-size: 0.85rem;">
+                    <!-- Font Control Quick Pill & Modal Trigger -->
+                    <div class="d-flex align-items-center bg-white border rounded-pill p-1 shadow-xs font-control-bar" title="ตัวปรับขนาดตัวอักษร">
+                        <button type="button" class="btn btn-sm btn-link text-decoration-none text-secondary px-2 py-0" id="btnQuickFontDec" title="ลดขนาดตัวอักษร 5% (A-)">
+                            <span class="fw-bold" style="font-size: 0.85rem;">A-</span>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-link text-decoration-none text-dark px-2 py-0 border-start border-end" id="btnQuickFontReset" title="รีเซ็ตกลับค่าเริ่มต้น (115%)">
+                            <span class="fw-bold" style="font-size: 0.95rem;">A</span>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-link text-decoration-none text-primary px-2 py-0" id="btnQuickFontInc" title="เพิ่มขนาดตัวอักษร 5% (A+)">
+                            <span class="fw-bold" style="font-size: 1.1rem;">A+</span>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-primary rounded-pill px-2.5 py-1 ms-1 d-flex align-items-center gap-1.5 shadow-xs" data-bs-toggle="modal" data-bs-target="#fontSizeModal" title="เปิดหน้าต่างปรับขนาดตัวอักษรและการแสดงผล">
+                            <i class="fa-solid fa-text-height"></i>
+                            <span class="d-none d-lg-inline fw-semibold" style="font-size: 0.9rem;">ปรับขนาดฟอนต์</span>
+                            <span class="badge bg-white text-primary rounded-pill px-2 py-0.5 ms-1 fw-bold" id="topbarFontScaleBadge" style="font-size: 0.82rem;">115%</span>
+                        </button>
+                    </div>
+
+                    <a href="<?= base_url() ?>" target="_blank" class="btn-modern-outline d-none d-sm-inline-flex align-items-center gap-2 text-decoration-none" style="padding: 0.45rem 0.95rem; font-size: 0.92rem;">
                         <i class="fa-solid fa-globe text-primary"></i> <span>ไปยังหน้าเว็บไซต์</span>
                     </a>
                     
                     <!-- Notification Bell -->
-                    <button class="btn btn-light rounded-circle position-relative border" style="width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; color: #475569;" title="การแจ้งเตือน" onclick="App.toast('ระบบปกติ ไม่มีการแจ้งเตือนค้าง', 'info')">
-                        <i class="fa-regular fa-bell" style="font-size: 1rem;"></i>
+                    <button class="btn btn-light rounded-circle position-relative border" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: #475569;" title="การแจ้งเตือน" onclick="App.toast('ระบบปกติ ไม่มีการแจ้งเตือนค้าง', 'info')">
+                        <i class="fa-regular fa-bell" style="font-size: 1.05rem;"></i>
                     </button>
                 </div>
             </header>
@@ -557,7 +659,285 @@
                 }
             });
         }
+
+        // 5. Admin Font & Ergonomics Manager
+        const AdminFontManager = {
+            currentScale: 115,
+            currentFont: 'Sarabun',
+
+            init: function() {
+                try {
+                    const savedScale = localStorage.getItem('admin_font_scale');
+                    const savedFont = localStorage.getItem('admin_font_family');
+                    if (savedScale) this.currentScale = parseInt(savedScale, 10);
+                    if (savedFont) this.currentFont = savedFont;
+                } catch(e) {}
+
+                this.apply(false);
+                this.bindQuickButtons();
+            },
+
+            apply: function(save = true) {
+                // 1. Update CSS Variables on root html
+                document.documentElement.style.setProperty('--admin-font-scale', (this.currentScale / 100).toString());
+                document.documentElement.style.setProperty('--admin-font-family', this.currentFont === 'Prompt' ? "'Prompt', sans-serif" : "'Sarabun', 'Prompt', sans-serif");
+
+                // 2. Update UI indicators
+                const badge = document.getElementById('topbarFontScaleBadge');
+                if (badge) badge.innerText = this.currentScale + '%';
+
+                const slider = document.getElementById('fontScaleSlider');
+                if (slider) slider.value = this.currentScale;
+
+                const sliderVal = document.getElementById('sliderValueBadge');
+                if (sliderVal) sliderVal.innerText = this.currentScale + '%';
+
+                const modalCur = document.getElementById('modalCurrentScaleText');
+                if (modalCur) modalCur.innerText = 'ปัจจุบัน: ' + this.currentScale + '%';
+
+                // 3. Highlight Presets
+                document.querySelectorAll('.font-preset-card').forEach(card => card.classList.remove('active'));
+                const activePreset = document.getElementById('preset-' + this.currentScale);
+                if (activePreset) activePreset.classList.add('active');
+
+                // 4. Highlight Font Family Cards
+                const cardSarabun = document.getElementById('fontFamilySarabun');
+                const cardPrompt = document.getElementById('fontFamilyPrompt');
+                const checkSarabun = document.getElementById('iconCheckSarabun');
+                const checkPrompt = document.getElementById('iconCheckPrompt');
+
+                if (this.currentFont === 'Prompt') {
+                    if (cardPrompt) cardPrompt.classList.add('active');
+                    if (cardSarabun) cardSarabun.classList.remove('active');
+                    if (checkPrompt) checkPrompt.classList.remove('d-none');
+                    if (checkSarabun) checkSarabun.classList.add('d-none');
+                } else {
+                    if (cardSarabun) cardSarabun.classList.add('active');
+                    if (cardPrompt) cardPrompt.classList.remove('active');
+                    if (checkSarabun) checkSarabun.classList.remove('d-none');
+                    if (checkPrompt) checkPrompt.classList.add('d-none');
+                }
+
+                if (save) {
+                    try {
+                        localStorage.setItem('admin_font_scale', this.currentScale.toString());
+                        localStorage.setItem('admin_font_family', this.currentFont);
+                    } catch(e) {}
+                }
+            },
+
+            setScale: function(scale, save = true) {
+                this.currentScale = Math.min(160, Math.max(90, parseInt(scale, 10)));
+                this.apply(save);
+            },
+
+            onSliderChange: function(val) {
+                this.setScale(val, true);
+            },
+
+            setFont: function(font, save = true) {
+                this.currentFont = font;
+                this.apply(save);
+            },
+
+            increase: function() {
+                this.setScale(this.currentScale + 5, true);
+                if (typeof App !== 'undefined' && App.toast) {
+                    App.toast('ขยายขนาดฟอนต์เป็น ' + this.currentScale + '%', 'info');
+                }
+            },
+
+            decrease: function() {
+                this.setScale(this.currentScale - 5, true);
+                if (typeof App !== 'undefined' && App.toast) {
+                    App.toast('ลดขนาดฟอนต์เป็น ' + this.currentScale + '%', 'info');
+                }
+            },
+
+            resetToDefault: function() {
+                this.currentScale = 115;
+                this.currentFont = 'Sarabun';
+                this.apply(true);
+                if (typeof App !== 'undefined' && App.toast) {
+                    App.toast('คืนค่าขนาดตัวอักษรเริ่มต้น (115% สารบรรณ)', 'success');
+                }
+            },
+
+            saveAndNotify: function() {
+                this.apply(true);
+                if (typeof App !== 'undefined' && App.toast) {
+                    App.toast('บันทึกขนาดฟอนต์ ' + this.currentScale + '% (' + (this.currentFont === 'Prompt' ? 'พร้อมท์' : 'สารบรรณ') + ') เรียบร้อยแล้ว', 'success');
+                }
+            },
+
+            bindQuickButtons: function() {
+                document.getElementById('btnQuickFontInc')?.addEventListener('click', () => this.increase());
+                document.getElementById('btnQuickFontDec')?.addEventListener('click', () => this.decrease());
+                document.getElementById('btnQuickFontReset')?.addEventListener('click', () => this.resetToDefault());
+            }
+        };
+
+        // Initialize AdminFontManager
+        document.addEventListener('DOMContentLoaded', function() {
+            AdminFontManager.init();
+        });
     </script>
+
+    <!-- Modal ปรับแต่งขนาดตัวอักษรและการแสดงผล (Font Size & Ergonomics Modal) -->
+    <div class="modal fade" id="fontSizeModal" tabindex="-1" aria-labelledby="fontSizeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 20px; overflow: hidden;">
+                <!-- Modal Header -->
+                <div class="modal-header border-bottom px-4 py-3" style="background: linear-gradient(135deg, #064e3b 0%, #047857 100%); color: white;">
+                    <div class="d-flex align-items-center gap-3">
+                        <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(255,255,255,0.18); display: flex; align-items: center; justify-content: center; font-size: 1.35rem; color: #fff;">
+                            <i class="fa-solid fa-sliders"></i>
+                        </div>
+                        <div>
+                            <h5 class="modal-title fw-bold mb-0 text-white" id="fontSizeModalLabel" style="font-size: 1.25rem;">ตั้งค่าขนาดตัวอักษรและการแสดงผล</h5>
+                            <small style="color: #a7f3d0; font-size: 0.9rem;">ปรับแต่งตัวหนังสือให้คมชัด สบายตา เหมาะสมกับสายตาและขนาดหน้าจอของคุณ</small>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <!-- Modal Body -->
+                <div class="modal-body p-4" style="background-color: #f8fafc;">
+                    <!-- Section 1: Presets -->
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-dark d-flex align-items-center justify-content-between mb-2">
+                            <span><i class="fa-solid fa-layer-group text-primary me-2"></i>1. เลือกระดับขนาดตัวอักษรที่ต้องการ</span>
+                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2.5 py-1 rounded-pill" id="modalCurrentScaleText">ปัจจุบัน: 115%</span>
+                        </label>
+                        <div class="row g-3">
+                            <!-- 100% -->
+                            <div class="col-sm-6 col-md-3">
+                                <div class="font-preset-card text-center" onclick="AdminFontManager.setScale(100)" id="preset-100">
+                                    <i class="fa-solid fa-circle-check preset-check"></i>
+                                    <div class="fw-bold fs-4 text-dark mb-1">100%</div>
+                                    <div class="fw-bold text-secondary mb-1" style="font-size: 0.95rem;">กะทัดรัด</div>
+                                    <small class="text-muted d-block" style="font-size: 0.8rem; line-height: 1.3;">ขนาดปกติ สำหรับจอเล็กหรือเนื้อหาเยอะ</small>
+                                </div>
+                            </div>
+                            <!-- 115% Default -->
+                            <div class="col-sm-6 col-md-3">
+                                <div class="font-preset-card text-center active" onclick="AdminFontManager.setScale(115)" id="preset-115">
+                                    <i class="fa-solid fa-circle-check preset-check"></i>
+                                    <div class="fw-bold fs-4 text-dark mb-1">115%</div>
+                                    <div class="fw-bold text-primary mb-1" style="font-size: 0.95rem;">สบายตา</div>
+                                    <small class="text-muted d-block" style="font-size: 0.8rem; line-height: 1.3;">ค่าเริ่มต้นมาตรฐาน อ่านง่าย ไม่ปวดตา</small>
+                                </div>
+                            </div>
+                            <!-- 130% Senior / Big -->
+                            <div class="col-sm-6 col-md-3">
+                                <div class="font-preset-card text-center" onclick="AdminFontManager.setScale(130)" id="preset-130">
+                                    <i class="fa-solid fa-circle-check preset-check"></i>
+                                    <span class="badge bg-warning text-dark position-absolute top-0 start-50 translate-middle rounded-pill px-2 py-0.5" style="font-size: 0.72rem;">แนะนำ</span>
+                                    <div class="fw-bold fs-4 text-dark mb-1">130%</div>
+                                    <div class="fw-bold text-success mb-1" style="font-size: 0.95rem;">ใหญ่คมชัด</div>
+                                    <small class="text-muted d-block" style="font-size: 0.8rem; line-height: 1.3;">แนะนำสำหรับผู้ใหญ่ สายตายาว ไม่ต้องเพ่ง</small>
+                                </div>
+                            </div>
+                            <!-- 145% Super Big -->
+                            <div class="col-sm-6 col-md-3">
+                                <div class="font-preset-card text-center" onclick="AdminFontManager.setScale(145)" id="preset-145">
+                                    <i class="fa-solid fa-circle-check preset-check"></i>
+                                    <div class="fw-bold fs-4 text-dark mb-1">145%</div>
+                                    <div class="fw-bold text-danger mb-1" style="font-size: 0.95rem;">ใหญ่พิเศษ</div>
+                                    <small class="text-muted d-block" style="font-size: 0.8rem; line-height: 1.3;">ตัวโต คมชัดสูง สำหรับจอความละเอียด 2K/4K</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 2: Slider Fine Tuning -->
+                    <div class="bg-white p-3 rounded-4 border mb-4 shadow-2xs">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="fw-bold text-dark" style="font-size: 0.95rem;">
+                                <i class="fa-solid fa-sliders text-primary me-1.5"></i>2. แถบเลื่อนปรับระดับละเอียด (Fine-Tune Slider)
+                            </span>
+                            <span class="fw-bold text-primary fs-5" id="sliderValueBadge">115%</span>
+                        </div>
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="text-muted fw-bold" style="font-size: 0.85rem;">90%</span>
+                            <input type="range" class="form-range flex-grow-1" id="fontScaleSlider" min="90" max="160" step="5" value="115" oninput="AdminFontManager.onSliderChange(this.value)">
+                            <span class="text-muted fw-bold" style="font-size: 0.85rem;">160%</span>
+                        </div>
+                    </div>
+
+                    <!-- Section 3: Font Family -->
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-dark mb-2">
+                            <i class="fa-solid fa-font text-primary me-2"></i>3. รูปแบบฟอนต์ภาษาไทย (Font Family)
+                        </label>
+                        <div class="row g-3">
+                            <div class="col-sm-6">
+                                <div class="font-family-card active" onclick="AdminFontManager.setFont('Sarabun')" id="fontFamilySarabun">
+                                    <div class="d-flex align-items-center justify-content-between mb-1">
+                                        <span class="fw-bold" style="font-family: 'Sarabun'; font-size: 1.15rem;">สารบรรณ (Sarabun)</span>
+                                        <i class="fa-solid fa-circle-check text-primary" id="iconCheckSarabun"></i>
+                                    </div>
+                                    <small class="text-muted" style="font-family: 'Sarabun'; font-size: 0.9rem;">แบบอักษรทางการ เรียบร้อย อ่านง่ายตามมาตรฐานราชการ</small>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="font-family-card" onclick="AdminFontManager.setFont('Prompt')" id="fontFamilyPrompt">
+                                    <div class="d-flex align-items-center justify-content-between mb-1">
+                                        <span class="fw-bold" style="font-family: 'Prompt'; font-size: 1.15rem;">พร้อมท์ (Prompt)</span>
+                                        <i class="fa-solid fa-circle-check text-primary d-none" id="iconCheckPrompt"></i>
+                                    </div>
+                                    <small class="text-muted" style="font-family: 'Prompt'; font-size: 0.9rem;">แบบอักษรสมัยใหม่ หัวกลม ตัวหนาคมชัด ชัดเจนทุกระยะ</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 4: Live Interactive Preview -->
+                    <div>
+                        <label class="form-label fw-bold text-dark mb-2">
+                            <i class="fa-solid fa-eye text-primary me-2"></i>4. ตัวอย่างการแสดงผลจริง (Live Preview)
+                        </label>
+                        <div class="font-preview-box shadow-xs" id="fontPreviewContainer">
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3 py-1">
+                                    ข่าวประชาสัมพันธ์จังหวัดพัทลุง
+                                </span>
+                                <small class="text-muted"><i class="fa-regular fa-clock me-1"></i>24 กันยายน พ.ศ. 2569</small>
+                            </div>
+                            <h4 class="fw-bold text-dark mb-2">
+                                ผู้ว่าราชการจังหวัดพัทลุง มอบนโยบายขับเคลื่อนการพัฒนาเมืองอัจฉริยะและการท่องเที่ยวเชิงนิเวศ
+                            </h4>
+                            <p class="text-secondary mb-3">
+                                ภาพรวมสถิติและเครื่องมือบริหารจัดการเว็บไซต์จังหวัดพัทลุง ระบบบริหารจัดการหลังบ้านช่วยให้เจ้าหน้าที่ทำงานได้อย่างสะดวก รวดเร็ว พร้อมการแสดงผลตัวอักษรที่คมชัดทุกมุมมอง
+                            </p>
+                            <div class="d-flex flex-wrap align-items-center gap-3 pt-2 border-top">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div style="width: 32px; height: 32px; border-radius: 8px; background: #ecfdf5; color: #047857; display: flex; align-items: center; justify-content: center;">
+                                        <i class="fa-solid fa-chart-line"></i>
+                                    </div>
+                                    <span class="fw-bold text-dark">1,250 ครั้ง</span>
+                                    <span class="text-muted small">ยอดเข้าชม</span>
+                                </div>
+                                <span class="text-success fw-medium ms-auto"><i class="fa-solid fa-circle me-1" style="font-size: 0.55rem;"></i>สถานะ: เผยแพร่อยู่</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal Footer -->
+                <div class="modal-footer border-top bg-white px-4 py-3 d-flex justify-content-between">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill px-3" onclick="AdminFontManager.resetToDefault()">
+                        <i class="fa-solid fa-rotate-left me-1"></i> คืนค่าเริ่มต้น (115%)
+                    </button>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm" data-bs-dismiss="modal" onclick="AdminFontManager.saveAndNotify()">
+                            <i class="fa-solid fa-check me-1.5"></i> ตกลง / บันทึกการตั้งค่า
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <?= $this->renderSection('scripts') ?>
 </body>
 </html>

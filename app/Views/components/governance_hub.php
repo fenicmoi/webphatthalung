@@ -6,6 +6,12 @@ $procCategories = function_exists('get_procurement_categories') ? get_procuremen
 $procItems = function_exists('get_procurement_items') ? get_procurement_items(null, true) : [];
 $homeScorecard = function_exists('get_ita_scorecard') ? get_ita_scorecard() : [];
 $isOfficer = session()->get('isLoggedIn');
+
+$finReports = [];
+try {
+    $finModel = new \App\Models\FinancialReportModel();
+    $finReports = $finModel->orderBy('fiscal_year', 'DESC')->orderBy('id', 'DESC')->findAll(6);
+} catch (\Throwable $e) {}
 ?>
 
 <style>
@@ -58,6 +64,11 @@ $isOfficer = session()->get('isLoggedIn');
                 <li class="nav-item" role="presentation">
                     <button class="nav-link active gov-tab-trigger" id="tab-procurement-trigger" data-bs-toggle="pill" data-bs-target="#tab-procurement" type="button" role="tab" aria-controls="tab-procurement" aria-selected="true">
                         💼 ประกาศจัดซื้อจัดจ้าง (e-GP)
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link gov-tab-trigger" id="tab-financial-trigger" data-bs-toggle="pill" data-bs-target="#tab-financial" type="button" role="tab" aria-controls="tab-financial" aria-selected="false">
+                        📊 รายงานทางการเงิน & งบทดลอง
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
@@ -157,6 +168,69 @@ $isOfficer = session()->get('isLoggedIn');
                             </table>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <!-- Tab: รายงานทางการเงินและงบทดลอง -->
+            <div class="tab-pane fade" id="tab-financial" role="tabpanel" aria-labelledby="tab-financial-trigger">
+                <div class="table-responsive border rounded-3 p-3 bg-white bg-opacity-5">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3 pb-2 border-bottom">
+                        <div class="fw-bold text-dark fs-6 d-flex align-items-center gap-2">
+                            <i class="fa-solid fa-file-invoice-dollar text-primary"></i>
+                            <span>รายงานงบทดลองประจำเดือนล่าสุด (งบกรมจังหวัด & งบสำนักงานจังหวัดพัทลุง)</span>
+                        </div>
+                        <a href="<?= base_url('financial-reports') ?>" class="btn btn-sm btn-outline-primary rounded-pill px-3 py-1 fw-bold">
+                            ดูรายงานการเงินทั้งหมด (230 รายการ) ➔
+                        </a>
+                    </div>
+                    <table class="table align-middle table-hover text-dark m-0">
+                        <thead>
+                            <tr class="text-secondary small">
+                                <th>ชื่อรายงานงบทดลอง</th>
+                                <th style="width: 200px;">หน่วยงาน</th>
+                                <th style="width: 120px;" class="text-center">ปี พ.ศ.</th>
+                                <th style="width: 140px;" class="text-end">ดาวน์โหลด</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php if (empty($finReports)): ?>
+                                <tr>
+                                    <td colspan="4" class="text-center py-4 text-muted">ไม่พบข้อมูลรายงานการเงิน</td>
+                                </tr>
+                            <?php else: ?>
+                                <?php foreach ($finReports as $fr): ?>
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-baseline gap-2">
+                                                <i class="fa-solid fa-file-pdf text-danger"></i>
+                                                <div>
+                                                    <a href="<?= esc($fr['doc_path']) ?>" target="_blank" class="fw-semibold text-dark text-decoration-none hover-primary">
+                                                        <?= esc($fr['title']) ?>
+                                                    </a>
+                                                    <?php if (!empty($fr['file_size'])): ?>
+                                                        <small class="text-muted ms-2">(<?= esc($fr['file_size']) ?>)</small>
+                                                    <?php endif; ?>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-light text-dark border px-2 py-1 rounded-pill small">
+                                                <?= esc($fr['department'] ?? 'สำนักงานจังหวัดพัทลุง') ?>
+                                            </span>
+                                        </td>
+                                        <td class="text-center fw-bold text-secondary">
+                                            <?= esc($fr['fiscal_year'] ?? '-') ?>
+                                        </td>
+                                        <td class="text-end">
+                                            <a href="<?= esc($fr['doc_path']) ?>" target="_blank" class="btn btn-sm btn-danger rounded-pill px-3 py-1 fw-bold d-inline-flex align-items-center gap-1">
+                                                <i class="fa-solid fa-download"></i> PDF
+                                            </a>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
                 </div>
             </div>
 

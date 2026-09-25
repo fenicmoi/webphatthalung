@@ -141,7 +141,7 @@ $documents = $documents ?? [];
     <div class="mb-5">
         <div class="d-flex align-items-center justify-content-between mb-3">
             <h5 class="fw-bold m-0" style="color: var(--text-primary);">
-                <i class="fa-solid fa-layer-group text-success me-2"></i>เลือกหมวดหมู่เอกสาร 5 เสาหลัก (5 Smart Pillars):
+                <i class="fa-solid fa-layer-group text-success me-2"></i>เลือกหมวดหมู่เอกสารและคลังข้อมูล (Smart Document Categories):
             </h5>
             <?php if ($selectedCat !== 'all'): ?>
                 <a href="<?= base_url('documents') ?>" class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-bold">
@@ -150,11 +150,13 @@ $documents = $documents ?? [];
             <?php endif; ?>
         </div>
         <div class="row g-3">
-            <?php foreach ($categories as $catKey => $catInfo): 
+            <?php 
+            $docPool = !empty($allDocuments) ? $allDocuments : $documents;
+            foreach ($categories as $catKey => $catInfo): 
                 $isActive = ($selectedCat === $catInfo['name']);
                 // นับจำนวนไฟล์ในกลุ่มนี้
                 $countDocs = 0;
-                foreach ($documents as $dItem) {
+                foreach ($docPool as $dItem) {
                     if (strcasecmp(trim($dItem['category'] ?? ''), trim($catInfo['name'])) === 0) $countDocs++;
                 }
             ?>

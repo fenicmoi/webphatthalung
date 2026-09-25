@@ -26,7 +26,7 @@ $tables = $db->listTables();
 
 // 1. Export JSON Seed files to writable/
 echo "[1/2] Updating JSON Seed Datasets in writable/...\n";
-$seedTables = ['pages', 'provincial_projects', 'emenscr_settings', 'executives', 'gallery_albums', 'gallery_photos', 'ita_documents', 'nora_knowledge', 'procurements', 'site_banners'];
+$seedTables = ['pages', 'provincial_projects', 'emenscr_settings', 'executives', 'gallery_albums', 'gallery_photos', 'ita_documents', 'nora_knowledge', 'procurements', 'financial_reports', 'site_banners'];
 
 foreach ($seedTables as $t) {
     if ($db->tableExists($t)) {

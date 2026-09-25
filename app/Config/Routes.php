@@ -166,6 +166,16 @@ $routes->post('admin/procurement/delete-inline/(:any)', 'Admin\ProcurementManage
 
 /*
  * --------------------------------------------------------------------
+ * Financial Reports & Trial Balance (รายงานทางการเงินและงบทดลอง)
+ * --------------------------------------------------------------------
+ */
+$routes->get('financial-reports', 'FinancialReports::index');
+$routes->get('financial-reports/(:any)', 'FinancialReports::index/$1');
+$routes->get('news-money', 'FinancialReports::index');
+$routes->get('news_money', 'FinancialReports::index');
+
+/*
+ * --------------------------------------------------------------------
  * Phatthalung Interactive GIS & Geographic Portal Routes
  * --------------------------------------------------------------------
  */
@@ -216,6 +226,11 @@ $routes->post('admin/videos/delete-item/(:any)', 'Admin\VideoManager::deleteItem
 $routes->get('documents', 'Document::index');
 $routes->get('documents/category/(:any)', 'Document::index/$1');
 $routes->post('documents/count-download/(:any)', 'Document::countDownload/$1');
+
+// Legacy 2022 compatibility route for news_form (e.g. news_form/showList?cid=7)
+$routes->get('news_form/showList', 'Document::legacyNewsForm');
+$routes->get('news_form', 'Document::legacyNewsForm');
+$routes->get('news-form', 'Document::legacyNewsForm');
 
 $routes->get('admin/documents/get-item/(:any)', 'Admin\DocumentManager::getItem/$1');
 $routes->post('admin/documents/save-item', 'Admin\DocumentManager::saveItem');
@@ -331,6 +346,7 @@ $routes->post('admin/strategy/save-pillar', 'Admin\StrategyManager::savePillar',
 $routes->post('admin/strategy/delete-pillar', 'Admin\StrategyManager::deletePillar', ['filter' => 'auth']);
 $routes->post('admin/strategy/save-document', 'Admin\StrategyManager::saveDocument', ['filter' => 'auth']);
 $routes->post('admin/strategy/delete-document', 'Admin\StrategyManager::deleteDocument', ['filter' => 'auth']);
+$routes->post('admin/strategy/save-plan-books', 'Admin\StrategyManager::savePlanBooks', ['filter' => 'auth']);
 
 // Provincial Projects & GIS Map & eMENSCR Dashboard
 $routes->get('projects', 'Projects::index');

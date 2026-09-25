@@ -105,6 +105,12 @@
                 "target": "_self"
             },
             {
+                "id": "sub_financial_reports_101",
+                "title": "รายงานทางการเงินและงบทดลอง",
+                "url": "financial-reports",
+                "target": "_self"
+            },
+            {
                 "id": "sub_6a7172486e733",
                 "title": "เอกสารดาวน์โหลด",
                 "url": "documents",

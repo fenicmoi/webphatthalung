@@ -84,6 +84,30 @@ if (count($topExecutives) < 3) {
         }
     }
 }
+
+// Strategic Plan Books (5-Year Plan & 1-Year Action Plan)
+$strategyData = function_exists('get_site_strategy') ? get_site_strategy() : [];
+$planBooks = $strategyData['plan_books'] ?? [];
+$book5yr = $planBooks['book_5yr'] ?? [
+    'title' => 'แผนพัฒนาจังหวัดพัทลุง',
+    'period' => 'พ.ศ. 2566 - 2570',
+    'type_label' => 'แผนพัฒนาจังหวัด 5 ปี',
+    'vision_text' => "\"เมืองแห่งความยั่งยืน ด้านเศรษฐกิจ สังคม และความมั่นคง ทรัพยากรธรรมชาติและสิ่งแวดล้อม\"\n(Sustainability Phatthalung)",
+    'button_text' => 'เปิดอ่านแผนพัฒนา 5 ปี',
+    'cover_theme' => 'emerald',
+    'url' => 'strategy'
+];
+$book1yr = $planBooks['book_1yr'] ?? [
+    'title' => 'แผนปฏิบัติราชการประจำปี',
+    'period' => 'พ.ศ. 2570',
+    'type_label' => 'แผนปฏิบัติราชการ 1 ปี',
+    'vision_text' => "\"ขับเคลื่อนโครงการและงบประมาณตามยุทธศาสตร์ สู่การปฏิบัติจริงเพื่อประโยชน์สุขของประชาชน\"",
+    'button_text' => 'เปิดอ่านแผนปฏิบัติราชการ 2570',
+    'cover_theme' => 'royal_blue',
+    'url' => 'strategy'
+];
+$book5yrUrl = !empty($book5yr['url']) ? (strpos($book5yr['url'], 'http') === 0 ? $book5yr['url'] : base_url($book5yr['url'])) : base_url('strategy');
+$book1yrUrl = !empty($book1yr['url']) ? (strpos($book1yr['url'], 'http') === 0 ? $book1yr['url'] : base_url($book1yr['url'])) : base_url('strategy');
 ?>
 
 <section class="provincial-policy-section mb-5">
@@ -191,44 +215,91 @@ if (count($topExecutives) < 3) {
                 </div>
             </div>
 
-            <!-- Column 2: 3D Provincial Strategic Plan Book Cover (ส่วนที่ 2: แบนเนอร์รูปปกสมุดแผนพัฒนาจังหวัด) -->
-            <div class="col-12 col-md-6 col-xl-3 d-flex flex-column justify-content-center align-items-center">
-                <a href="<?= base_url('strategy') ?>" class="provincial-book-link text-decoration-none w-100 h-100 d-flex flex-column align-items-center justify-content-center" title="คลิกเพื่ออ่านแผนพัฒนาจังหวัดพัทลุง พ.ศ. 2566 - 2570">
-                    
-                    <!-- 3D Book Cover Card -->
-                    <div class="book-3d-wrapper">
-                        <div class="book-3d-cover d-flex flex-column justify-content-between p-3.5 text-center text-white">
-                            
-                            <!-- Book Top Header -->
-                            <div class="book-header">
-                                <h6 class="book-main-title fw-bold mb-1">แผนพัฒนาจังหวัดพัทลุง</h6>
-                                <span class="book-period badge rounded-pill px-2.5 py-0.5">พ.ศ. 2566 - 2570</span>
-                            </div>
+            <!-- Column 2: 3D Provincial Strategic Plan Book Cover (ส่วนที่ 2: แบนเนอร์รูปปกสมุดแผนพัฒนาจังหวัด 5 ปี และ แผน 1 ปี) -->
+            <div class="col-12 col-md-6 col-xl-3 d-flex flex-column justify-content-between align-items-center">
+                <!-- Book Switcher Header -->
+                <div class="plan-book-toggle-wrap mb-2 shadow-xs">
+                    <button type="button" class="plan-toggle-btn active btn-emerald" id="btnToggle5yr" onclick="switchPlanBook('5yr')" title="คลิกเพื่อดูแผนพัฒนาจังหวัด 5 ปี">
+                        <i class="fa-solid fa-book-bookmark"></i>
+                        <span>แผน 5 ปี (<?= esc(preg_replace('/^พ\.ศ\.\s*/u', '', $book5yr['period'] ?? '2566 - 2570')) ?>)</span>
+                    </button>
+                    <button type="button" class="plan-toggle-btn btn-royal-blue" id="btnToggle1yr" onclick="switchPlanBook('1yr')" title="คลิกเพื่อดูแผนปฏิบัติราชการประจำปี 1 ปี">
+                        <i class="fa-solid fa-file-contract"></i>
+                        <span>แผน 1 ปี (<?= esc(preg_replace('/^พ\.ศ\.\s*/u', '', $book1yr['period'] ?? '2570')) ?>)</span>
+                    </button>
+                </div>
 
-                            <!-- Book Center Emblem -->
-                            <div class="book-emblem-wrap my-auto py-2">
-                                <div class="book-emblem-circle shadow-sm mx-auto">
-                                    <img src="<?= $siteLogo ?: base_url('assets/images/slider/sane_muanglung.png') ?>" alt="ตราสัญลักษณ์จังหวัดพัทลุง" class="img-fluid">
+                <!-- Book 1: 5-Year Plan -->
+                <div id="planBook5yr" class="plan-book-card-item w-100 flex-grow-1 d-flex flex-column align-items-center justify-content-center">
+                    <a href="<?= esc($book5yrUrl) ?>" class="provincial-book-link text-decoration-none w-100 h-100 d-flex flex-column align-items-center justify-content-center" title="คลิกเพื่อเปิดอ่าน <?= esc($book5yr['title']) ?> (<?= esc($book5yr['period']) ?>)">
+                        <div class="book-3d-wrapper">
+                            <div class="book-3d-cover <?= ($book5yr['cover_theme'] ?? 'emerald') === 'royal_blue' ? 'theme-royal-blue' : '' ?> d-flex flex-column justify-content-between p-3.5 text-center text-white">
+                                <!-- Top Header -->
+                                <div class="book-header">
+                                    <div class="book-type-badge mb-1"><?= esc($book5yr['type_label'] ?? 'แผนพัฒนาจังหวัด 5 ปี') ?></div>
+                                    <h6 class="book-main-title fw-bold mb-1"><?= esc($book5yr['title'] ?? 'แผนพัฒนาจังหวัดพัทลุง') ?></h6>
+                                    <span class="book-period badge rounded-pill px-2.5 py-0.5"><?= esc($book5yr['period'] ?? 'พ.ศ. 2566 - 2570') ?></span>
                                 </div>
-                            </div>
-
-                            <!-- Book Footer Slogan & Action Tag -->
-                            <div class="book-footer">
-                                <p class="book-vision-text mb-2">
-                                    "เมืองแห่งความยั่งยืน ด้านเศรษฐกิจ สังคม และความมั่นคง ทรัพยากรธรรมชาติและสิ่งแวดล้อม<br>(Sustainability Phatthalung)"
-                                </p>
-                                <div class="book-cta-chip d-inline-flex align-items-center gap-1.5 px-3 py-1 rounded-pill fw-bold">
-                                    <i class="fa-solid fa-book-open"></i>
-                                    <span>เปิดอ่านแผนพัฒนา</span>
+                                <!-- Emblem -->
+                                <div class="book-emblem-wrap my-auto py-2">
+                                    <div class="book-emblem-circle shadow-sm mx-auto">
+                                        <img src="<?= $siteLogo ?: base_url('assets/images/slider/sane_muanglung.png') ?>" alt="ตราสัญลักษณ์จังหวัดพัทลุง" class="img-fluid">
+                                    </div>
                                 </div>
+                                <!-- Footer -->
+                                <div class="book-footer">
+                                    <p class="book-vision-text mb-2"><?= nl2br(esc($book5yr['vision_text'] ?? '')) ?></p>
+                                    <div class="book-cta-chip d-inline-flex align-items-center gap-1.5 px-3 py-1 rounded-pill fw-bold">
+                                        <i class="fa-solid fa-book-open"></i>
+                                        <span><?= esc($book5yr['button_text'] ?? 'เปิดอ่านแผนพัฒนา 5 ปี') ?></span>
+                                    </div>
+                                </div>
+                                <!-- Effects -->
+                                <div class="book-spine-effect"></div>
+                                <div class="book-edge-shadow"></div>
                             </div>
-
-                            <!-- 3D Spine Lighting & Ribbon Accent -->
-                            <div class="book-spine-effect"></div>
-                            <div class="book-edge-shadow"></div>
                         </div>
-                    </div>
-                </a>
+                    </a>
+                </div>
+
+                <!-- Book 2: 1-Year Action Plan -->
+                <div id="planBook1yr" class="plan-book-card-item w-100 flex-grow-1 d-flex flex-column align-items-center justify-content-center d-none">
+                    <a href="<?= esc($book1yrUrl) ?>" class="provincial-book-link text-decoration-none w-100 h-100 d-flex flex-column align-items-center justify-content-center" title="คลิกเพื่อเปิดอ่าน <?= esc($book1yr['title']) ?> (<?= esc($book1yr['period']) ?>)">
+                        <div class="book-3d-wrapper">
+                            <div class="book-3d-cover theme-royal-blue d-flex flex-column justify-content-between p-3.5 text-center text-white">
+                                <!-- Top Header -->
+                                <div class="book-header">
+                                    <div class="book-type-badge mb-1"><?= esc($book1yr['type_label'] ?? 'แผนปฏิบัติราชการ 1 ปี') ?></div>
+                                    <h6 class="book-main-title fw-bold mb-1"><?= esc($book1yr['title'] ?? 'แผนปฏิบัติราชการประจำปี') ?></h6>
+                                    <span class="book-period badge rounded-pill px-2.5 py-0.5"><?= esc($book1yr['period'] ?? 'พ.ศ. 2570') ?></span>
+                                </div>
+                                <!-- Emblem -->
+                                <div class="book-emblem-wrap my-auto py-2">
+                                    <div class="book-emblem-circle shadow-sm mx-auto">
+                                        <img src="<?= $siteLogo ?: base_url('assets/images/slider/sane_muanglung.png') ?>" alt="ตราสัญลักษณ์จังหวัดพัทลุง" class="img-fluid">
+                                    </div>
+                                </div>
+                                <!-- Footer -->
+                                <div class="book-footer">
+                                    <p class="book-vision-text mb-2"><?= nl2br(esc($book1yr['vision_text'] ?? '')) ?></p>
+                                    <div class="book-cta-chip d-inline-flex align-items-center gap-1.5 px-3 py-1 rounded-pill fw-bold">
+                                        <i class="fa-solid fa-book-open"></i>
+                                        <span><?= esc($book1yr['button_text'] ?? 'เปิดอ่านแผนปฏิบัติราชการ 2570') ?></span>
+                                    </div>
+                                </div>
+                                <!-- Effects -->
+                                <div class="book-spine-effect"></div>
+                                <div class="book-edge-shadow"></div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Subtle Switch Indicator Dots -->
+                <div class="d-flex align-items-center justify-content-center gap-1.5 mt-2">
+                    <span class="plan-book-dot active" id="dotBook5yr" onclick="switchPlanBook('5yr')" title="แผนพัฒนา 5 ปี"></span>
+                    <span class="plan-book-dot" id="dotBook1yr" onclick="switchPlanBook('1yr')" title="แผนปฏิบัติราชการ 1 ปี"></span>
+                </div>
             </div>
 
             <!-- Column 3: Governor's Leadership Vision (ส่วนที่ 3: นโยบายการบริหารงานของผู้ว่าฯ) -->
@@ -696,6 +767,114 @@ if (count($topExecutives) < 3) {
     color: #052e16;
 }
 
+/* Dual Book Themes & Toggle Controls */
+.book-3d-cover.theme-royal-blue {
+    background: linear-gradient(135deg, #0b1f44 0%, #1e3a8a 50%, #1d4ed8 100%);
+    border: 2px solid #93c5fd;
+    box-shadow: -4px 6px 16px rgba(15, 23, 42, 0.3), 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.provincial-book-link:hover .book-3d-cover.theme-royal-blue {
+    transform: translateY(-4px) rotateY(-6deg);
+    box-shadow: -8px 12px 24px rgba(29, 78, 216, 0.35), 0 0 16px rgba(147, 197, 253, 0.4);
+}
+
+.book-3d-cover.theme-royal-blue .book-period {
+    background: #dbeafe;
+    color: #1e3a8a;
+}
+
+.book-3d-cover.theme-royal-blue .book-emblem-circle {
+    border-color: #60a5fa;
+}
+
+.book-3d-cover.theme-royal-blue .book-cta-chip {
+    color: #1e3a8a;
+    border-color: #93c5fd;
+}
+
+.provincial-book-link:hover .book-3d-cover.theme-royal-blue .book-cta-chip {
+    background: #2563eb;
+    color: #ffffff;
+    border-color: #60a5fa;
+}
+
+.book-type-badge {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: rgba(255, 255, 255, 0.9);
+    background: rgba(0, 0, 0, 0.28);
+    padding: 1.5px 8px;
+    border-radius: 9999px;
+    display: inline-block;
+}
+
+.plan-book-toggle-wrap {
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 9999px;
+    padding: 3px;
+    display: inline-flex;
+    gap: 3px;
+}
+
+.plan-toggle-btn {
+    border: none;
+    background: transparent;
+    padding: 4px 10px;
+    border-radius: 9999px;
+    font-size: 0.73rem;
+    font-weight: 700;
+    color: #64748b;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    line-height: 1.2;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.plan-toggle-btn:hover {
+    color: #1e293b;
+}
+
+.plan-toggle-btn.active.btn-emerald {
+    background: #047857;
+    color: #ffffff;
+    box-shadow: 0 2px 6px rgba(4, 120, 87, 0.35);
+}
+
+.plan-toggle-btn.active.btn-royal-blue {
+    background: #1d4ed8;
+    color: #ffffff;
+    box-shadow: 0 2px 6px rgba(29, 78, 216, 0.35);
+}
+
+.plan-book-card-item {
+    transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.plan-book-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #cbd5e1;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.plan-book-dot.active {
+    width: 22px;
+    border-radius: 9999px;
+    background: #047857;
+}
+
+#dotBook1yr.plan-book-dot.active {
+    background: #1d4ed8;
+}
+
 /* 4. Governor Vision Card */
 .governor-vision-card {
     background: #ffffff;
@@ -1017,6 +1196,33 @@ if (count($topExecutives) < 3) {
 </style>
 
 <script>
+function switchPlanBook(bookType) {
+    var book5yr = document.getElementById('planBook5yr');
+    var book1yr = document.getElementById('planBook1yr');
+    var btn5yr = document.getElementById('btnToggle5yr');
+    var btn1yr = document.getElementById('btnToggle1yr');
+    var dot5yr = document.getElementById('dotBook5yr');
+    var dot1yr = document.getElementById('dotBook1yr');
+
+    if (!book5yr || !book1yr) return;
+
+    if (bookType === '5yr') {
+        book5yr.classList.remove('d-none');
+        book1yr.classList.add('d-none');
+        if (btn5yr) btn5yr.classList.add('active');
+        if (btn1yr) btn1yr.classList.remove('active');
+        if (dot5yr) dot5yr.classList.add('active');
+        if (dot1yr) dot1yr.classList.remove('active');
+    } else {
+        book1yr.classList.remove('d-none');
+        book5yr.classList.add('d-none');
+        if (btn1yr) btn1yr.classList.add('active');
+        if (btn5yr) btn5yr.classList.remove('active');
+        if (dot1yr) dot1yr.classList.add('active');
+        if (dot5yr) dot5yr.classList.remove('active');
+    }
+}
+
 function openGovernorModal(tabIndex) {
     var modalEl = document.getElementById('governorPortraitModal');
     if (!modalEl) return;
