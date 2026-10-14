@@ -4,6 +4,11 @@
 <?php
 $isOfficer        = session()->get('isLoggedIn');
 $isProcurementCat = !empty($isProcurementCat);
+$isFinancialCat   = !empty($isFinancialCat);
+$financialReports = $financialReports ?? [];
+$financialYears   = $financialYears ?? [];
+$financialDepts   = $financialDepts ?? [];
+$financialSourceUrl = $financialSourceUrl ?? 'https://www.phatthalung.go.th/2022-stop/news_money';
 $newsList         = $newsList ?? [];
 $categories       = $categories ?? [];
 $currentCat       = $currentCat ?? null;
@@ -116,7 +121,10 @@ $pageTitle        = $pageTitle ?? 'ข่าวสารและประกา
         <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 pt-3 border-top" style="border-color: rgba(255,255,255,0.1) !important;">
             <div>
                 <h2 class="fw-bold mb-1 text-white d-flex align-items-center gap-2">
-                    <?php if ($isProcurementCat): ?>
+                    <?php if ($isFinancialCat): ?>
+                        <i class="fa-solid fa-file-invoice-dollar text-warning fs-1"></i>
+                        <span>รายงานทางการเงินและงบทดลอง - จังหวัดพัทลุง</span>
+                    <?php elseif ($isProcurementCat): ?>
                         <i class="fa-solid fa-gavel text-warning fs-1"></i>
                         <span>ประกาศจัดซื้อจัดจ้างภาครัฐ (e-GP) - จังหวัดพัทลุง</span>
                     <?php else: ?>
@@ -128,7 +136,9 @@ $pageTitle        = $pageTitle ?? 'ข่าวสารและประกา
                     <?php endif; ?>
                 </h2>
                 <p class="text-secondary m-0">
-                    <?php if ($isProcurementCat): ?>
+                    <?php if ($isFinancialCat): ?>
+                        รายงานงบทดลอง งบกรมจังหวัดพัทลุง และงบสำนักงานจังหวัดพัทลุง ประจำเดือนและประจำปีงบประมาณ เชื่อมโยงข้อมูลระบบเดิม
+                    <?php elseif ($isProcurementCat): ?>
                         ข้อมูลโครงการจัดซื้อจัดจ้างภาครัฐ แผนการจัดซื้อจัดจ้าง และราคากลาง จากระบบ e-GP กรมบัญชีกลาง (เฉพาะหน่วยงานในจังหวัดพัทลุง)
                     <?php else: ?>
                         ติดตามข่าวสาร กิจกรรมจังหวัด ประกาศประกวดราคา และคู่มือประชาชนทั้งหมด
@@ -158,10 +168,12 @@ $pageTitle        = $pageTitle ?? 'ข่าวสารและประกา
         <?php foreach ($categories as $cat): 
             $isActive = (strcasecmp(trim($currentCat ?? ''), trim($cat)) === 0);
             $isEgpCat = (mb_stripos($cat, 'จัดซื้อจัดจ้าง') !== false || mb_stripos($cat, 'e-gp') !== false);
+            $isFinCatItem = (mb_stripos($cat, 'การเงิน') !== false || mb_stripos($cat, 'งบทดลอง') !== false);
             $isPrdCatItem = (mb_stripos($cat, 'สปชส') !== false || mb_stripos($cat, 'สำนักงานประชาสัมพันธ์') !== false || mb_stripos($cat, 'กรมประชาสัมพันธ์') !== false || mb_stripos($cat, 'nnt') !== false || mb_stripos($cat, 'prd') !== false);
         ?>
             <a href="<?= base_url('news?category=' . urlencode($cat)) ?>" class="btn btn-sm px-3.5 py-1.5 rounded-pill news-cat-btn <?= $isActive ? 'active' : '' ?>">
                 <?php if ($isEgpCat): ?><i class="fa-solid fa-gavel text-warning me-1"></i><?php endif; ?>
+                <?php if ($isFinCatItem): ?><i class="fa-solid fa-file-invoice-dollar text-primary me-1"></i><?php endif; ?>
                 <?php if ($isPrdCatItem): ?><i class="fa-solid fa-bullhorn text-success me-1"></i><?php endif; ?>
                 <?= esc($cat) ?>
             </a>
@@ -216,6 +228,95 @@ $pageTitle        = $pageTitle ?? 'ข่าวสารและประกา
 
     <?php endif; ?>
 
+    <?php if ($isFinancialCat): ?>
+        <!-- ============================================================= -->
+        <!-- FINANCIAL REPORTS (NEWS_MONEY) INTERACTIVE TABLE -->
+        <!-- ============================================================= -->
+        <div class="card border-0 rounded-4 shadow-sm mb-5 overflow-hidden" style="background: #ffffff; border: 1px solid #cbd5e1 !important;">
+            
+            <!-- Top Controls Header -->
+            <div class="p-3.5 px-4 d-flex flex-wrap align-items-center justify-content-between gap-3 border-bottom" style="background: linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 100%);">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="badge bg-success bg-opacity-25 text-success border border-success border-opacity-50 px-3 py-1.5 rounded-pill fw-bold" style="font-size: 0.85rem;">
+                        <i class="fa-solid fa-file-invoice-dollar me-1"></i> รายงานทางการเงินและงบทดลอง
+                    </span>
+                    <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-3 py-1.5 rounded-pill fw-bold" style="font-size: 0.85rem;">
+                        <i class="fa-solid fa-database me-1"></i> รวม <?= count($financialReports) ?> รายการ
+                    </span>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <a href="https://www.phatthalung.go.th/2022-stop/news_money" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1.5 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-xs">
+                        <i class="fa-solid fa-arrow-up-right-from-square text-warning"></i> ระบบเดิม (2022-stop/news_money)
+                    </a>
+                    <a href="<?= base_url('financial-reports') ?>" class="btn btn-sm btn-success text-white rounded-pill px-3 py-1.5 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-xs" style="background: #047857;">
+                        <i class="fa-solid fa-table me-1"></i> เปิดหน้าสืบค้นฉบับเต็ม
+                    </a>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="p-3 p-md-4">
+                <div class="table-responsive">
+                    <table class="table egp-clean-table m-0" id="financialNewsTable">
+                        <thead>
+                            <tr>
+                                <th class="text-center" style="width: 70px;">ลำดับ</th>
+                                <th>ชื่อเอกสาร / รายงานงบทดลอง</th>
+                                <th class="text-center" style="width: 120px;">ปีงบประมาณ</th>
+                                <th class="text-center" style="width: 130px;">ประจำเดือน</th>
+                                <th style="width: 220px;">หน่วยงาน</th>
+                                <th class="text-center" style="width: 100px;">ขนาดไฟล์</th>
+                                <th class="text-center" style="width: 130px;">ดาวน์โหลด</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($financialReports as $fIdx => $fr): ?>
+                                <tr>
+                                    <td class="text-center text-muted fw-bold"><?= $fIdx + 1 ?></td>
+                                    <td>
+                                        <div class="fw-bold text-dark mb-1">
+                                            <?= esc($fr['title']) ?>
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge bg-light text-dark border px-2.5 py-1 rounded-pill">
+                                            พ.ศ. <?= esc($fr['fiscal_year']) ?>
+                                        </span>
+                                    </td>
+                                    <td class="text-center text-secondary small">
+                                        <?= esc($fr['report_month'] ?: '-') ?>
+                                    </td>
+                                    <td class="small text-secondary">
+                                        <i class="fa-regular fa-building me-1 text-muted"></i><?= esc($fr['department']) ?>
+                                    </td>
+                                    <td class="text-center small text-muted">
+                                        <?= esc($fr['file_size'] ?: '-') ?>
+                                    </td>
+                                    <td class="text-center">
+                                        <a href="<?= esc($fr['doc_path']) ?>" target="_blank" rel="noopener noreferrer" class="btn btn-xs btn-danger px-3 py-1.5 rounded-pill fw-semibold text-white d-inline-flex align-items-center gap-1 shadow-xs" style="font-size: 0.82rem;">
+                                            <i class="fa-solid fa-file-pdf"></i> PDF
+                                        </a>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="p-3 bg-light border-top d-flex flex-wrap align-items-center justify-content-between gap-2 text-muted small">
+                <span>
+                    <i class="fa-solid fa-circle-check text-success me-1"></i> เชื่อมโยงข้อมูลรายงานทางการเงินและงบทดลองจากระบบเดิม (https://www.phatthalung.go.th/2022-stop/news_money)
+                </span>
+                <a href="<?= base_url('financial-reports') ?>" class="text-decoration-none fw-bold text-success">
+                    เปิดโหมดกรองตามปี/เดือนแบบละเอียด &raquo;
+                </a>
+            </div>
+        </div>
+    <?php endif; ?>
+
+    <?php if (!$isFinancialCat): ?>
     <!-- Standard News List View -->
     <div class="card border-0 rounded-4 shadow-sm overflow-hidden mb-5" style="background: var(--card-bg, #ffffff); border: 1px solid rgba(15,23,42,0.08) !important;">
         <?php if ($isProcurementCat): ?>
@@ -329,6 +430,7 @@ $pageTitle        = $pageTitle ?? 'ข่าวสารและประกา
             </div>
         <?php endif; ?>
     </div>
+    <?php endif; ?>
 </div>
 
 <!-- DataTables Scripts -->
@@ -338,6 +440,28 @@ $pageTitle        = $pageTitle ?? 'ข่าวสารและประกา
 
 <script>
 $(document).ready(function() {
+    if ($('#financialNewsTable').length) {
+        $('#financialNewsTable').DataTable({
+            pageLength: 15,
+            lengthMenu: [[10, 15, 25, 50, 100], [10, 15, 25, 50, 100]],
+            language: {
+                search: '<i class="fa-solid fa-search text-primary me-1"></i> ค้นหารายงาน:',
+                searchPlaceholder: 'พิมพ์ชื่อรายงาน, เดือน, ปีงบประมาณ...',
+                lengthMenu: 'แสดง _MENU_ รายการต่อหน้า',
+                info: 'แสดง _START_ ถึง _END_ จากทั้งหมด _TOTAL_ รายการ',
+                infoEmpty: 'ไม่มีข้อมูล',
+                zeroRecords: 'ไม่พบข้อมูลรายงานที่ค้นหา',
+                paginate: {
+                    first: '<i class="fa-solid fa-angles-left"></i>',
+                    last: '<i class="fa-solid fa-angles-right"></i>',
+                    next: '<i class="fa-solid fa-chevron-right"></i>',
+                    previous: '<i class="fa-solid fa-chevron-left"></i>'
+                }
+            },
+            order: []
+        });
+    }
+
     if ($('#egpTable').length) {
         $('#egpTable').DataTable({
             processing: true,

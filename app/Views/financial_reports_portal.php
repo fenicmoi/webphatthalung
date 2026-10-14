@@ -154,7 +154,10 @@ $items = $items ?? [];
                 <i class="fa-solid fa-gavel text-warning"></i> ประกาศจัดซื้อจัดจ้าง (e-GP)
             </a>
             <a href="<?= base_url('news?category=' . urlencode('รายงานทางการเงิน')) ?>" class="btn btn-sm btn-light text-dark rounded-pill px-3 py-1.5 fw-bold d-inline-flex align-items-center gap-1.5 shadow-sm">
-                <i class="fa-solid fa-chart-line text-primary"></i> รายงานงบทดลองทั้งหมด
+                <i class="fa-solid fa-file-invoice-dollar text-success"></i> หมวดหมู่: รายงานทางการเงิน
+            </a>
+            <a href="https://www.phatthalung.go.th/2022-stop/news_money" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-warning rounded-pill px-3 py-1.5 fw-bold d-inline-flex align-items-center gap-1.5 shadow-sm" style="background: rgba(245, 158, 11, 0.2); border-color: #fcd34d; color: #ffffff;">
+                <i class="fa-solid fa-arrow-up-right-from-square text-warning"></i> ลิงก์ระบบเดิม (2022-stop/news_money)
             </a>
         </div>
     </div>

@@ -48,6 +48,20 @@ class News extends BaseController
         $isPrdCat = !empty($cat) && (mb_stripos($cat, 'สปชส') !== false || mb_stripos($cat, 'สำนักงานประชาสัมพันธ์') !== false || mb_stripos($cat, 'กรมประชาสัมพันธ์') !== false || mb_stripos($cat, 'nnt') !== false || mb_stripos($cat, 'prd') !== false);
         $prdNewsList = \App\Libraries\PrdNewsService::getPhatthalungNews(24);
 
+        $isFinancialCat = !empty($cat) && (mb_stripos($cat, 'การเงิน') !== false || mb_stripos($cat, 'งบทดลอง') !== false || mb_stripos($cat, 'financial') !== false);
+        $financialReports = [];
+        $financialYears = [];
+        $financialDepts = [];
+
+        if ($isFinancialCat) {
+            $finModel = new \App\Models\FinancialReportModel();
+            $financialReports = $finModel->orderBy('fiscal_year', 'DESC')->orderBy('id', 'DESC')->findAll();
+            $yearsData = $finModel->distinct()->select('fiscal_year')->where('fiscal_year IS NOT NULL')->orderBy('fiscal_year', 'DESC')->findAll();
+            $financialYears = array_filter(array_column($yearsData, 'fiscal_year'));
+            $deptsData = $finModel->distinct()->select('department')->where('department IS NOT NULL')->orderBy('department', 'ASC')->findAll();
+            $financialDepts = array_filter(array_column($deptsData, 'department'));
+        }
+
         if ($isPrdCat) {
             $newsList = $prdNewsList;
         } elseif ($isProcurementCat) {
@@ -57,13 +71,18 @@ class News extends BaseController
         }
 
         return view('news/index', [
-            'newsList'          => $newsList,
-            'categories'        => $categories,
-            'currentCat'        => $cat,
-            'isProcurementCat'  => $isProcurementCat,
-            'isPrdCat'          => $isPrdCat,
-            'egpProjects'       => $egpProjects,
-            'pageTitle'         => !empty($cat) ? esc($cat) . ' | ข่าวสารและประกาศ' : 'ข่าวสารและประกาศจากสำนักงาน'
+            'newsList'           => $newsList,
+            'categories'         => $categories,
+            'currentCat'         => $cat,
+            'isProcurementCat'   => $isProcurementCat,
+            'isPrdCat'           => $isPrdCat,
+            'isFinancialCat'     => $isFinancialCat,
+            'financialReports'   => $financialReports,
+            'financialYears'     => $financialYears,
+            'financialDepts'     => $financialDepts,
+            'financialSourceUrl' => 'https://www.phatthalung.go.th/2022-stop/news_money',
+            'egpProjects'        => $egpProjects,
+            'pageTitle'          => !empty($cat) ? esc($cat) . ' | ข่าวสารและประกาศ' : 'ข่าวสารและประกาศจากสำนักงาน'
         ]);
     }
 

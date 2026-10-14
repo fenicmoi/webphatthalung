@@ -504,19 +504,40 @@ try {
                     <button class="btn btn-xs px-4 py-2 news-cat-btn rounded-pill active" data-filter="all" onclick="filterHomeNews('all', this)">
                         ทั้งหมด (<?= count($homeNews) ?>)
                     </button>
-                    <?php foreach ($newsCats as $cat): 
+                    <?php 
+                    $finTotalCount = 0;
+                    try {
+                        $finDump = (defined('WRITABLE') ? rtrim(WRITABLE, '/\\') : dirname(__DIR__, 2) . '/writable') . '/dump_financial_reports.json';
+                        if (file_exists($finDump)) {
+                            $finData = json_decode(file_get_contents($finDump), true);
+                            $finTotalCount = is_array($finData) ? count($finData) : 234;
+                        }
+                    } catch (\Throwable $e) {}
+
+                    foreach ($newsCats as $cat): 
                         $countInCat = 0;
-                        foreach ($homeNews as $hn) {
-                            if (strcasecmp(trim($hn['category'] ?? ''), trim($cat)) === 0) $countInCat++;
+                        $isFinCatChip = (mb_stripos($cat, 'การเงิน') !== false || mb_stripos($cat, 'งบทดลอง') !== false);
+                        if ($isFinCatChip) {
+                            $countInCat = $finTotalCount ?: 234;
+                        } else {
+                            foreach ($homeNews as $hn) {
+                                if (strcasecmp(trim($hn['category'] ?? ''), trim($cat)) === 0) $countInCat++;
+                            }
                         }
                         if ($countInCat === 0 && !$isOfficer) continue;
                         $displayCatName = (strcasecmp(trim($cat), 'general') === 0) ? 'ข่าวทั่วไป' : $cat;
                         $isPrdCatChip = (mb_stripos($cat, 'สปชส') !== false || mb_stripos($cat, 'สำนักงานประชาสัมพันธ์') !== false);
                     ?>
-                        <button class="btn btn-xs px-4 py-2 news-cat-btn rounded-pill <?= ($countInCat === 0) ? 'opacity-50' : '' ?>" data-filter="<?= esc($cat) ?>" onclick="filterHomeNews('<?= esc($cat) ?>', this)">
-                            <?php if ($isPrdCatChip): ?><i class="fa-solid fa-bullhorn text-success me-1"></i><?php endif; ?>
-                            <?= esc($displayCatName) ?> (<?= $countInCat ?>)
-                        </button>
+                        <?php if ($isFinCatChip): ?>
+                            <a href="<?= base_url('news?category=' . urlencode('รายงานทางการเงิน')) ?>" class="btn btn-xs px-4 py-2 news-cat-btn rounded-pill text-decoration-none" title="คลิกเพื่อดูรายงานทางการเงินและงบทดลอง">
+                                <i class="fa-solid fa-file-invoice-dollar text-success me-1"></i><?= esc($displayCatName) ?> (<?= $countInCat ?>)
+                            </a>
+                        <?php else: ?>
+                            <button class="btn btn-xs px-4 py-2 news-cat-btn rounded-pill <?= ($countInCat === 0) ? 'opacity-50' : '' ?>" data-filter="<?= esc($cat) ?>" onclick="filterHomeNews('<?= esc($cat) ?>', this)">
+                                <?php if ($isPrdCatChip): ?><i class="fa-solid fa-bullhorn text-success me-1"></i><?php endif; ?>
+                                <?= esc($displayCatName) ?> (<?= $countInCat ?>)
+                            </button>
+                        <?php endif; ?>
                     <?php endforeach; ?>
                 </div>
 

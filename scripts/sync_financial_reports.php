@@ -1,12 +1,13 @@
 <?php
 /**
- * Sync Financial Reports (news_money) from Live Server into phatthalun_2026db
+ * Sync Financial Reports (news_money) from Live Server (2022-stop) into phatthalun_2026db
  */
 
 header('Content-Type: text/plain; charset=utf-8');
 
 echo "========================================================\n";
 echo "  Phatthalung Financial Reports Sync Tool (news_money)\n";
+echo "  Source: https://www.phatthalung.go.th/2022-stop/news_money\n";
 echo "========================================================\n\n";
 
 $targetDbName = 'phatthalun_2026db';
@@ -47,27 +48,29 @@ $thaiMonths = [
 ];
 
 $allReports = [];
-$totalPages = 23;
+$totalPages = 24;
 
-echo "2. กำลังดึงข้อมูลรายงานทางการเงินจาก https://www.phatthalung.go.th/2022/news_money (ทั้งหมด $totalPages หน้า)...\n";
+echo "2. กำลังดึงข้อมูลรายงานทางการเงินจาก https://www.phatthalung.go.th/2022-stop/news_money (ทั้งหมด $totalPages หน้า)...\n";
 
 for ($p = 1; $p <= $totalPages; $p++) {
-    $url = ($p === 1) ? 'https://www.phatthalung.go.th/2022/news_money' : "https://www.phatthalung.go.th/2022/news_money?page=$p";
+    $url = 'https://www.phatthalung.go.th/2022-stop/news_money/';
     
     $ch = curl_init($url);
     curl_setopt_array($ch, [
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_FOLLOWLOCATION => true,
-        CURLOPT_TIMEOUT => 15,
+        CURLOPT_POST => true,
+        CURLOPT_POSTFIELDS => ['page' => $p],
+        CURLOPT_TIMEOUT => 25,
         CURLOPT_SSL_VERIFYPEER => false,
-        CURLOPT_USERAGENT => 'Mozilla/5.0'
+        CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
     ]);
     $html = curl_exec($ch);
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
 
     if ($httpCode !== 200 || empty($html)) {
-        echo "   [!] หน้า $p โหลดไม่สำเร็จ\n";
+        echo "   [!] หน้า $p โหลดไม่สำเร็จ (HTTP $httpCode)\n";
         continue;
     }
 
@@ -93,9 +96,9 @@ for ($p = 1; $p <= $totalPages; $p++) {
         foreach ($hm[1] as $h) {
             if (strpos($h, '.pdf') !== false || strpos($h, 'files/com_news_money') !== false) {
                 if (strpos($h, 'http') === 0) {
-                    $docPath = $h;
+                    $docPath = str_replace('https://www.phatthalung.go.th/2022/', 'https://www.phatthalung.go.th/2022-stop/', $h);
                 } else {
-                    $docPath = 'https://www.phatthalung.go.th/2022/' . ltrim($h, '/');
+                    $docPath = 'https://www.phatthalung.go.th/2022-stop/' . ltrim($h, '/');
                 }
                 break;
             }
@@ -103,7 +106,7 @@ for ($p = 1; $p <= $totalPages; $p++) {
 
         // If no direct link in list, fallback to news_money url
         if (empty($docPath)) {
-            $docPath = 'https://www.phatthalung.go.th/2022/news_money';
+            $docPath = 'https://www.phatthalung.go.th/2022-stop/news_money';
         }
 
         // Extract file size & downloads
