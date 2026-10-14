@@ -93,6 +93,7 @@ $essentialFiles = [
     'app/Views/procurement/detail.php',
     'app/Views/procurement_portal.php',
     'app/Views/news/index.php',
+    'app/Views/news/detail.php',
     'app/Models/FinancialReportModel.php',
     'app/Controllers/FinancialReports.php',
     'app/Views/financial_reports_portal.php',

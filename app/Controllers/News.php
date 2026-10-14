@@ -121,13 +121,13 @@ class News extends BaseController
             }
         }
 
+        // Increment view count in MySQL database and fallback JSON
+        $this->incrementViews($id);
+
         $news = get_news_by_id($id);
         if (!$news) {
             return redirect()->to(base_url('news'))->with('error', 'ไม่พบข่าวสารที่ท่านค้นหา หรือถูกยกเลิกการเผยแพร่ออกไปแล้ว');
         }
-
-        // Increment view count
-        $this->incrementViews($id);
 
         $recentNews = get_site_news(4, null, true);
 
@@ -140,13 +140,30 @@ class News extends BaseController
 
     private function incrementViews($id)
     {
+        // 1. อัปเดตในฐานข้อมูล MySQL ทันที (Single Source of Truth)
+        try {
+            $db = \Config\Database::connect();
+            if ($db->tableExists('news')) {
+                $builder = $db->table('news');
+                if (is_numeric($id)) {
+                    $builder->where('id', (int)$id);
+                } else {
+                    $builder->where('id', $id)->orWhere('slug', (string)$id);
+                }
+                $builder->set('views_count', 'views_count + 1', false)->update();
+            }
+        } catch (\Throwable $t) {
+            log_message('error', 'incrementViews MySQL error: ' . $t->getMessage());
+        }
+
+        // 2. อัปเดตในไฟล์ site_news.json เพื่อความสอดคล้องกับระบบสำรอง
         $path = $this->getNewsPath();
         if (is_file($path)) {
-            $all = json_decode(file_get_contents($path), true);
+            $all = json_decode(@file_get_contents($path), true);
             if (is_array($all)) {
                 $changed = false;
                 foreach ($all as &$item) {
-                    if (strval($item['id']) === strval($id)) {
+                    if (strval($item['id'] ?? '') === strval($id) || strval($item['slug'] ?? '') === strval($id)) {
                         $item['views'] = isset($item['views']) ? ((int)$item['views'] + 1) : 1;
                         $changed = true;
                         break;
@@ -336,7 +353,7 @@ class News extends BaseController
                     'images_gallery'    => !empty($imagesGallery) ? json_encode($imagesGallery, JSON_UNESCAPED_UNICODE) : null,
                     'attachments'       => !empty($attachments) ? json_encode($attachments, JSON_UNESCAPED_UNICODE) : null,
                     'status'            => 'published',
-                    'views_count'       => ($foundIndex >= 0 && isset($allNews[$foundIndex]['views'])) ? (int)$allNews[$foundIndex]['views'] : 1,
+                    'views_count'       => $existingDb ? (int)($existingDb['views_count'] ?? 1) : (($foundIndex >= 0 && isset($allNews[$foundIndex]['views'])) ? (int)$allNews[$foundIndex]['views'] : 1),
                     'author_id'         => is_numeric($authorId) ? (int)$authorId : null,
                     'updated_at'        => $now,
                 ];
