@@ -43,6 +43,21 @@ class Login extends BaseController
             return redirect()->back()->withInput()->with('toast_msg', $msg)->with('toast_type', 'error');
         }
 
+        // 0. ตรวจสอบระบบป้องกัน Brute Force Attack (จำกัดการพยายามล็อกอินผิดพลาด)
+        $cache = \Config\Services::cache();
+        $ip = $this->request->getIPAddress();
+        $throttleKey = 'login_throttle_' . md5($ip . '_' . strtolower($username));
+        $throttleData = $cache->get($throttleKey) ?: ['attempts' => 0, 'locked_until' => 0];
+
+        if (!empty($throttleData['locked_until']) && $throttleData['locked_until'] > time()) {
+            $waitMinutes = ceil(($throttleData['locked_until'] - time()) / 60);
+            $msg = "⚠️ ระงับการเข้าสู่ระบบชั่วคราวเนื่องจากพยายามกรอกรหัสผ่านผิดเกินกำหนด กรุณารออีก {$waitMinutes} นาที";
+            if ($isAjax) {
+                return $this->respond(['status' => 'error', 'message' => $msg], 429);
+            }
+            return redirect()->back()->withInput()->with('toast_msg', $msg)->with('toast_type', 'error');
+        }
+
         // 1. ตรวจสอบกับฐานข้อมูลจริง (ตาราง users) ก่อนเป็นลำดับแรก
         $account = null;
         try {
@@ -106,6 +121,11 @@ class Login extends BaseController
 
         // 3. ผลการตรวจสอบสิทธิ์
         if ($account) {
+            // ล้างประวัติการพยายามล็อกอินผิดเมื่อเข้าสู่ระบบสำเร็จ
+            try {
+                $cache->delete($throttleKey);
+            } catch (\Throwable $e) {}
+
             // ตั้งค่าเซสชัน
             session()->set([
                 'user_id'         => $account['id'],
@@ -130,7 +150,22 @@ class Login extends BaseController
             return redirect()->to(base_url('admin/dashboard'));
         }
 
-        $failMsg = '⚠️ ชื่อผู้ใช้งานหรือรหัสผ่านไม่ถูกต้อง (ลองใช้อย่างง่าย: admin / password123)';
+        // บันทึกการพยายามเข้าสู่ระบบผิดพลาด
+        $attempts = ($throttleData['attempts'] ?? 0) + 1;
+        $lockedUntil = 0;
+        if ($attempts >= 5) {
+            $lockedUntil = time() + (15 * 60); // บล็อก 15 นาที
+        }
+        try {
+            $cache->save($throttleKey, ['attempts' => $attempts, 'locked_until' => $lockedUntil], 1800);
+        } catch (\Throwable $e) {}
+
+        $failMsg = '⚠️ ชื่อผู้ใช้งานหรือรหัสผ่านไม่ถูกต้อง กรุณาตรวจสอบอีกครั้ง';
+        if ($attempts >= 3 && $attempts < 5) {
+            $remaining = 5 - $attempts;
+            $failMsg .= " (สามารถลองได้อีก {$remaining} ครั้งก่อนระบบจะระงับชั่วคราว)";
+        }
+
         if ($isAjax) {
             return $this->respond([
                 'status' => 'error',

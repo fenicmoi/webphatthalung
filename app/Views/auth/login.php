@@ -174,34 +174,6 @@
             color: #047857;
         }
 
-        .demo-box {
-            background: #ecfdf5;
-            border: 1.5px dashed #6ee7b7;
-            border-radius: 14px;
-            padding: 0.75rem 0.9rem;
-        }
-
-        .demo-btn {
-            font-size: 0.84rem;
-            font-weight: 600;
-            padding: 0.4rem 0.9rem;
-            border-radius: 30px;
-            background: #ffffff;
-            color: #065f46;
-            border: 1.5px solid #a7f3d0;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: 0 2px 6px rgba(4, 120, 87, 0.06);
-        }
-
-        .demo-btn:hover {
-            background: linear-gradient(135deg, #059669 0%, #047857 100%);
-            color: white !important;
-            border-color: #047857;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(4, 120, 87, 0.2);
-        }
-
         .btn-login-submit {
             background: linear-gradient(135deg, #059669 0%, #047857 50%, #064e3b 100%);
             color: #ffffff !important;
@@ -348,21 +320,6 @@
                 </div>
             <?php endif; ?>
 
-            <!-- Demo Fill Section for Seamless Development Showcase -->
-            <div class="demo-box mb-3 text-center">
-                <div class="fw-bold text-emerald mb-2" style="font-size: 0.86rem;">
-                    <i class="fa-solid fa-wand-magic-sparkles text-warning me-1"></i>คลิกเพื่อกรอกรหัสทดสอบอัตโนมัติ (Demo Access):
-                </div>
-                <div class="d-flex flex-wrap justify-content-center gap-2">
-                    <button type="button" class="demo-btn" onclick="fillDemo('admin', 'password123')">
-                        👑 สิทธิ์ผู้ดูแลระบบ (Admin)
-                    </button>
-                    <button type="button" class="demo-btn" onclick="fillDemo('officer', 'officer123')">
-                        🛡️ สิทธิ์เจ้าหน้าที่ (Officer)
-                    </button>
-                </div>
-            </div>
-
             <!-- Interactive Login Form -->
             <form id="loginForm" action="<?= base_url('login/attempt') ?>" method="POST" onsubmit="handleLoginSubmit(event)">
                 <?= csrf_field() ?>
@@ -374,7 +331,7 @@
                     </label>
                     <div class="position-relative">
                         <i class="fa-solid fa-user-shield position-absolute login-input-icon"></i>
-                        <input type="text" id="username" name="username" class="form-control login-input" required placeholder="เช่น admin หรือ officer" autocomplete="username">
+                        <input type="text" id="username" name="username" class="form-control login-input" required placeholder="ระบุชื่อผู้ใช้งาน หรือ อีเมลราชการ" autocomplete="username">
                     </div>
                 </div>
 
@@ -432,14 +389,7 @@
             });
         <?php endif; ?>
 
-        // 2. ฟังก์ชันกรอกรหัสทดสอบอัตโนมัติ (Demo Credentials)
-        function fillDemo(username, password) {
-            document.getElementById('username').value = username;
-            document.getElementById('password').value = password;
-            App.toast(`กรอกข้อมูลของบัญชี ${username} เรียบร้อย! กดปุ่มเข้าสู่ระบบได้เลย`, 'info');
-        }
-
-        // 3. ฟังก์ชันสลับดูรหัสผ่าน
+        // 2. ฟังก์ชันสลับดูรหัสผ่าน
         function togglePassword() {
             const input = document.getElementById('password');
             const icon = document.getElementById('eyeIcon');
