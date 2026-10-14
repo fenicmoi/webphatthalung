@@ -262,6 +262,7 @@ $routes->post('admin/governor-policy/save', 'Admin\GovernorPolicyManager::save',
 $routes->get('admin/executives', 'Admin\ExecutiveManager::index', ['filter' => 'auth']);
 $routes->get('admin/executives/get-item/(:any)', 'Admin\ExecutiveManager::getItem/$1');
 $routes->post('admin/executives/save-item', 'Admin\ExecutiveManager::saveItem');
+$routes->post('admin/executives/toggle-active/(:any)', 'Admin\ExecutiveManager::toggleActive/$1');
 $routes->post('admin/executives/delete-item/(:any)', 'Admin\ExecutiveManager::deleteItem/$1');
 
 /*

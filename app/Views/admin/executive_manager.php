@@ -100,14 +100,15 @@
                     <th class="text-center table-nowrap" style="width: 140px;">ตำแหน่งผัง (Grid)</th>
                     <th class="table-nowrap">หมวดหมู่</th>
                     <th style="min-width: 200px;">ข้อมูลติดต่อ</th>
-                    <th class="text-center table-nowrap" style="width: 110px;">หน้าแรก</th>
+                    <th class="text-center table-nowrap" style="width: 150px;">สถานะดำรงตำแหน่ง</th>
+                    <th class="text-center table-nowrap" style="width: 90px;">หน้าแรก</th>
                     <th class="pe-4 text-end table-nowrap" style="width: 170px;">การจัดการ</th>
                 </tr>
             </thead>
             <tbody>
                 <?php if (empty($executives)): ?>
                     <tr>
-                        <td colspan="7" class="text-center py-5 text-secondary">
+                        <td colspan="8" class="text-center py-5 text-secondary">
                             <i class="fa-solid fa-users-slash fs-1 d-block mb-3 opacity-50"></i>
                             <h6 class="fw-bold mb-1" style="color: var(--text-primary);">ยังไม่มีข้อมูลผู้บริหารในระบบ</h6>
                             <p class="small text-secondary mb-3">กดปุ่ม <strong>"+ เพิ่มรายนามผู้บริหาร"</strong> ด้านบนเพื่อเริ่มบันทึกข้อมูล</p>
@@ -118,17 +119,23 @@
                     </tr>
                 <?php else: ?>
                     <?php foreach ($executives as $ex): ?>
-                        <tr>
+                        <?php $isActive = !isset($ex['active']) || !empty($ex['active']); ?>
+                        <tr class="<?= !$isActive ? 'table-light opacity-75' : '' ?>">
                             <td class="ps-4">
                                 <div class="position-relative" style="width: 52px; height: 52px;">
                                     <img src="<?= !empty($ex['photo']) ? (strpos($ex['photo'], 'http') === 0 ? esc($ex['photo']) : base_url($ex['photo'])) : 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop' ?>" 
                                          alt="<?= esc($ex['name']) ?>" 
                                          class="rounded-circle shadow-sm" 
-                                         style="width: 52px; height: 52px; object-fit: cover; object-position: top center; border: 2.5px solid var(--accent-gold, #f59e0b);">
+                                         style="width: 52px; height: 52px; object-fit: cover; object-position: top center; border: 2.5px solid <?= $isActive ? 'var(--accent-gold, #f59e0b)' : '#94a3b8' ?>;">
                                 </div>
                             </td>
                             <td>
-                                <div class="fw-bold" style="color: var(--text-primary); font-size: 1rem;"><?= esc($ex['name']) ?></div>
+                                <div class="fw-bold d-flex align-items-center gap-1.5" style="color: var(--text-primary); font-size: 1rem;">
+                                    <?= esc($ex['name']) ?>
+                                    <?php if (!$isActive): ?>
+                                        <span class="badge bg-secondary" style="font-size: 0.7rem;">เกษียณ/ซ่อน</span>
+                                    <?php endif; ?>
+                                </div>
                                 <div class="text-secondary small mt-0.5"><?= esc($ex['position']) ?></div>
                             </td>
                             <td class="text-center table-nowrap">
@@ -156,7 +163,18 @@
                                 </div>
                             </td>
                             <td class="text-center table-nowrap">
-                                <?php if (!empty($ex['featured'])): ?>
+                                <?php if ($isActive): ?>
+                                    <button type="button" class="btn btn-sm btn-success rounded-pill px-2.5 py-1 fw-bold shadow-xs d-inline-flex align-items-center gap-1" title="คลิกเพื่อยกเลิกการแสดงผล (เกษียณ/พ้นตำแหน่ง โดยไม่ต้องลบข้อมูล)" onclick="toggleExecutiveActive('<?= $ex['id'] ?>', '<?= esc($ex['name'], 'js') ?>')">
+                                        <i class="fa-solid fa-circle-check"></i> ดำรงตำแหน่ง
+                                    </button>
+                                <?php else: ?>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-2.5 py-1 fw-bold d-inline-flex align-items-center gap-1" title="คลิกเพื่อเปิดการแสดงผลอีกครั้ง" onclick="toggleExecutiveActive('<?= $ex['id'] ?>', '<?= esc($ex['name'], 'js') ?>')">
+                                        <i class="fa-solid fa-ban text-warning"></i> เกษียณ/ซ่อน
+                                    </button>
+                                <?php endif; ?>
+                            </td>
+                            <td class="text-center table-nowrap">
+                                <?php if (!empty($ex['featured']) && $isActive): ?>
                                     <span class="badge bg-success-subtle text-success rounded-pill px-2.5 py-1 fw-bold">
                                         <i class="fa-solid fa-check me-1"></i> แสดง
                                     </span>
@@ -184,6 +202,27 @@
         </table>
     </div>
 </div>
+
+<script>
+    async function toggleExecutiveActive(id, name) {
+        if (!confirm(`ต้องการเปลี่ยนสถานะการแสดงผลของ "${name}" ใช่หรือไม่?\n\n(หากยกเลิกการแสดงผล ข้อมูลจะถูกซ่อนจากหน้าเว็บไซต์ทันที แต่ประวัติจะยังคงบันทึกไว้ในระบบอย่างปลอดภัย)`)) return;
+
+        try {
+            const res = await App.fetch(`<?= base_url('admin/executives/toggle-active') ?>/${id}`, {
+                method: 'POST'
+            });
+
+            if (res.status === 'success') {
+                App.toast(res.message, 'success');
+                setTimeout(() => location.reload(), 800);
+            } else {
+                App.toast(res.message || 'ดำเนินการไม่สำเร็จ', 'error');
+            }
+        } catch (err) {
+            App.toast('เกิดข้อผิดพลาดในการเชื่อมต่อ', 'error');
+        }
+    }
+</script>
 
 <!-- Include Executive Studio Modal Component -->
 <?= $this->include('components/executive_studio') ?>

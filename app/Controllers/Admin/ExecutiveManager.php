@@ -29,7 +29,7 @@ class ExecutiveManager extends BaseController
             return redirect()->to('/login');
         }
 
-        $executives = get_site_executives(null, null, false);
+        $executives = get_site_executives(null, null, false, false);
         $categories = get_executive_categories();
 
         $data = [
@@ -50,7 +50,7 @@ class ExecutiveManager extends BaseController
     {
         if ($auth = $this->checkOfficerAuth()) return $auth;
 
-        $execs = get_site_executives(null, null, false);
+        $execs = get_site_executives(null, null, false, false);
         foreach ($execs as $item) {
             if ((string)($item['id'] ?? '') === (string)$id) {
                 return $this->response->setJSON(['status' => 'success', 'data' => $item]);
@@ -82,11 +82,13 @@ class ExecutiveManager extends BaseController
         $orderNum = (int)($this->request->getPost('order_num') ?? 99);
         $featured = !empty($this->request->getPost('featured'));
 
+        $active = $this->request->getPost('active') !== null ? !empty($this->request->getPost('active')) : true;
+
         if (empty($name) || empty($position)) {
             return $this->response->setJSON(['status' => 'error', 'message' => 'กรุณาระบุชื่อและตำแหน่งของผู้บริหาร']);
         }
 
-        $execs = get_site_executives(null, null, false);
+        $execs = get_site_executives(null, null, false, false);
         $existingIndex = null;
 
         if (!empty($id)) {
@@ -156,7 +158,7 @@ class ExecutiveManager extends BaseController
             'col_num'       => $colNum > 0 ? $colNum : 1,
             'order_num'     => $orderNum,
             'featured'      => $featured,
-            'active'        => true
+            'active'        => $active
         ];
 
         if ($existingIndex !== null) {
@@ -187,6 +189,47 @@ class ExecutiveManager extends BaseController
     }
 
     /**
+     * สลับสถานะเปิด/ปิดการแสดงผล (เช่น กรณีเกษียณอายุราชการ โดยไม่ต้องลบข้อมูล)
+     */
+    public function toggleActive($id = null): ResponseInterface
+    {
+        if ($auth = $this->checkOfficerAuth()) return $auth;
+
+        if (empty($id)) {
+            return $this->response->setJSON(['status' => 'error', 'message' => 'ไม่ระบุรหัสผู้บริหาร']);
+        }
+
+        $execs = get_site_executives(null, null, false, false);
+        $found = false;
+        $newStatus = true;
+        $name = '';
+
+        foreach ($execs as &$item) {
+            if ((string)($item['id'] ?? '') === (string)$id) {
+                $item['active'] = empty($item['active']);
+                $newStatus = (bool)$item['active'];
+                $name = $item['name'] ?? '';
+                $found = true;
+                break;
+            }
+        }
+        unset($item);
+
+        if (!$found) {
+            return $this->response->setJSON(['status' => 'error', 'message' => 'ไม่พบข้อมูลผู้บริหาร']);
+        }
+
+        save_site_executives($execs);
+
+        $statusText = $newStatus ? 'เปิดการแสดงผล (กำลังดำรงตำแหน่ง)' : 'ยกเลิกการแสดงผล (เกษียณอายุราชการ/พ้นตำแหน่ง)';
+        return $this->response->setJSON([
+            'status'  => 'success',
+            'message' => "เปลี่ยนสถานะของ '{$name}' เป็น: {$statusText} เรียบร้อยแล้ว",
+            'active'  => $newStatus
+        ]);
+    }
+
+    /**
      * ลบรายการผู้บริหาร
      */
     public function deleteItem($id = null): ResponseInterface
@@ -197,7 +240,7 @@ class ExecutiveManager extends BaseController
             return $this->response->setJSON(['status' => 'error', 'message' => 'ไม่ระบุรหัสรายการที่ต้องการลบ']);
         }
 
-        $execs = get_site_executives(null, null, false);
+        $execs = get_site_executives(null, null, false, false);
         $newExecs = array_filter($execs, static function($item) use ($id) {
             return (string)($item['id'] ?? '') !== (string)$id;
         });

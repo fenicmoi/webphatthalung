@@ -1703,7 +1703,7 @@ if (!function_exists('get_site_executives')) {
     /**
      * ดึงรายการทำเนียบผู้บริหารปัจจุบัน (Current Executive Leadership)
      */
-    function get_site_executives($limit = null, $category = null, $featuredOnly = false)
+    function get_site_executives($limit = null, $category = null, $featuredOnly = false, $activeOnly = true)
     {
         $writableDir = defined('WRITABLE') ? rtrim(\WRITABLE, '/\\') : realpath(__DIR__ . '/../../writable');
         $jsonPath = ($writableDir ?: WRITEPATH) . DIRECTORY_SEPARATOR . 'site_executives.json';
@@ -1781,10 +1781,12 @@ if (!function_exists('get_site_executives')) {
             });
         }
 
-        // Filter active
-        $execs = array_filter($execs, static function($it) {
-            return !isset($it['active']) || !empty($it['active']);
-        });
+        // Filter active (only show active executives on public website)
+        if ($activeOnly) {
+            $execs = array_filter($execs, static function($it) {
+                return !isset($it['active']) || !empty($it['active']);
+            });
+        }
 
         // Filter featured only if requested
         if ($featuredOnly) {

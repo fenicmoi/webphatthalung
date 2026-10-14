@@ -46,10 +46,16 @@
                                     <?php endforeach; ?>
                                 </select>
                             </div>
-                            <div class="col-md-6 d-flex align-items-end pb-1">
+                            <div class="col-md-6 d-flex flex-wrap gap-4 align-items-center pt-3">
+                                <div class="form-check form-switch fs-6">
+                                    <input class="form-check-input" type="checkbox" id="exec_active" name="active" value="1" checked>
+                                    <label class="form-check-label fw-bold text-success" for="exec_active">
+                                        <i class="fa-solid fa-circle-check me-1"></i>สถานะดำรงตำแหน่ง (เปิดแสดงผล)
+                                    </label>
+                                </div>
                                 <div class="form-check form-switch fs-6">
                                     <input class="form-check-input" type="checkbox" id="exec_featured" name="featured" value="1" checked>
-                                    <label class="form-check-label fw-semibold text-primary" for="exec_featured">แสดงบนหน้าแรกของเว็บไซต์</label>
+                                    <label class="form-check-label fw-semibold text-primary" for="exec_featured">แสดงบนหน้าแรก</label>
                                 </div>
                             </div>
                         </div>
@@ -228,6 +234,7 @@ window.ExecutiveStudio = {
                         document.getElementById('exec_row_num').value = it.row_num || 1;
                         document.getElementById('exec_col_num').value = it.col_num || 1;
                         document.getElementById('exec_order_num').value = it.order_num || 1;
+                        document.getElementById('exec_active').checked = (it.active !== undefined) ? !!it.active : true;
                         document.getElementById('exec_featured').checked = !(!it.featured);
                         document.getElementById('exec_photo_url').value = it.photo || '';
                         document.getElementById('exec_document_name').value = it.document_name || '';
@@ -265,6 +272,7 @@ window.ExecutiveStudio = {
             document.getElementById('exec_row_num').value = 1;
             document.getElementById('exec_col_num').value = 1;
             document.getElementById('exec_order_num').value = 1;
+            document.getElementById('exec_active').checked = true;
             this.modalInstance.show();
         }
     },
