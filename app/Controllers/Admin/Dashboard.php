@@ -9,6 +9,12 @@ class Dashboard extends BaseController
 {
     public function index()
     {
+        // ตรวจสอบสิทธิ์: ผู้ใช้ทั่วไปที่ไม่ใช่ admin ห้ามเข้าถึง Dashboard ภาพรวม
+        if (session()->get('role') !== 'admin') {
+            $targetUrl = function_exists('get_first_permitted_url') ? get_first_permitted_url() : base_url();
+            return redirect()->to($targetUrl)->with('toast_msg', 'ขออภัย เฉพาะผู้ดูแลระบบหลัก (Super Admin) เท่านั้นที่มีสิทธิ์เข้าถึง Dashboard ภาพรวม')->with('toast_type', 'warning');
+        }
+
         $newsCount         = 0;
         $usersCount        = 0;
         $contactsCount     = 0;

@@ -235,10 +235,22 @@ $currRole   = $currRole ?? '';
                                         <span class="badge rounded-pill px-2.5 py-1.5" style="background: rgba(139, 92, 246, 0.15); color: #7c3aed; border: 1px solid rgba(139, 92, 246, 0.3);">
                                             <i class="fa-solid fa-crown me-1"></i>ผู้ดูแลระบบ
                                         </span>
+                                        <div class="mt-1" style="font-size: 0.72rem; color: #8b5cf6; font-weight: 600;">
+                                            <i class="fa-solid fa-star me-0.5 text-warning"></i>ทุกเมนูระบบ
+                                        </div>
                                     <?php else: ?>
+                                        <?php
+                                        $uPerms = !empty($u['permissions']) ? json_decode($u['permissions'], true) : [];
+                                        $pCount = is_array($uPerms) ? count($uPerms) : 0;
+                                        ?>
                                         <span class="badge rounded-pill px-2.5 py-1.5" style="background: rgba(59, 130, 246, 0.12); color: #2563eb; border: 1px solid rgba(59, 130, 246, 0.25);">
                                             <i class="fa-solid fa-shield me-1"></i>เจ้าหน้าที่
                                         </span>
+                                        <div class="mt-1">
+                                            <span class="badge bg-light text-primary border border-primary-subtle fw-semibold px-2 py-0.5" style="font-size: 0.72rem;">
+                                                <i class="fa-solid fa-key me-1"></i><?= $pCount ?> เมนู
+                                            </span>
+                                        </div>
                                     <?php endif; ?>
                                 </td>
                                 <td class="text-center">
@@ -295,7 +307,7 @@ $currRole   = $currRole ?? '';
 
 <!-- Modal: เพิ่ม / แก้ไข ผู้ใช้งาน -->
 <div class="modal fade" id="userModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
         <div class="modal-content border-0 shadow-lg rounded-4">
             <div class="modal-header border-bottom py-3 px-4" style="background: linear-gradient(135deg, #022c22 0%, #064e3b 100%); color: #fff;">
                 <h5 class="modal-title fw-bold d-flex align-items-center gap-2" id="userModalTitle">
@@ -330,7 +342,7 @@ $currRole   = $currRole ?? '';
                         </div>
                         <div class="col-md-4">
                             <label class="form-label fw-semibold" for="modalRole">สิทธิ์การใช้งาน (Role) <span class="text-danger">*</span></label>
-                            <select class="form-select" id="modalRole" name="role" required>
+                            <select class="form-select" id="modalRole" name="role" required onchange="handleRoleChange(this.value)">
                                 <option value="officer">🛡️ เจ้าหน้าที่ (Officer)</option>
                                 <option value="admin">👑 ผู้ดูแลระบบ (Super Admin)</option>
                             </select>
@@ -349,6 +361,81 @@ $currRole   = $currRole ?? '';
                             </label>
                             <input type="password" class="form-control" id="modalPassword" name="password" placeholder="อย่างน้อย 6 ตัวอักษร">
                             <small class="text-muted" id="pwdHint">สำหรับกรณีสร้างผู้ใช้ใหม่ ต้องกำหนดรหัสผ่าน</small>
+                        </div>
+
+                        <!-- ส่วนกำหนดสิทธิ์การเข้าถึงเมนู (Menu Permissions Matrix) -->
+                        <div class="col-12 mt-4 pt-3 border-top" id="permissionMatrixContainer">
+                            <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+                                <div>
+                                    <h6 class="fw-bold text-dark mb-0 d-flex align-items-center gap-2">
+                                        <i class="fa-solid fa-shield-halved text-primary"></i> 
+                                        <span>กำหนดสิทธิ์การเข้าถึงเมนูระบบ (Menu Permissions)</span>
+                                    </h6>
+                                    <small class="text-muted" id="permSubText">เลือกเมนูที่อนุญาตให้เจ้าหน้าที่ท่านนี้มองเห็นและเข้าใช้งานใน Admin Portal</small>
+                                </div>
+                                <div class="d-flex gap-2" id="permQuickButtons">
+                                    <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3" onclick="toggleAllPermissions(true)">
+                                        <i class="fa-solid fa-check-double me-1"></i> เลือกทั้งหมด
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3" onclick="toggleAllPermissions(false)">
+                                        <i class="fa-solid fa-xmark me-1"></i> ล้างทั้งหมด
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Alert แสดงเมื่อเลือกเป็น Super Admin -->
+                            <div id="superAdminNotice" class="alert alert-primary bg-primary bg-opacity-10 border-primary border-opacity-25 py-3 px-3 rounded-3 mb-3 d-none">
+                                <div class="d-flex align-items-center gap-2.5">
+                                    <i class="fa-solid fa-crown text-primary fs-4"></i>
+                                    <div>
+                                        <strong class="text-primary d-block">บัญชีระดับผู้ดูแลระบบสูงสุด (Super Admin):</strong> 
+                                        <span class="text-dark fs-7">ผู้ดูแลระบบสูงสุดสามารถมองเห็นและเข้าใช้งานได้ทุกเมนูในระบบอย่างเต็มรูปแบบโดยอัตโนมัติ</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- ตาราง Grouped Checkboxes สำหรับสิทธิ์รายเมนู -->
+                            <div class="row g-3" id="permGroupsGrid">
+                                <?php if (!empty($menuDefinitions)): ?>
+                                    <?php foreach ($menuDefinitions as $groupKey => $group): ?>
+                                        <div class="col-12 col-md-6">
+                                            <div class="card h-100 border border-slate-200 rounded-3 shadow-none bg-light bg-opacity-50">
+                                                <div class="card-header bg-white py-2 px-3 border-bottom d-flex justify-content-between align-items-center">
+                                                    <div class="fw-bold text-dark fs-7 d-flex align-items-center gap-2">
+                                                        <i class="<?= htmlspecialchars($group['icon'] ?? 'fa-solid fa-layer-group') ?> text-emerald"></i>
+                                                        <span><?= htmlspecialchars($group['title'] ?? '') ?></span>
+                                                    </div>
+                                                    <button type="button" class="btn btn-link btn-sm p-0 text-decoration-none fs-8 text-primary group-toggle-btn" onclick="toggleGroupPermissions('<?= $groupKey ?>')">
+                                                        สลับกลุ่มนี้
+                                                    </button>
+                                                </div>
+                                                <div class="card-body p-2.5">
+                                                    <div class="d-flex flex-column gap-2">
+                                                        <?php foreach ($group['items'] as $itemKey => $item): ?>
+                                                            <?php $isAdminOnly = !empty($item['admin_only']); ?>
+                                                            <label class="d-flex align-items-start gap-2.5 p-2 rounded-2 bg-white border border-light-subtle perm-item-label <?= $isAdminOnly ? 'opacity-75' : '' ?>" style="cursor: pointer; transition: all 0.15s ease;">
+                                                                <input type="checkbox" name="permissions[]" value="<?= htmlspecialchars($itemKey) ?>" class="form-check-input mt-1 perm-checkbox group-<?= $groupKey ?>" <?= $isAdminOnly ? 'data-admin-only="true"' : '' ?>>
+                                                                <div class="flex-grow-1 lh-sm">
+                                                                    <div class="d-flex align-items-center gap-1.5 fw-semibold fs-7 text-dark">
+                                                                        <i class="<?= htmlspecialchars($item['icon'] ?? 'fa-solid fa-circle') ?> text-secondary opacity-75" style="font-size: 0.85rem; width: 16px;"></i>
+                                                                        <span><?= htmlspecialchars($item['label'] ?? '') ?></span>
+                                                                        <?php if ($isAdminOnly): ?>
+                                                                            <span class="badge bg-purple-subtle text-purple border border-purple-subtle fs-8 px-1.5 py-0.5" style="font-size: 0.65rem; background: #f3e8ff; color: #7e22ce;">เฉพาะ Admin</span>
+                                                                        <?php endif; ?>
+                                                                    </div>
+                                                                    <div class="text-muted fs-8 mt-0.5" style="font-size: 0.75rem;">
+                                                                        <?= htmlspecialchars($item['desc'] ?? '') ?>
+                                                                    </div>
+                                                                </div>
+                                                            </label>
+                                                        <?php endforeach; ?>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -405,6 +492,66 @@ $currRole   = $currRole ?? '';
         resetModalInstance = new bootstrap.Modal(document.getElementById('resetPasswordModal'));
     });
 
+    function handleRoleChange(role) {
+        const notice = document.getElementById('superAdminNotice');
+        const quickBtns = document.getElementById('permQuickButtons');
+        const permSubText = document.getElementById('permSubText');
+        const checkboxes = document.querySelectorAll('.perm-checkbox');
+        const toggleBtns = document.querySelectorAll('.group-toggle-btn');
+
+        if (role === 'admin') {
+            notice.classList.remove('d-none');
+            quickBtns.classList.add('d-none');
+            toggleBtns.forEach(b => b.classList.add('d-none'));
+            permSubText.textContent = 'บัญชี Super Admin ได้รับสิทธิ์เข้าถึงทุกเมนูโดยอัตโนมัติ';
+            checkboxes.forEach(cb => {
+                cb.checked = true;
+                cb.disabled = true;
+            });
+        } else {
+            notice.classList.add('d-none');
+            quickBtns.classList.remove('d-none');
+            toggleBtns.forEach(b => b.classList.remove('d-none'));
+            permSubText.textContent = 'เลือกเมนูที่อนุญาตให้เจ้าหน้าที่ท่านนี้มองเห็นและเข้าใช้งานใน Admin Portal';
+            checkboxes.forEach(cb => {
+                cb.disabled = false;
+                if (cb.dataset.adminOnly === 'true') {
+                    cb.checked = false;
+                    cb.disabled = true;
+                }
+            });
+        }
+    }
+
+    function toggleAllPermissions(checked) {
+        const role = document.getElementById('modalRole').value;
+        if (role === 'admin') return;
+
+        const checkboxes = document.querySelectorAll('.perm-checkbox');
+        checkboxes.forEach(cb => {
+            if (cb.dataset.adminOnly === 'true') {
+                cb.checked = false;
+            } else {
+                cb.checked = checked;
+            }
+        });
+    }
+
+    function toggleGroupPermissions(groupKey) {
+        const role = document.getElementById('modalRole').value;
+        if (role === 'admin') return;
+
+        const groupCbs = document.querySelectorAll(`.perm-checkbox.group-${groupKey}`);
+        const anyUnchecked = Array.from(groupCbs).some(cb => !cb.checked && cb.dataset.adminOnly !== 'true');
+        groupCbs.forEach(cb => {
+            if (cb.dataset.adminOnly === 'true') {
+                cb.checked = false;
+            } else {
+                cb.checked = anyUnchecked;
+            }
+        });
+    }
+
     function openAddUserModal() {
         document.getElementById('userForm').reset();
         document.getElementById('userId').value = '0';
@@ -412,6 +559,16 @@ $currRole   = $currRole ?? '';
         document.getElementById('pwdRequiredStar').style.display = 'inline';
         document.getElementById('modalPassword').required = true;
         document.getElementById('pwdHint').textContent = 'สำหรับสร้างผู้ใช้ใหม่ ต้องกำหนดรหัสผ่านอย่างน้อย 6 ตัวอักษร';
+        document.getElementById('modalRole').value = 'officer';
+
+        // กำหนดสิทธิ์พื้นฐานสำหรับเจ้าหน้าที่ใหม่
+        const defaultOfficerPerms = ['dashboard', 'news', 'procurement', 'contact_manager', 'mailbox_manager'];
+        const checkboxes = document.querySelectorAll('.perm-checkbox');
+        checkboxes.forEach(cb => {
+            cb.checked = defaultOfficerPerms.includes(cb.value);
+        });
+
+        handleRoleChange('officer');
         userModalInstance.show();
     }
 
@@ -434,6 +591,15 @@ $currRole   = $currRole ?? '';
                 document.getElementById('modalPhone').value = u.phone || '';
                 document.getElementById('modalRole').value = u.role || 'officer';
                 document.getElementById('modalStatus').value = u.status || 'approved';
+
+                // ตั้งค่า Checkbox สิทธิ์ตามข้อมูลที่ได้รับ
+                const userPerms = Array.isArray(u.permissions) ? u.permissions : [];
+                const checkboxes = document.querySelectorAll('.perm-checkbox');
+                checkboxes.forEach(cb => {
+                    cb.checked = userPerms.includes(cb.value) || userPerms.includes('*');
+                });
+
+                handleRoleChange(u.role || 'officer');
                 userModalInstance.show();
             } else {
                 App.toast(res.message || 'ไม่สามารถโหลดข้อมูลได้', 'error');
@@ -447,7 +613,18 @@ $currRole   = $currRole ?? '';
         e.preventDefault();
         const btn = document.getElementById('btnSaveUser');
         const form = document.getElementById('userForm');
+        const role = document.getElementById('modalRole').value;
+
+        // เปิดให้ Checkbox ส่งค่าได้ก่อนเก็บ FormData
+        const checkboxes = document.querySelectorAll('.perm-checkbox');
+        checkboxes.forEach(cb => cb.disabled = false);
+
         const formData = new FormData(form);
+
+        // หากเป็น Admin ให้ล็อค disabled คืนกลับ
+        if (role === 'admin') {
+            checkboxes.forEach(cb => cb.disabled = true);
+        }
 
         btn.disabled = true;
         btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i> กำลังบันทึก...';

@@ -11,10 +11,22 @@ class UserManager extends BaseController
     use ResponseTrait;
 
     /**
+     * ตรวจสอบว่าเป็น Super Admin หรือไม่
+     */
+    protected function ensureSuperAdmin()
+    {
+        return session()->get('role') === 'admin';
+    }
+
+    /**
      * หน้าจอจัดการผู้ใช้งานและสิทธิ์เจ้าหน้าที่ (User & Permission Management)
      */
     public function index()
     {
+        if (!$this->ensureSuperAdmin()) {
+            return redirect()->to(base_url('admin/dashboard'))->with('toast_msg', 'ขออภัย เฉพาะผู้ดูแลระบบหลัก (Super Admin) เท่านั้นที่มีสิทธิ์เข้าถึงหน้านี้')->with('toast_type', 'error');
+        }
+
         $userModel = new UserModel();
 
         $search = trim($this->request->getGet('q') ?? '');
@@ -57,13 +69,14 @@ class UserManager extends BaseController
         ];
 
         $data = [
-            'title'      => 'จัดการผู้ใช้งานและสิทธิ์เจ้าหน้าที่ | Admin Portal',
-            'activeMenu' => 'users',
-            'users'      => $users,
-            'stats'      => $stats,
-            'search'     => $search,
-            'currStatus' => $status,
-            'currRole'   => $role,
+            'title'           => 'จัดการผู้ใช้งานและสิทธิ์เจ้าหน้าที่ | Admin Portal',
+            'activeMenu'      => 'users',
+            'users'           => $users,
+            'stats'           => $stats,
+            'search'          => $search,
+            'currStatus'      => $status,
+            'currRole'        => $role,
+            'menuDefinitions' => function_exists('get_admin_menu_definitions') ? get_admin_menu_definitions() : []
         ];
 
         return view('admin/user_manager', $data);
@@ -74,6 +87,10 @@ class UserManager extends BaseController
      */
     public function getJson($id)
     {
+        if (!$this->ensureSuperAdmin()) {
+            return $this->respond(['status' => 'error', 'message' => 'คุณไม่มีสิทธิ์เข้าถึงข้อมูลส่วนนี้ (เฉพาะ Super Admin เท่านั้น)'], 403);
+        }
+
         $userModel = new UserModel();
         $user = $userModel->find($id);
 
@@ -84,6 +101,16 @@ class UserManager extends BaseController
         // ซ่อน password_hash เพื่อความปลอดภัย
         unset($user['password_hash']);
 
+        // แปลง permissions ให้เป็น array JSON
+        $perms = [];
+        if (!empty($user['permissions'])) {
+            $decoded = json_decode($user['permissions'], true);
+            if (is_array($decoded)) {
+                $perms = $decoded;
+            }
+        }
+        $user['permissions'] = $perms;
+
         return $this->respond(['status' => 'success', 'data' => $user]);
     }
 
@@ -92,6 +119,10 @@ class UserManager extends BaseController
      */
     public function save()
     {
+        if (!$this->ensureSuperAdmin()) {
+            return $this->respond(['status' => 'error', 'message' => 'คุณไม่มีสิทธิ์บันทึกข้อมูลส่วนนี้ (เฉพาะ Super Admin เท่านั้น)'], 403);
+        }
+
         $isAjax = $this->request->isAJAX() || $this->request->getHeaderLine('X-Requested-With') === 'XMLHttpRequest';
         $userModel = new UserModel();
 
@@ -104,6 +135,15 @@ class UserManager extends BaseController
         $role       = trim($this->request->getPost('role') ?? 'officer');
         $status     = trim($this->request->getPost('status') ?? 'approved');
         $password   = trim($this->request->getPost('password') ?? '');
+
+        // จัดการสิทธิ์การเข้าถึงเมนู (Permissions)
+        $rawPerms = $this->request->getPost('permissions');
+        $perms = is_array($rawPerms) ? array_values(array_filter($rawPerms)) : [];
+
+        // ถ้าเป็น Admin ให้บันทึกเป็น wildcard หรือเต็มสิทธิ์
+        if ($role === 'admin') {
+            $perms = ['*'];
+        }
 
         // ตรวจสอบค่าจำเป็น
         if (empty($username) || empty($email) || empty($fullName)) {
@@ -129,13 +169,14 @@ class UserManager extends BaseController
         }
 
         $userData = [
-            'username'   => $username,
-            'email'      => $email,
-            'full_name'  => $fullName,
-            'department' => $department,
-            'phone'      => $phone,
-            'role'       => in_array($role, ['admin', 'officer', 'citizen']) ? $role : 'officer',
-            'status'     => in_array($status, ['pending', 'approved', 'rejected']) ? $status : 'approved',
+            'username'    => $username,
+            'email'       => $email,
+            'full_name'   => $fullName,
+            'department'  => $department,
+            'phone'       => $phone,
+            'role'        => in_array($role, ['admin', 'officer', 'citizen']) ? $role : 'officer',
+            'status'      => in_array($status, ['pending', 'approved', 'rejected']) ? $status : 'approved',
+            'permissions' => json_encode($perms, JSON_UNESCAPED_UNICODE)
         ];
 
         if ($id > 0) {
@@ -150,6 +191,14 @@ class UserManager extends BaseController
             }
 
             $userModel->update($id, $userData);
+
+            // หากแก้ไขข้อมูลตนเอง ให้รีเฟรชค่า permission ใน Session ทันที
+            if ((int)$id === (int)session()->get('user_id')) {
+                session()->set('permissions', $perms);
+                session()->set('role', $userData['role']);
+                session()->set('full_name', $userData['full_name']);
+            }
+
             $msg = "แก้ไขข้อมูลผู้ใช้งาน '{$username}' สำเร็จเรียบร้อย";
         } else {
             // กรณีสร้างใหม่: ต้องระบุรหัสผ่าน
@@ -174,6 +223,10 @@ class UserManager extends BaseController
      */
     public function approve($id)
     {
+        if (!$this->ensureSuperAdmin()) {
+            return $this->respond(['status' => 'error', 'message' => 'เฉพาะ Super Admin เท่านั้นที่สามารถอนุมัติได้'], 403);
+        }
+
         $userModel = new UserModel();
         $user = $userModel->find($id);
 
@@ -193,6 +246,10 @@ class UserManager extends BaseController
      */
     public function reject($id)
     {
+        if (!$this->ensureSuperAdmin()) {
+            return $this->respond(['status' => 'error', 'message' => 'เฉพาะ Super Admin เท่านั้นที่สามารถระงับผู้ใช้ได้'], 403);
+        }
+
         $currentUserId = session()->get('user_id');
         if ((int)$id === (int)$currentUserId) {
             return $this->respond(['status' => 'error', 'message' => 'ไม่สามารถระงับบัญชีของตนเองที่กำลังล็อกอินอยู่ได้'], 400);
@@ -217,6 +274,10 @@ class UserManager extends BaseController
      */
     public function resetPassword()
     {
+        if (!$this->ensureSuperAdmin()) {
+            return $this->respond(['status' => 'error', 'message' => 'เฉพาะ Super Admin เท่านั้นที่สามารถรีเซ็ตรหัสผ่านได้'], 403);
+        }
+
         $id          = (int)$this->request->getPost('id');
         $newPassword = trim($this->request->getPost('new_password') ?? '');
 
@@ -246,6 +307,10 @@ class UserManager extends BaseController
      */
     public function delete($id)
     {
+        if (!$this->ensureSuperAdmin()) {
+            return $this->respond(['status' => 'error', 'message' => 'เฉพาะ Super Admin เท่านั้นที่สามารถลบบัญชีผู้ใช้ได้'], 403);
+        }
+
         $currentUserId = session()->get('user_id');
         if ((int)$id === (int)$currentUserId) {
             return $this->respond(['status' => 'error', 'message' => 'ไม่สามารถลบบัญชีของตนเองที่กำลังล็อกอินอยู่ได้'], 400);

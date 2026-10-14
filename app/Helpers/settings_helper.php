@@ -2755,6 +2755,303 @@ if (!function_exists('get_trending_keywords')) {
     }
 }
 
+if (!function_exists('get_admin_menu_definitions')) {
+    /**
+     * รายการเมนูทั้งหมดในระบบผู้ดูแล พร้อมกลุ่มและคำอธิบายสำหรับจัดการสิทธิ์
+     */
+    function get_admin_menu_definitions()
+    {
+        return [
+            'overview' => [
+                'title' => 'ภาพรวมระบบ',
+                'icon'  => 'fa-solid fa-chart-pie',
+                'items' => [
+                    'dashboard' => [
+                        'label' => 'แผงควบคุมหลัก (Dashboard)',
+                        'icon'  => 'fa-solid fa-chart-pie',
+                        'url'   => 'admin/dashboard',
+                        'desc'  => 'สถิติภาพรวมและการดำเนินงานของเว็บไซต์ (เฉพาะ Super Admin)',
+                        'admin_only' => true
+                    ]
+                ]
+            ],
+            'news_media' => [
+                'title' => 'ข่าวสารและมีเดีย',
+                'icon'  => 'fa-solid fa-newspaper',
+                'items' => [
+                    'news' => [
+                        'label' => 'ข่าวประชาสัมพันธ์',
+                        'icon'  => 'fa-regular fa-newspaper',
+                        'url'   => 'news',
+                        'desc'  => 'จัดการข่าวสาร กิจกรรม ข่าวจัดซื้อจัดจ้าง'
+                    ],
+                    'news_aggregator' => [
+                        'label' => 'ดึงข่าวอัตโนมัติ (Feeds)',
+                        'icon'  => 'fa-solid fa-satellite-dish',
+                        'url'   => 'admin/news-aggregator',
+                        'desc'  => 'ระบบดึงข่าวอัตโนมัติจากแหล่งภายนอก'
+                    ],
+                    'videos' => [
+                        'label' => 'วีดิทัศน์ & YouTube',
+                        'icon'  => 'fa-solid fa-film',
+                        'url'   => 'admin/videos',
+                        'desc'  => 'คลังคลิปวีดีโอและมีเดียแนะนำจังหวัด'
+                    ],
+                ]
+            ],
+            'province_strategy' => [
+                'title' => 'ข้อมูลจังหวัด & ยุทธศาสตร์',
+                'icon'  => 'fa-solid fa-landmark',
+                'items' => [
+                    'executive_manager' => [
+                        'label' => 'คณะผู้บริหารปัจจุบัน',
+                        'icon'  => 'fa-solid fa-user-tie',
+                        'url'   => 'admin/executives',
+                        'desc'  => 'ข้อมูลทำเนียบและสถานะผู้บริหารจังหวัด'
+                    ],
+                    'governors' => [
+                        'label' => 'ทำเนียบผู้ว่าราชการ',
+                        'icon'  => 'fa-solid fa-crown',
+                        'url'   => 'admin/governors',
+                        'desc'  => 'ประวัติและทำเนียบอดีตผู้ว่าราชการ'
+                    ],
+                    'governor_policy' => [
+                        'label' => 'นโยบายผู้ว่าราชการ',
+                        'icon'  => 'fa-solid fa-user-gear',
+                        'url'   => 'admin/governor-policy',
+                        'desc'  => 'นโยบายและวิสัยทัศน์การบริหารงาน'
+                    ],
+                    'strategy_manager' => [
+                        'label' => 'ยุทธศาสตร์ & แผนพัฒนา',
+                        'icon'  => 'fa-solid fa-bullseye',
+                        'url'   => 'admin/strategy',
+                        'desc'  => 'แผนยุทธศาสตร์ 5 ปี และแผนปฏิบัติการ'
+                    ],
+                    'project_manager' => [
+                        'label' => 'แผนที่ GIS & eMENSCR',
+                        'icon'  => 'fa-solid fa-map-location-dot',
+                        'url'   => 'admin/projects',
+                        'desc'  => 'โครงการติดตามแผนงานและพิกัด GIS'
+                    ],
+                ]
+            ],
+            'cms_content' => [
+                'title' => 'จัดการหน้าเว็บและเนื้อหา',
+                'icon'  => 'fa-solid fa-layer-group',
+                'items' => [
+                    'page_manager' => [
+                        'label' => 'หน้าเว็บไซต์ (Static Pages)',
+                        'icon'  => 'fa-solid fa-file-lines',
+                        'url'   => 'admin/pages',
+                        'desc'  => 'สร้างและแก้ไขหน้าเนื้อหาอิสระ'
+                    ],
+                    'menu_manager' => [
+                        'label' => 'จัดการเมนูบาร์เว็บไซต์',
+                        'icon'  => 'fa-solid fa-compass',
+                        'url'   => 'admin/menu',
+                        'desc'  => 'จัดลำดับและตั้งค่าเมนูหลักของประชาชน'
+                    ],
+                    'banners' => [
+                        'label' => 'แบนเนอร์ & สไลด์หน้าแรก',
+                        'icon'  => 'fa-solid fa-images',
+                        'url'   => 'admin/banners',
+                        'desc'  => 'ภาพสไลด์และกราฟิกส่วนหัวหน้าแรก'
+                    ],
+                    'services' => [
+                        'label' => 'แบนเนอร์ประชาสัมพันธ์ & หน่วยงานสัมพันธ์',
+                        'icon'  => 'fa-solid fa-bullhorn',
+                        'url'   => 'admin/service-banners',
+                        'desc'  => 'แบนเนอร์บริการประชาชนและลิงก์ภายนอก'
+                    ],
+                    'procurement' => [
+                        'label' => 'จัดซื้อจัดจ้าง e-GP',
+                        'icon'  => 'fa-solid fa-file-invoice-dollar',
+                        'url'   => 'admin/procurement',
+                        'desc'  => 'ประกาศจัดซื้อจัดจ้างและสรุปผล e-GP'
+                    ],
+                    'site_texts' => [
+                        'label' => 'แก้ไขข้อความทั่วเว็บไซต์',
+                        'icon'  => 'fa-solid fa-pen-to-square',
+                        'url'   => 'admin/site-texts',
+                        'desc'  => 'ปรับแต่งข้อความและสโลแกนในจุดต่างๆ'
+                    ],
+                ]
+            ],
+            'citizen_services' => [
+                'title' => 'บริการและรับเรื่องราว',
+                'icon'  => 'fa-solid fa-comments',
+                'items' => [
+                    'mailbox_manager' => [
+                        'label' => 'กล่องจดหมายกลาง (MOI)',
+                        'icon'  => 'fa-solid fa-envelope',
+                        'url'   => 'admin/mailbox',
+                        'desc'  => 'รับ-ส่งข้อความและจดหมายราชการ'
+                    ],
+                    'contact_manager' => [
+                        'label' => 'เรื่องติดต่อ & ร้องเรียน',
+                        'icon'  => 'fa-solid fa-envelope-open-text',
+                        'url'   => 'admin/contacts',
+                        'desc'  => 'เรื่องร้องเรียนศูนย์ดำรงธรรมและข้อเสนอแนะ'
+                    ],
+                ]
+            ],
+            'system_security' => [
+                'title' => 'ระบบและความปลอดภัย',
+                'icon'  => 'fa-solid fa-sliders',
+                'items' => [
+                    'nora_ai' => [
+                        'label' => 'น้องโนรา AI & คลังความรู้',
+                        'icon'  => 'fa-solid fa-wand-magic-sparkles',
+                        'url'   => 'admin/nora-ai',
+                        'desc'  => 'ผู้ช่วยอัจฉริยะและคลังถาม-ตอบ'
+                    ],
+                    'settings' => [
+                        'label' => 'ตั้งค่าระบบเว็บไซต์',
+                        'icon'  => 'fa-solid fa-gear',
+                        'url'   => 'admin/settings',
+                        'desc'  => 'การตั้งค่าทั่วไป การแสดงผล และ SEO'
+                    ],
+                    'database_manager' => [
+                        'label' => 'จัดการตาราง & ฐานข้อมูล',
+                        'icon'  => 'fa-solid fa-database',
+                        'url'   => 'admin/database-manager',
+                        'desc'  => 'เครื่องมือจัดการฐานข้อมูลและโครงสร้าง'
+                    ],
+                    'users' => [
+                        'label' => 'เจ้าหน้าที่ & ผู้ใช้งาน',
+                        'icon'  => 'fa-solid fa-users-gear',
+                        'url'   => 'admin/users',
+                        'desc'  => 'จัดการบัญชีและกำหนดสิทธิ์การเข้าถึงเมนู',
+                        'admin_only' => true
+                    ],
+                ]
+            ]
+        ];
+    }
+}
+
+if (!function_exists('is_super_admin')) {
+    /**
+     * ตรวจสอบว่าผู้ใช้ปัจจุบันเป็นผู้ดูแลระบบสูงสุด (Super Admin) หรือไม่
+     */
+    function is_super_admin()
+    {
+        $role = session()->get('role');
+        return ($role === 'admin');
+    }
+}
+
+if (!function_exists('has_permission')) {
+    /**
+     * ตรวจสอบสิทธิ์การเข้าถึงเมนูของผู้ใช้ปัจจุบัน
+     * 
+     * @param string|null $menuKey คีย์ประจำเมนู เช่น 'news', 'procurement', 'users'
+     * @return bool
+     */
+    function has_permission($menuKey = null)
+    {
+        // 1. Super Admin เข้าถึงได้ทุกเมนูโดยไม่มีเงื่อนไข
+        if (is_super_admin()) {
+            return true;
+        }
+
+        if ($menuKey === null || $menuKey === '') {
+            return true;
+        }
+
+        // 2. เมนู 'dashboard' และ 'users' สงวนเฉพาะ Super Admin เท่านั้น (ผู้ใช้ทั่วไปห้ามเข้าถึง Dashboard ภาพรวม)
+        if ($menuKey === 'dashboard' || $menuKey === 'users') {
+            return false;
+        }
+
+        // 3. ตรวจสอบสิทธิ์ที่บันทึกไว้ใน Session
+        $perms = session()->get('permissions');
+
+        // หากยังไม่มีใน Session ลองดึงจาก DB
+        if ($perms === null) {
+            $userId = session()->get('user_id');
+            if ($userId) {
+                try {
+                    $u = \Config\Database::connect()->table('users')->select('permissions, role')->where('id', $userId)->get()->getRowArray();
+                    if ($u) {
+                        if ($u['role'] === 'admin') {
+                            return true;
+                        }
+                        $perms = !empty($u['permissions']) ? json_decode($u['permissions'], true) : [];
+                        session()->set('permissions', $perms);
+                    }
+                } catch (\Throwable $e) {}
+            }
+        }
+
+        // หากไม่มีการระบุสิทธิ์เลย ให้สิทธิ์ค่าเริ่มต้นสำหรับเจ้าหน้าที่ (ไม่รวม dashboard)
+        if (!is_array($perms)) {
+            $defaultPerms = ['news', 'procurement', 'contact_manager', 'mailbox_manager'];
+            return in_array($menuKey, $defaultPerms, true);
+        }
+
+        // มีสิทธิ์ Wildcard ทั้งหมด
+        if (in_array('*', $perms, true)) {
+            return true;
+        }
+
+        return in_array($menuKey, $perms, true);
+    }
+}
+
+if (!function_exists('has_group_permission')) {
+    /**
+     * ตรวจสอบว่าในกลุ่มเมนูนี้ ผู้ใช้มีสิทธิ์เข้าถึงอย่างน้อย 1 เมนูหรือไม่
+     */
+    function has_group_permission($groupKey)
+    {
+        if (is_super_admin()) {
+            return true;
+        }
+
+        $menus = get_admin_menu_definitions();
+        if (!isset($menus[$groupKey]['items'])) {
+            return false;
+        }
+
+        foreach ($menus[$groupKey]['items'] as $key => $item) {
+            if (has_permission($key)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+}
+
+if (!function_exists('get_first_permitted_url')) {
+    /**
+     * ค้นหา URL เมนูแรกที่เจ้าหน้าที่ได้รับอนุญาตให้เข้าใช้งาน
+     */
+    function get_first_permitted_url()
+    {
+        if (is_super_admin()) {
+            return base_url('admin/dashboard');
+        }
+
+        $menus = get_admin_menu_definitions();
+        foreach ($menus as $group) {
+            foreach ($group['items'] as $key => $item) {
+                if (!empty($item['admin_only'])) {
+                    continue;
+                }
+                if (has_permission($key)) {
+                    return base_url($item['url']);
+                }
+            }
+        }
+
+        // กรณีไม่มีสิทธิ์ในเมนูหลังบ้านเลย ส่งกลับหน้าเว็บหลัก
+        return base_url();
+    }
+}
+
+
 
 
 

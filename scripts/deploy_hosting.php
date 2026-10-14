@@ -70,6 +70,11 @@ $essentialFiles = [
     'app/Views/admin/settings.php',
     'app/Views/admin/service_banners.php',
     'app/Controllers/Admin/ServiceBannerManager.php',
+    'app/Models/UserModel.php',
+    'app/Controllers/Auth/Login.php',
+    'app/Controllers/Admin/UserManager.php',
+    'app/Controllers/Admin/Dashboard.php',
+    'app/Views/admin/user_manager.php',
     'app/Views/components/news_media_hub.php',
     'app/Views/components/provincial_policy_hub.php',
     'app/Views/components/pr_banner_carousel.php',
@@ -92,19 +97,7 @@ $essentialFiles = [
     'app/Controllers/FinancialReports.php',
     'app/Views/financial_reports_portal.php',
     'app/Controllers/Document.php',
-    'app/Controllers/News.php',
-    'writable/news_categories.json',
-    'writable/site_documents.json',
-    'writable/dump_ita_documents.json',
-    'writable/dump_pages.json',
-    'writable/dump_procurements.json',
-    'writable/dump_financial_reports.json',
-    'writable/site_menus.json',
-    'writable/site_banners.json',
-    'writable/service_banners.json',
-    'writable/site_settings.json',
-    'writable/gallery_albums.json',
-    'writable/site_texts.json'
+    'app/Controllers/News.php'
 ];
 
 $allFiles = array_unique(array_merge($files, $essentialFiles));
@@ -208,6 +201,13 @@ if ($zip->open($zipPath) === true) {
         $mysqli = new mysqli("localhost", "phatthalun_newdb", "hYxuV8ypi4", "phatthalun_newdb2026");
         if (!$mysqli->connect_error) {
             $mysqli->set_charset("utf8mb4");
+
+            // Ensure permissions column exists in users table
+            $checkCol = $mysqli->query("SHOW COLUMNS FROM users LIKE \'permissions\'");
+            if ($checkCol && $checkCol->num_rows === 0) {
+                $mysqli->query("ALTER TABLE users ADD COLUMN permissions TEXT NULL AFTER role");
+                echo "\nDATABASE: Added permissions column to users table!";
+            }
 
             // 1. Sync procurements (150 records)
             $procJson = dirname(__DIR__) . "/writable/dump_procurements.json";

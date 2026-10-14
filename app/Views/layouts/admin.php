@@ -220,7 +220,8 @@
     <div class="admin-wrapper">
         <!-- Sidebar -->
         <aside class="admin-sidebar" id="adminSidebar">
-            <a href="<?= base_url('admin/dashboard') ?>" class="sidebar-header">
+            <?php $headerPortalLink = (session()->get('role') === 'admin') ? base_url('admin/dashboard') : (function_exists('get_first_permitted_url') ? get_first_permitted_url() : base_url()); ?>
+            <a href="<?= $headerPortalLink ?>" class="sidebar-header">
                 <?php $adminLogo = function_exists('get_site_logo') ? get_site_logo() : ''; ?>
                 <?php if (!empty($adminLogo)): ?>
                     <img src="<?= htmlspecialchars($adminLogo) ?>" alt="Logo" style="height: 36px; width: auto; max-width: 40px; object-fit: contain;">
@@ -261,20 +262,23 @@
             <div class="sidebar-menu-list" id="sidebarMenuList">
                 <!-- Overview: Single Direct Link -->
                 <div class="sidebar-menu-title">
-                    <span>ภาพรวมระบบ</span>
+                    <span><?= (session()->get('role') === 'admin') ? 'ภาพรวมระบบ' : 'เมนูการทำงาน' ?></span>
                     <button type="button" class="btn btn-link p-0" id="btnToggleAll" title="ย่อ/ขยายทุกกลุ่ม" style="font-size: 13px; text-decoration: none; color: #94a3b8 !important;">
                         <i class="fa-solid fa-arrows-up-down me-1"></i>ย่อ/ขยาย
                     </button>
                 </div>
                 
+                <?php if (function_exists('has_permission') && has_permission('dashboard')): ?>
                 <a href="<?= base_url('admin/dashboard') ?>" class="sidebar-link-single <?= $currMenu === 'dashboard' ? 'active' : '' ?>">
                     <div class="sidebar-icon-box" style="background: rgba(16, 185, 129, 0.18); color: #34d399;">
                         <i class="fa-solid fa-chart-pie"></i>
                     </div>
                     <span>แผงควบคุมหลัก (Dashboard)</span>
                 </a>
+                <?php endif; ?>
 
                 <!-- Group 1: News & Media -->
+                <?php if (!function_exists('has_group_permission') || has_group_permission('news_media')): ?>
                 <div class="sidebar-group <?= $isNewsActive ? 'open' : '' ?>" id="grp-news">
                     <button type="button" class="sidebar-group-btn <?= $isNewsActive ? 'has-active' : '' ?>" onclick="toggleSidebarGroup('grp-news')">
                         <div class="d-flex align-items-center gap-2.5">
@@ -286,28 +290,36 @@
                         <i class="fa-solid fa-chevron-down sidebar-chevron"></i>
                     </button>
                     <ul class="sidebar-submenu">
+                        <?php if (has_permission('news')): ?>
                         <li>
                             <a href="<?= base_url('news') ?>" class="sidebar-sublink <?= $currMenu === 'news' ? 'active' : '' ?>">
                                 <i class="fa-regular fa-newspaper"></i>
                                 <span>ข่าวประชาสัมพันธ์</span>
                             </a>
                         </li>
+                        <?php endif; ?>
+                        <?php if (has_permission('news_aggregator')): ?>
                         <li>
                             <a href="<?= base_url('admin/news-aggregator') ?>" class="sidebar-sublink <?= $currMenu === 'news_aggregator' ? 'active' : '' ?>">
                                 <i class="fa-solid fa-satellite-dish"></i>
                                 <span>ดึงข่าวอัตโนมัติ (Feeds)</span>
                             </a>
                         </li>
+                        <?php endif; ?>
+                        <?php if (has_permission('videos')): ?>
                         <li>
                             <a href="<?= base_url('admin/videos') ?>" class="sidebar-sublink <?= $currMenu === 'videos' ? 'active' : '' ?>">
                                 <i class="fa-solid fa-film"></i>
                                 <span>วีดิทัศน์ & YouTube</span>
                             </a>
                         </li>
+                        <?php endif; ?>
                     </ul>
                 </div>
+                <?php endif; ?>
 
                 <!-- Group 2: Provincial Info & Strategy -->
+                <?php if (!function_exists('has_group_permission') || has_group_permission('province_strategy')): ?>
                 <div class="sidebar-group <?= $isProvinceActive ? 'open' : '' ?>" id="grp-province">
                     <button type="button" class="sidebar-group-btn <?= $isProvinceActive ? 'has-active' : '' ?>" onclick="toggleSidebarGroup('grp-province')">
                         <div class="d-flex align-items-center gap-2.5">
@@ -319,40 +331,52 @@
                         <i class="fa-solid fa-chevron-down sidebar-chevron"></i>
                     </button>
                     <ul class="sidebar-submenu">
+                        <?php if (has_permission('executive_manager')): ?>
                         <li>
                             <a href="<?= base_url('admin/executives') ?>" class="sidebar-sublink <?= $currMenu === 'executive_manager' ? 'active' : '' ?>">
                                 <i class="fa-solid fa-user-tie"></i>
                                 <span>คณะผู้บริหารปัจจุบัน</span>
                             </a>
                         </li>
+                        <?php endif; ?>
+                        <?php if (has_permission('governors')): ?>
                         <li>
                             <a href="<?= base_url('admin/governors') ?>" class="sidebar-sublink <?= $currMenu === 'governors' ? 'active' : '' ?>">
                                 <i class="fa-solid fa-crown"></i>
                                 <span>ทำเนียบผู้ว่าราชการ</span>
                             </a>
                         </li>
+                        <?php endif; ?>
+                        <?php if (has_permission('governor_policy')): ?>
                         <li>
                             <a href="<?= base_url('admin/governor-policy') ?>" class="sidebar-sublink <?= $currMenu === 'governor_policy' ? 'active' : '' ?>">
                                 <i class="fa-solid fa-user-gear"></i>
                                 <span>นโยบายผู้ว่าราชการ</span>
                             </a>
                         </li>
+                        <?php endif; ?>
+                        <?php if (has_permission('strategy_manager')): ?>
                         <li>
                             <a href="<?= base_url('admin/strategy') ?>" class="sidebar-sublink <?= $currMenu === 'strategy_manager' ? 'active' : '' ?>">
                                 <i class="fa-solid fa-bullseye"></i>
                                 <span>ยุทธศาสตร์ & แผนพัฒนา</span>
                             </a>
                         </li>
+                        <?php endif; ?>
+                        <?php if (has_permission('project_manager')): ?>
                         <li>
                             <a href="<?= base_url('admin/projects') ?>" class="sidebar-sublink <?= $currMenu === 'project_manager' ? 'active' : '' ?>">
                                 <i class="fa-solid fa-map-location-dot"></i>
                                 <span>แผนที่ GIS & eMENSCR</span>
                             </a>
                         </li>
+                        <?php endif; ?>
                     </ul>
                 </div>
+                <?php endif; ?>
 
                 <!-- Group 3: Web CMS & Portal Management -->
+                <?php if (!function_exists('has_group_permission') || has_group_permission('cms_content')): ?>
                 <div class="sidebar-group <?= $isCmsActive ? 'open' : '' ?>" id="grp-cms">
                     <button type="button" class="sidebar-group-btn <?= $isCmsActive ? 'has-active' : '' ?>" onclick="toggleSidebarGroup('grp-cms')">
                         <div class="d-flex align-items-center gap-2.5">
@@ -364,46 +388,60 @@
                         <i class="fa-solid fa-chevron-down sidebar-chevron"></i>
                     </button>
                     <ul class="sidebar-submenu">
+                        <?php if (has_permission('page_manager')): ?>
                         <li>
                             <a href="<?= base_url('admin/pages') ?>" class="sidebar-sublink <?= $currMenu === 'page_manager' ? 'active' : '' ?>">
                                 <i class="fa-solid fa-file-lines"></i>
                                 <span>หน้าเว็บไซต์ (Static Pages)</span>
                             </a>
                         </li>
+                        <?php endif; ?>
+                        <?php if (has_permission('menu_manager')): ?>
                         <li>
                             <a href="<?= base_url('admin/menu') ?>" class="sidebar-sublink <?= $currMenu === 'menu_manager' ? 'active' : '' ?>">
                                 <i class="fa-solid fa-compass"></i>
                                 <span>จัดการเมนูบาร์เว็บไซต์</span>
                             </a>
                         </li>
+                        <?php endif; ?>
+                        <?php if (has_permission('banners')): ?>
                         <li>
                             <a href="<?= base_url('admin/banners') ?>" class="sidebar-sublink <?= $currMenu === 'banners' ? 'active' : '' ?>">
                                 <i class="fa-solid fa-images"></i>
                                 <span>แบนเนอร์ & สไลด์หน้าแรก</span>
                             </a>
                         </li>
+                        <?php endif; ?>
+                        <?php if (has_permission('services')): ?>
                         <li>
                             <a href="<?= base_url('admin/service-banners') ?>" class="sidebar-sublink <?= $currMenu === 'services' ? 'active' : '' ?>">
                                 <i class="fa-solid fa-bullhorn text-primary"></i>
                                 <span>แบนเนอร์ประชาสัมพันธ์ & หน่วยงานสัมพันธ์</span>
                             </a>
                         </li>
+                        <?php endif; ?>
+                        <?php if (has_permission('procurement')): ?>
                         <li>
                             <a href="<?= base_url('admin/procurement') ?>" class="sidebar-sublink <?= $currMenu === 'procurement' ? 'active' : '' ?>">
                                 <i class="fa-solid fa-file-invoice-dollar"></i>
                                 <span>จัดซื้อจัดจ้าง e-GP</span>
                             </a>
                         </li>
+                        <?php endif; ?>
+                        <?php if (has_permission('site_texts')): ?>
                         <li>
                             <a href="<?= base_url('admin/site-texts') ?>" class="sidebar-sublink <?= $currMenu === 'site_texts' ? 'active' : '' ?>">
                                 <i class="fa-solid fa-pen-to-square"></i>
                                 <span>แก้ไขข้อความทั่วเว็บไซต์</span>
                             </a>
                         </li>
+                        <?php endif; ?>
                     </ul>
                 </div>
+                <?php endif; ?>
 
                 <!-- Group 4: Citizen Inquiries & Complaints -->
+                <?php if (!function_exists('has_group_permission') || has_group_permission('citizen_services')): ?>
                 <div class="sidebar-group <?= $isServicesActive ? 'open' : '' ?>" id="grp-services">
                     <button type="button" class="sidebar-group-btn <?= $isServicesActive ? 'has-active' : '' ?>" onclick="toggleSidebarGroup('grp-services')">
                         <div class="d-flex align-items-center gap-2.5">
@@ -415,22 +453,28 @@
                         <i class="fa-solid fa-chevron-down sidebar-chevron"></i>
                     </button>
                     <ul class="sidebar-submenu">
+                        <?php if (has_permission('mailbox_manager')): ?>
                         <li>
                             <a href="<?= base_url('admin/mailbox') ?>" class="sidebar-sublink <?= $currMenu === 'mailbox_manager' ? 'active' : '' ?>">
                                 <i class="fa-solid fa-envelope"></i>
                                 <span>กล่องจดหมายกลาง (MOI)</span>
                             </a>
                         </li>
+                        <?php endif; ?>
+                        <?php if (has_permission('contact_manager')): ?>
                         <li>
                             <a href="<?= base_url('admin/contacts') ?>" class="sidebar-sublink <?= $currMenu === 'contact_manager' ? 'active' : '' ?>">
                                 <i class="fa-solid fa-envelope-open-text"></i>
                                 <span>เรื่องติดต่อ & ร้องเรียน</span>
                             </a>
                         </li>
+                        <?php endif; ?>
                     </ul>
                 </div>
+                <?php endif; ?>
 
                 <!-- Group 5: AI Tools & Settings -->
+                <?php if (!function_exists('has_group_permission') || has_group_permission('system_security')): ?>
                 <div class="sidebar-group <?= $isSystemActive ? 'open' : '' ?>" id="grp-system">
                     <button type="button" class="sidebar-group-btn <?= $isSystemActive ? 'has-active' : '' ?>" onclick="toggleSidebarGroup('grp-system')">
                         <div class="d-flex align-items-center gap-2.5">
@@ -442,24 +486,31 @@
                         <i class="fa-solid fa-chevron-down sidebar-chevron"></i>
                     </button>
                     <ul class="sidebar-submenu">
+                        <?php if (has_permission('nora_ai')): ?>
                         <li>
                             <a href="<?= base_url('admin/nora-ai') ?>" class="sidebar-sublink <?= $currMenu === 'nora_ai' ? 'active' : '' ?>">
                                 <i class="fa-solid fa-wand-magic-sparkles text-warning"></i>
                                 <span>น้องโนรา AI & คลังความรู้</span>
                             </a>
                         </li>
+                        <?php endif; ?>
+                        <?php if (has_permission('settings')): ?>
                         <li>
                             <a href="<?= base_url('admin/settings') ?>" class="sidebar-sublink <?= $currMenu === 'settings' ? 'active' : '' ?>">
                                 <i class="fa-solid fa-gear"></i>
                                 <span>ตั้งค่าระบบเว็บไซต์</span>
                             </a>
                         </li>
+                        <?php endif; ?>
+                        <?php if (has_permission('database_manager')): ?>
                         <li>
                             <a href="<?= base_url('admin/database-manager') ?>" class="sidebar-sublink <?= $currMenu === 'database_manager' ? 'active' : '' ?>">
                                 <i class="fa-solid fa-database text-info"></i>
                                 <span>จัดการตาราง & ฐานข้อมูล</span>
                             </a>
                         </li>
+                        <?php endif; ?>
+                        <?php if (has_permission('users')): ?>
                         <li>
                             <a href="<?= base_url('admin/users') ?>" class="sidebar-sublink <?= $currMenu === 'users' ? 'active' : '' ?>">
                                 <i class="fa-solid fa-users-gear"></i>
@@ -477,8 +528,10 @@
                                 <?php endif; ?>
                             </a>
                         </li>
+                        <?php endif; ?>
                     </ul>
                 </div>
+                <?php endif; ?>
             </div>
 
             <!-- Sidebar Footer -->

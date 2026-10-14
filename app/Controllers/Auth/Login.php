@@ -88,11 +88,20 @@ class Login extends BaseController
                         return redirect()->back()->withInput()->with('toast_msg', $msg)->with('toast_type', 'error');
                     }
 
+                    $perms = [];
+                    if (!empty($dbUser['permissions'])) {
+                        $decoded = json_decode($dbUser['permissions'], true);
+                        if (is_array($decoded)) {
+                            $perms = $decoded;
+                        }
+                    }
+
                     $account = [
                         'id'              => $dbUser['id'],
                         'username'        => $dbUser['username'],
                         'full_name'       => $dbUser['full_name'] ?? $dbUser['username'],
                         'role'            => $dbUser['role'] ?? 'officer',
+                        'permissions'     => $perms,
                         'avatar_initials' => mb_strtoupper(mb_substr($dbUser['full_name'] ?? $dbUser['username'], 0, 2))
                     ];
                 }
@@ -110,6 +119,7 @@ class Login extends BaseController
                     'password' => 'password123',
                     'full_name' => 'ดร.สุเทพ ผู้ดูแลระบบสูงสุด',
                     'role' => 'admin',
+                    'permissions' => ['*'],
                     'avatar_initials' => 'AD'
                 ],
                 'officer' => [
@@ -118,6 +128,7 @@ class Login extends BaseController
                     'password' => 'officer123',
                     'full_name' => 'สมใจ ปฏิบัติการศูนย์ดำรงธรรม',
                     'role' => 'officer',
+                    'permissions' => ['dashboard', 'news', 'procurement', 'contact_manager', 'mailbox_manager'],
                     'avatar_initials' => 'OF'
                 ]
             ];
@@ -148,6 +159,7 @@ class Login extends BaseController
                 'username'        => $account['username'],
                 'full_name'       => $account['full_name'],
                 'role'            => $account['role'],
+                'permissions'     => $account['permissions'] ?? [],
                 'avatar_initials' => $account['avatar_initials'],
                 'isLoggedIn'      => true
             ]);
@@ -155,15 +167,19 @@ class Login extends BaseController
             session()->setFlashdata('toast_msg', '🎉 ยินดีต้อนรับ ' . $account['full_name'] . ' สู่แผงควบคุมระบบพัทลุง');
             session()->setFlashdata('toast_type', 'success');
 
+            $targetUrl = ($account['role'] === 'admin') 
+                ? base_url('admin/dashboard') 
+                : (function_exists('get_first_permitted_url') ? get_first_permitted_url() : base_url());
+
             if ($isAjax) {
                 return $this->respond([
                     'status' => 'success',
                     'message' => 'ตรวจสอบสิทธิ์สำเร็จ! ระบบกำลังนำพาท่านสู่เขตข้อมูลหลังบ้าน...',
-                    'redirect' => base_url('admin/dashboard')
+                    'redirect' => $targetUrl
                 ], 200);
             }
 
-            return redirect()->to(base_url('admin/dashboard'));
+            return redirect()->to($targetUrl);
         }
 
         // บันทึกการพยายามเข้าสู่ระบบผิดพลาด
