@@ -87,7 +87,7 @@ while ($row = $result->fetch_assoc()) {
     if ($attRes && $attRes->num_rows > 0) {
         $attRow = $attRes->fetch_assoc();
         if (!empty($attRow['filepath'])) {
-            $docPath = 'https://www.phatthalung.go.th/2022/' . ltrim($attRow['filepath'], '/');
+            $docPath = 'https://www.phatthalung.go.th/2022-stop/' . ltrim($attRow['filepath'], '/');
         }
     }
 

@@ -185,7 +185,15 @@ if (!function_exists('format_thai_date_short')) {
                 <span class="badge bg-success text-dark fs-7 ms-2"><i class="fa-solid fa-user-shield me-1"></i>On-Page CMS</span>
             <?php endif; ?>
         </h1>
-        <p class="text-white-50 mt-2 mb-0 small">ศูนย์ข้อมูลประกวดราคา เปิดเผยราคากลาง และสรุปผล สขร.1 จังหวัดพัทลุง</p>
+        <p class="text-white-50 mt-2 mb-2 small">ศูนย์ข้อมูลประกวดราคา เปิดเผยราคากลาง และสรุปผล สขร.1 จังหวัดพัทลุง</p>
+        <div class="d-flex flex-wrap gap-2 justify-content-center mt-2">
+            <a href="<?= base_url('news?category=' . urlencode('ประกาศจัดซื้อจัดจ้าง (e-GP)')) ?>" class="btn btn-sm btn-light text-dark rounded-pill px-3 py-1.5 fw-bold d-inline-flex align-items-center gap-1.5 shadow-sm">
+                <i class="fa-solid fa-bullhorn text-primary"></i> ข่าวสารจัดซื้อจัดจ้าง
+            </a>
+            <a href="https://www.phatthalung.go.th/2022-stop/news?cid=3" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-warning rounded-pill px-3 py-1.5 fw-bold d-inline-flex align-items-center gap-1.5 shadow-sm" style="background: rgba(245, 158, 11, 0.2); border-color: #fcd34d; color: #ffffff;">
+                <i class="fa-solid fa-arrow-up-right-from-square text-warning"></i> ลิงก์ระบบเดิม (2022-stop/news)
+            </a>
+        </div>
     </div>
 
     <!-- Filter Toolbar Box -->

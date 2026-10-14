@@ -196,6 +196,14 @@ $pageTitle        = $pageTitle ?? 'ข่าวสารและประกา
                         <i class="fa-solid fa-location-dot me-1"></i> พื้นที่จังหวัดพัทลุง
                     </span>
                 </div>
+                <div class="d-flex align-items-center gap-2">
+                    <a href="https://www.phatthalung.go.th/2022-stop/news?cid=3" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1.5 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-xs">
+                        <i class="fa-solid fa-arrow-up-right-from-square text-warning"></i> ระบบเดิม (2022-stop/news)
+                    </a>
+                    <a href="<?= base_url('procurement') ?>" class="btn btn-sm btn-primary rounded-pill px-3 py-1.5 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-xs">
+                        <i class="fa-solid fa-table me-1"></i> หน้าสืบค้นจัดซื้อจัดจ้างฉบับเต็ม
+                    </a>
+                </div>
             </div>
 
             <!-- Clean Table with DataTables -->
@@ -221,8 +229,13 @@ $pageTitle        = $pageTitle ?? 'ข่าวสารและประกา
             </div>
 
             <!-- Footer -->
-            <div class="p-3 bg-light border-top text-center text-muted small">
-                <i class="fa-solid fa-circle-info text-primary me-1"></i> เชื่อมโยงข้อมูลจัดซื้อจัดจ้างภาครัฐ กรมบัญชีกลาง (e-GP) ของหน่วยงานในจังหวัดพัทลุง
+            <div class="p-3 bg-light border-top d-flex flex-wrap align-items-center justify-content-between gap-2 text-muted small">
+                <span>
+                    <i class="fa-solid fa-circle-info text-primary me-1"></i> เชื่อมโยงข้อมูลจัดซื้อจัดจ้างภาครัฐ กรมบัญชีกลาง (e-GP) ของหน่วยงานในจังหวัดพัทลุง
+                </span>
+                <a href="https://www.phatthalung.go.th/2022-stop/news?cid=3" target="_blank" rel="noopener noreferrer" class="text-decoration-none fw-bold text-primary">
+                    <i class="fa-solid fa-arrow-up-right-from-square me-1 text-warning"></i> ดูประกาศจัดซื้อจัดจ้างในระบบเดิม (2022-stop) &raquo;
+                </a>
             </div>
         </div>
 

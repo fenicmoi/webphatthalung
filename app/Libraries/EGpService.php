@@ -166,10 +166,12 @@ class EGpService
 
         $projects = [];
         foreach ($items as $idx => $item) {
-            $docUrl = '#';
+            $docUrl = 'https://www.phatthalung.go.th/2022-stop/news?cid=3';
             if (!empty($item['doc_path'])) {
                 if (strpos($item['doc_path'], 'http') === 0) {
-                    $docUrl = $item['doc_path'];
+                    $docUrl = str_replace('https://www.phatthalung.go.th/2022/', 'https://www.phatthalung.go.th/2022-stop/', $item['doc_path']);
+                } elseif (strpos($item['doc_path'], 'assets/docs/egp_sample') !== false) {
+                    $docUrl = 'https://www.phatthalung.go.th/2022-stop/news?cid=3';
                 } else {
                     $docUrl = base_url($item['doc_path']);
                 }
