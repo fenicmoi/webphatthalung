@@ -12,7 +12,7 @@ class UserModel extends Model
     protected $returnType = 'array';
     protected $useSoftDeletes = false;
 
-    protected $allowedFields = ['username', 'email', 'password_hash', 'role', 'full_name', 'avatar'];
+    protected $allowedFields = ['username', 'email', 'password_hash', 'role', 'status', 'full_name', 'department', 'phone', 'avatar'];
 
     protected $useTimestamps = true;
     protected $createdField  = 'created_at';
@@ -22,5 +22,6 @@ class UserModel extends Model
         'username' => 'required|min_length[3]|max_length[100]',
         'email'    => 'required|valid_email',
         'role'     => 'in_list[admin,officer,citizen]',
+        'status'   => 'in_list[pending,approved,rejected]',
     ];
 }

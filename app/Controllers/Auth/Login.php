@@ -72,6 +72,22 @@ class Login extends BaseController
                 $hash = $dbUser['password_hash'] ?? '';
                 // ตรวจสอบด้วย password_verify หรือรหัสผ่าน default สำหรับ dev/migration
                 if (password_verify($password, $hash) || $password === 'password123' || $password === '123456') {
+                    $userStatus = $dbUser['status'] ?? 'approved';
+                    if ($userStatus === 'pending') {
+                        $msg = '⏳ บัญชีของท่านลงทะเบียนเรียบร้อยแล้ว แต่อยู่ระหว่างรอผู้ดูแลระบบตรวจสอบและอนุมัติการเข้าใช้งาน';
+                        if ($isAjax) {
+                            return $this->respond(['status' => 'error', 'message' => $msg], 403);
+                        }
+                        return redirect()->back()->withInput()->with('toast_msg', $msg)->with('toast_type', 'warning');
+                    }
+                    if ($userStatus === 'rejected') {
+                        $msg = '🚫 บัญชีของท่านไม่ได้รับอนุมัติหรือถูกระงับการเข้าใช้งาน กรุณาติดต่อศูนย์สารสนเทศจังหวัด';
+                        if ($isAjax) {
+                            return $this->respond(['status' => 'error', 'message' => $msg], 403);
+                        }
+                        return redirect()->back()->withInput()->with('toast_msg', $msg)->with('toast_type', 'error');
+                    }
+
                     $account = [
                         'id'              => $dbUser['id'],
                         'username'        => $dbUser['username'],

@@ -370,6 +370,13 @@
                 </button>
             </form>
 
+            <div class="text-center mt-3 pt-2">
+                <span class="text-muted" style="font-size: 0.88rem;">ยังไม่มีบัญชีเจ้าหน้าที่?</span>
+                <a href="<?= base_url('register') ?>" class="text-emerald fw-bold text-decoration-none ms-1" style="font-size: 0.88rem;">
+                    <i class="fa-solid fa-user-plus me-1"></i>ลงทะเบียนเจ้าหน้าที่
+                </a>
+            </div>
+
             <div class="text-center mt-3 pt-3 border-top" style="border-color: rgba(0,0,0,0.06) !important;">
                 <p class="text-muted mb-0" style="font-size: 0.82rem;">
                     <i class="fa-solid fa-shield-halved text-warning me-1"></i> ระบบสำหรับเจ้าหน้าที่และผู้ได้รับมอบหมายเท่านั้น

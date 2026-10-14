@@ -461,9 +461,20 @@
                             </a>
                         </li>
                         <li>
-                            <a href="#users" onclick="App.toast('ระบบจัดการสิทธิ์เจ้าหน้าที่อยู่ในแผนอัปเดตถัดไป', 'info')" class="sidebar-sublink">
+                            <a href="<?= base_url('admin/users') ?>" class="sidebar-sublink <?= $currMenu === 'users' ? 'active' : '' ?>">
                                 <i class="fa-solid fa-users-gear"></i>
-                                <span>เจ้าหน้าที่ระบบ</span>
+                                <span>เจ้าหน้าที่ & ผู้ใช้งาน</span>
+                                <?php
+                                $pendingUsersCount = 0;
+                                try {
+                                    $pendingUsersCount = \Config\Database::connect()->table('users')->where('status', 'pending')->countAllResults();
+                                } catch (\Throwable $e) {}
+                                ?>
+                                <?php if ($pendingUsersCount > 0): ?>
+                                    <span class="badge bg-warning text-dark ms-auto" style="font-size: 0.72rem; padding: 0.2rem 0.45rem; border-radius: 20px;">
+                                        <?= $pendingUsersCount ?>
+                                    </span>
+                                <?php endif; ?>
                             </a>
                         </li>
                     </ul>

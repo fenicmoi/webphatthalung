@@ -56,6 +56,8 @@ $routes->match(['get', 'post'], 'news/syncDb', 'News::syncDb');
  */
 $routes->get('login', 'Auth\Login::index');
 $routes->post('login/attempt', 'Auth\Login::attempt');
+$routes->get('register', 'Auth\Register::index');
+$routes->post('register/attempt', 'Auth\Register::attempt');
 $routes->get('logout', 'Auth\Login::logout');
 
 /*
@@ -68,6 +70,15 @@ $routes->group('admin', ['namespace' => 'App\Controllers\Admin', 'filter' => 'au
     $routes->get('dashboard', 'Dashboard::index');
     $routes->get('settings', 'Settings::index');
     $routes->post('settings/save', 'Settings::save');
+
+    // User & Permission Management Routes
+    $routes->get('users', 'UserManager::index');
+    $routes->get('users/get-json/(:num)', 'UserManager::getJson/$1');
+    $routes->post('users/save', 'UserManager::save');
+    $routes->post('users/approve/(:num)', 'UserManager::approve/$1');
+    $routes->post('users/reject/(:num)', 'UserManager::reject/$1');
+    $routes->post('users/delete/(:num)', 'UserManager::delete/$1');
+    $routes->post('users/reset-password', 'UserManager::resetPassword');
 
     // Navigation & Submenu Management Routes
     $routes->get('menu', 'MenuManager::index');
