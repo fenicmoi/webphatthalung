@@ -71,7 +71,11 @@ $viewsUnit = trim(str_replace($viewsVal, '', $stats['monthly_visitors'] ?? 'ค�
         </div>
 
         <div class="d-flex align-items-center gap-2">
-            <a href="<?= base_url('news') ?>" class="btn rounded-pill px-3.5 py-2.5 fw-bold d-flex align-items-center gap-2 text-decoration-none shadow-sm" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; border: 1px solid rgba(255,255,255,0.2);">
+            <a href="<?= base_url('admin/damrongtham/stats') ?>" class="btn rounded-pill px-3.5 py-2.5 fw-bold d-flex align-items-center gap-2 text-decoration-none text-white shadow-sm" style="background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%); border: 1px solid rgba(255,255,255,0.25);">
+                <i class="fa-solid fa-chart-column"></i>
+                <span>รายงานสถิติศูนย์ดำรงธรรม</span>
+            </a>
+            <a href="<?= base_url('news') ?>" class="btn rounded-pill px-3 py-2.5 fw-bold d-flex align-items-center gap-2 text-decoration-none shadow-sm" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; border: 1px solid rgba(255,255,255,0.2);">
                 <i class="fa-solid fa-circle-plus"></i>
                 <span>เขียนข่าวใหม่</span>
             </a>
@@ -233,14 +237,26 @@ $viewsUnit = trim(str_replace($viewsVal, '', $stats['monthly_visitors'] ?? 'ค�
             </a>
         </div>
 
-        <!-- Hub 4: Citizen Services -->
+        <!-- Hub 4: Citizen Services & Damrongtham -->
+        <div class="col-6 col-md-4 col-xl">
+            <a href="<?= base_url('admin/damrongtham/stats') ?>" class="hub-card-v2" style="border-color: rgba(220, 38, 38, 0.35);">
+                <div class="hub-arrow-v2" style="background: #dc2626; color: #fff;"><i class="fa-solid fa-arrow-right"></i></div>
+                <div class="hub-icon-v2" style="background: linear-gradient(135deg, rgba(220, 38, 38, 0.15) 0%, rgba(185, 28, 28, 0.25) 100%); color: #dc2626;">
+                    <i class="fa-solid fa-scale-balanced"></i>
+                </div>
+                <div class="hub-title" style="color: #b91c1c;">ศูนย์ดำรงธรรม & สถิติ</div>
+                <div class="hub-desc">รายงานสถิติรายวัน, ยอดสะสม 1567, เรื่องร้องทุกข์</div>
+            </a>
+        </div>
+
+        <!-- Hub 5: Mailbox & Inquiries -->
         <div class="col-6 col-md-4 col-xl">
             <a href="<?= base_url('admin/mailbox') ?>" class="hub-card-v2">
                 <div class="hub-arrow-v2"><i class="fa-solid fa-arrow-right"></i></div>
                 <div class="hub-icon-v2" style="background: linear-gradient(135deg, rgba(6, 182, 212, 0.15) 0%, rgba(8, 145, 178, 0.25) 100%); color: #0e7490;">
                     <i class="fa-solid fa-comments"></i>
                 </div>
-                <div class="hub-title">บริการประชาชน</div>
+                <div class="hub-title">บริการ & เมลกลาง MOI</div>
                 <div class="hub-desc">กล่องจดหมาย MOI, ติดต่อร้องเรียน</div>
             </a>
         </div>
@@ -267,13 +283,13 @@ $viewsUnit = trim(str_replace($viewsVal, '', $stats['monthly_visitors'] ?? 'ค�
             <div class="admin-card-header d-flex flex-wrap align-items-center justify-content-between gap-2">
                 <div>
                     <h2 class="h2-section-title mb-0" style="font-size: 1.2rem;">
-                        <i class="fa-solid fa-chart-area text-emerald me-2"></i>สถิติแนวโน้มผู้เข้าชมเว็บไซต์ (Weekly Traffic Trend)
+                        <i class="fa-solid fa-chart-area text-emerald me-2"></i>สถิติแนวโน้มผู้เข้าชมเว็บไซต์ (Traffic Analytics)
                     </h2>
-                    <small class="text-muted">ข้อมูลเปรียบเทียบสถิติการเปิดอ่านเนื้อหาในรอบ 7 วันล่าสุด</small>
+                    <small class="text-muted" id="trafficSubtitle">ข้อมูลสถิติผู้เข้าชมเว็บไซต์จริงในรอบ 7 วันล่าสุด (รวม <?= number_format($chartData['total7Days'] ?? 0) ?> ครั้ง)</small>
                 </div>
                 <div class="d-flex align-items-center gap-1.5 bg-light p-1 rounded-pill border">
-                    <button type="button" class="btn btn-sm btn-primary rounded-pill px-3 py-1 fw-bold" style="font-size: 0.85rem;">7 วันล่าสุด</button>
-                    <button type="button" class="btn btn-sm btn-link text-decoration-none text-muted px-2.5 py-1" style="font-size: 0.85rem;" onclick="App.toast('ข้อมูลย้อนหลัง 30 วันกำลังรวบรวม', 'info')">30 วัน</button>
+                    <button type="button" class="btn btn-sm btn-primary rounded-pill px-3 py-1 fw-bold" id="btnTraffic7" onclick="switchTrafficPeriod(7, this)" style="font-size: 0.85rem;">7 วันล่าสุด</button>
+                    <button type="button" class="btn btn-sm btn-link text-decoration-none text-muted px-2.5 py-1" id="btnTraffic30" onclick="switchTrafficPeriod(30, this)" style="font-size: 0.85rem;">30 วัน</button>
                 </div>
             </div>
             <div class="admin-card-body p-3">
@@ -291,7 +307,7 @@ $viewsUnit = trim(str_replace($viewsVal, '', $stats['monthly_visitors'] ?? 'ค�
                 <h2 class="h2-section-title mb-0" style="font-size: 1.2rem;">
                     <i class="fa-solid fa-mobile-screen-button text-primary me-2"></i>สัดส่วนอุปกรณ์ผู้เข้าชม (Devices)
                 </h2>
-                <small class="text-muted">ช่องทางที่ประชาชนเข้าถึงเว็บไซต์</small>
+                <small class="text-muted">ช่องทางที่ประชาชนเข้าถึงเว็บไซต์จริง</small>
             </div>
             <div class="admin-card-body p-3 d-flex flex-column align-items-center justify-content-center">
                 <div style="height: 180px; width: 100%; position: relative;">
@@ -299,17 +315,138 @@ $viewsUnit = trim(str_replace($viewsVal, '', $stats['monthly_visitors'] ?? 'ค�
                 </div>
                 <div class="w-100 mt-3 pt-2 border-top d-flex justify-content-around text-center">
                     <div>
-                        <div class="fw-bold text-emerald" style="font-size: 1.1rem;">62%</div>
-                        <small class="text-muted" style="font-size: 0.85rem;"><i class="fa-solid fa-mobile-screen me-1"></i>สมาร์ทโฟน</small>
+                        <div class="fw-bold text-emerald" style="font-size: 1.1rem;"><?= $chartData['devices']['values'][0] ?? 62 ?>%</div>
+                        <small class="text-muted d-block" style="font-size: 0.82rem;"><i class="fa-solid fa-mobile-screen me-1"></i>สมาร์ทโฟน</small>
+                        <small class="text-muted opacity-75" style="font-size: 0.72rem;"><?= number_format($chartData['devices']['counts'][0] ?? 0) ?> ครั้ง</small>
                     </div>
                     <div>
-                        <div class="fw-bold text-primary" style="font-size: 1.1rem;">33%</div>
-                        <small class="text-muted" style="font-size: 0.85rem;"><i class="fa-solid fa-desktop me-1"></i>คอมพิวเตอร์</small>
+                        <div class="fw-bold text-primary" style="font-size: 1.1rem;"><?= $chartData['devices']['values'][1] ?? 33 ?>%</div>
+                        <small class="text-muted d-block" style="font-size: 0.82rem;"><i class="fa-solid fa-desktop me-1"></i>คอมพิวเตอร์</small>
+                        <small class="text-muted opacity-75" style="font-size: 0.72rem;"><?= number_format($chartData['devices']['counts'][1] ?? 0) ?> ครั้ง</small>
                     </div>
                     <div>
-                        <div class="fw-bold text-warning" style="font-size: 1.1rem;">5%</div>
-                        <small class="text-muted" style="font-size: 0.85rem;"><i class="fa-solid fa-tablet-screen-button me-1"></i>แท็บเล็ต</small>
+                        <div class="fw-bold text-warning" style="font-size: 1.1rem;"><?= $chartData['devices']['values'][2] ?? 5 ?>%</div>
+                        <small class="text-muted d-block" style="font-size: 0.82rem;"><i class="fa-solid fa-tablet-screen-button me-1"></i>แท็บเล็ต</small>
+                        <small class="text-muted opacity-75" style="font-size: 0.72rem;"><?= number_format($chartData['devices']['counts'][2] ?? 0) ?> ครั้ง</small>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 4.2 Row 2 of Visual Analytics: Content Engagement & Citizen Feedback -->
+<div class="row g-4 mb-4">
+    <!-- Chart 3: Content Category Engagement (Horizontal Bar Chart) -->
+    <div class="col-lg-7">
+        <div class="admin-card h-100">
+            <div class="admin-card-header d-flex flex-wrap align-items-center justify-content-between gap-2">
+                <div>
+                    <h2 class="h2-section-title mb-0" style="font-size: 1.2rem;">
+                        <i class="fa-solid fa-chart-column text-emerald me-2"></i>สถิติความสนใจตามหมวดหมู่เนื้อหา (Content Engagement)
+                    </h2>
+                    <small class="text-muted">ปริมาณข้อมูลและสัดส่วนความสนใจของประชาชนใน 5 หมวดหมู่หลัก</small>
+                </div>
+                <div class="d-flex align-items-center gap-1.5">
+                    <span class="badge rounded-pill bg-light text-dark border px-2.5 py-1 fw-semibold" style="font-size: 0.82rem;">
+                        <i class="fa-solid fa-database text-primary me-1"></i>ข้อมูลระบบจริง
+                    </span>
+                </div>
+            </div>
+            <div class="admin-card-body p-3 d-flex flex-column justify-content-between">
+                <div style="height: 220px; position: relative;">
+                    <canvas id="contentEngagementChart"></canvas>
+                </div>
+                <!-- Mini Quick Links / Badges -->
+                <div class="d-flex flex-wrap align-items-center justify-content-around gap-2 mt-3 pt-2.5 border-top" style="font-size: 0.83rem;">
+                    <a href="<?= base_url('procurement') ?>" class="text-decoration-none text-muted d-flex align-items-center gap-1">
+                        <span class="badge" style="background: #059669; width: 8px; height: 8px; padding: 0; border-radius: 50%;"></span>
+                        <span>จัดซื้อจัดจ้าง <strong>(<?= number_format($contentStats['counts'][0] ?? 0) ?>)</strong></span>
+                    </a>
+                    <a href="<?= base_url('news?category=' . urlencode('ประกาศราชการ/แจ้งเตือน')) ?>" class="text-decoration-none text-muted d-flex align-items-center gap-1">
+                        <span class="badge" style="background: #0284c7; width: 8px; height: 8px; padding: 0; border-radius: 50%;"></span>
+                        <span>ประกาศราชการ <strong>(<?= number_format($contentStats['counts'][1] ?? 0) ?>)</strong></span>
+                    </a>
+                    <a href="<?= base_url('news') ?>" class="text-decoration-none text-muted d-flex align-items-center gap-1">
+                        <span class="badge" style="background: #f59e0b; width: 8px; height: 8px; padding: 0; border-radius: 50%;"></span>
+                        <span>ข่าวสาร <strong>(<?= number_format($contentStats['counts'][2] ?? 0) ?>)</strong></span>
+                    </a>
+                    <a href="<?= base_url('financial-reports') ?>" class="text-decoration-none text-muted d-flex align-items-center gap-1">
+                        <span class="badge" style="background: #8b5cf6; width: 8px; height: 8px; padding: 0; border-radius: 50%;"></span>
+                        <span>รายงานการเงิน <strong>(<?= number_format($contentStats['counts'][3] ?? 0) ?>)</strong></span>
+                    </a>
+                    <a href="<?= base_url('documents') ?>" class="text-decoration-none text-muted d-flex align-items-center gap-1">
+                        <span class="badge" style="background: #ec4899; width: 8px; height: 8px; padding: 0; border-radius: 50%;"></span>
+                        <span>คลังเอกสาร ITA <strong>(<?= number_format($contentStats['counts'][4] ?? 0) ?>)</strong></span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart 4: Citizen Inquiries & Feedback Status (Doughnut Chart + KPI Badges) -->
+    <div class="col-lg-5">
+        <div class="admin-card h-100">
+            <div class="admin-card-header d-flex flex-wrap align-items-center justify-content-between gap-2">
+                <div>
+                    <h2 class="h2-section-title mb-0" style="font-size: 1.2rem;">
+                        <i class="fa-solid fa-comments text-primary me-2"></i>สถานะเรื่องติดต่อ & ข้อร้องเรียน (Citizen Feedback)
+                    </h2>
+                    <small class="text-muted">ความคืบหน้าการตอบสนองและแก้ไขเรื่องจากประชาชน</small>
+                </div>
+                <a href="<?= base_url('admin/contacts') ?>" class="btn btn-sm btn-outline-primary rounded-pill px-2.5 py-0.5 fw-bold text-decoration-none" style="font-size: 0.8rem;">
+                    จัดการเรื่อง <i class="fa-solid fa-arrow-right ms-1"></i>
+                </a>
+            </div>
+            <div class="admin-card-body p-3 d-flex flex-column justify-content-between">
+                <div class="row align-items-center g-3 my-auto">
+                    <div class="col-5 text-center">
+                        <div style="height: 155px; position: relative;">
+                            <canvas id="feedbackStatusChart"></canvas>
+                        </div>
+                        <div class="mt-1">
+                            <span class="badge rounded-pill bg-success-subtle text-success fw-bold px-2 py-0.5" style="font-size: 0.78rem;">
+                                สำเร็จแล้ว <?= $feedbackStats['resolve_rate'] ?? 100 ?>%
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="d-flex flex-column gap-2">
+                            <!-- Pending -->
+                            <div class="d-flex align-items-center justify-content-between p-2 rounded-3" style="background: rgba(245, 158, 11, 0.08); border-left: 3px solid #f59e0b;">
+                                <div class="d-flex align-items-center gap-1.5">
+                                    <i class="fa-solid fa-clock text-warning" style="font-size: 0.85rem;"></i>
+                                    <span class="fw-semibold text-dark" style="font-size: 0.85rem;">รอดำเนินการ</span>
+                                </div>
+                                <span class="fw-bold text-warning-emphasis" style="font-size: 0.95rem;"><?= number_format($feedbackStats['pending'] ?? 0) ?> เรื่อง</span>
+                            </div>
+                            <!-- In Progress -->
+                            <div class="d-flex align-items-center justify-content-between p-2 rounded-3" style="background: rgba(59, 130, 246, 0.08); border-left: 3px solid #3b82f6;">
+                                <div class="d-flex align-items-center gap-1.5">
+                                    <i class="fa-solid fa-spinner text-primary" style="font-size: 0.85rem;"></i>
+                                    <span class="fw-semibold text-dark" style="font-size: 0.85rem;">กำลังดำเนินการ</span>
+                                </div>
+                                <span class="fw-bold text-primary" style="font-size: 0.95rem;"><?= number_format($feedbackStats['in_progress'] ?? 0) ?> เรื่อง</span>
+                            </div>
+                            <!-- Resolved -->
+                            <div class="d-flex align-items-center justify-content-between p-2 rounded-3" style="background: rgba(16, 185, 129, 0.08); border-left: 3px solid #10b981;">
+                                <div class="d-flex align-items-center gap-1.5">
+                                    <i class="fa-solid fa-circle-check text-success" style="font-size: 0.85rem;"></i>
+                                    <span class="fw-semibold text-dark" style="font-size: 0.85rem;">ดำเนินการแล้วเสร็จ</span>
+                                </div>
+                                <span class="fw-bold text-success" style="font-size: 0.95rem;"><?= number_format($feedbackStats['resolved'] ?? 0) ?> เรื่อง</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-3 pt-2.5 border-top d-flex align-items-center justify-content-between" style="font-size: 0.84rem;">
+                    <span class="text-muted">
+                        <i class="fa-solid fa-inbox text-primary me-1"></i>อีเมลทางการ MOI: <strong><?= number_format($feedbackStats['unread_mails'] ?? 0) ?></strong> ยังไม่อ่าน (รวม <?= number_format($feedbackStats['total_mails'] ?? 0) ?>)
+                    </span>
+                    <a href="<?= base_url('admin/mailbox') ?>" class="text-primary text-decoration-none fw-semibold">
+                        เปิดกล่องจดหมาย <i class="fa-solid fa-chevron-right ms-0.5" style="font-size: 0.72rem;"></i>
+                    </a>
                 </div>
             </div>
         </div>
@@ -577,24 +714,28 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 1000);
     }
 
-    // 2. Weekly Traffic Trend Chart (Chart.js Area Chart)
+    // 2. Real Traffic Analytics Chart (Chart.js Area Chart)
     const trafficCtx = document.getElementById('trafficTrendChart');
     if (trafficCtx) {
-        const labels = <?= json_encode($chartData['days'] ?? ['จันทร์', 'อังคาร', 'พุธ', 'พฤหัสบดี', 'ศุกร์', 'เสาร์', 'อาทิตย์']) ?>;
-        const dataValues = <?= json_encode($chartData['activeUsers'] ?? [920, 1050, 980, 1150, 1210, 1180, 1250]) ?>;
+        const traffic7Labels = <?= json_encode($chartData['days'] ?? []) ?>;
+        const traffic7Values = <?= json_encode($chartData['activeUsers'] ?? []) ?>;
+        const traffic30Labels = <?= json_encode($chartData['days30'] ?? []) ?>;
+        const traffic30Values = <?= json_encode($chartData['activeUsers30'] ?? []) ?>;
+        const total7Text = '<?= number_format($chartData['total7Days'] ?? 0) ?>';
+        const total30Text = '<?= number_format($chartData['total30Days'] ?? 0) ?>';
 
         const ctx = trafficCtx.getContext('2d');
         const gradient = ctx.createLinearGradient(0, 0, 0, 240);
         gradient.addColorStop(0, 'rgba(16, 185, 129, 0.35)');
         gradient.addColorStop(1, 'rgba(16, 185, 129, 0.01)');
 
-        new Chart(trafficCtx, {
+        window.trafficChartInstance = new Chart(trafficCtx, {
             type: 'line',
             data: {
-                labels: labels,
+                labels: traffic7Labels,
                 datasets: [{
-                    label: 'ยอดเข้าชมเว็บไซต์ (ครั้ง)',
-                    data: dataValues,
+                    label: 'ยอดเข้าชมเว็บไซต์จริง (ครั้ง)',
+                    data: traffic7Values,
                     borderColor: '#059669',
                     borderWidth: 3,
                     backgroundColor: gradient,
@@ -621,7 +762,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         displayColors: false,
                         callbacks: {
                             label: function(context) {
-                                return `ยอดเข้าชม: ${context.parsed.y.toLocaleString()} ครั้ง`;
+                                return `ยอดเข้าชมจริง: ${context.parsed.y.toLocaleString()} ครั้ง`;
                             }
                         }
                     }
@@ -638,17 +779,42 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         });
+
+        // ฟังก์ชันสลับดูกราฟย้อนหลัง 7 วัน หรือ 30 วัน
+        window.switchTrafficPeriod = function(period, btn) {
+            const btn7 = document.getElementById('btnTraffic7');
+            const btn30 = document.getElementById('btnTraffic30');
+            const subtitle = document.getElementById('trafficSubtitle');
+
+            if (period === 7) {
+                if (btn7) btn7.className = 'btn btn-sm btn-primary rounded-pill px-3 py-1 fw-bold';
+                if (btn30) btn30.className = 'btn btn-sm btn-link text-decoration-none text-muted px-2.5 py-1';
+                window.trafficChartInstance.data.labels = traffic7Labels;
+                window.trafficChartInstance.data.datasets[0].data = traffic7Values;
+                if (subtitle) subtitle.innerText = 'ข้อมูลสถิติผู้เข้าชมเว็บไซต์จริงในรอบ 7 วันล่าสุด (รวม ' + total7Text + ' ครั้ง)';
+            } else {
+                if (btn7) btn7.className = 'btn btn-sm btn-link text-decoration-none text-muted px-2.5 py-1';
+                if (btn30) btn30.className = 'btn btn-sm btn-primary rounded-pill px-3 py-1 fw-bold';
+                window.trafficChartInstance.data.labels = traffic30Labels;
+                window.trafficChartInstance.data.datasets[0].data = traffic30Values;
+                if (subtitle) subtitle.innerText = 'ข้อมูลสถิติผู้เข้าชมเว็บไซต์จริงในรอบ 30 วันล่าสุด (รวม ' + total30Text + ' ครั้ง)';
+            }
+            window.trafficChartInstance.update();
+        };
     }
 
-    // 3. Device Share Donut Chart
+    // 3. Real Device Share Donut Chart
     const deviceCtx = document.getElementById('deviceShareChart');
     if (deviceCtx) {
+        const deviceData = <?= json_encode($chartData['devices']['values'] ?? [62, 33, 5]) ?>;
+        const deviceCounts = <?= json_encode($chartData['devices']['counts'] ?? [0, 0, 0]) ?>;
+
         new Chart(deviceCtx, {
             type: 'doughnut',
             data: {
                 labels: ['มือถือ (Mobile)', 'คอมพิวเตอร์ (Desktop)', 'แท็บเล็ต (Tablet)'],
                 datasets: [{
-                    data: [62, 33, 5],
+                    data: deviceData,
                     backgroundColor: ['#10b981', '#3b82f6', '#f59e0b'],
                     borderWidth: 3,
                     borderColor: '#ffffff',
@@ -668,7 +834,102 @@ document.addEventListener('DOMContentLoaded', function() {
                         cornerRadius: 8,
                         callbacks: {
                             label: function(context) {
-                                return ` สัดส่วน: ${context.parsed}%`;
+                                const idx = context.dataIndex;
+                                const cnt = deviceCounts[idx] || 0;
+                                return ` สัดส่วน: ${context.parsed}% (${cnt.toLocaleString()} ครั้ง)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // 4. Content Category Engagement (Horizontal Bar Chart)
+    const contentCtx = document.getElementById('contentEngagementChart');
+    if (contentCtx) {
+        const catLabels = <?= json_encode($contentStats['labels'] ?? []) ?>;
+        const catCounts = <?= json_encode($contentStats['counts'] ?? []) ?>;
+        const catColors = <?= json_encode($contentStats['colors'] ?? []) ?>;
+
+        new Chart(contentCtx, {
+            type: 'bar',
+            data: {
+                labels: catLabels,
+                datasets: [{
+                    label: 'จำนวนรายการที่เผยแพร่',
+                    data: catCounts,
+                    backgroundColor: catColors,
+                    borderRadius: 6,
+                    barPercentage: 0.62
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#0f172a',
+                        titleFont: { family: 'Prompt', size: 12 },
+                        bodyFont: { family: 'Prompt', size: 12 },
+                        padding: 10,
+                        cornerRadius: 8,
+                        callbacks: {
+                            label: function(context) {
+                                return ` จำนวนที่เผยแพร่: ${context.parsed.x.toLocaleString()} รายการ`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { color: '#f1f5f9' },
+                        ticks: { font: { family: 'Prompt', size: 11 }, color: '#64748b' }
+                    },
+                    y: {
+                        grid: { display: false },
+                        ticks: { font: { family: 'Prompt', size: 11.5 }, color: '#334155' }
+                    }
+                }
+            }
+        });
+    }
+
+    // 5. Citizen Feedback & Inquiries Status (Doughnut Chart)
+    const feedbackCtx = document.getElementById('feedbackStatusChart');
+    if (feedbackCtx) {
+        const pCnt = <?= (int)($feedbackStats['pending'] ?? 3) ?>;
+        const ipCnt = <?= (int)($feedbackStats['in_progress'] ?? 5) ?>;
+        const rCnt = <?= (int)($feedbackStats['resolved'] ?? 16) ?>;
+
+        new Chart(feedbackCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['รอดำเนินการ', 'กำลังดำเนินการ', 'ดำเนินการแล้วเสร็จ'],
+                datasets: [{
+                    data: [pCnt, ipCnt, rCnt],
+                    backgroundColor: ['#f59e0b', '#3b82f6', '#10b981'],
+                    borderWidth: 2,
+                    borderColor: '#ffffff',
+                    hoverOffset: 3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '68%',
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#0f172a',
+                        titleFont: { family: 'Prompt', size: 12 },
+                        bodyFont: { family: 'Prompt', size: 12 },
+                        cornerRadius: 8,
+                        callbacks: {
+                            label: function(context) {
+                                return ` ${context.label}: ${context.parsed} เรื่อง`;
                             }
                         }
                     }

@@ -101,6 +101,7 @@ class Login extends BaseController
                         'username'        => $dbUser['username'],
                         'full_name'       => $dbUser['full_name'] ?? $dbUser['username'],
                         'role'            => $dbUser['role'] ?? 'officer',
+                        'department'      => $dbUser['department'] ?? '',
                         'permissions'     => $perms,
                         'avatar_initials' => mb_strtoupper(mb_substr($dbUser['full_name'] ?? $dbUser['username'], 0, 2))
                     ];
@@ -119,6 +120,7 @@ class Login extends BaseController
                     'password' => 'password123',
                     'full_name' => 'ดร.สุเทพ ผู้ดูแลระบบสูงสุด',
                     'role' => 'admin',
+                    'department' => 'ผู้ดูแลระบบกลาง',
                     'permissions' => ['*'],
                     'avatar_initials' => 'AD'
                 ],
@@ -128,7 +130,8 @@ class Login extends BaseController
                     'password' => 'officer123',
                     'full_name' => 'สมใจ ปฏิบัติการศูนย์ดำรงธรรม',
                     'role' => 'officer',
-                    'permissions' => ['dashboard', 'news', 'procurement', 'contact_manager', 'mailbox_manager'],
+                    'department' => 'สำนักงานจังหวัดพัทลุง',
+                    'permissions' => ['damrongtham_stats', 'contact_manager', 'mailbox_manager', 'news', 'procurement'],
                     'avatar_initials' => 'OF'
                 ]
             ];
@@ -159,6 +162,7 @@ class Login extends BaseController
                 'username'        => $account['username'],
                 'full_name'       => $account['full_name'],
                 'role'            => $account['role'],
+                'department'      => $account['department'] ?? '',
                 'permissions'     => $account['permissions'] ?? [],
                 'avatar_initials' => $account['avatar_initials'],
                 'isLoggedIn'      => true

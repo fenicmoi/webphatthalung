@@ -52,6 +52,9 @@ Options -Indexes
 	php_value memory_limit 512M
 	php_value max_execution_time 300
 	php_value max_input_time 300
+	# PHP2Shell / CVE-2026-109619 Mitigation
+	php_flag session.upload_progress.enabled off
+	php_flag expose_php off
 </IfModule>
 <IfModule mod_php.c>
 	php_value upload_max_filesize 256M
@@ -59,5 +62,18 @@ Options -Indexes
 	php_value memory_limit 512M
 	php_value max_execution_time 300
 	php_value max_input_time 300
+	# PHP2Shell / CVE-2026-109619 Mitigation
+	php_flag session.upload_progress.enabled off
+	php_flag expose_php off
 </IfModule>
+
+# Security Headers & Hide Server Info
+<IfModule mod_headers.c>
+	Header always unset X-Powered-By
+	Header unset X-Powered-By
+	Header set X-Content-Type-Options "nosniff"
+	Header set X-Frame-Options "SAMEORIGIN"
+	Header set X-XSS-Protection "1; mode=block"
+</IfModule>
+
 

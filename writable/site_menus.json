@@ -40,8 +40,8 @@
             },
             {
                 "id": "sub_1787114329634",
-                "title": "หัวหน้าส่วนราชการ",
-                "url": "http:\/\/www.phone.phatthalung.go.th",
+                "title": "หัวหน้าส่วนราชการและสมุดโทรศัพท์",
+                "url": "directory",
                 "target": "_self"
             },
             {
@@ -60,21 +60,45 @@
     },
     {
         "id": "menu_6a7172486e72c",
-        "title": "บริการประชาชน e-Service",
-        "url": "#services",
+        "title": "ระบบสารสนเทศ & e-Service",
+        "url": "#digitalServicesHub",
         "icon": "fa-solid fa-laptop-file",
         "target": "_self",
         "children": [
             {
-                "id": "sub_6a7172486e72d",
-                "title": "ยื่นเรื่องร้องเรียน ศูนย์ดำรงธรรม",
-                "url": "contact",
+                "id": "sub_service_hub",
+                "title": "ศูนย์รวมระบบสารสนเทศทั้งหมด",
+                "url": "#digitalServicesHub",
                 "target": "_self"
             },
             {
-                "id": "sub_6a7172486e72e",
-                "title": "ระบบตรวจสอบรหัสสถานะคำร้อง",
-                "url": "contact",
+                "id": "sub_eoffice",
+                "title": "e-Office จังหวัดพัทลุง",
+                "url": "https://eoffice.phatthalung.go.th/",
+                "target": "_blank"
+            },
+            {
+                "id": "sub_crimemap",
+                "title": "CRIME MAP แผนที่อาชญากรรม 90 วัน",
+                "url": "https://www.phatthalung.go.th/90day/",
+                "target": "_blank"
+            },
+            {
+                "id": "sub_phone",
+                "title": "ทำเนียบหัวหน้าส่วนราชการ (สมุดโทรศัพท์)",
+                "url": "https://www.phatthalung.go.th/2026/directory",
+                "target": "_self"
+            },
+            {
+                "id": "sub_emenscr",
+                "title": "ระบบ eMENSCR (ยุทธศาสตร์ชาติ)",
+                "url": "https://emenscr.nesdc.go.th/",
+                "target": "_blank"
+            },
+            {
+                "id": "sub_6a7172486e72d",
+                "title": "ศูนย์ดำรงธรรมจังหวัดพัทลุง (สายด่วน 1567)",
+                "url": "damrongtham",
                 "target": "_self"
             },
             {
@@ -96,6 +120,12 @@
                 "id": "sub_6a7172486e731",
                 "title": "ข่าวประกาศทั่วไปจากศาลากลาง",
                 "url": "#news-general",
+                "target": "_self"
+            },
+            {
+                "id": "sub_calendar_events",
+                "title": "ปฏิทินกิจกรรมและตารางงานจังหวัด",
+                "url": "calendar",
                 "target": "_self"
             },
             {
@@ -121,9 +151,28 @@
     {
         "id": "menu_6a7172486e734",
         "title": "ติดต่อเรา",
-        "url": "contact",
+        "url": "#contact",
         "icon": "fa-solid fa-phone-volume",
         "target": "_self",
-        "children": []
+        "children": [
+            {
+                "id": "sub_contact_damrongtham",
+                "title": "ศูนย์ดำรงธรรมจังหวัดพัทลุง (ร้องทุกข์ 24 ชม.)",
+                "url": "damrongtham",
+                "target": "_self"
+            },
+            {
+                "id": "sub_contact_provincial",
+                "title": "ติดต่อศาลากลางจังหวัดพัทลุง",
+                "url": "contact",
+                "target": "_self"
+            },
+            {
+                "id": "sub_contact_directory",
+                "title": "ทำเนียบส่วนราชการและสมุดโทรศัพท์",
+                "url": "directory",
+                "target": "_self"
+            }
+        ]
     }
 ]

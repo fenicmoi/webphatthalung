@@ -68,11 +68,17 @@ class UserManager extends BaseController
             'officer'  => $db->table('users')->where('role', 'officer')->countAllResults(),
         ];
 
+        $directoryModel = new \App\Models\DirectoryModel();
+        $departments = $directoryModel->getDepartments();
+        $ministries = $directoryModel->getMinistries();
+
         $data = [
             'title'           => 'จัดการผู้ใช้งานและสิทธิ์เจ้าหน้าที่ | Admin Portal',
             'activeMenu'      => 'users',
             'users'           => $users,
             'stats'           => $stats,
+            'departments'     => $departments,
+            'ministries'      => $ministries,
             'search'          => $search,
             'currStatus'      => $status,
             'currRole'        => $role,
@@ -179,6 +185,32 @@ class UserManager extends BaseController
             'permissions' => json_encode($perms, JSON_UNESCAPED_UNICODE)
         ];
 
+        // ตรวจสอบและลงทะเบียนหน่วยงานในทำเนียบ (Directory) อัตโนมัติหากเป็นหน่วยงานใหม่
+        if (!empty($department)) {
+            $directoryModel = new \App\Models\DirectoryModel();
+            $deptInfo = $directoryModel->findDepartment($department);
+            if (!$deptInfo) {
+                $allDepts = $directoryModel->getDepartments();
+                $maxDeptId = 0;
+                foreach ($allDepts as $d) {
+                    $did = (int)($d['id'] ?? 0);
+                    if ($did > $maxDeptId) $maxDeptId = $did;
+                }
+                $ministryId = (int)($this->request->getPost('ministry_id') ?? 12);
+                if ($ministryId <= 0) $ministryId = 12;
+
+                $newDept = [
+                    'id'          => $maxDeptId + 1,
+                    'ministry_id' => $ministryId,
+                    'name'        => $department,
+                    'order'       => count($allDepts) + 1,
+                    'created_at'  => date('Y-m-d H:i:s')
+                ];
+                $allDepts[] = $newDept;
+                @file_put_contents(WRITEPATH . 'directory_departments.json', json_encode($allDepts, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+            }
+        }
+
         if ($id > 0) {
             // กรณีแก้ไข: ถ้ามีการกรอกรหัสผ่านใหม่ ให้แฮชและอัปเดตด้วย
             if (!empty($password)) {
@@ -197,6 +229,7 @@ class UserManager extends BaseController
                 session()->set('permissions', $perms);
                 session()->set('role', $userData['role']);
                 session()->set('full_name', $userData['full_name']);
+                session()->set('department', $userData['department']);
             }
 
             $msg = "แก้ไขข้อมูลผู้ใช้งาน '{$username}' สำเร็จเรียบร้อย";
@@ -219,7 +252,7 @@ class UserManager extends BaseController
     }
 
     /**
-     * อนุมัติผู้ใช้งาน (Approve)
+     * อนุมัติผู้ใช้งาน (Approve) พร้อมกำหนดส่วนราชการและสิทธิ์การใช้งาน
      */
     public function approve($id)
     {
@@ -234,10 +267,81 @@ class UserManager extends BaseController
             return $this->respond(['status' => 'error', 'message' => 'ไม่พบข้อมูลผู้ใช้งาน'], 404);
         }
 
-        $userModel->update($id, ['status' => 'approved']);
+        $updateData = ['status' => 'approved'];
+
+        // 1. รับค่าส่วนราชการที่ Admin กำหนดให้
+        $department = trim($this->request->getPost('department') ?? '');
+        if (!empty($department)) {
+            $updateData['department'] = $department;
+        }
+
+        // 2. จัดการสิทธิ์การใช้งาน (Permissions)
+        $perms = [];
+        if (!empty($user['permissions'])) {
+            $decoded = json_decode($user['permissions'], true);
+            if (is_array($decoded)) {
+                $perms = $decoded;
+            }
+        }
+
+        $rawPerms = $this->request->getPost('permissions');
+        if (is_array($rawPerms)) {
+            $perms = array_values(array_unique(array_merge($perms, $rawPerms)));
+        }
+
+        // สิทธิ์จัดการทำเนียบข้าราชการประจำหน่วยงาน (directory_manager)
+        $grantDirectory = $this->request->getPost('grant_directory');
+        if ($grantDirectory === '1' || $grantDirectory === 'true' || $grantDirectory === true || in_array('directory_manager', $perms, true)) {
+            if (!in_array('directory_manager', $perms, true)) {
+                $perms[] = 'directory_manager';
+            }
+        }
+
+        // หากสังกัดศูนย์ดำรงธรรม ให้มอบสิทธิ์ศูนย์ดำรงธรรมด้วย
+        $finalDept = !empty($updateData['department']) ? $updateData['department'] : ($user['department'] ?? '');
+        if (mb_strpos($finalDept, 'ดำรงธรรม') !== false) {
+            if (!in_array('damrongtham_stats', $perms, true)) $perms[] = 'damrongtham_stats';
+            if (!in_array('contact_manager', $perms, true)) $perms[] = 'contact_manager';
+        }
+
+        // ถ้ายังไม่มีสิทธิ์ใดๆ เลย ให้ตั้งต้นด้วย directory_manager
+        if (empty($perms)) {
+            $perms = ['directory_manager'];
+        }
+
+        $updateData['permissions'] = json_encode(array_values(array_unique($perms)), JSON_UNESCAPED_UNICODE);
+
+        // 3. ตรวจสอบว่าหน่วยงานนี้มีอยู่ในฐานข้อมูลทำเนียบ (Directory) แล้วหรือยัง
+        if (!empty($updateData['department'])) {
+            $directoryModel = new \App\Models\DirectoryModel();
+            $deptInfo = $directoryModel->findDepartment($updateData['department']);
+            if (!$deptInfo) {
+                // หากเป็นหน่วยงานใหม่ที่ไม่อยู่ในระบบ ให้สร้างขึ้นใหม่ใน directory_departments.json อัตโนมัติ!
+                $allDepts = $directoryModel->getDepartments();
+                $maxDeptId = 0;
+                foreach ($allDepts as $d) {
+                    $did = (int)($d['id'] ?? 0);
+                    if ($did > $maxDeptId) $maxDeptId = $did;
+                }
+                $ministryId = (int)($this->request->getPost('ministry_id') ?? 12); // ค่าเริ่มต้น: กระทรวงมหาดไทย
+                if ($ministryId <= 0) $ministryId = 12;
+
+                $newDept = [
+                    'id'          => $maxDeptId + 1,
+                    'ministry_id' => $ministryId,
+                    'name'        => $updateData['department'],
+                    'order'       => count($allDepts) + 1,
+                    'created_at'  => date('Y-m-d H:i:s')
+                ];
+                $allDepts[] = $newDept;
+                @file_put_contents(WRITEPATH . 'directory_departments.json', json_encode($allDepts, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+            }
+        }
+
+        $userModel->update($id, $updateData);
         return $this->respond([
             'status'  => 'success',
-            'message' => "อนุมัติการใช้งานบัญชี '{$user['full_name']}' ({$user['username']}) สำเร็จแล้ว"
+            'message' => "อนุมัติการใช้งานและผูกสังกัด '{$updateData['department']}' ให้กับบัญชี '{$user['full_name']}' สำเร็จแล้ว"
         ]);
     }
 

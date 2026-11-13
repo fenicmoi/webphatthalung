@@ -1,20 +1,24 @@
 <?php
 // =========================================================================
 // ศาลาประชาสัมพันธ์และสื่อเมืองลุง (News, Events, Photo Gallery & Videos Hub)
+// ดีไซน์ใหม่: แยก Section ออกมาแสดงผลอย่างชัดเจน เด่นสะดุดตาทุกหมวดหมู่ (No Hidden Tabs)
 // =========================================================================
-$localNews = function_exists('get_site_news') ? get_site_news(12, null, true) : [];
-$localNews = is_array($localNews) ? $localNews : [];
-$prdNews = [];
-try {
-    if (class_exists('\App\Libraries\PrdNewsService')) {
-        $prdNews = \App\Libraries\PrdNewsService::getPhatthalungNews(12);
-    }
-} catch (\Throwable $e) {
-    $prdNews = [];
+$allPublishedNews = function_exists('get_site_news') ? get_site_news(null, null, true) : [];
+$allPublishedNews = is_array($allPublishedNews) ? $allPublishedNews : [];
+
+// คัดกรองข่าวที่ถูกกำหนดเป็น "หัวข้อเด่น" (Featured News)
+$featuredNews = array_values(array_filter($allPublishedNews, function($item) {
+    return !empty($item['is_featured']);
+}));
+
+// หากมีหัวข้อเด่นที่กำหนดไว้ ให้นำเฉพาะหัวข้อเด่นมาแสดงที่หน้าหลัก
+if (!empty($featuredNews)) {
+    $homeNews = array_slice($featuredNews, 0, 6);
+    $isFeaturedMode = true;
+} else {
+    $homeNews = array_slice($allPublishedNews, 0, 6);
+    $isFeaturedMode = false;
 }
-$prdNews = is_array($prdNews) ? $prdNews : [];
-$homeNews = $localNews;
-$homeNews = array_slice($homeNews, 0, 6);
 $newsCats = function_exists('get_news_categories') ? get_news_categories() : [];
 $newsCats = is_array($newsCats) ? $newsCats : [];
 $homeEvents = function_exists('get_site_events') ? get_site_events(true) : [];
@@ -35,59 +39,10 @@ try {
 
 <style>
 /* ==========================================================================
-   Clean Editorial News & Media Hub (Calm, Readable, Emerald-Themed)
+   Clean Editorial News, Calendar & Multimedia Styling (Emerald GovTech Theme)
    ========================================================================== */
 
-/* 1. Main Navigation Tabs (Modern Clean Underline Style) */
-.nav-underline-custom {
-    display: flex;
-    gap: 0.5rem;
-    overflow-x: auto;
-    scrollbar-width: none;
-}
-.nav-underline-custom::-webkit-scrollbar {
-    display: none;
-}
-
-.news-media-tab-trigger {
-    color: #475569 !important;
-    background: transparent !important;
-    border: none !important;
-    padding: 10px 18px !important;
-    font-weight: 600 !important;
-    font-size: 1.05rem;
-    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
-    border-radius: 12px 12px 0 0 !important;
-    border-bottom: 3px solid transparent !important;
-    white-space: nowrap;
-    position: relative;
-}
-.news-media-tab-trigger:hover {
-    color: #047857 !important;
-    background: rgba(16, 185, 129, 0.05) !important;
-    border-bottom-color: rgba(4, 120, 87, 0.3) !important;
-}
-.news-media-tab-trigger.active {
-    color: #047857 !important;
-    border-bottom: 3px solid #047857 !important;
-    font-weight: 700 !important;
-    background: rgba(16, 185, 129, 0.08) !important;
-}
-
-[data-theme="dark"] .news-media-tab-trigger {
-    color: #94a3b8 !important;
-}
-[data-theme="dark"] .news-media-tab-trigger:hover {
-    color: #34d399 !important;
-    background: rgba(16, 185, 129, 0.1) !important;
-}
-[data-theme="dark"] .news-media-tab-trigger.active {
-    color: #34d399 !important;
-    background: rgba(16, 185, 129, 0.15) !important;
-    border-bottom-color: #34d399 !important;
-}
-
-/* 2. Category Sub-tabs - Sleek Pill Chips */
+/* 1. Category Sub-tabs - Sleek Pill Chips */
 .news-cat-btn {
     border: 1px solid rgba(16, 185, 129, 0.2) !important;
     background: rgba(255, 255, 255, 0.9);
@@ -133,7 +88,7 @@ try {
     box-shadow: 0 6px 18px rgba(16, 185, 129, 0.3) !important;
 }
 
-/* 3. News Card System (Elevated GovTech Architecture) */
+/* 2. News Card System (Elevated GovTech Architecture) */
 .gov-news-card {
     background: #ffffff;
     border-radius: 20px;
@@ -169,7 +124,6 @@ try {
     transform: scale(1.06);
 }
 
-/* Subtle gradient shade on image bottom for sleek depth */
 .gov-news-img-wrap::after {
     content: "";
     position: absolute;
@@ -178,7 +132,6 @@ try {
     pointer-events: none;
 }
 
-/* Category pill floating over image */
 .gov-news-floating-cat {
     position: absolute;
     top: 12px;
@@ -250,7 +203,7 @@ try {
     color: #cbd5e1;
 }
 
-/* 4. Hub Interactive Calendar Styling (High Dimension & Equal 7-Column Layout) */
+/* 3. Hub Interactive Calendar Styling */
 .hub-calendar-wrapper {
     background: #ffffff;
     border-radius: 18px;
@@ -386,13 +339,41 @@ try {
     color: #cbd5e1;
 }
 
-/* ==========================================================================
-   5. News Hub Container - Luxury Seamless Ambient Mesh & Glassmorphic Canvas
-   แก้ปัญหาพื้นหลังต่อกันไม่เนียน ด้วย Gradient Mesh แสงนุ่มระดับพรีเมียม
-   ========================================================================== */
-.news-media-hub-card {
+/* Visual Event Spotlight Cards Styling */
+.gov-visual-event-card {
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+.gov-visual-event-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 35px rgba(4, 120, 87, 0.16) !important;
+    border-color: #10b981 !important;
+}
+.gov-visual-event-card .event-zoom-img {
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+.gov-visual-event-card:hover .event-zoom-img {
+    transform: scale(1.08);
+}
+.gov-visual-event-card .event-arrow-icon {
+    transition: transform 0.25s ease;
+}
+.gov-visual-event-card:hover .event-arrow-icon {
+    transform: translateX(4px);
+}
+.gov-visual-event-card:hover .event-title-hover {
+    color: #047857 !important;
+}
+.gov-visual-event-card .event-glass-date {
+    transition: transform 0.25s ease;
+}
+.gov-visual-event-card:hover .event-glass-date {
+    transform: scale(1.06);
+}
+
+/* 4. Section Card Containers (Ambient Mesh & Glassmorphism) */
+.gov-section-card {
     position: relative;
-    border-radius: 30px;
+    border-radius: 28px;
     border: 1.5px solid rgba(16, 185, 129, 0.22) !important;
     background-color: #ffffff;
     background-image: 
@@ -404,9 +385,7 @@ try {
     overflow: hidden;
     backdrop-filter: blur(16px);
 }
-
-/* Elegant decorative subtle backdrop accents */
-.news-media-hub-card::before {
+.gov-section-card::before {
     content: "";
     position: absolute;
     top: 0;
@@ -414,24 +393,11 @@ try {
     right: 0;
     height: 4px;
     background: linear-gradient(90deg, #059669 0%, #10b981 50%, #34d399 100%);
-    border-radius: 30px 30px 0 0;
+    border-radius: 28px 28px 0 0;
     z-index: 1;
 }
 
-.news-media-hub-card::after {
-    content: "";
-    position: absolute;
-    bottom: -60px;
-    right: -40px;
-    width: 320px;
-    height: 320px;
-    background: radial-gradient(circle, rgba(16, 185, 129, 0.06) 0%, transparent 70%);
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 0;
-}
-
-[data-theme="dark"] .news-media-hub-card {
+[data-theme="dark"] .gov-section-card {
     background-color: #0f172a;
     background-image: 
         radial-gradient(1000px circle at 0% 0%, rgba(16, 185, 129, 0.14) 0%, transparent 60%),
@@ -440,370 +406,631 @@ try {
     border-color: rgba(16, 185, 129, 0.25) !important;
     box-shadow: 0 24px 60px -15px rgba(0, 0, 0, 0.6);
 }
+
+.section-icon-box {
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    flex-shrink: 0;
+}
 </style>
 
+<!-- =========================================================================
+     SECTION 1: ข่าวสารและประชาสัมพันธ์ (News & Announcements)
+     ========================================================================= -->
 <section id="news-media-hub" class="my-5 py-2">
-    <div class="card news-media-hub-card border-0 p-4 p-lg-5 shadow-sm">
+    <div class="card gov-section-card border-0 p-4 p-lg-5 shadow-sm">
         
-        <!-- Hub Header & Main Tabs -->
+        <!-- Header -->
         <div class="mb-4">
             <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
-                <h3 class="fw-bold mb-0 d-flex align-items-center gap-2.5" style="color: var(--text-primary);">
-                    <img src="<?= base_url('assets/images/phatthalung_fabric_emblem.svg') ?>" alt="ลายผ้าประจำจังหวัดพัทลุง" style="width: 30px; height: 36px; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));">
-                    <span><?= site_text('news_section_title', 'ข่าวสารและประชาสัมพันธ์', 'หัวข้อส่วนข่าวสาร') ?></span>
-                    <?php if ($isOfficer): ?>
-                        <span class="badge bg-success bg-opacity-25 text-success px-2 py-1 fs-6"><i class="fa-solid fa-user-shield me-1"></i>แอดมิน</span>
-                    <?php endif; ?>
-                </h3>
-            </div>
+                <div>
+                    <h3 class="fw-bold mb-1 d-flex align-items-center gap-2.5" style="color: var(--text-primary);">
+                        <img src="<?= base_url('assets/images/phatthalung_fabric_emblem.svg') ?>" alt="ลายผ้าประจำจังหวัดพัทลุง" style="width: 32px; height: 38px; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));">
+                        <span><?= site_text('news_section_title', 'ข่าวสารและประชาสัมพันธ์', 'หัวข้อส่วนข่าวสาร') ?></span>
+                        <?php if ($isFeaturedMode): ?>
+                            <span class="badge rounded-pill px-3 py-1.5 text-dark shadow-xs" style="background: linear-gradient(135deg, #f59e0b, #fbbf24); font-size: 0.8rem;">
+                                <i class="fa-solid fa-star me-1 text-danger"></i> หัวข้อเด่นหน้าหลัก (<?= count($homeNews) ?>)
+                            </span>
+                        <?php endif; ?>
+                        <?php if ($isOfficer): ?>
+                            <span class="badge bg-success bg-opacity-25 text-success px-2 py-1 fs-6"><i class="fa-solid fa-user-shield me-1"></i>แอดมิน</span>
+                        <?php endif; ?>
+                    </h3>
+                    <p class="text-muted small mb-0 mt-1">อัปเดตข่าวสาร กิจกรรมราชการ และประกาศสำคัญของจังหวัดพัทลุง</p>
+                </div>
 
-            <!-- Tab Navigation (Clean Underline Style) -->
-            <ul class="nav nav-underline-custom border-bottom" id="newsMediaHubTabs" role="tablist" style="border-color: rgba(0,0,0,0.06) !important;">
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link active news-media-tab-trigger" id="tab-pr-news-trigger" data-bs-toggle="pill" data-bs-target="#tab-pr-news" type="button" role="tab" aria-controls="tab-pr-news" aria-selected="true">
-                        ข่าวประชาสัมพันธ์
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link news-media-tab-trigger" id="tab-calendar-trigger" data-bs-toggle="pill" data-bs-target="#tab-calendar" type="button" role="tab" aria-controls="tab-calendar" aria-selected="false">
-                        ปฏิทินตารางงาน
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link news-media-tab-trigger" id="tab-gallery-trigger" data-bs-toggle="pill" data-bs-target="#tab-gallery" type="button" role="tab" aria-controls="tab-gallery" aria-selected="false">
-                        คลังภาพกิจกรรม
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link news-media-tab-trigger" id="tab-videos-trigger" data-bs-toggle="pill" data-bs-target="#tab-videos" type="button" role="tab" aria-controls="tab-videos" aria-selected="false">
-                        วิดีทัศน์ Web TV
-                    </button>
-                </li>
-            </ul>
-        </div>
-
-        <!-- Tab Content Area -->
-        <div class="tab-content" id="newsMediaHubTabContent">
-            
-            <!-- Tab 1: ข่าวประชาสัมพันธ์ -->
-            <div class="tab-pane fade show active" id="tab-pr-news" role="tabpanel" aria-labelledby="tab-pr-news-trigger">
-                <!-- Action buttons for admins -->
                 <?php if ($isOfficer): ?>
-                    <div class="d-flex flex-wrap gap-2 mb-3 justify-content-end">
-                        <button type="button" onclick="NewsStudio.addCategory()" class="btn btn-xs btn-outline-success py-2 px-3 rounded-pill fw-bold">
-                            <i class="fa-solid fa-tags"></i> เพิ่มหมวดหมู่ใหม่
-                        </button>
+                    <div class="d-flex flex-wrap gap-2">
+                        <?php if (function_exists('is_super_admin') && is_super_admin()): ?>
+                            <button type="button" onclick="NewsStudio.addCategory()" class="btn btn-xs btn-outline-success py-2 px-3 rounded-pill fw-bold" title="เฉพาะ Super Admin เท่านั้น">
+                                <i class="fa-solid fa-tags"></i> เพิ่มหมวดหมู่ใหม่
+                            </button>
+                        <?php endif; ?>
                         <button type="button" onclick="NewsStudio.open()" class="btn btn-xs btn-success py-2 px-4 rounded-pill fw-bold text-white shadow-xs" style="background: #047857; border: none;">
                             <i class="fa-solid fa-circle-plus"></i> + สร้างประกาศข่าวใหม่ (Studio)
                         </button>
                     </div>
                 <?php endif; ?>
+            </div>
 
-                <!-- Category Filters inside Tab -->
-                <div class="d-flex flex-wrap gap-2 mb-4">
-                    <button class="btn btn-xs px-4 py-2 news-cat-btn rounded-pill active" data-filter="all" onclick="filterHomeNews('all', this)">
-                        ทั้งหมด (<?= count($homeNews) ?>)
-                    </button>
-                    <?php 
-                    $finTotalCount = 0;
-                    try {
-                        $finDump = (defined('WRITABLE') ? rtrim(WRITABLE, '/\\') : dirname(__DIR__, 2) . '/writable') . '/dump_financial_reports.json';
-                        if (file_exists($finDump)) {
-                            $finData = json_decode(file_get_contents($finDump), true);
-                            $finTotalCount = is_array($finData) ? count($finData) : 234;
-                        }
-                    } catch (\Throwable $e) {}
+            <!-- Category Filters: Dropdown Box System -->
+            <div class="d-flex align-items-center gap-2 pt-2 border-top flex-wrap" style="border-color: rgba(0,0,0,0.06) !important;">
+                <?php 
+                $finTotalCount = 0;
+                try {
+                    $finDump = (defined('WRITABLE') ? rtrim(WRITABLE, '/\\') : dirname(__DIR__, 2) . '/writable') . '/dump_financial_reports.json';
+                    if (file_exists($finDump)) {
+                        $finData = json_decode(file_get_contents($finDump), true);
+                        $finTotalCount = is_array($finData) ? count($finData) : 234;
+                    }
+                } catch (\Throwable $e) {}
 
-                    foreach ($newsCats as $cat): 
-                        $countInCat = 0;
-                        $isFinCatChip = (mb_stripos($cat, 'การเงิน') !== false || mb_stripos($cat, 'งบทดลอง') !== false);
-                        if ($isFinCatChip) {
-                            $countInCat = $finTotalCount ?: 234;
-                        } else {
-                            foreach ($homeNews as $hn) {
-                                if (strcasecmp(trim($hn['category'] ?? ''), trim($cat)) === 0) $countInCat++;
+                // รวบรวมสถิติจำนวนบทความในแต่ละหมวดหมู่
+                $categoryStats = [];
+                foreach ($newsCats as $cat) {
+                    $countInCat = 0;
+                    $isFinCatChip = (strcasecmp(trim($cat), 'รายงานทางการเงิน') === 0);
+                    if ($isFinCatChip) {
+                        $countInCat = $finTotalCount ?: 234;
+                    } else {
+                        $normCat = preg_replace('/\s*([\/\(\)])\s*/u', '$1', trim($cat));
+                        foreach ($allPublishedNews as $hn) {
+                            $normHnCat = preg_replace('/\s*([\/\(\)])\s*/u', '$1', trim($hn['category'] ?? ''));
+                            if (strcasecmp($normHnCat, $normCat) === 0) {
+                                $countInCat++;
                             }
                         }
-                        if ($countInCat === 0 && !$isOfficer) continue;
-                        $displayCatName = (strcasecmp(trim($cat), 'general') === 0) ? 'ข่าวทั่วไป' : $cat;
-                        $isPrdCatChip = (mb_stripos($cat, 'สปชส') !== false || mb_stripos($cat, 'สำนักงานประชาสัมพันธ์') !== false);
-                    ?>
-                        <?php if ($isFinCatChip): ?>
-                            <a href="<?= base_url('news?category=' . urlencode('รายงานทางการเงิน')) ?>" class="btn btn-xs px-4 py-2 news-cat-btn rounded-pill text-decoration-none" title="คลิกเพื่อดูรายงานทางการเงินและงบทดลอง">
-                                <i class="fa-solid fa-file-invoice-dollar text-success me-1"></i><?= esc($displayCatName) ?> (<?= $countInCat ?>)
-                            </a>
-                        <?php else: ?>
-                            <button class="btn btn-xs px-4 py-2 news-cat-btn rounded-pill <?= ($countInCat === 0) ? 'opacity-50' : '' ?>" data-filter="<?= esc($cat) ?>" onclick="filterHomeNews('<?= esc($cat) ?>', this)">
-                                <?php if ($isPrdCatChip): ?><i class="fa-solid fa-bullhorn text-success me-1"></i><?php endif; ?>
-                                <?= esc($displayCatName) ?> (<?= $countInCat ?>)
-                            </button>
-                        <?php endif; ?>
-                    <?php endforeach; ?>
-                </div>
+                    }
+                    if ($countInCat === 0 && !$isOfficer) continue;
 
-                <!-- News Cards Grid -->
-                <div class="row g-4" id="newsGridContainer">
-                    <?php if (empty($homeNews)): ?>
-                        <div class="col-12 text-center py-5">
-                            <i class="fa-regular fa-folder-open fs-1 text-muted mb-3"></i>
-                            <p class="text-muted m-0">ยังไม่มีข้อมูลข่าวสารในระบบขณะนี้</p>
-                        </div>
-                    <?php else: ?>
-                        <?php foreach ($homeNews as $item): 
-                            $rawCat = trim($item['category'] ?? 'ข่าวทั่วไป');
-                            $catLabel = (strcasecmp($rawCat, 'general') === 0 || empty($rawCat)) ? 'ข่าวทั่วไป' : $rawCat;
-                            $isPrd = !empty($item['is_prd']);
-                            
-                            $coverImg = !empty($item['cover_image']) ? ((strpos($item['cover_image'], 'http') === 0 || strpos($item['cover_image'], 'data:') === 0 || strpos($item['cover_image'], 'uploads/') === 0) ? ((strpos($item['cover_image'], 'http') === 0) ? $item['cover_image'] : base_url($item['cover_image'])) : base_url('assets/images/slider/sane_muanglung.png')) : base_url('assets/images/slider/sane_muanglung.png');
-                            
-                            $attachCount = !empty($item['attachments']) ? count($item['attachments']) : 0;
-                            $newsDate = !empty($item['created_at']) ? date('d/m/Y', strtotime($item['created_at'])) : (!empty($item['display_date']) ? $item['display_date'] : date('d/m/Y'));
-                            $viewsCount = number_format($item['views'] ?? 0);
-                            $sourceName = $item['source'] ?? '';
-                        ?>
-                            <div class="col-md-6 col-lg-4 news-card-item" data-category="<?= esc($rawCat) ?>">
-                                <div class="gov-news-card">
-                                    
-                                    <!-- Image Header with Floating Category Badge -->
-                                    <a href="<?= base_url('news/detail/' . $item['id']) ?>" class="d-block gov-news-img-wrap position-relative">
-                                        <img src="<?= $coverImg ?>" alt="<?= esc($item['title']) ?>" loading="lazy">
-                                        <span class="gov-news-floating-cat">
-                                            <i class="fa-solid fa-tag me-1" style="font-size: 0.68rem; opacity: 0.85;"></i><?= esc($catLabel) ?>
-                                        </span>
+                    $categoryStats[] = [
+                        'cat'            => $cat,
+                        'count'          => $countInCat,
+                        'isFin'          => $isFinCatChip,
+                        'isPrd'          => (mb_stripos($cat, 'สปชส') !== false || mb_stripos($cat, 'สำนักงานประชาสัมพันธ์') !== false),
+                        'displayCatName' => (strcasecmp(trim($cat), 'general') === 0) ? 'ข่าวทั่วไป' : $cat,
+                    ];
+                }
+
+                // เรียงลำดับจากจำนวนบทความมากไปหาน้อย
+                usort($categoryStats, function ($a, $b) {
+                    return $b['count'] <=> $a['count'];
+                });
+                ?>
+
+                <!-- ปุ่ม ทั้งหมด -->
+                <button class="btn btn-xs px-3.5 py-2 news-cat-btn rounded-pill active" id="btnNewsFilterAll" data-filter="all" onclick="resetNewsToAll(this)">
+                    <i class="fa-solid fa-border-all me-1.5"></i>ทั้งหมด (<?= count($allPublishedNews) ?>)
+                </button>
+
+                <!-- Dropdown Box เลือกหมวดหมู่ -->
+                <div class="dropdown d-inline-block">
+                    <button class="btn btn-xs px-3.5 py-2 news-cat-btn rounded-pill dropdown-toggle d-inline-flex align-items-center gap-2 shadow-xs" type="button" id="newsCatDropdownBtn" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fa-solid fa-layer-group text-success"></i>
+                        <span id="newsCatDropdownLabel" class="fw-semibold">เลือกหมวดหมู่ข่าวสาร (<?= count($categoryStats) ?> หมวด)</span>
+                    </button>
+                    <ul class="dropdown-menu shadow-lg border-0 rounded-4 py-2 mt-1" style="min-width: 320px; font-size: 0.88rem; max-height: 400px; overflow-y: auto;">
+                        <li class="px-3 py-1.5 text-muted small fw-bold text-uppercase border-bottom mb-1" style="font-size: 0.72rem; letter-spacing: 0.5px;">
+                            <i class="fa-solid fa-arrow-down-wide-short me-1 text-primary"></i> เรียงตามจำนวนบทความ (มาก &rarr; น้อย)
+                        </li>
+                        <?php foreach ($categoryStats as $catItem): ?>
+                            <?php if ($catItem['isFin']): ?>
+                                <li>
+                                    <a class="dropdown-item py-2 px-3 d-flex justify-content-between align-items-center" href="<?= base_url('news?category=' . urlencode('รายงานทางการเงิน')) ?>" title="คลิกเพื่อดูรายงานทางการเงินและงบทดลอง">
+                                        <span><i class="fa-solid fa-file-invoice-dollar text-success me-2"></i><?= esc($catItem['displayCatName']) ?></span>
+                                        <span class="badge bg-success bg-opacity-15 text-success rounded-pill font-monospace"><?= $catItem['count'] ?></span>
                                     </a>
-
-                                    <!-- Content Body -->
-                                    <div class="p-4 d-flex flex-column justify-content-between flex-grow-1">
-                                        <div>
-                                            <!-- Meta Row -->
-                                            <div class="gov-news-meta mb-2.5">
-                                                <span><i class="fa-regular fa-calendar me-1"></i><?= $newsDate ?></span>
-                                                <span><i class="fa-regular fa-eye me-1"></i><?= $viewsCount ?></span>
-                                            </div>
-
-                                            <!-- News Title -->
-                                            <a href="<?= base_url('news/detail/' . $item['id']) ?>" class="text-decoration-none d-block">
-                                                <h5 class="gov-news-title">
-                                                    <?= esc($item['title']) ?>
-                                                </h5>
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                                </li>
+                            <?php else: ?>
+                                <li>
+                                    <button class="dropdown-item py-2 px-3 d-flex justify-content-between align-items-center <?= ($catItem['count'] === 0) ? 'opacity-50' : '' ?>" type="button" onclick="selectNewsDropdownCat('<?= esc($catItem['cat']) ?>', '<?= esc($catItem['displayCatName']) ?>', <?= $catItem['count'] ?>)">
+                                        <span>
+                                            <?php if ($catItem['isPrd']): ?><i class="fa-solid fa-bullhorn text-success me-2"></i><?php else: ?><i class="fa-solid fa-tag text-muted me-2"></i><?php endif; ?>
+                                            <?= esc($catItem['displayCatName']) ?>
+                                        </span>
+                                        <span class="badge bg-light text-muted border rounded-pill font-monospace"><?= $catItem['count'] ?></span>
+                                    </button>
+                                </li>
+                            <?php endif; ?>
                         <?php endforeach; ?>
-                    <?php endif; ?>
-                </div>
-
-                <!-- View More News Button -->
-                <div class="text-center mt-5">
-                    <a href="<?= base_url('news') ?>" class="btn btn-outline-success rounded-pill px-5 py-2.5 fw-bold shadow-xs d-inline-flex align-items-center gap-2 hover-scale" style="font-size: 0.95rem; border-width: 1.5px; color: #047857; border-color: #047857; transition: all 0.25s ease;">
-                        <i class="fa-solid fa-newspaper text-success"></i>
-                        <span>ดูข่าวประชาสัมพันธ์ทั้งหมด</span>
-                        <i class="fa-solid fa-arrow-right-long ms-1"></i>
-                    </a>
-                </div>
-            </div>
-
-            <!-- Tab 2: ปฏิทินตารางงาน (Interactive Calendar & Event Summary Inspector) -->
-            <div class="tab-pane fade" id="tab-calendar" role="tabpanel" aria-labelledby="tab-calendar-trigger">
-                
-                <!-- Calendar Toolbar -->
-                <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4 pb-2 border-bottom" style="border-color: rgba(0,0,0,0.06) !important;">
-                    <div class="d-flex align-items-center gap-2">
-                        <button type="button" class="btn btn-sm btn-outline-success rounded-circle d-flex align-items-center justify-content-center shadow-xs" style="width: 36px; height: 36px; border-color: #047857; color: #047857;" onclick="HubCalendar.prevMonth()" title="เดือนก่อนหน้า">
-                            <i class="fa-solid fa-chevron-left" style="font-size: 0.8rem;"></i>
-                        </button>
-                        <h5 class="fw-bold m-0 px-2 text-dark" id="hubCalMonthTitle" style="min-width: 170px; text-align: center; font-size: 1.15rem; color: #047857 !important;">
-                            สิงหาคม 2569
-                        </h5>
-                        <button type="button" class="btn btn-sm btn-outline-success rounded-circle d-flex align-items-center justify-content-center shadow-xs" style="width: 36px; height: 36px; border-color: #047857; color: #047857;" onclick="HubCalendar.nextMonth()" title="เดือนถัดไป">
-                            <i class="fa-solid fa-chevron-right" style="font-size: 0.8rem;"></i>
-                        </button>
-                        <button type="button" class="btn btn-sm btn-light rounded-pill px-3 py-1 ms-1 fw-semibold text-success border border-success border-opacity-25" onclick="HubCalendar.goToToday()">
-                            วันนี้
-                        </button>
-                    </div>
-
-                    <div class="d-flex align-items-center gap-2">
-                        <!-- Voice TTS Monthly Narration Button -->
-                        <button type="button" id="btnHubCalSpeak" class="btn btn-sm btn-outline-success rounded-pill px-3 py-1.5 fw-bold d-inline-flex align-items-center gap-2 shadow-xs hover-scale" onclick="HubCalendar.toggleSpeakMonthlySchedule()">
-                            <i class="fa-solid fa-volume-high text-success" id="hubCalSpeakIcon"></i>
-                            <span id="hubCalSpeakText">ฟังเสียงกำหนดการเดือนนี้</span>
-                        </button>
-                        <?php if ($isOfficer): ?>
-                            <a href="<?= base_url('calendar') ?>" class="btn btn-sm btn-success rounded-pill px-3 py-1.5 fw-bold text-white shadow-xs" style="background: #047857; border: none;">
-                                <i class="fa-solid fa-calendar-plus me-1"></i> จัดการปฏิทิน (Studio)
+                        <li><hr class="dropdown-divider my-1"></li>
+                        <li>
+                            <a class="dropdown-item py-1.5 px-3 text-primary small fw-semibold" href="<?= base_url('news') ?>">
+                                <i class="fa-solid fa-arrow-up-right-from-square me-1"></i> ดูหน้าคลังข่าวสารทั้งหมด
                             </a>
-                        <?php endif; ?>
-                    </div>
-                </div>
-
-                <!-- Full-Width Responsive Monthly Calendar Grid -->
-                <div class="hub-calendar-wrapper">
-                    <div class="hub-cal-weekdays">
-                        <div>อาทิตย์</div><div>จันทร์</div><div>อังคาร</div><div>พุธ</div><div>พฤหัสบดี</div><div>ศุกร์</div><div>เสาร์</div>
-                    </div>
-                    <div id="hubCalDaysGrid" class="hub-cal-days-grid">
-                        <!-- Rendered dynamically by HubCalendar.renderGrid() -->
-                    </div>
+                        </li>
+                    </ul>
                 </div>
             </div>
+        </div>
 
-            <!-- Tab 3: คลังภาพกิจกรรม -->
-            <div class="tab-pane fade" id="tab-gallery" role="tabpanel" aria-labelledby="tab-gallery-trigger">
-                <?php if ($isOfficer): ?>
-                    <div class="d-flex justify-content-end mb-3">
-                        <button type="button" onclick="GalleryStudio.open()" class="btn btn-xs btn-warning rounded-pill px-4 py-2 fw-bold text-dark" style="background: linear-gradient(135deg, #f59e0b, #fbbf24); border: none;">
-                            <i class="fa-solid fa-circle-plus"></i> เพิ่มอัลบั้มใหม่ (Studio)
-                        </button>
-                    </div>
-                <?php endif; ?>
+        <!-- News Cards Grid -->
+        <div class="row g-4" id="newsGridContainer">
+            <?php if (empty($allPublishedNews)): ?>
+                <div class="col-12 text-center py-5">
+                    <i class="fa-regular fa-folder-open fs-1 text-muted mb-3"></i>
+                    <p class="text-muted m-0">ยังไม่มีข้อมูลข่าวสารในระบบขณะนี้</p>
+                </div>
+            <?php else: ?>
+                <div class="col-12 text-center py-5" id="newsGridEmpty" style="display: none;">
+                    <i class="fa-regular fa-folder-open fs-1 text-muted mb-3"></i>
+                    <p class="text-muted m-0">ยังไม่มีข้อมูลในหมวดหมู่นี้</p>
+                </div>
+                <?php 
+                $initialIds = !empty($featuredNews) ? array_column(array_slice($featuredNews, 0, 6), 'id') : array_column(array_slice($allPublishedNews, 0, 6), 'id');
+                ?>
+                <?php foreach ($allPublishedNews as $item): 
+                    $isInitShow = in_array($item['id'], $initialIds, false);
+                    $rawCat = trim($item['category'] ?? 'ข่าวทั่วไป');
+                    $catLabel = (strcasecmp($rawCat, 'general') === 0 || empty($rawCat)) ? 'ข่าวทั่วไป' : $rawCat;
+                    $isPrd = !empty($item['is_prd']);
+                    
+                    $coverImg = !empty($item['cover_image']) ? ((strpos($item['cover_image'], 'http') === 0 || strpos($item['cover_image'], 'data:') === 0 || strpos($item['cover_image'], 'uploads/') === 0) ? ((strpos($item['cover_image'], 'http') === 0) ? $item['cover_image'] : base_url($item['cover_image'])) : base_url('assets/images/slider/sane_muanglung.png')) : base_url('assets/images/slider/sane_muanglung.png');
+                    
+                    $attachCount = !empty($item['attachments']) ? count($item['attachments']) : 0;
+                    $newsDate = !empty($item['created_at']) ? date('d/m/Y', strtotime($item['created_at'])) : (!empty($item['display_date']) ? $item['display_date'] : date('d/m/Y'));
+                    $viewsCount = number_format($item['views'] ?? 0);
+                    $sourceName = $item['source'] ?? '';
+                ?>
+                    <div class="col-md-6 col-lg-4 news-card-item" data-category="<?= esc($rawCat) ?>" data-initial-show="<?= $isInitShow ? '1' : '0' ?>" style="<?= $isInitShow ? '' : 'display: none;' ?>">
+                        <div class="gov-news-card position-relative">
+                            
+                            <?php if ($isOfficer && empty($item['is_prd'])): ?>
+                                <!-- Quick Officer Controls -->
+                                <div class="position-absolute top-0 end-0 m-2.5 d-flex gap-1.5" style="z-index: 10;">
+                                    <button type="button" class="btn btn-sm <?= !empty($item['is_featured']) ? 'btn-warning text-dark' : 'btn-light text-muted' ?> shadow rounded-circle border p-0 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;" onclick="event.preventDefault(); event.stopPropagation(); NewsStudio.toggleFeatured('<?= $item['id'] ?>')" title="<?= !empty($item['is_featured']) ? 'หัวข้อเด่นหน้าหลัก (คลิกเพื่อยกเลิก)' : 'คลิกเพื่อตั้งเป็นหัวข้อเด่นหน้าหลัก' ?>">
+                                        <i class="fa-<?= !empty($item['is_featured']) ? 'solid' : 'regular' ?> fa-star"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-light bg-white shadow rounded-circle border p-0 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;" onclick="event.preventDefault(); event.stopPropagation(); NewsStudio.open('<?= $item['id'] ?>')" title="แก้ไขบทความนี้">
+                                        <i class="fa-solid fa-pen-to-square text-primary" style="font-size: 0.8rem;"></i>
+                                    </button>
+                                </div>
+                            <?php endif; ?>
 
-                <div class="row g-4">
-                    <?php if (empty($homeGalleryAlbums)): ?>
-                        <div class="col-12 text-center py-5">
-                            <i class="fa-regular fa-image fs-1 text-muted mb-3"></i>
-                            <p class="text-muted m-0">ยังไม่มีอัลบั้มรูปภาพในระบบขณะนี้</p>
-                        </div>
-                    <?php else: ?>
-                        <?php foreach ($homeGalleryAlbums as $alb): 
-                            $covUrl = (!empty($alb['cover_image']) && (strpos($alb['cover_image'], 'http') === 0 || strpos($alb['cover_image'], 'data:') === 0 || strpos($alb['cover_image'], 'uploads/') === 0)) ? ((strpos($alb['cover_image'], 'http') === 0) ? $alb['cover_image'] : base_url($alb['cover_image'])) : 'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?auto=format&fit=crop&w=800&q=80';
-                            $pCnt = !empty($alb['photos']) ? count($alb['photos']) : 0;
-                        ?>
-                            <div class="col-12 col-md-6 col-lg-3">
-                                <a href="<?= base_url('gallery/album/' . $alb['id']) ?>" class="text-decoration-none h-100 d-block">
-                                    <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden transition-transform hover-scale" style="background: var(--card-bg, #ffffff); border: 1px solid rgba(15,23,42,0.08) !important;">
-                                        <div class="position-relative" style="padding-top: 65%; overflow: hidden; background: #0f172a;">
-                                            <img src="<?= $covUrl ?>" alt="<?= esc($alb['title']) ?>" class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover transition-all" loading="lazy" style="object-fit: cover;">
-                                            <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, transparent 40%, rgba(0,0,0,0.7) 100%);"></div>
-                                            <span class="badge position-absolute top-0 start-0 m-3 rounded-pill px-3 py-1 shadow" style="background: linear-gradient(135deg, #a855f7, #6b21a8); font-size: 0.75rem;">
-                                                <?= esc($alb['category'] ?? 'กิจกรรมจังหวัด') ?>
-                                            </span>
-                                            <span class="badge position-absolute bottom-0 end-0 m-3 rounded-pill px-3 py-1 bg-dark text-info border border-secondary border-opacity-50 shadow" style="font-size: 0.78rem;">
-                                                <i class="fa-solid fa-camera me-1"></i> <?= $pCnt ?> ภาพ
-                                            </span>
-                                        </div>
-                                        <div class="card-body p-3 d-flex flex-column justify-content-between flex-grow-1">
-                                            <h6 class="fw-bold mb-2 text-dark" style="line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
-                                                <?= esc($alb['title']) ?>
-                                            </h6>
-                                            <div class="d-flex align-items-center justify-content-between text-muted mt-3 pt-2 border-top small" style="font-size: 0.78rem; border-color: rgba(0,0,0,0.06) !important;">
-                                                <span><i class="fa-regular fa-calendar me-1 text-primary"></i> <?= $alb['date'] ?? '' ?></span>
-                                                <span><i class="fa-regular fa-eye me-1 text-secondary"></i> <?= number_format($alb['views'] ?? 1) ?> ครั้ง</span>
-                                            </div>
-                                        </div>
-                                    </div>
+                            <!-- Cover Image Wrap -->
+                            <div class="gov-news-img-wrap">
+                                <span class="gov-news-floating-cat">
+                                    <?php if ($isPrd): ?><i class="fa-solid fa-bullhorn text-warning me-1"></i><?php endif; ?>
+                                    <?= esc($catLabel) ?>
+                                </span>
+                                <?php if (!empty($item['is_featured'])): ?>
+                                    <span class="badge position-absolute top-0 end-0 m-2.5 rounded-pill px-2.5 py-1 text-dark shadow" style="background: linear-gradient(135deg, #f59e0b, #fbbf24); font-size: 0.72rem; z-index: 2;">
+                                        <i class="fa-solid fa-star me-1 text-danger"></i> เด่น
+                                    </span>
+                                <?php endif; ?>
+                                <a href="<?= base_url('news/detail/' . $item['id']) ?>">
+                                    <img src="<?= $coverImg ?>" alt="<?= esc($item['title']) ?>" loading="lazy" onerror="this.src='<?= base_url('assets/images/slider/sane_muanglung.png') ?>'">
                                 </a>
                             </div>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
-                </div>
-            </div>
 
-            <!-- Tab 4: วิดีทัศน์ Web TV -->
-            <!-- Tab 4: วิดีทัศน์ Web TV -->
-            <div class="tab-pane fade" id="tab-videos" role="tabpanel" aria-labelledby="tab-videos-trigger">
-                <?php if ($isOfficer): ?>
-                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3.5 p-3 rounded-4 bg-light border">
-                        <div class="small fw-bold text-dark d-flex align-items-center gap-2">
-                            <span class="badge bg-danger rounded-pill px-2.5 py-1.5"><i class="fa-solid fa-film me-1"></i> โหมดจัดการวิดีโอ</span>
-                            <span>คุณสามารถเพิ่ม แก้ไข หรือลบวิดีโอได้โดยตรง</span>
-                        </div>
-                        <div class="d-flex align-items-center gap-2">
-                            <button type="button" onclick="openHomeVideoAddModal()" class="btn btn-sm btn-danger rounded-pill px-3.5 py-1.5 fw-bold shadow-sm d-flex align-items-center gap-1.5">
-                                <i class="fa-solid fa-plus"></i> เพิ่มวิดีโอใหม่
-                            </button>
-                            <a href="<?= base_url('admin/videos') ?>" class="btn btn-sm btn-outline-dark rounded-pill px-3 py-1.5 fw-bold d-flex align-items-center gap-1.5">
-                                <i class="fa-solid fa-sliders"></i> สตูดิโอหลังบ้าน
-                            </a>
-                        </div>
-                    </div>
-                <?php endif; ?>
-
-                <div class="row g-4">
-                    <?php if (empty($homeVideos)): ?>
-                        <div class="col-12 text-center py-5">
-                            <i class="fa-solid fa-video-slash fs-1 text-muted mb-3"></i>
-                            <p class="text-muted m-0">ยังไม่มีวิดีโอประชาสัมพันธ์ในระบบขณะนี้</p>
-                            <?php if ($isOfficer): ?>
-                                <button type="button" onclick="openHomeVideoAddModal()" class="btn btn-danger btn-sm rounded-pill mt-3 px-4">
-                                    <i class="fa-solid fa-plus me-1"></i> เพิ่มวิดีโอแรก
-                                </button>
-                            <?php endif; ?>
-                        </div>
-                    <?php else: ?>
-                        <?php foreach ($homeVideos as $vid): 
-                            $yId = esc($vid['youtube_id'] ?? '');
-                            $thumbUrl = "https://img.youtube.com/vi/{$yId}/hqdefault.jpg";
-                            $vidTitle = esc($vid['title'] ?? 'วิดีโอจังหวัดพัทลุง');
-                            $vidDesc = esc($vid['desc'] ?? '');
-                            $vidCat = esc($vid['category'] ?? 'ทั่วไป');
-                            $vidViews = number_format($vid['views'] ?? 1);
-                            $vidDate = !empty($vid['date']) ? date('d/m/Y', strtotime($vid['date'])) : '-';
-                            $vidId = esc($vid['id'] ?? '');
-                        ?>
-                            <div class="col-12 col-md-6 col-lg-4">
-                                <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden transition-transform hover-scale d-flex flex-column justify-content-between position-relative" style="cursor: pointer; background: var(--card-bg, #ffffff); border: 1px solid rgba(225, 29, 72, 0.2) !important;">
-                                    
-                                    <?php if ($isOfficer): ?>
-                                        <!-- Quick Edit/Delete Overlay for Officer -->
-                                        <div class="position-absolute top-0 end-0 m-2.5 d-flex gap-1.5" style="z-index: 10;">
-                                            <button type="button" class="btn btn-sm btn-white bg-white shadow rounded-circle border p-0" style="width: 32px; height: 32px;" onclick="event.stopPropagation(); editHomeVideo('<?= $vidId ?>')" title="แก้ไขวิดีโอ">
-                                                <i class="fa-solid fa-pen-to-square text-primary" style="font-size: 0.8rem;"></i>
-                                            </button>
-                                            <button type="button" class="btn btn-sm btn-white bg-white shadow rounded-circle border p-0" style="width: 32px; height: 32px;" onclick="event.stopPropagation(); deleteHomeVideo('<?= $vidId ?>', '<?= addslashes($vidTitle) ?>')" title="ลบวิดีโอ">
-                                                <i class="fa-solid fa-trash-can text-danger" style="font-size: 0.8rem;"></i>
-                                            </button>
-                                        </div>
-                                    <?php endif; ?>
-
-                                    <div onclick="SmartHomeCinema.play('<?= $yId ?>', '<?= addslashes($vid['title']) ?>', '<?= $vidId ?>')">
-                                        <!-- Thumbnail with Play Overlay -->
-                                        <div class="position-relative overflow-hidden bg-dark" style="padding-top: 56.25%;">
-                                            <span class="badge position-absolute top-0 start-0 m-3 px-3 py-1 rounded-pill fw-bold" style="background: rgba(15,23,42,0.85); backdrop-filter: blur(8px); color: #fb7185; z-index: 2; border: 1px solid rgba(251,113,133,0.3);">
-                                                <i class="fa-solid fa-film me-1"></i> <?= $vidCat ?>
-                                            </span>
-                                            <span class="badge position-absolute bottom-0 end-0 m-3 px-2 py-1 rounded" style="background: rgba(0,0,0,0.8); color: #fff; z-index: 2; font-size: 0.75rem;">
-                                                <i class="fa-solid fa-eye text-warning me-1"></i> <?= $vidViews ?>
-                                            </span>
-                                            <img src="<?= $thumbUrl ?>" alt="<?= $vidTitle ?>" class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover opacity-90 transition-all hover-scale" onerror="this.src='https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?auto=format&fit=crop&w=800&q=80'">
-                                            <div class="position-absolute top-50 start-50 translate-middle d-flex align-items-center justify-content-center rounded-circle text-white shadow-lg" style="width: 56px; height: 56px; background: rgba(225, 29, 72, 0.88); backdrop-filter: blur(4px); z-index: 2;">
-                                                <i class="fa-solid fa-play ms-1 fs-4"></i>
-                                            </div>
-                                        </div>
-
-                                        <div class="p-4">
-                                            <h5 class="fw-bold mb-2 text-dark" style="line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
-                                                <?= $vidTitle ?>
-                                            </h5>
-                                            <p class="text-muted small mb-0" style="display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.5;">
-                                                <?= $vidDesc ?>
-                                            </p>
-                                        </div>
+                            <!-- Body Content -->
+                            <div class="p-4 d-flex flex-column justify-content-between flex-grow-1">
+                                <div>
+                                    <div class="gov-news-meta mb-2.5">
+                                        <span><i class="fa-regular fa-calendar-days text-success me-1"></i> <?= $newsDate ?></span>
+                                        <span><i class="fa-regular fa-eye text-primary me-1"></i> <?= $viewsCount ?></span>
+                                        <?php if ($attachCount > 0): ?>
+                                            <span><i class="fa-solid fa-paperclip text-secondary me-1"></i> <?= $attachCount ?></span>
+                                        <?php endif; ?>
                                     </div>
 
-                                    <div class="px-4 py-3 border-top d-flex align-items-center justify-content-between text-muted small" style="border-color: rgba(0,0,0,0.06) !important;" onclick="SmartHomeCinema.play('<?= $yId ?>', '<?= addslashes($vid['title']) ?>', '<?= $vidId ?>')">
-                                        <span><i class="fa-regular fa-calendar-days me-1 text-danger"></i> <?= $vidDate ?></span>
-                                        <span class="btn btn-sm btn-outline-danger rounded-pill px-3 py-1 fw-bold flex-shrink-0" style="font-size: 0.75rem;">
-                                            <i class="fa-solid fa-play me-1"></i> คลิกเล่นวิดีโอ
-                                        </span>
-                                    </div>
+                                    <a href="<?= base_url('news/detail/' . $item['id']) ?>" class="text-decoration-none">
+                                        <h5 class="gov-news-title" title="<?= esc($item['title']) ?>">
+                                            <?= esc($item['title']) ?>
+                                        </h5>
+                                    </a>
                                 </div>
                             </div>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
-                </div>
-            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            <?php endif; ?>
+        </div>
 
+        <!-- View More News Button -->
+        <div class="text-center mt-5">
+            <a href="<?= base_url('news') ?>" class="btn btn-outline-success rounded-pill px-5 py-2.5 fw-bold shadow-xs d-inline-flex align-items-center gap-2 hover-scale" style="font-size: 0.95rem; border-width: 1.5px; color: #047857; border-color: #047857; transition: all 0.25s ease;">
+                <i class="fa-solid fa-newspaper text-success"></i>
+                <span>ดูข่าวประชาสัมพันธ์ทั้งหมด</span>
+                <i class="fa-solid fa-arrow-right-long ms-1"></i>
+            </a>
         </div>
 
     </div>
 </section>
 
+<?php 
+$todayStr = date('Y-m-d');
+$filteredUpcomingEvents = array_filter($homeEvents, function($ev) use ($todayStr) {
+    $endDate = !empty($ev['event_end_date']) ? substr($ev['event_end_date'], 0, 10) : '';
+    $startDate = !empty($ev['event_start_date']) ? substr($ev['event_start_date'], 0, 10) : '';
+    // กิจกรรมที่ยังไม่ผ่านพ้นไป: ถ้ามีวันสิ้นสุดให้ใช้วันสิ้นสุด ถ้าไม่มีให้ใช้วันเริ่มจัดงาน
+    if (!empty($endDate)) {
+        return $endDate >= $todayStr;
+    }
+    if (!empty($startDate)) {
+        return $startDate >= $todayStr;
+    }
+    return false;
+});
+$upcomingEvents = array_slice(array_values($filteredUpcomingEvents), 0, 4);
+?>
+
+<?php if (!empty($upcomingEvents)): ?>
+<!-- =========================================================================
+     SECTION 2: กำหนดการ & ไฮไลท์กิจกรรมเมืองลุง (Visual Event Spotlight Cards)
+     ========================================================================= -->
+<section id="provincial-calendar-section" class="my-5 py-2">
+    <div class="card gov-section-card border-0 p-4 p-lg-5 shadow-sm" style="border-radius: 28px; position: relative; overflow: hidden;">
+        
+        <!-- Ambient Decorative Glow -->
+        <div class="position-absolute top-0 end-0 rounded-circle" style="width: 250px; height: 250px; background: radial-gradient(circle, rgba(16, 185, 129, 0.12) 0%, transparent 70%); pointer-events: none; z-index: 0;"></div>
+
+        <!-- Section Header Strip -->
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4 pb-3 border-bottom position-relative" style="border-color: rgba(0,0,0,0.06) !important; z-index: 1;">
+            <div class="d-flex align-items-center gap-3">
+                <div class="section-icon-box text-white" style="width: 48px; height: 48px; min-width: 48px; border-radius: 16px; background: linear-gradient(135deg, #059669 0%, #047857 100%); display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(5, 150, 105, 0.25);">
+                    <i class="fa-solid fa-calendar-check fs-5"></i>
+                </div>
+                <div>
+                    <div class="d-flex align-items-center gap-2">
+                        <h3 class="fw-bold mb-0 text-dark" style="color: var(--text-primary); font-size: 1.35rem;">กำหนดการ & ไฮไลท์กิจกรรมเมืองลุง</h3>
+                        <span class="badge rounded-pill px-2.5 py-1 text-white shadow-xs" style="background: linear-gradient(135deg, #f59e0b, #d97706); font-size: 0.72rem;">
+                            <i class="fa-solid fa-fire text-warning me-1"></i> เร็วๆ นี้
+                        </span>
+                    </div>
+                    <p class="text-muted small mb-0 mt-0.5" style="font-size: 0.84rem;">ประมวลวาระงานสำคัญ ประเพณีท้องถิ่น และกิจกรรมขับเคลื่อนจังหวัดพัทลุง</p>
+                </div>
+            </div>
+
+            <div class="d-flex align-items-center gap-2">
+                <?php if ($isOfficer): ?>
+                    <a href="<?= base_url('calendar') ?>" class="btn btn-sm btn-warning rounded-pill px-3 py-1.5 fw-bold text-dark shadow-xs" style="background: linear-gradient(135deg, #f59e0b, #fbbf24); border: none; font-size: 0.82rem;">
+                        <i class="fa-solid fa-calendar-plus me-1"></i> จัดการปฏิทิน
+                    </a>
+                <?php endif; ?>
+                <a href="<?= base_url('calendar') ?>" class="btn btn-sm btn-outline-success rounded-pill px-3.5 py-1.5 fw-bold d-inline-flex align-items-center gap-2 hover-scale shadow-xs" style="border-width: 1.5px; color: #047857; border-color: #047857; font-size: 0.84rem;">
+                    <span>ดูปฏิทินและตารางงานฉบับเต็ม</span>
+                    <i class="fa-solid fa-arrow-right-long" style="font-size: 0.8rem;"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Upcoming Visual Event Cards -->
+        <div class="row g-4 position-relative" style="z-index: 1;">
+            <?php foreach ($upcomingEvents as $ev): 
+                $startDate = !empty($ev['event_start_date']) ? $ev['event_start_date'] : ($ev['created_at'] ?? date('Y-m-d'));
+                $time = strtotime($startDate);
+                $thaiDay = date('j', $time);
+                $thaiMonthNames = ['', 'ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+                $thaiMonth = $thaiMonthNames[(int)date('n', $time)] ?? '';
+                $thaiYear = (int)date('Y', $time) + 543;
+                $shortYear = substr((string)$thaiYear, 2, 2);
+                $fullDateLabel = $thaiDay . ' ' . $thaiMonth . ' ' . $thaiYear;
+
+                // Image extraction & smart thematic fallback
+                $evCover = !empty($ev['cover_image']) ? $ev['cover_image'] : '';
+                if (empty($evCover) && !empty($ev['images']) && is_array($ev['images'])) {
+                    $evCover = $ev['images'][0];
+                }
+                if (!empty($evCover)) {
+                    if (strpos($evCover, 'http') === 0 || strpos($evCover, 'data:') === 0) {
+                        // already full URL
+                    } else {
+                        $evCover = base_url($evCover);
+                    }
+                } else {
+                    $titleLower = mb_strtolower($ev['title'] ?? '');
+                    if (mb_strpos($titleLower, 'วิ่ง') !== false || mb_strpos($titleLower, 'run') !== false || mb_strpos($titleLower, 'กีฬา') !== false) {
+                        $evCover = 'https://images.unsplash.com/photo-1452626038306-9aae5e071dd3?auto=format&fit=crop&w=800&q=80';
+                    } elseif (mb_strpos($titleLower, 'เดือนสิบ') !== false || mb_strpos($titleLower, 'เปรต') !== false || mb_strpos($titleLower, 'วัฒนธรรม') !== false || mb_strpos($titleLower, 'ประเพณี') !== false || mb_strpos($titleLower, 'ท่องเที่ยว') !== false || mb_strpos($titleLower, 'หลบบ้าน') !== false) {
+                        $evCover = 'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?auto=format&fit=crop&w=800&q=80';
+                    } elseif (mb_strpos($titleLower, 'ประชุม') !== false || mb_strpos($titleLower, 'สัมมนา') !== false || mb_strpos($titleLower, 'เชิญร่วม') !== false) {
+                        $evCover = 'https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=800&q=80';
+                    } else {
+                        $evCover = 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80';
+                    }
+                }
+
+                $loc = !empty($ev['event_location']) ? $ev['event_location'] : 'ศาลากลางจังหวัดพัทลุง';
+                $catLabel = !empty($ev['category']) ? $ev['category'] : 'กิจกรรมจังหวัด';
+            ?>
+                <div class="col-12 col-md-6 col-lg-3">
+                    <div class="gov-visual-event-card card h-100 border-0 shadow-sm rounded-4 overflow-hidden" onclick="SmartEventViewer.open('<?= esc($ev['id']) ?>')" style="cursor: pointer; background: var(--card-bg, #ffffff); border: 1px solid rgba(16, 185, 129, 0.22) !important;">
+                        
+                        <!-- 1. Event Poster / Image Header with Floating Badges -->
+                        <div class="position-relative overflow-hidden" style="padding-top: 60%; background: #064e3b;">
+                            <img src="<?= $evCover ?>" alt="<?= esc($ev['title']) ?>" class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover event-zoom-img" loading="lazy" style="object-fit: cover;">
+                            
+                            <!-- Contrast Vignette Overlay -->
+                            <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(180deg, rgba(0,0,0,0.3) 0%, transparent 40%, rgba(0,0,0,0.78) 100%);"></div>
+
+                            <!-- 3D Glassmorphism Date Stamp (Top-Left) -->
+                            <div class="position-absolute top-0 start-0 m-3 d-flex flex-column align-items-center text-center shadow-lg rounded-3 overflow-hidden event-glass-date" style="min-width: 50px; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); background: rgba(255, 255, 255, 0.95); border: 1px solid rgba(255, 255, 255, 0.85); z-index: 2;">
+                                <div class="w-100 py-0.5 px-2 text-white fw-bold" style="background: linear-gradient(135deg, #059669, #047857); font-size: 0.68rem; letter-spacing: 0.3px;">
+                                    <?= $thaiMonth ?> '<?= $shortYear ?>
+                                </div>
+                                <div class="py-1 px-2 fw-black" style="font-size: 1.25rem; line-height: 1; font-weight: 800; color: #064e3b;">
+                                    <?= $thaiDay ?>
+                                </div>
+                            </div>
+
+                            <!-- Floating Category Badge (Top-Right) -->
+                            <span class="badge position-absolute top-0 end-0 m-3 rounded-pill px-2.5 py-1 text-white shadow-sm" style="background: rgba(15, 23, 42, 0.78); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); font-size: 0.72rem; border: 1px solid rgba(255, 255, 255, 0.25); z-index: 2;">
+                                <?= esc($catLabel) ?>
+                            </span>
+
+                            <!-- Floating Location Pill (Bottom on image) -->
+                            <div class="position-absolute bottom-0 start-0 m-2.5 d-flex align-items-center gap-1.5 text-white small" style="font-size: 0.75rem; text-shadow: 0 1px 3px rgba(0,0,0,0.8); z-index: 2;">
+                                <span class="badge rounded-pill px-2.5 py-1 bg-dark bg-opacity-70 text-white border border-light border-opacity-25 text-truncate" style="max-width: 220px;">
+                                    <i class="fa-solid fa-location-dot text-danger me-1"></i> <?= esc($loc) ?>
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- 2. Event Body -->
+                        <div class="card-body p-3.5 d-flex flex-column justify-content-between flex-grow-1" style="background: #ffffff;">
+                            <div>
+                                <h6 class="fw-bold mb-2 text-dark event-title-hover" style="font-size: 0.92rem; line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 2.65rem;" title="<?= esc($ev['title']) ?>">
+                                    <?= esc($ev['title']) ?>
+                                </h6>
+                                <div class="d-flex align-items-center gap-2 text-muted small mt-2" style="font-size: 0.78rem;">
+                                    <i class="fa-regular fa-calendar-check text-success"></i>
+                                    <span><?= $fullDateLabel ?></span>
+                                </div>
+                            </div>
+
+                            <!-- 3. Event Action Footer -->
+                            <div class="pt-3 mt-3 border-top d-flex align-items-center justify-content-between" style="border-color: rgba(0,0,0,0.06) !important;">
+                                <span class="text-success fw-bold small d-inline-flex align-items-center gap-1.5" style="font-size: 0.8rem;">
+                                    <span>ดูรายละเอียด & แผนที่</span>
+                                    <i class="fa-solid fa-arrow-right-long event-arrow-icon" style="font-size: 0.78rem;"></i>
+                                </span>
+                                <span class="btn btn-xs rounded-circle bg-success bg-opacity-10 text-success d-flex align-items-center justify-content-center shadow-xs" style="width: 28px; height: 28px; border: 1px solid rgba(16, 185, 129, 0.2);">
+                                    <i class="fa-solid fa-location-arrow" style="font-size: 0.75rem;"></i>
+                                </span>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+
+    </div>
+</section>
+<?php endif; ?>
+
+<!-- =========================================================================
+     SECTION 3: สื่อมัลติมีเดียเมืองลุง (Photo Gallery & Web TV Cinema)
+     ========================================================================= -->
+<section id="multimedia-gallery-section" class="my-5 py-2">
+    <div class="card gov-section-card border-0 p-4 p-lg-5 shadow-sm">
+        
+        <!-- Section Header -->
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4 pb-3 border-bottom" style="border-color: rgba(0,0,0,0.06) !important;">
+            <div class="d-flex align-items-center gap-3">
+                <div class="section-icon-box text-white" style="background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);">
+                    <i class="fa-solid fa-photo-film fs-5"></i>
+                </div>
+                <div>
+                    <h3 class="fw-bold mb-0 text-dark" style="color: var(--text-primary);">คลังภาพกิจกรรม และ วิดีทัศน์ Web TV</h3>
+                    <p class="text-muted small mb-0 mt-0.5">ประมวลภาพถ่ายภารกิจ กิจกรรมสำคัญ และวิดีโอสารคดีเมืองพัทลุง</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3.1 PHOTO GALLERY BLOCK -->
+        <div class="mb-5">
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3.5">
+                <h5 class="fw-bold mb-0 text-dark d-flex align-items-center gap-2">
+                    <span class="badge rounded-circle p-1.5 bg-primary bg-opacity-10 text-primary">
+                        <i class="fa-solid fa-camera"></i>
+                    </span>
+                    <span>ภาพถ่ายภารกิจและกิจกรรมสำคัญ</span>
+                </h5>
+                
+                <div class="d-flex align-items-center gap-2">
+                    <?php if (function_exists('can_manage_gallery') && can_manage_gallery()): ?>
+                        <button type="button" onclick="GalleryStudio.open()" class="btn btn-xs btn-warning rounded-pill px-3 py-1.5 fw-bold text-dark" style="background: linear-gradient(135deg, #f59e0b, #fbbf24); border: none;">
+                            <i class="fa-solid fa-circle-plus"></i> เพิ่มอัลบั้มใหม่
+                        </button>
+                    <?php endif; ?>
+                    <a href="<?= base_url('gallery') ?>" class="btn btn-sm btn-outline-primary rounded-pill px-3.5 py-1.5 fw-bold d-inline-flex align-items-center gap-1.5">
+                        <span>ดูคลังภาพทั้งหมด (<?= $totalAlbums ?> อัลบั้ม)</span>
+                        <i class="fa-solid fa-arrow-right-long" style="font-size: 0.8rem;"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <?php if (empty($homeGalleryAlbums)): ?>
+                    <div class="col-12 text-center py-4 bg-light rounded-4">
+                        <i class="fa-regular fa-image fs-1 text-muted mb-2"></i>
+                        <p class="text-muted m-0">ยังไม่มีอัลบั้มรูปภาพในระบบขณะนี้</p>
+                    </div>
+                <?php else: ?>
+                    <?php foreach ($homeGalleryAlbums as $alb): 
+                        $covUrl = (!empty($alb['cover_image']) && (strpos($alb['cover_image'], 'http') === 0 || strpos($alb['cover_image'], 'data:') === 0 || strpos($alb['cover_image'], 'uploads/') === 0)) ? ((strpos($alb['cover_image'], 'http') === 0) ? $alb['cover_image'] : base_url($alb['cover_image'])) : 'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?auto=format&fit=crop&w=800&q=80';
+                        $pCnt = !empty($alb['photos']) ? count($alb['photos']) : 0;
+                    ?>
+                        <div class="col-12 col-md-6 col-lg-3">
+                            <a href="<?= base_url('gallery/album/' . $alb['id']) ?>" class="text-decoration-none h-100 d-block">
+                                <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden transition-transform hover-scale" style="background: var(--card-bg, #ffffff); border: 1px solid rgba(15,23,42,0.08) !important;">
+                                    <div class="position-relative" style="padding-top: 65%; overflow: hidden; background: #0f172a;">
+                                        <img src="<?= $covUrl ?>" alt="<?= esc($alb['title']) ?>" class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover transition-all" loading="lazy" style="object-fit: cover;">
+                                        <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, transparent 40%, rgba(0,0,0,0.7) 100%);"></div>
+                                        <span class="badge position-absolute top-0 start-0 m-3 rounded-pill px-3 py-1 shadow" style="background: linear-gradient(135deg, #a855f7, #6b21a8); font-size: 0.75rem;">
+                                            <?= esc($alb['category'] ?? 'กิจกรรมจังหวัด') ?>
+                                        </span>
+                                        <span class="badge position-absolute bottom-0 end-0 m-3 rounded-pill px-3 py-1 bg-dark text-info border border-secondary border-opacity-50 shadow" style="font-size: 0.78rem;">
+                                            <i class="fa-solid fa-camera me-1"></i> <?= $pCnt ?> ภาพ
+                                        </span>
+                                    </div>
+                                    <div class="card-body p-3 d-flex flex-column justify-content-between flex-grow-1">
+                                        <h6 class="fw-bold mb-2 text-dark" style="line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                                            <?= esc($alb['title']) ?>
+                                        </h6>
+                                        <div class="d-flex align-items-center justify-content-between text-muted mt-3 pt-2 border-top small" style="font-size: 0.78rem; border-color: rgba(0,0,0,0.06) !important;">
+                                            <span><i class="fa-regular fa-calendar me-1 text-primary"></i> <?= $alb['date'] ?? '' ?></span>
+                                            <span><i class="fa-regular fa-eye me-1 text-secondary"></i> <?= number_format($alb['views'] ?? 1) ?> ครั้ง</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </div>
+        </div>
+
+        <!-- DIVIDER WITH AMBIENT GLOW -->
+        <div class="my-5 position-relative">
+            <hr style="border-color: rgba(0,0,0,0.08); margin: 0;">
+            <div class="position-absolute top-50 start-50 translate-middle px-3 bg-white" style="background: var(--card-bg, #ffffff);">
+                <span class="badge bg-danger bg-opacity-10 text-danger rounded-pill px-3 py-1 fw-bold" style="font-size: 0.8rem;">
+                    <i class="fa-solid fa-video me-1"></i> วิดีทัศน์ & สารคดี Web TV
+                </span>
+            </div>
+        </div>
+
+        <!-- 3.2 WEB TV & VIDEO CINEMA BLOCK -->
+        <div>
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3.5">
+                <h5 class="fw-bold mb-0 text-dark d-flex align-items-center gap-2">
+                    <span class="badge rounded-circle p-1.5 bg-danger bg-opacity-10 text-danger">
+                        <i class="fa-brands fa-youtube fs-5"></i>
+                    </span>
+                    <span>วิดีทัศน์นำเสนอและสารคดีเมืองลุง (Web TV)</span>
+                </h5>
+
+                <div class="d-flex align-items-center gap-2">
+                    <?php if ($isOfficer): ?>
+                        <button type="button" onclick="openHomeVideoAddModal()" class="btn btn-xs btn-danger rounded-pill px-3 py-1.5 fw-bold shadow-sm d-flex align-items-center gap-1.5">
+                            <i class="fa-solid fa-plus"></i> เพิ่มวิดีโอใหม่
+                        </button>
+                        <a href="<?= base_url('admin/videos') ?>" class="btn btn-xs btn-outline-dark rounded-pill px-3 py-1.5 fw-bold d-flex align-items-center gap-1.5">
+                            <i class="fa-solid fa-sliders"></i> สตูดิโอหลังบ้าน
+                        </a>
+                    <?php endif; ?>
+                    <a href="<?= base_url('video') ?>" class="btn btn-sm btn-outline-danger rounded-pill px-3.5 py-1.5 fw-bold d-inline-flex align-items-center gap-1.5">
+                        <span>ดูวิดีโอทั้งหมด</span>
+                        <i class="fa-solid fa-arrow-right-long" style="font-size: 0.8rem;"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <?php if (empty($homeVideos)): ?>
+                    <div class="col-12 text-center py-4 bg-light rounded-4">
+                        <i class="fa-solid fa-video-slash fs-1 text-muted mb-2"></i>
+                        <p class="text-muted m-0">ยังไม่มีวิดีโอประชาสัมพันธ์ในระบบขณะนี้</p>
+                    </div>
+                <?php else: ?>
+                    <?php foreach ($homeVideos as $vid): 
+                        $yId = esc($vid['youtube_id'] ?? '');
+                        $thumbUrl = "https://img.youtube.com/vi/{$yId}/hqdefault.jpg";
+                        $vidTitle = esc($vid['title'] ?? 'วิดีโอจังหวัดพัทลุง');
+                        $vidDesc = esc($vid['desc'] ?? '');
+                        $vidCat = esc($vid['category'] ?? 'ทั่วไป');
+                        $vidViews = number_format($vid['views'] ?? 1);
+                        $vidDate = !empty($vid['date']) ? date('d/m/Y', strtotime($vid['date'])) : '-';
+                        $vidId = esc($vid['id'] ?? '');
+                    ?>
+                        <div class="col-12 col-md-6 col-lg-4">
+                            <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden transition-transform hover-scale d-flex flex-column justify-content-between position-relative" style="cursor: pointer; background: var(--card-bg, #ffffff); border: 1px solid rgba(225, 29, 72, 0.2) !important;">
+                                
+                                <?php if ($isOfficer): ?>
+                                    <!-- Quick Edit/Delete Overlay for Officer -->
+                                    <div class="position-absolute top-0 end-0 m-2.5 d-flex gap-1.5" style="z-index: 10;">
+                                        <button type="button" class="btn btn-sm btn-white bg-white shadow rounded-circle border p-0 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;" onclick="event.stopPropagation(); editHomeVideo('<?= $vidId ?>')" title="แก้ไขวิดีโอ">
+                                            <i class="fa-solid fa-pen-to-square text-primary" style="font-size: 0.8rem;"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-white bg-white shadow rounded-circle border p-0 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;" onclick="event.stopPropagation(); deleteHomeVideo('<?= $vidId ?>', '<?= addslashes($vidTitle) ?>')" title="ลบวิดีโอ">
+                                            <i class="fa-solid fa-trash-can text-danger" style="font-size: 0.8rem;"></i>
+                                        </button>
+                                    </div>
+                                <?php endif; ?>
+
+                                <div onclick="SmartHomeCinema.play('<?= $yId ?>', '<?= addslashes($vid['title']) ?>', '<?= $vidId ?>')">
+                                    <!-- Thumbnail with Play Overlay -->
+                                    <div class="position-relative overflow-hidden bg-dark" style="padding-top: 56.25%;">
+                                        <span class="badge position-absolute top-0 start-0 m-3 px-3 py-1 rounded-pill fw-bold" style="background: rgba(15,23,42,0.85); backdrop-filter: blur(8px); color: #fb7185; z-index: 2; border: 1px solid rgba(251,113,133,0.3);">
+                                            <i class="fa-solid fa-film me-1"></i> <?= $vidCat ?>
+                                        </span>
+                                        <span class="badge position-absolute bottom-0 end-0 m-3 px-2 py-1 rounded" style="background: rgba(0,0,0,0.8); color: #fff; z-index: 2; font-size: 0.75rem;">
+                                            <i class="fa-solid fa-eye text-warning me-1"></i> <?= $vidViews ?>
+                                        </span>
+                                        <img src="<?= $thumbUrl ?>" alt="<?= $vidTitle ?>" class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover opacity-90 transition-all hover-scale" onerror="this.src='https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?auto=format&fit=crop&w=800&q=80'">
+                                        <div class="position-absolute top-50 start-50 translate-middle d-flex align-items-center justify-content-center rounded-circle text-white shadow-lg" style="width: 58px; height: 58px; background: rgba(225, 29, 72, 0.92); backdrop-filter: blur(4px); z-index: 2; transition: transform 0.2s ease;">
+                                            <i class="fa-solid fa-play ms-1 fs-4"></i>
+                                        </div>
+                                    </div>
+
+                                    <div class="p-4">
+                                        <h5 class="fw-bold mb-2 text-dark" style="line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                                            <?= $vidTitle ?>
+                                        </h5>
+                                        <p class="text-muted small mb-0" style="display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.5;">
+                                            <?= $vidDesc ?>
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="px-4 py-3 border-top d-flex align-items-center justify-content-between text-muted small" style="border-color: rgba(0,0,0,0.06) !important;" onclick="SmartHomeCinema.play('<?= $yId ?>', '<?= addslashes($vid['title']) ?>', '<?= $vidId ?>')">
+                                    <span><i class="fa-regular fa-calendar-days me-1 text-danger"></i> <?= $vidDate ?></span>
+                                    <span class="btn btn-sm btn-outline-danger rounded-pill px-3 py-1 fw-bold flex-shrink-0" style="font-size: 0.75rem;">
+                                        <i class="fa-solid fa-play me-1"></i> คลิกเล่นวิดีโอ
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- =====================================================================
+     SMART HOME CINEMA THEATER MODAL (IMAX-Style Dark Glassmorphism Viewer)
+     ===================================================================== -->
+<div class="modal fade" id="homeCinemaTheaterModal" tabindex="-1" aria-labelledby="homeCinemaTitle" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content border-0 shadow-lg" style="background: rgba(15, 23, 42, 0.96); backdrop-filter: blur(25px); border: 1px solid rgba(255,255,255,0.15) !important; border-radius: 28px; overflow: hidden;">
+            <div class="modal-header border-bottom py-3 px-4 d-flex align-items-center justify-content-between" style="border-color: rgba(255,255,255,0.1) !important;">
+                <h5 class="modal-title fw-bold text-white d-flex align-items-center gap-2 m-0 text-truncate" id="homeCinemaTitle">
+                    <i class="fa-brands fa-youtube text-danger fs-3"></i>
+                    <span id="homeCinemaTitleText">กำลังโหลดวิดีโอ...</span>
+                </h5>
+                <button type="button" class="btn btn-dark rounded-circle text-white p-2 d-flex align-items-center justify-content-center border" onclick="SmartHomeCinema.close()" style="width: 40px; height: 40px; border-color: rgba(255,255,255,0.2) !important;">
+                    <i class="fa-solid fa-xmark fs-5"></i>
+                </button>
+            </div>
+            <div class="modal-body p-0 bg-black">
+                <div class="ratio ratio-16x9">
+                    <iframe id="homeCinemaPlayerIframe" src="" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                </div>
+            </div>
+            <div class="modal-footer border-top px-4 py-3 d-flex align-items-center justify-content-between text-muted small" style="border-color: rgba(255,255,255,0.1) !important;">
+                <span class="text-light opacity-75"><i class="fa-solid fa-shield-halved text-success me-1"></i> สตรีมมิ่งความละเอียดสูงผ่าน YouTube CDN</span>
+                <button type="button" class="btn btn-outline-light rounded-pill px-4 py-2 fw-bold small" onclick="SmartHomeCinema.close()">
+                    <span>ปิดหน้าต่างรับชม</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <?php if ($isOfficer): ?>
 <!-- ======================================================== -->
-<!-- MODAL: QUICK ADD/EDIT YOUTUBE VIDEO (HOME TAB) -->
+<!-- MODAL: QUICK ADD/EDIT YOUTUBE VIDEO (OFFICER STUDIO) -->
 <!-- ======================================================== -->
 <div class="modal fade" id="homeVideoModal" tabindex="-1" aria-hidden="true" style="z-index: 1060;">
     <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -995,18 +1222,97 @@ function filterHomeNews(cat, btn) {
     document.querySelectorAll('.news-cat-btn').forEach(b => {
         b.classList.remove('active');
     });
-    btn.classList.add('active');
+    if (btn) {
+        if (btn.classList.contains('news-cat-btn')) {
+            btn.classList.add('active');
+        } else if (btn.closest('.dropdown')) {
+            var dropBtn = btn.closest('.dropdown').querySelector('.news-cat-btn');
+            if (dropBtn) dropBtn.classList.add('active');
+        }
+    }
+
+    var normCat = (cat || '').replace(/\s*\/\s*/g, '/').trim().toLowerCase();
+    var visibleCount = 0;
 
     document.querySelectorAll('.news-card-item').forEach(item => {
-        if (cat === 'all' || item.getAttribute('data-category') === cat) {
-            item.style.display = '';
+        if (cat === 'all') {
+            var isInit = item.getAttribute('data-initial-show') === '1';
+            item.style.display = isInit ? '' : 'none';
+            if (isInit) visibleCount++;
         } else {
-            item.style.display = 'none';
+            var itemCat = (item.getAttribute('data-category') || '').replace(/\s*([\/\(\)])\s*/g, '$1').trim().toLowerCase();
+            var cleanNormCat = normCat.replace(/\s*([\/\(\)])\s*/g, '$1').trim().toLowerCase();
+            if (itemCat === cleanNormCat) {
+                item.style.display = '';
+                visibleCount++;
+            } else {
+                item.style.display = 'none';
+            }
         }
     });
+
+    var emptyBox = document.getElementById('newsGridEmpty');
+    if (emptyBox) {
+        emptyBox.style.display = (visibleCount === 0) ? 'block' : 'none';
+    }
 }
 
-// Interactive Hub Calendar & Event Summary Engine
+// Select news category from Dropdown Box
+function selectNewsDropdownCat(cat, catName, count) {
+    document.querySelectorAll('.news-cat-btn').forEach(b => b.classList.remove('active'));
+    var dropBtn = document.getElementById('newsCatDropdownBtn');
+    var dropLabel = document.getElementById('newsCatDropdownLabel');
+    if (dropBtn) dropBtn.classList.add('active');
+    if (dropLabel) dropLabel.innerHTML = 'หมวด: <strong>' + catName + '</strong> (' + count + ')';
+    filterHomeNews(cat, dropBtn);
+}
+
+// Reset news filter to All
+function resetNewsToAll(btn) {
+    var dropLabel = document.getElementById('newsCatDropdownLabel');
+    if (dropLabel) {
+        dropLabel.innerHTML = 'เลือกหมวดหมู่ข่าวสาร';
+    }
+    filterHomeNews('all', btn);
+}
+
+// =========================================================================
+// SMART HOME CINEMA THEATER ENGINE
+// =========================================================================
+const SmartHomeCinema = {
+    modalInstance: null,
+    play: function(youtubeId, title, dbId) {
+        var el = document.getElementById('homeCinemaTheaterModal');
+        if (!el) return;
+        if (!this.modalInstance) {
+            this.modalInstance = new bootstrap.Modal(el);
+        }
+        var titleEl = document.getElementById('homeCinemaTitleText');
+        var iframe = document.getElementById('homeCinemaPlayerIframe');
+        if (titleEl) titleEl.textContent = title || 'วิดีโอนำเสนอจังหวัดพัทลุง';
+        if (iframe) iframe.src = 'https://www.youtube.com/embed/' + youtubeId + '?autoplay=1&rel=0';
+        this.modalInstance.show();
+
+        if (dbId) {
+            fetch('<?= base_url("videos/count-view") ?>/' + dbId, { method: 'POST' }).catch(function(){});
+        }
+    },
+    close: function() {
+        var el = document.getElementById('homeCinemaTheaterModal');
+        var iframe = document.getElementById('homeCinemaPlayerIframe');
+        if (iframe) iframe.src = '';
+        if (this.modalInstance) {
+            this.modalInstance.hide();
+        } else if (el) {
+            var m = bootstrap.Modal.getInstance(el);
+            if (m) m.hide();
+        }
+    }
+};
+
+// =========================================================================
+// INTERACTIVE HUB CALENDAR & EVENT SUMMARY ENGINE
+// =========================================================================
 var ALL_HUB_EVENTS = <?= json_encode($homeEvents) ?>;
 
 var HubCalendar = {
@@ -1060,12 +1366,6 @@ var HubCalendar = {
         this.render();
     },
 
-    selectDate: function(dateStr) {
-        this.selectedDateStr = dateStr;
-        this.renderGrid();
-        this.renderSelectedDay();
-    },
-
     getEventsForDate: function(dateStr) {
         return this.events.filter(function(ev) {
             if (!ev.event_start_date) return false;
@@ -1100,7 +1400,6 @@ var HubCalendar = {
         }
 
         this.renderGrid();
-        this.renderSelectedDay();
     },
 
     renderGrid: function() {
@@ -1188,7 +1487,6 @@ var HubCalendar = {
         var year = this.currentDate.getFullYear();
         var month = this.currentDate.getMonth();
 
-        // Get all events that fall in this month
         var monthEvents = this.events.filter(function(ev) {
             if (!ev.event_start_date) return false;
             var d = new Date(ev.event_start_date);
@@ -1226,7 +1524,7 @@ var HubCalendar = {
                 btn.classList.add('btn-danger', 'text-white');
             }
             if (icon) icon.className = 'fa-solid fa-stop text-white';
-            if (text) text.innerText = 'หยุดฟังเสียง';
+            if (text) text.innerText = 'หยุดฟัง';
         };
 
         utter.onend = utter.onerror = function() {
@@ -1249,18 +1547,11 @@ var HubCalendar = {
             btn.classList.add('btn-outline-success');
         }
         if (icon) icon.className = 'fa-solid fa-volume-high text-success';
-        if (text) text.innerText = 'ฟังเสียงกำหนดการเดือนนี้';
+        if (text) text.innerText = 'ฟังเสียงกำหนดการ';
     }
 };
 
 document.addEventListener('DOMContentLoaded', function() {
     HubCalendar.init();
-    
-    var calTabTrigger = document.getElementById('tab-calendar-trigger');
-    if (calTabTrigger) {
-        calTabTrigger.addEventListener('shown.bs.tab', function () {
-            HubCalendar.render();
-        });
-    }
 });
 </script>

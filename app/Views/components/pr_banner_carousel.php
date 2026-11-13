@@ -1,81 +1,61 @@
 <?php
 // =========================================================================
-// คอมโพเนนต์: แถบแบนเนอร์ประชาสัมพันธ์และหน่วยงานสัมพันธ์ (3D Carousel Slide)
-// Phatthalung 3D Perspective Coverflow Banner Showcase (3-Banner Focus Showcase)
-// แสดงผล 3 แบนเนอร์ (แบนเนอร์กลางใหญ่สุด พร้อมชื่อป้ายกำกับชัดเจน)
+// คอมโพเนนต์: แถบแบนเนอร์ประชาสัมพันธ์และหน่วยงานสัมพันธ์
+// Horizontal 5-Banner Spotlight Showcase (จัดเรียงแนวนอน 5 การ์ดตามรูปสเก็ตช์)
+// การ์ดตรงกลางใหญ่และเด่นที่สุด (Center Spotlight / Hatch Highlighted)
+// ขนาบข้างซ้าย 2 การ์ด และขวา 2 การ์ด เรียงแถวแนวนอนราบเรียบ ไม่บิดเอียง 3D
 // =========================================================================
-$prBanners = function_exists('get_service_banners') ? get_service_banners(true) : [];
-if (empty($prBanners)) {
-    // ถ้าไม่มีข้อมูล ให้ใช้ fallback ตัวอย่าง
-    $prBanners = [
-        [
-            'id' => 'b1',
-            'title' => 'ระบบชำระภาษีท้องถิ่นออนไลน์ (e-Tax Phatthalung)',
-            'desc' => 'บริการชำระภาษีที่ดินและสิ่งปลูกสร้าง สะดวกรวดเร็ว',
-            'badge' => 'บริการประชาชน 24 ชม.',
-            'badge_color' => 'success',
-            'url' => 'https://www.rd.go.th',
-            'image' => 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?q=80&w=800&auto=format&fit=crop',
-            'target' => '_blank'
-        ],
-        [
-            'id' => 'b2',
-            'title' => 'พอร์ตัลเชื่อมโยงบริการภาครัฐ Citizen e-Service',
-            'desc' => 'ศูนย์กลางบริการภาครัฐแบบเบ็ดเสร็จสำหรับประชาชน',
-            'badge' => 'Citizen Portal',
-            'badge_color' => 'primary',
-            'url' => 'https://www.dga.or.th',
-            'image' => 'https://images.unsplash.com/photo-1557200134-90327ee9fafa?q=80&w=800&auto=format&fit=crop',
-            'target' => '_blank'
-        ],
-        [
-            'id' => 'b3',
-            'title' => 'ระบบแจ้งปัญหาและสายตรงผู้ว่าฯ (Traffy Fondue)',
-            'desc' => 'แจ้งเรื่องร้องทุกข์ ติดตามผลการแก้ปัญหาได้ทันที',
-            'badge' => 'สายตรงผู้ว่าฯ',
-            'badge_color' => 'danger',
-            'url' => 'https://www.traffy.in.th',
-            'image' => 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?q=80&w=800&auto=format&fit=crop',
-            'target' => '_blank'
-        ],
-        [
-            'id' => 'b4',
-            'title' => 'ระบบติดตามโครงการและจัดซื้อจัดจ้างภาครัฐ (e-GP)',
-            'desc' => 'ประกาศประกวดราคาและแผนการจัดซื้อจัดจ้างโปร่งใส',
-            'badge' => 'จัดซื้อจัดจ้าง',
-            'badge_color' => 'warning',
-            'url' => 'http://www.gprocurement.go.th',
-            'image' => 'https://images.unsplash.com/photo-1450133064473-71024230f91b?q=80&w=800&auto=format&fit=crop',
-            'target' => '_blank'
-        ]
-    ];
+$rawBanners = function_exists('get_service_banners') ? get_service_banners(true) : [];
+$rawBanners = array_values($rawBanners);
+$origBannerCount = count($rawBanners);
+
+// แสดงเฉพาะข้อมูลแบนเนอร์จริงที่บันทึกไว้ในระบบเท่านั้น (ไม่มีการจำลอง Mockup หลอก)
+$prBanners = [];
+if ($origBannerCount > 0) {
+    if ($origBannerCount < 5) {
+        $repeatTimes = (int)ceil(5 / $origBannerCount);
+        if ($repeatTimes < 2) $repeatTimes = 2;
+        for ($r = 0; $r < $repeatTimes; $r++) {
+            foreach ($rawBanners as $k => $b) {
+                $b['__orig_index'] = $k;
+                $prBanners[] = $b;
+            }
+        }
+    } else {
+        foreach ($rawBanners as $k => $b) {
+            $b['__orig_index'] = $k;
+            $prBanners[] = $b;
+        }
+    }
 }
 ?>
 
 <style>
 /* =========================================================================
-   3D CAROUSEL SLIDER STYLING (3-Banner Showcase with Rich Title Overlays)
+   HORIZONTAL 5-BANNER SPOTLIGHT SHOWCASE STYLING (จัดเรียงแนวนอน 5 การ์ด)
+   - ตรงกลางใหญ่ที่สุดและเด่นที่สุด (Center Spotlight Highlight)
+   - ด้านซ้าย 2 การ์ด และด้านขวา 2 การ์ด เรียงแนวระนาบแนวนอน ไม่บิดเอียง
    ========================================================================= */
 .pr-banners-section {
     position: relative;
     margin: 3.5rem 0 4rem 0;
 }
 
-/* 3D Viewport Stage - Extra Height for Large Cards */
+/* Horizontal Viewport Stage */
 .pr-3d-stage {
-    perspective: 1400px;
-    perspective-origin: 50% 50%;
     position: relative;
     width: 100%;
-    height: 380px;
+    height: 310px;
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    padding: 20px 0;
+    padding: 15px 0;
     user-select: none;
     touch-action: pan-y;
     cursor: grab;
+    background: linear-gradient(180deg, rgba(248, 250, 252, 0) 0%, rgba(241, 245, 249, 0.45) 50%, rgba(248, 250, 252, 0) 100%);
+    border-radius: 20px;
 }
 
 .pr-3d-stage:active {
@@ -89,75 +69,90 @@ if (empty($prBanners)) {
     position: absolute;
     top: 0;
     bottom: 0;
-    width: 70px;
-    z-index: 25;
+    width: 60px;
+    z-index: 18;
     pointer-events: none;
+    opacity: 0.85;
 }
 
 .pr-3d-stage::before {
     left: 0;
-    background: linear-gradient(to right, rgba(248, 250, 252, 0.95) 0%, rgba(248, 250, 252, 0) 100%);
+    background: linear-gradient(to right, rgba(248, 250, 252, 1) 0%, rgba(248, 250, 252, 0) 100%);
 }
 
 .pr-3d-stage::after {
     right: 0;
-    background: linear-gradient(to left, rgba(248, 250, 252, 0.95) 0%, rgba(248, 250, 252, 0) 100%);
+    background: linear-gradient(to left, rgba(248, 250, 252, 1) 0%, rgba(248, 250, 252, 0) 100%);
 }
 
-/* 3D Track */
+/* Horizontal Track */
 .pr-3d-track {
     position: relative;
     width: 100%;
     height: 100%;
-    transform-style: preserve-3d;
 }
 
-/* 3D Card - Large Premium Banner */
+/* Horizontal Card Base Styling (Flat, Clean, 2D Symmetrical) */
 .pr-3d-card {
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 540px;
-    height: 270px;
-    margin-top: -135px;
-    margin-left: -270px;
-    border-radius: 22px;
+    width: 380px;
+    height: 220px;
+    margin-top: -110px;
+    margin-left: -190px;
+    border-radius: 18px;
     background: #0f172a;
-    border: 1.5px solid rgba(255, 255, 255, 0.15);
+    border: 2px solid rgba(226, 232, 240, 0.8);
     overflow: hidden;
     cursor: pointer;
-    transition: transform 0.65s cubic-bezier(0.25, 1, 0.5, 1),
-                opacity 0.5s ease,
-                box-shadow 0.5s ease,
-                filter 0.5s ease;
+    transition: transform 0.60s cubic-bezier(0.22, 1, 0.36, 1),
+                opacity 0.45s ease,
+                box-shadow 0.45s ease,
+                border-color 0.45s ease,
+                filter 0.45s ease;
     will-change: transform, opacity;
-    box-shadow: 0 15px 35px -8px rgba(0, 0, 0, 0.22);
+    box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.15);
     text-decoration: none;
 }
 
-/* Active Center Card: Prominent, Glowing, Largest */
+/* Active Center Card (Spotlight - เด่นสุด ขนาดใหญ่สุด และมีแสงเรือง) */
 .pr-3d-card.is-active {
-    box-shadow: 0 25px 60px -10px rgba(2, 132, 199, 0.48), 0 0 0 3px #0284c7 !important;
-    border-color: transparent !important;
+    border: 3.5px solid #0284c7 !important;
+    box-shadow: 0 20px 45px -8px rgba(2, 132, 199, 0.50), 
+                0 0 0 4px rgba(56, 189, 248, 0.35) !important;
+    cursor: pointer;
 }
 
 .pr-3d-card.is-active:hover {
-    transform: translateX(0px) translateZ(85px) rotateY(0deg) scale(1.18) !important;
-    box-shadow: 0 35px 70px -12px rgba(2, 132, 199, 0.6), 0 0 0 3.5px #38bdf8 !important;
+    box-shadow: 0 26px 55px -10px rgba(2, 132, 199, 0.65), 
+                0 0 0 5px rgba(56, 189, 248, 0.50) !important;
+    border-color: #38bdf8 !important;
 }
 
-/* Banner Image - 100% full coverage */
+/* Flanking Side Cards (Non-active) */
+.pr-3d-card:not(.is-active) {
+    box-shadow: 0 8px 20px -4px rgba(15, 23, 42, 0.12);
+}
+
+.pr-3d-card:not(.is-active):hover {
+    filter: brightness(1.02) !important;
+    opacity: 0.98 !important;
+    border-color: #cbd5e1;
+}
+
+/* Banner Image */
 .pr-3d-img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
-    border-radius: 22px;
-    transition: transform 0.65s cubic-bezier(0.25, 1, 0.5, 1);
+    border-radius: 16px;
+    transition: transform 0.60s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .pr-3d-card.is-active:hover .pr-3d-img {
-    transform: scale(1.05);
+    transform: scale(1.03);
 }
 
 /* Title & Badge Caption Overlay */
@@ -167,12 +162,12 @@ if (empty($prBanners)) {
     left: 0;
     right: 0;
     z-index: 6;
-    padding: 3rem 1.4rem 1.1rem 1.4rem;
+    padding: 2.2rem 1.15rem 0.9rem 1.15rem;
     background: linear-gradient(to top, rgba(15, 23, 42, 0.95) 0%, rgba(15, 23, 42, 0.72) 55%, rgba(15, 23, 42, 0) 100%);
-    border-bottom-left-radius: 22px;
-    border-bottom-right-radius: 22px;
+    border-bottom-left-radius: 16px;
+    border-bottom-right-radius: 16px;
     pointer-events: none;
-    transition: all 0.4s ease;
+    transition: all 0.35s ease;
 }
 
 .pr-3d-caption-inner {
@@ -183,42 +178,65 @@ if (empty($prBanners)) {
 
 .pr-3d-badge {
     align-self: flex-start;
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     font-weight: 700;
     letter-spacing: 0.3px;
-    padding: 0.2rem 0.65rem;
+    padding: 0.18rem 0.6rem;
     border-radius: 9999px;
     backdrop-filter: blur(8px);
     box-shadow: 0 2px 6px rgba(0,0,0,0.25);
 }
 
 .pr-3d-badge.badge-primary {
-    background: rgba(2, 132, 199, 0.85);
+    background: rgba(2, 132, 199, 0.90);
     color: #ffffff;
     border: 1px solid rgba(56, 189, 248, 0.5);
 }
 
 .pr-3d-badge.badge-success {
-    background: rgba(16, 185, 129, 0.85);
+    background: rgba(16, 185, 129, 0.90);
     color: #ffffff;
     border: 1px solid rgba(110, 231, 183, 0.5);
 }
 
 .pr-3d-badge.badge-danger {
-    background: rgba(239, 68, 68, 0.85);
+    background: rgba(239, 68, 68, 0.90);
     color: #ffffff;
     border: 1px solid rgba(252, 165, 165, 0.5);
 }
 
 .pr-3d-badge.badge-warning {
-    background: rgba(245, 158, 11, 0.85);
+    background: rgba(245, 158, 11, 0.90);
     color: #ffffff;
     border: 1px solid rgba(253, 230, 138, 0.5);
 }
 
+/* Spotlight Ribbon / Badge (ตรงกลางเด่นเป็นพิเศษ) */
+.pr-spotlight-indicator {
+    display: none;
+    align-items: center;
+    gap: 4px;
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 7;
+    background: linear-gradient(135deg, #0284c7, #2563eb);
+    color: #ffffff;
+    font-size: 0.70rem;
+    font-weight: 700;
+    padding: 0.22rem 0.65rem;
+    border-radius: 9999px;
+    box-shadow: 0 4px 12px rgba(2, 132, 199, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+.pr-3d-card.is-active .pr-spotlight-indicator {
+    display: inline-flex;
+}
+
 .pr-3d-title {
     color: #ffffff;
-    font-size: 1.05rem;
+    font-size: 0.90rem;
     font-weight: 700;
     line-height: 1.35;
     text-shadow: 0 2px 8px rgba(0, 0, 0, 0.85);
@@ -230,21 +248,21 @@ if (empty($prBanners)) {
     transition: all 0.3s ease;
 }
 
-/* Active Card Title Highlight */
+/* Active Center Card Title (ใหญ่และชัดเจน) */
 .pr-3d-card.is-active .pr-3d-title {
-    font-size: 1.25rem;
+    font-size: 1.12rem;
     color: #ffffff;
-    text-shadow: 0 3px 12px rgba(0, 0, 0, 0.9);
+    text-shadow: 0 3px 12px rgba(0, 0, 0, 0.95);
 }
 
 .pr-3d-card.is-active .pr-3d-caption {
-    padding: 3.5rem 1.6rem 1.25rem 1.6rem;
+    padding: 2.6rem 1.30rem 1.05rem 1.30rem;
 }
 
-/* Flanking Non-Active Cards Title */
+/* Side Non-Active Cards Title */
 .pr-3d-card:not(.is-active) .pr-3d-title {
-    font-size: 0.95rem;
-    opacity: 0.85;
+    font-size: 0.82rem;
+    opacity: 0.90;
 }
 
 /* Floating External Link Icon */
@@ -253,15 +271,15 @@ if (empty($prBanners)) {
     top: 12px;
     right: 12px;
     z-index: 7;
-    width: 36px;
-    height: 36px;
+    width: 34px;
+    height: 34px;
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.95);
     color: #0284c7;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
     transition: all 0.25s ease;
     opacity: 0.9;
@@ -271,7 +289,7 @@ if (empty($prBanners)) {
     background: #0284c7;
     color: #ffffff;
     opacity: 1;
-    transform: scale(1.15) rotate(15deg);
+    transform: scale(1.15) rotate(12deg);
 }
 
 /* Navigation Buttons */
@@ -330,7 +348,7 @@ if (empty($prBanners)) {
     transition: width 0.05s linear;
 }
 
-/* 3D Indicator Dots */
+/* Indicator Dots */
 .pr-3d-dots {
     display: flex;
     align-items: center;
@@ -361,90 +379,100 @@ if (empty($prBanners)) {
     box-shadow: 0 4px 12px rgba(2, 132, 199, 0.4);
 }
 
-/* Responsive Breakpoints */
+/* Responsive Media Queries */
 @media (max-width: 1200px) {
     .pr-3d-stage {
-        height: 330px;
+        height: 290px;
     }
     .pr-3d-card {
-        width: 460px;
-        height: 230px;
-        margin-top: -115px;
-        margin-left: -230px;
+        width: 350px;
+        height: 200px;
+        margin-top: -100px;
+        margin-left: -175px;
+    }
+}
+
+@media (max-width: 992px) {
+    .pr-3d-stage {
+        height: 265px;
+    }
+    .pr-3d-card {
+        width: 310px;
+        height: 180px;
+        margin-top: -90px;
+        margin-left: -155px;
+    }
+    .pr-3d-caption {
+        padding: 1.8rem 0.95rem 0.75rem 0.95rem;
     }
 }
 
 @media (max-width: 768px) {
     .pr-3d-stage {
-        height: 270px;
-        perspective: 1000px;
+        height: 240px;
     }
     .pr-3d-card {
-        width: 350px;
-        height: 175px;
-        margin-top: -87px;
-        margin-left: -175px;
-        border-radius: 16px;
-    }
-    .pr-3d-img {
-        border-radius: 16px;
+        width: 270px;
+        height: 160px;
+        margin-top: -80px;
+        margin-left: -135px;
     }
     .pr-3d-caption {
-        padding: 2rem 1rem 0.8rem 1rem;
-        border-bottom-left-radius: 16px;
-        border-bottom-right-radius: 16px;
+        padding: 1.5rem 0.85rem 0.65rem 0.85rem;
     }
     .pr-3d-card.is-active .pr-3d-title {
-        font-size: 1.05rem;
+        font-size: 0.98rem;
     }
-    .pr-3d-stage::before, .pr-3d-stage::after {
+    .pr-3d-card:not(.is-active) .pr-3d-title {
+        font-size: 0.76rem;
+    }
+    .pr-3d-stage::before, 
+    .pr-3d-stage::after {
         width: 35px;
     }
 }
 
 @media (max-width: 480px) {
     .pr-3d-stage {
-        height: 220px;
-        perspective: 800px;
+        height: 215px;
     }
     .pr-3d-card {
-        width: 280px;
-        height: 145px;
-        margin-top: -72px;
-        margin-left: -140px;
+        width: 230px;
+        height: 135px;
+        margin-top: -67px;
+        margin-left: -115px;
         border-radius: 14px;
     }
     .pr-3d-img {
         border-radius: 14px;
     }
     .pr-3d-caption {
-        padding: 1.5rem 0.75rem 0.6rem 0.75rem;
-        border-bottom-left-radius: 14px;
-        border-bottom-right-radius: 14px;
+        padding: 1.2rem 0.70rem 0.50rem 0.70rem;
     }
     .pr-3d-card.is-active .pr-3d-title {
-        font-size: 0.92rem;
+        font-size: 0.88rem;
+    }
+    .pr-3d-card:not(.is-active) .pr-3d-title {
+        display: none;
     }
     .pr-3d-badge {
-        font-size: 0.68rem;
+        font-size: 0.62rem;
         padding: 0.1rem 0.45rem;
-    }
-    .pr-3d-stage::before, .pr-3d-stage::after {
-        display: none;
     }
 }
 </style>
 
-<!-- SECTION: แบนเนอร์ประชาสัมพันธ์และหน่วยงานสัมพันธ์ (3D Carousel Slider - 3 Banners Focus) -->
+<?php if ($origBannerCount > 0): ?>
+<!-- SECTION: แบนเนอร์ประชาสัมพันธ์และหน่วยงานสัมพันธ์ (5 การ์ดแนวนอน - Center Spotlight) -->
 <section class="pr-banners-section" id="prBanners3DSection">
     <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-2">
         <div>
             <div class="d-flex align-items-center gap-2 mb-1">
                 <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2.5 py-1 rounded-pill" style="font-size: 0.75rem; font-weight: 700; letter-spacing: 0.5px;">
-                    <i class="fa-solid fa-cube me-1 text-primary"></i> PARTNER & GOVERNMENT LINKS
+                    <i class="fa-solid fa-layer-group me-1 text-primary"></i> PARTNER & GOVERNMENT LINKS
                 </span>
                 <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-2 py-0.5" style="font-size: 0.72rem;">
-                    <i class="fa-solid fa-bolt-lightning me-1"></i>Auto 3D Slide
+                    <i class="fa-solid fa-grip-horizontal me-1"></i>จัดเรียง 5 แบนเนอร์แนวนอน (Spotlight Center)
                 </span>
             </div>
             <h4 class="fw-bold mb-0 d-flex align-items-center gap-2" style="color: #0f172a;">
@@ -473,21 +501,21 @@ if (empty($prBanners)) {
                 <i class="fa-solid fa-pause"></i>
             </button>
 
-            <!-- 3D Navigation Controls -->
-            <button type="button" class="pr-nav-btn" id="pr3dPrev" aria-label="Previous Banner">
+            <!-- Navigation Controls -->
+            <button type="button" class="pr-nav-btn" id="pr3dPrev" aria-label="Previous Banner" title="แบนเนอร์ก่อนหน้า">
                 <i class="fa-solid fa-chevron-left"></i>
             </button>
-            <button type="button" class="pr-nav-btn" id="pr3dNext" aria-label="Next Banner">
+            <button type="button" class="pr-nav-btn" id="pr3dNext" aria-label="Next Banner" title="แบนเนอร์ถัดไป">
                 <i class="fa-solid fa-chevron-right"></i>
             </button>
         </div>
     </div>
 
-    <!-- 3D Carousel Stage - 3 Banners View (Center Prominent) -->
-    <div class="pr-3d-stage" id="pr3dStage" title="สไลด์อัตโนมัติ (ลากซ้าย-ขวา หรือคลิกที่การ์ดเพื่อดูแบนเนอร์)">
-        <div class="pr-3d-track" id="pr3dTrack">
+    <!-- Horizontal Carousel Stage - 5 Banners View (Center Prominent) -->
+    <div class="pr-3d-stage" id="pr3dStage" title="สไลด์แบนเนอร์แนวนอน 5 ภาพ (คลิกที่การ์ดเพื่อเลื่อนมาตรงกลาง หรือคลิกการ์ดกลางเพื่อเปิดลิงก์)">
+        <div class="pr-3d-track" id="pr3dTrack" data-orig-count="<?= $origBannerCount ?>">
             <?php foreach ($prBanners as $idx => $item): 
-                $imgUrl = (!empty($item['image']) && (strpos($item['image'], 'http') === 0 || strpos($item['image'], 'data:') === 0 || strpos($item['image'], 'uploads/') === 0)) 
+                $imgUrl = (!empty($item['image']) && (strpos($item['image'], 'http') === 0 || strpos($item['image'], 'data:') === 0 || strpos($item['image'], 'uploads/') === 0 || strpos($item['image'], 'assets/') === 0)) 
                           ? ((strpos($item['image'], 'http') === 0) ? $item['image'] : base_url($item['image'])) 
                           : 'https://images.unsplash.com/photo-1557200134-90327ee9fafa?q=80&w=800&auto=format&fit=crop';
                 $targetUrl = !empty($item['url']) ? $item['url'] : '#';
@@ -495,8 +523,15 @@ if (empty($prBanners)) {
                 $itemTitle = $item['title'] ?? 'แบนเนอร์ประชาสัมพันธ์';
                 $itemBadge = $item['badge'] ?? '';
                 $itemBadgeColor = $item['badge_color'] ?? 'primary';
+                $origIdx = $item['__orig_index'] ?? $idx;
             ?>
-                <div class="pr-3d-card" data-index="<?= $idx ?>" data-url="<?= htmlspecialchars($targetUrl) ?>" data-target="<?= htmlspecialchars($targetAttr) ?>" title="<?= htmlspecialchars($itemTitle) ?>">
+                <div class="pr-3d-card" data-index="<?= $idx ?>" data-original-index="<?= $origIdx ?>" data-url="<?= htmlspecialchars($targetUrl) ?>" data-target="<?= htmlspecialchars($targetAttr) ?>" title="<?= htmlspecialchars($itemTitle) ?>">
+                    <!-- Top Spotlight Tag (แสดงเฉพาะใบกลาง) -->
+                    <div class="pr-spotlight-indicator">
+                        <i class="fa-solid fa-star text-warning"></i>
+                        <span>แนะนำ</span>
+                    </div>
+
                     <img src="<?= $imgUrl ?>" alt="<?= htmlspecialchars($itemTitle) ?>" class="pr-3d-img" loading="lazy" draggable="false">
                     
                     <!-- Banner Title & Badge Label Overlay -->
@@ -526,18 +561,22 @@ if (empty($prBanners)) {
         <div class="pr-3d-progress-bar" id="pr3dProgressBar"></div>
     </div>
 
-    <!-- 3D Carousel Indicator Dots -->
+    <!-- Indicator Dots -->
     <div class="pr-3d-dots" id="pr3dDots"></div>
 </section>
 
 <script>
 /**
- * Phatthalung 3D Carousel Slider Engine (3-Banner Focus Showcase)
- * Displays strictly 3 banners at a time (Left, Active Center [Largest], Right).
- * Center card is most prominent with high-resolution scaling and title caption.
+ * Horizontal 5-Banner Spotlight Carousel Engine
+ * Displays 5 cards symmetrically in a clean horizontal line:
+ * [Far Left (diff -2)] [Near Left (diff -1)] [Center Spotlight (diff 0)] [Near Right (diff 1)] [Far Right (diff 2)]
+ * Matches the user's hand-drawn sketch:
+ * - Center card is noticeably larger, highlighted, and spotlighted.
+ * - Symmetrically flanked by 2 cards on left and 2 cards on right.
+ * - Flat 2D horizontal arrangement without 3D perspective distortion.
  */
 (function() {
-    function init3DCarousel() {
+    function initHorizontalCarousel() {
         const stage = document.getElementById('pr3dStage');
         const track = document.getElementById('pr3dTrack');
         const prevBtn = document.getElementById('pr3dPrev');
@@ -552,9 +591,11 @@ if (empty($prBanners)) {
         const totalCards = cards.length;
         if (totalCards === 0) return;
 
+        const origCount = parseInt(track.getAttribute('data-orig-count') || totalCards, 10);
+
         let activeIndex = 0;
         let isAutoPlay = true;
-        const autoPlayDuration = 3200; // 3.2 seconds per slide
+        const autoPlayDuration = 3400; // 3.4 seconds per slide
         let progressInterval = null;
         let progressStartTime = Date.now();
         let isDragging = false;
@@ -562,95 +603,173 @@ if (empty($prBanners)) {
         let currentX = 0;
         const dragThreshold = 45;
 
-        // 1. สร้างปุ่ม Dots ตามจำนวนแบนเนอร์
+        // 1. สร้างปุ่ม Dots ตามจำนวนแบนเนอร์ดั้งเดิม (Original Unique Count)
         if (dotsContainer) {
             dotsContainer.innerHTML = '';
-            cards.forEach((card, idx) => {
+            for (let idx = 0; idx < origCount; idx++) {
+                const sampleCard = cards.find(c => parseInt(c.getAttribute('data-original-index') || 0, 10) === idx) || cards[idx];
+                const dotTitle = sampleCard ? sampleCard.getAttribute('title') : ('แบนเนอร์ที่ ' + (idx + 1));
                 const dot = document.createElement('button');
                 dot.type = 'button';
                 dot.className = 'pr-3d-dot' + (idx === 0 ? ' active' : '');
-                dot.setAttribute('aria-label', card.getAttribute('title') || ('แบนเนอร์ที่ ' + (idx + 1)));
-                dot.setAttribute('title', card.getAttribute('title') || ('แบนเนอร์ที่ ' + (idx + 1)));
+                dot.setAttribute('aria-label', dotTitle || ('แบนเนอร์ที่ ' + (idx + 1)));
+                dot.setAttribute('title', dotTitle || ('แบนเนอร์ที่ ' + (idx + 1)));
                 dot.addEventListener('click', () => {
-                    goToSlide(idx);
+                    let targetSlide = idx;
+                    if (totalCards > origCount) {
+                        let bestDiff = 9999;
+                        cards.forEach((c, cIdx) => {
+                            const cOrig = parseInt(c.getAttribute('data-original-index') || cIdx, 10);
+                            if (cOrig === idx) {
+                                let d = Math.abs(cIdx - activeIndex);
+                                if (d < bestDiff) {
+                                    bestDiff = d;
+                                    targetSlide = cIdx;
+                                }
+                            }
+                        });
+                    }
+                    goToSlide(targetSlide);
                     resetProgressBar();
                 });
                 dotsContainer.appendChild(dot);
-            });
-        }
-
-        // คำนวณค่าพารามิเตอร์ 3 แบนเนอร์ตามความกว้างหน้าจอ
-        function getResponsiveParams() {
-            const w = window.innerWidth;
-            if (w <= 480) {
-                return { stepX: 135, rot: 22, centerScale: 1.08, flankScale: 0.72, zCenter: 40, zFlank: -40 };
-            } else if (w <= 768) {
-                return { stepX: 185, rot: 25, centerScale: 1.10, flankScale: 0.75, zCenter: 50, zFlank: -50 };
-            } else if (w <= 1200) {
-                return { stepX: 275, rot: 28, centerScale: 1.12, flankScale: 0.78, zCenter: 60, zFlank: -50 };
-            } else {
-                return { stepX: 375, rot: 30, centerScale: 1.16, flankScale: 0.80, zCenter: 75, zFlank: -50 };
             }
         }
 
-        // 2. คำนวณตำแหน่ง 3D: แสดงผลเฉพาะ 3 แบนเนอร์ (กลางใหญ่สุด, ซ้าย, ขวา) การ์ดอื่นซ่อน 100%
-        function render3D() {
-            const p = getResponsiveParams();
+        // คำนวณค่าพารามิเตอร์การจัดเรียง 5 การ์ดแนวนอนตามความกว้างหน้าจอ (Responsive 5-Banner Parameters)
+        function getHorizontalParams() {
+            const w = stage.clientWidth || window.innerWidth;
+            if (w < 576) {
+                // Mobile
+                return {
+                    scaleCenter: 0.90,
+                    scaleNear: 0.62,
+                    scaleFar: 0.44,
+                    step1: Math.min(w * 0.68, 240),
+                    step2: Math.min(w * 1.15, 410),
+                    hideFar: true
+                };
+            } else if (w < 768) {
+                // Large Phone / Small Tablet
+                return {
+                    scaleCenter: 0.94,
+                    scaleNear: 0.66,
+                    scaleFar: 0.48,
+                    step1: 260,
+                    step2: 430,
+                    hideFar: false
+                };
+            } else if (w < 992) {
+                // Tablet
+                return {
+                    scaleCenter: 0.98,
+                    scaleNear: 0.70,
+                    scaleFar: 0.50,
+                    step1: 280,
+                    step2: 470,
+                    hideFar: false
+                };
+            } else if (w < 1200) {
+                // Small Desktop
+                return {
+                    scaleCenter: 1.02,
+                    scaleNear: 0.73,
+                    scaleFar: 0.54,
+                    step1: 310,
+                    step2: 530,
+                    hideFar: false
+                };
+            } else {
+                // Large Desktop (>= 1200px)
+                return {
+                    scaleCenter: 1.06,
+                    scaleNear: 0.76,
+                    scaleFar: 0.56,
+                    step1: 340,
+                    step2: 585,
+                    hideFar: false
+                };
+            }
+        }
+
+        // 2. คำนวณตำแหน่งแนวนอน 5 การ์ด (Center ใหญ่สุด, ขนาบซ้าย 2 ใบ, ขวา 2 ใบ)
+        function renderHorizontal() {
+            const p = getHorizontalParams();
 
             cards.forEach((card, i) => {
                 let diff = i - activeIndex;
-                if (diff > totalCards / 2) diff -= totalCards;
-                if (diff < -totalCards / 2) diff += totalCards;
+                while (diff > totalCards / 2) diff -= totalCards;
+                while (diff < -totalCards / 2) diff += totalCards;
 
                 card.classList.remove('is-active');
 
                 if (diff === 0) {
-                    // แบนเนอร์กลาง: เด่นและใหญ่ที่สุด
+                    // 1. การ์ดตรงกลาง: ใหญ่ที่สุด เด่นที่สุด (Active Center Spotlight)
                     card.classList.add('is-active');
-                    card.style.transform = `translateX(0px) translateZ(${p.zCenter}px) rotateY(0deg) scale(${p.centerScale})`;
-                    card.style.zIndex = '30';
+                    card.style.transform = `translate3d(0, 0, 0) scale(${p.scaleCenter})`;
+                    card.style.zIndex = '25';
                     card.style.opacity = '1';
                     card.style.visibility = 'visible';
                     card.style.filter = 'brightness(1)';
                     card.style.pointerEvents = 'auto';
                 } else if (diff === 1) {
-                    // แบนเนอร์ขวา
-                    card.style.transform = `translateX(${p.stepX}px) translateZ(${p.zFlank}px) rotateY(-${p.rot}deg) scale(${p.flankScale})`;
-                    card.style.zIndex = '20';
-                    card.style.opacity = '0.88';
+                    // 2. การ์ดขวาใบที่ 1 (Near Right)
+                    card.style.transform = `translate3d(${p.step1}px, 0, 0) scale(${p.scaleNear})`;
+                    card.style.zIndex = '15';
+                    card.style.opacity = '0.90';
                     card.style.visibility = 'visible';
-                    card.style.filter = 'brightness(0.88)';
+                    card.style.filter = 'brightness(0.92)';
                     card.style.pointerEvents = 'auto';
                 } else if (diff === -1) {
-                    // แบนเนอร์ซ้าย
-                    card.style.transform = `translateX(-${p.stepX}px) translateZ(${p.zFlank}px) rotateY(${p.rot}deg) scale(${p.flankScale})`;
-                    card.style.zIndex = '20';
-                    card.style.opacity = '0.88';
+                    // 3. การ์ดซ้ายใบที่ 1 (Near Left)
+                    card.style.transform = `translate3d(-${p.step1}px, 0, 0) scale(${p.scaleNear})`;
+                    card.style.zIndex = '15';
+                    card.style.opacity = '0.90';
                     card.style.visibility = 'visible';
-                    card.style.filter = 'brightness(0.88)';
+                    card.style.filter = 'brightness(0.92)';
                     card.style.pointerEvents = 'auto';
+                } else if (diff === 2) {
+                    // 4. การ์ดขวาสุดใบที่ 2 (Far Right)
+                    card.style.transform = `translate3d(${p.step2}px, 0, 0) scale(${p.scaleFar})`;
+                    card.style.zIndex = '10';
+                    card.style.opacity = p.hideFar ? '0' : '0.72';
+                    card.style.visibility = p.hideFar ? 'hidden' : 'visible';
+                    card.style.filter = 'brightness(0.80)';
+                    card.style.pointerEvents = p.hideFar ? 'none' : 'auto';
+                } else if (diff === -2) {
+                    // 5. การ์ดซ้ายสุดใบที่ 2 (Far Left)
+                    card.style.transform = `translate3d(-${p.step2}px, 0, 0) scale(${p.scaleFar})`;
+                    card.style.zIndex = '10';
+                    card.style.opacity = p.hideFar ? '0' : '0.72';
+                    card.style.visibility = p.hideFar ? 'hidden' : 'visible';
+                    card.style.filter = 'brightness(0.80)';
+                    card.style.pointerEvents = p.hideFar ? 'none' : 'auto';
                 } else {
-                    // แบนเนอร์อื่นๆ ทั้งหมด ซ่อนสนิท (ไม่แสดง) เพื่อให้เห็นเฉพาะ 3 แบนเนอร์
+                    // การ์ดอื่นๆ ทั้งหมด ซ่อนไว้นอกจออย่างนุ่มนวล
                     const side = diff > 0 ? 1 : -1;
-                    card.style.transform = `translateX(${side * p.stepX * 1.6}px) translateZ(-250px) scale(0.4)`;
-                    card.style.zIndex = '0';
+                    card.style.transform = `translate3d(${side * (p.step2 + 250)}px, 0, 0) scale(0.35)`;
+                    card.style.zIndex = '1';
                     card.style.opacity = '0';
                     card.style.visibility = 'hidden';
                     card.style.pointerEvents = 'none';
                 }
             });
 
+            // อัปเดตสถานะของจุด Indicator Dots
             if (dotsContainer) {
                 const dots = dotsContainer.querySelectorAll('.pr-3d-dot');
-                dots.forEach((dot, idx) => {
-                    dot.classList.toggle('active', idx === activeIndex);
-                });
+                if (origCount > 0) {
+                    const activeOriginalIdx = activeIndex % origCount;
+                    dots.forEach((dot, idx) => {
+                        dot.classList.toggle('active', idx === activeOriginalIdx);
+                    });
+                }
             }
         }
 
         function goToSlide(index) {
             activeIndex = (index + totalCards) % totalCards;
-            render3D();
+            renderHorizontal();
         }
 
         function nextSlide() {
@@ -661,7 +780,7 @@ if (empty($prBanners)) {
             goToSlide(activeIndex - 1);
         }
 
-        // 3. คลิกที่การ์ด: คลิกการ์ดซ้ายหรือขวาจะเลื่อนมาตรงกลาง, คลิกการ์ดตรงกลางจะเปิดลิงก์
+        // 3. คลิกที่การ์ด: คลิกการ์ดข้างๆ เลื่อนมาตรงกลาง, คลิกการ์ดกลางเปิดลิงก์
         cards.forEach((card, idx) => {
             card.addEventListener('click', function(e) {
                 if (idx !== activeIndex) {
@@ -695,7 +814,7 @@ if (empty($prBanners)) {
             });
         }
 
-        // 5. Auto-Play & Smooth Progress Bar Animation
+        // 5. Auto-Play & Smooth Progress Bar
         function startAutoProgress() {
             stopAutoProgress();
             progressStartTime = Date.now();
@@ -783,18 +902,19 @@ if (empty($prBanners)) {
         window.addEventListener('touchend', onDragEnd);
 
         window.addEventListener('resize', () => {
-            render3D();
+            renderHorizontal();
         });
 
         // Initialize First View and Start Continuous Auto-Slide
-        render3D();
+        renderHorizontal();
         startAutoProgress();
     }
 
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init3DCarousel);
+        document.addEventListener('DOMContentLoaded', initHorizontalCarousel);
     } else {
-        init3DCarousel();
+        initHorizontalCarousel();
     }
 })();
 </script>
+<?php endif; ?>

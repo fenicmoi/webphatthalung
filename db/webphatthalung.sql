@@ -515,6 +515,7 @@ CREATE TABLE `news` (
   `images_gallery` longtext,
   `attachments` longtext,
   `cover_fit` varchar(50) DEFAULT 'cover',
+  `is_featured` tinyint(1) NOT NULL DEFAULT '0',
   `is_event` tinyint(1) DEFAULT '0',
   `event_start_date` varchar(50) DEFAULT NULL,
   `event_end_date` varchar(50) DEFAULT NULL,

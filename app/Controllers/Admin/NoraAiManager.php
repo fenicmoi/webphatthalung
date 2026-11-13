@@ -19,16 +19,19 @@ class NoraAiManager extends BaseController
 
         $knowledge = get_nora_knowledge();
         $settings  = get_nora_settings();
+        $logs      = function_exists('get_nora_question_logs') ? get_nora_question_logs() : [];
 
         $data = [
-            'title'       => 'จัดการระบบน้องโนรา AI & Smart Search Assistant | Phatthalung Admin',
-            'activeMenu'  => 'nora_ai',
-            'knowledge'   => $knowledge,
-            'settings'    => $settings,
-            'qaCount'     => count($knowledge),
-            'recentNews'  => function_exists('get_site_news') ? count(get_site_news(100)) : 0,
-            'recentDocs'  => function_exists('get_site_documents') ? count(get_site_documents()) : 0,
-            'recentProcs' => 0
+            'title'        => 'จัดการระบบน้องโนรา AI & Smart Search Assistant | Phatthalung Admin',
+            'activeMenu'   => 'nora_ai',
+            'knowledge'    => $knowledge,
+            'settings'     => $settings,
+            'questionLogs' => $logs,
+            'qaCount'      => count($knowledge),
+            'logCount'     => count($logs),
+            'recentNews'   => function_exists('get_site_news') ? count(get_site_news(100)) : 0,
+            'recentDocs'   => function_exists('get_site_documents') ? count(get_site_documents()) : 0,
+            'recentProcs'  => 0
         ];
 
         return view('admin/nora_ai_manager', $data);
@@ -96,6 +99,10 @@ class NoraAiManager extends BaseController
         }
 
         if (save_nora_knowledge($items)) {
+            $fromLogId = trim((string)$this->request->getPost('from_log_id'));
+            if (!empty($fromLogId) && function_exists('mark_nora_question_resolved')) {
+                mark_nora_question_resolved($fromLogId);
+            }
             return $this->response->setJSON(['status' => 'success', 'message' => 'บันทึกข้อมูล Q&A ของน้องโนรา AI สำเร็จแล้ว']);
         }
         return $this->response->setJSON(['status' => 'error', 'message' => 'ไม่สามารถบันทึกคลังความรู้ได้']);
@@ -458,5 +465,34 @@ class NoraAiManager extends BaseController
         }
 
         return $this->response->setJSON(['status' => 'error', 'message' => 'ไม่สามารถบันทึกข้อมูลได้']);
+    }
+
+    public function getQuestionLogs()
+    {
+        if ($auth = $this->checkAuth()) return $auth;
+        $logs = function_exists('get_nora_question_logs') ? get_nora_question_logs(500) : [];
+        return $this->response->setJSON([
+            'status' => 'success',
+            'logs'   => $logs,
+            'count'  => count($logs)
+        ]);
+    }
+
+    public function deleteQuestionLog($id)
+    {
+        if ($auth = $this->checkAuth()) return $auth;
+        if (function_exists('delete_nora_question_log') && delete_nora_question_log($id)) {
+            return $this->response->setJSON(['status' => 'success', 'message' => 'ลบรายการประวัติคำถามสำเร็จ']);
+        }
+        return $this->response->setJSON(['status' => 'error', 'message' => 'ไม่สามารถลบรายการได้']);
+    }
+
+    public function clearQuestionLogs()
+    {
+        if ($auth = $this->checkAuth()) return $auth;
+        if (function_exists('clear_nora_question_logs') && clear_nora_question_logs()) {
+            return $this->response->setJSON(['status' => 'success', 'message' => 'ล้างประวัติคำถามทั้งหมดเรียบร้อยแล้ว']);
+        }
+        return $this->response->setJSON(['status' => 'error', 'message' => 'ไม่สามารถล้างประวัติคำถามได้']);
     }
 }

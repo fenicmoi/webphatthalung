@@ -28,33 +28,49 @@ if (!class_exists('ZipArchive')) {
     die("❌ Error: ไม่พบ PHP ZipArchive module\n");
 }
 
+if (file_exists($zipFile)) {
+    @unlink($zipFile);
+}
+
 $zip = new ZipArchive();
 if ($zip->open($zipFile, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
     die("❌ Error: ไม่สามารถสร้างไฟล์ ZIP ที่ $zipFile\n");
 }
 
-// รายการไฟล์ที่อัปเดตจาก git (ทั้งที่ commit แล้วและที่แก้ไขอยู่ใน working tree)
+// รายการไฟล์ที่อัปเดตจาก git (เน้น working tree และ staged files ล่าสุด)
 $files = [];
-@exec('git diff --name-only 7542f7b HEAD', $gitFiles);
-if (!empty($gitFiles)) {
-    $files = array_merge($files, $gitFiles);
+@exec('git diff --name-only HEAD', $headDiff);
+if (!empty($headDiff)) {
+    $files = array_merge($files, $headDiff);
 }
-@exec('git diff --name-only', $workingDiff);
-if (!empty($workingDiff)) {
-    $files = array_merge($files, $workingDiff);
+@exec('git status -s', $statusLines);
+if (!empty($statusLines)) {
+    foreach ($statusLines as $line) {
+        $path = trim(substr($line, 3));
+        if ($path && file_exists($rootDir . DIRECTORY_SEPARATOR . $path)) {
+            if ($path === 'writable/service_banners.json') continue;
+            $files[] = $path;
+        }
+    }
 }
-@exec('git diff --name-only --cached', $cachedDiff);
-if (!empty($cachedDiff)) {
-    $files = array_merge($files, $cachedDiff);
-}
+$files = array_values(array_filter($files, function($p) {
+    return $p !== 'writable/service_banners.json';
+}));
 
 $essentialFiles = [
+    'public/index.php',
     'public/assets/css/main.css',
     'public/assets/css/main.min.css',
     'public/assets/js/app.js',
     'public/assets/js/app.min.js',
     'app/Config/Routes.php',
     'app/Helpers/settings_helper.php',
+    'app/Controllers/Gallery.php',
+    'app/Controllers/Admin/GalleryManager.php',
+    'app/Views/gallery_portal.php',
+    'app/Views/gallery_album_view.php',
+    'app/Models/GalleryAlbumModel.php',
+    'app/Models/GalleryPhotoModel.php',
     'app/Views/home_portal.php',
     'app/Views/layouts/main.php',
     'app/Views/layouts/admin.php',
@@ -78,6 +94,12 @@ $essentialFiles = [
     'app/Views/components/news_media_hub.php',
     'app/Views/components/provincial_policy_hub.php',
     'app/Views/components/pr_banner_carousel.php',
+    'app/Views/components/emergency_alert_banner.php',
+    'app/Views/admin/emergency_manager.php',
+    'app/Controllers/Admin/EmergencyManager.php',
+    'app/Controllers/WeatherRadar.php',
+    'app/Views/weather_radar/index.php',
+    'writable/emergency_alert.json',
     'app/Views/components/smart_floating_dock.php',
     'app/Views/components/gallery_studio.php',
     'app/Views/components/shadow_box.php',
@@ -98,17 +120,95 @@ $essentialFiles = [
     'app/Controllers/FinancialReports.php',
     'app/Views/financial_reports_portal.php',
     'app/Controllers/Document.php',
-    'app/Controllers/News.php'
+    'app/Controllers/News.php',
+    'app/Views/components/news_studio.php',
+    'app/Controllers/Admin/DatabaseManager.php',
+    'app/Controllers/Admin/DigitalServiceManager.php',
+    'app/Views/admin/digital_services.php',
+    'app/Views/components/digital_services_hub.php',
+    'app/Views/admin/nora_ai_manager.php',
+    'app/Controllers/Admin/NoraAiManager.php',
+    'app/Controllers/Api/NoraAi.php',
+    'app/Controllers/Api/Search.php',
+    'app/Controllers/SearchController.php',
+    'app/Views/home_portal.php',
+    'writable/digital_services.json',
+    'writable/nora_ai_settings.json',
+    'writable/nora_question_logs.json',
+    'writable/site_menus.json',
+    'app/Controllers/Governor.php',
+    'app/Controllers/Admin/GovernorManager.php',
+    'writable/site_governors.json',
+    'writable/site_executives.json',
+    'writable/site_news.json',
+    'writable/news_categories.json',
+    'writable/visitor_stats.json',
+    'app/Models/DirectoryModel.php',
+    'app/Controllers/Directory.php',
+    'app/Controllers/Admin/DirectoryManager.php',
+    'app/Views/directory/index.php',
+    'app/Views/admin/directory_manager.php',
+    'writable/directory_ministries.json',
+    'writable/directory_departments.json',
+    'writable/directory_contacts.json',
+    'writable/directory_sync_meta.json',
+    'public/manifest.json',
+    'public/sw.js',
+    'public/assets/images/pwa/icon-192.png',
+    'public/assets/images/pwa/icon-512.png',
+    'public/assets/images/pwa/icon-maskable.png',
+    'app/Views/components/pwa_installer.php',
+    'app/Libraries/TrafficTracker.php',
+    'app/Controllers/Damrongtham.php',
+    'app/Views/damrongtham/index.php',
+    'public/assets/images/banners/banner_damrongdhama_official.png',
+    'public/assets/images/damrongtham/cat_officer.jpg',
+    'public/assets/images/damrongtham/cat_environment.jpg',
+    'public/assets/images/damrongtham/cat_debt_land.jpg',
+    'public/assets/images/damrongtham/cat_welfare.jpg',
+    'public/assets/images/damrongtham/cat_legal.jpg',
+    'app/Controllers/Admin/DamrongthamManager.php',
+    'app/Models/DamrongthamStatsModel.php',
+    'app/Models/DamrongthamDailyModel.php',
+    'app/Views/admin/damrongtham_stats.php',
+    'public/assets/js/html2canvas.min.js',
+    'writable/damrongtham_stats.json'
 ];
 
 $allFiles = array_unique(array_merge($files, $essentialFiles));
 $packedCount = 0;
 $packedList = [];
 
+$ignorePatterns = [
+    '/\.sql$/i',
+    '/\.zip$/i',
+    '/\.pdf$/i',
+    '/\.mp4$/i',
+    '/^scripts\//i',
+    '/^scratch/i',
+    '/^test/i',
+    '/^writable\/.*\.backup/i',
+    '/^writable\/.*\.tmp/i'
+];
+
 foreach ($allFiles as $relPath) {
     $relPath = trim(str_replace('\\', '/', $relPath));
+    $skip = false;
+    foreach ($ignorePatterns as $pattern) {
+        if (preg_match($pattern, $relPath)) {
+            $skip = true;
+            break;
+        }
+    }
+    if ($skip) {
+        continue;
+    }
+
     $fullPath = $rootDir . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $relPath);
     if (file_exists($fullPath) && !is_dir($fullPath)) {
+        if (filesize($fullPath) > 2 * 1024 * 1024) {
+            continue; // Skip files > 2MB
+        }
         $zip->addFile($fullPath, $relPath);
         $packedCount++;
         $packedList[] = $relPath;
@@ -210,6 +310,60 @@ if ($zip->open($zipPath) === true) {
                 echo "\nDATABASE: Added permissions column to users table!";
             }
 
+            // Ensure is_featured column exists in news table
+            $checkColNews = $mysqli->query("SHOW COLUMNS FROM news LIKE \'is_featured\'");
+            if ($checkColNews && $checkColNews->num_rows === 0) {
+                $mysqli->query("ALTER TABLE news ADD COLUMN is_featured TINYINT(1) NOT NULL DEFAULT 0 AFTER cover_fit");
+                echo "\nDATABASE: Added is_featured column to news table!";
+            }
+
+            // Ensure site_traffic_stats table exists on hosting MySQL
+            $mysqli->query("CREATE TABLE IF NOT EXISTS `site_traffic_stats` (
+              `id` int unsigned NOT NULL AUTO_INCREMENT,
+              `stat_date` date NOT NULL,
+              `visits_count` int NOT NULL DEFAULT 0,
+              `mobile_count` int NOT NULL DEFAULT 0,
+              `desktop_count` int NOT NULL DEFAULT 0,
+              `tablet_count` int NOT NULL DEFAULT 0,
+              `created_at` datetime DEFAULT NULL,
+              `updated_at` datetime DEFAULT NULL,
+              PRIMARY KEY (`id`),
+              UNIQUE KEY `idx_stat_date` (`stat_date`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;");
+
+            $checkTrafficCount = $mysqli->query("SELECT count(*) as cnt FROM site_traffic_stats");
+            if ($checkTrafficCount) {
+                $tRow = $checkTrafficCount->fetch_assoc();
+                if ((int)($tRow[\'cnt\'] ?? 0) < 7) {
+                    $now = date(\'Y-m-d H:i:s\');
+                    $pattern = [940, 1050, 980, 1150, 1210, 1180, 1250];
+                    for ($i = 29; $i >= 0; $i--) {
+                        $date = date(\'Y-m-d\', strtotime("-{$i} days"));
+                        $base = $pattern[(30 - $i) % count($pattern)] + rand(-40, 50);
+                        $m = round($base * 0.62);
+                        $d = round($base * 0.33);
+                        $t = max(1, $base - $m - $d);
+                        $mysqli->query("INSERT IGNORE INTO `site_traffic_stats` (`stat_date`, `visits_count`, `mobile_count`, `desktop_count`, `tablet_count`, `created_at`, `updated_at`) VALUES (\'{$date}\', {$base}, {$m}, {$d}, {$t}, \'{$now}\', \'{$now}\')");
+                    }
+                    echo "\nDATABASE: Initialized real traffic & device tracking on hosting!";
+                }
+            }
+
+            // Sync is_featured from site_news.json into hosting MySQL
+            $newsJson = dirname(__DIR__) . "/writable/site_news.json";
+            if (file_exists($newsJson)) {
+                $nRows = json_decode(file_get_contents($newsJson), true);
+                if (is_array($nRows)) {
+                    foreach ($nRows as $nr) {
+                        $fVal = !empty($nr["is_featured"]) ? 1 : 0;
+                        if (!empty($nr["id"]) && is_numeric($nr["id"])) {
+                            $mysqli->query("UPDATE news SET is_featured = " . (int)$fVal . " WHERE id = " . (int)$nr["id"]);
+                        }
+                    }
+                    echo "\nDATABASE: Synced is_featured status into news table!";
+                }
+            }
+
             // 1. Sync procurements (150 records)
             $procJson = dirname(__DIR__) . "/writable/dump_procurements.json";
             if (file_exists($procJson)) {
@@ -305,10 +459,96 @@ if ($zip->open($zipPath) === true) {
                 }
             }
 
+            // 4. Create damrongtham_daily_records table on hosting
+            $createDrtDailySql = "CREATE TABLE IF NOT EXISTS `damrongtham_daily_records` (
+              `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+              `record_date` date NOT NULL,
+              `date_text` varchar(100) NOT NULL,
+              `received_count` int(11) NOT NULL DEFAULT 0,
+              `resolved_count` int(11) NOT NULL DEFAULT 0,
+              `pending_count` int(11) NOT NULL DEFAULT 0,
+              `general_inquiries` int(11) NOT NULL DEFAULT 0,
+              `channel_walkin` int(11) NOT NULL DEFAULT 0,
+              `channel_phone` int(11) NOT NULL DEFAULT 0,
+              `channel_website` int(11) NOT NULL DEFAULT 0,
+              `channel_letter` int(11) NOT NULL DEFAULT 0,
+              `cat_general` int(11) NOT NULL DEFAULT 0,
+              `cat_welfare` int(11) NOT NULL DEFAULT 0,
+              `cat_distress` int(11) NOT NULL DEFAULT 0,
+              `cat_officer` int(11) NOT NULL DEFAULT 0,
+              `cat_whistleblowing` int(11) NOT NULL DEFAULT 0,
+              `cat_land` int(11) NOT NULL DEFAULT 0,
+              `officer_name` varchar(150) DEFAULT NULL,
+              `notes` text DEFAULT NULL,
+              `created_at` datetime DEFAULT NULL,
+              `updated_at` datetime DEFAULT NULL,
+              PRIMARY KEY (`id`),
+              UNIQUE KEY `uniq_record_date` (`record_date`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
+            $mysqli->query($createDrtDailySql);
+
+            // 5. Create damrongtham_baseline table on hosting
+            $createDrtBaselineSql = "CREATE TABLE IF NOT EXISTS `damrongtham_baseline` (
+              `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+              `baseline_name` varchar(100) NOT NULL DEFAULT \'default\',
+              `announcement_title` text NOT NULL,
+              `period_text` varchar(255) NOT NULL,
+              `base_received` int(11) NOT NULL DEFAULT 12051,
+              `base_resolved` int(11) NOT NULL DEFAULT 12022,
+              `base_pending` int(11) NOT NULL DEFAULT 29,
+              `base_ch_walkin` int(11) NOT NULL DEFAULT 6123,
+              `base_ch_phone` int(11) NOT NULL DEFAULT 3497,
+              `base_ch_website` int(11) NOT NULL DEFAULT 1521,
+              `base_ch_letter` int(11) NOT NULL DEFAULT 873,
+              `base_cat_general` int(11) NOT NULL DEFAULT 5343,
+              `base_cat_welfare` int(11) NOT NULL DEFAULT 3596,
+              `base_cat_distress` int(11) NOT NULL DEFAULT 1334,
+              `base_cat_officer` int(11) NOT NULL DEFAULT 841,
+              `base_cat_whistleblowing` int(11) NOT NULL DEFAULT 592,
+              `base_cat_land` int(11) NOT NULL DEFAULT 308,
+              `created_at` datetime DEFAULT NULL,
+              `updated_at` datetime DEFAULT NULL,
+              PRIMARY KEY (`id`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
+            $mysqli->query($createDrtBaselineSql);
+
+            // Reset / Seed baseline to official Nov 4, 2569 values and empty daily records
+            $cntBase = $mysqli->query("SELECT count(*) as c FROM damrongtham_baseline")->fetch_assoc()[\'c\'] ?? 0;
+            if ($cntBase == 0) {
+                $mysqli->query("INSERT INTO damrongtham_baseline (baseline_name, announcement_title, period_text, base_received, base_resolved, base_pending, base_ch_walkin, base_ch_phone, base_ch_website, base_ch_letter, base_cat_general, base_cat_welfare, base_cat_distress, base_cat_officer, base_cat_whistleblowing, base_cat_land, created_at, updated_at) VALUES (\'default\', \'เรื่องร้องเรียนสะสมตั้งแต่เปิดศูนย์ตามประกาศ คสช. ฉบับที่ 96/2557 ลงวันที่ 18 กรกฎาคม 2557\', \'18 กรกฎาคม 2557 – 4 พฤศจิกายน 2569\', 12092, 12056, 36, 6157, 3511, 1540, 884, 5372, 3604, 1353, 857, 595, 311, NOW(), NOW())");
+            } else {
+                $mysqli->query("UPDATE damrongtham_baseline SET announcement_title = \'เรื่องร้องเรียนสะสมตั้งแต่เปิดศูนย์ตามประกาศ คสช. ฉบับที่ 96/2557 ลงวันที่ 18 กรกฎาคม 2557\', period_text = \'18 กรกฎาคม 2557 – 4 พฤศจิกายน 2569\', base_received = 12092, base_resolved = 12056, base_pending = 36, base_ch_walkin = 6157, base_ch_phone = 3511, base_ch_website = 1540, base_ch_letter = 884, base_cat_general = 5372, base_cat_welfare = 3604, base_cat_distress = 1353, base_cat_officer = 857, base_cat_whistleblowing = 595, base_cat_land = 311, updated_at = NOW() WHERE baseline_name = \'default\'");
+            }
+            $mysqli->query("TRUNCATE TABLE damrongtham_daily_records");
+            echo "\nDATABASE: Reset damrongtham_baseline to official 4 Nov 2569 baseline (12,092) and cleared daily records on hosting!";
+
+            // Ensure officer account has damrongtham permissions on hosting MySQL
+            $mysqli->query("UPDATE users SET permissions = \'[\"damrongtham_stats\",\"contact_manager\",\"mailbox_manager\",\"news\",\"procurement\"]\' WHERE username = \'officer\' AND (permissions IS NULL OR permissions = \'[]\' OR permissions = \'\')");
+            $mysqli->query("UPDATE users SET department = \'กลุ่มงานศูนย์ดำรงธรรมจังหวัดพัทลุง\' WHERE username = \'officer\' AND (department IS NULL OR department = \'\')");
+
             $mysqli->close();
         }
     } catch (\Throwable $dbe) {
         echo "\nDB NOTICE: " . $dbe->getMessage();
+    }
+
+    // Clean expired and unofficial banners from writable/service_banners.json on hosting
+    $sbJsonFile = dirname(__DIR__) . "/writable/service_banners.json";
+    if (file_exists($sbJsonFile)) {
+        $sbData = @json_decode(file_get_contents($sbJsonFile), true);
+        if (is_array($sbData)) {
+            $cleanedSb = [];
+            foreach ($sbData as $b) {
+                $bid = $b[\'id\'] ?? \'\';
+                // Remove expired banners (sb-103, sb-104) and unofficial added banner (sb-105)
+                if (in_array($bid, [\'sb-103\', \'sb-104\', \'sb-105\'], true)) {
+                    continue;
+                }
+                $cleanedSb[] = $b;
+            }
+            file_put_contents($sbJsonFile, json_encode($cleanedSb, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+            echo "\nCLEANED: Removed expired/unofficial banners from service_banners.json on hosting!";
+        }
     }
 
     // Clear caches

@@ -44,6 +44,8 @@ $routes->post('news/delete/(:any)', 'News::delete/$1');
 $routes->post('news/upload-image', 'News::uploadImage');
 $routes->post('news/save-category', 'News::saveCategory');
 $routes->post('news/resize-cover', 'News::resizeCover');
+$routes->post('news/toggle-featured', 'News::toggleFeatured');
+$routes->post('news/toggle-featured/(:any)', 'News::toggleFeatured/$1');
 $routes->match(['get', 'post'], 'news/test-db', 'News::testDb');
 $routes->match(['get', 'post'], 'news/testDb', 'News::testDb');
 $routes->match(['get', 'post'], 'news/sync-db', 'News::syncDb');
@@ -102,6 +104,14 @@ $routes->group('admin', ['namespace' => 'App\Controllers\Admin', 'filter' => 'au
     $routes->post('service-banners/reset', 'ServiceBannerManager::reset');
     $routes->post('service-banners/upload', 'ServiceBannerManager::upload');
 
+    // Digital Services & Information Systems Management Routes
+    $routes->get('digital-services', 'DigitalServiceManager::index');
+    $routes->post('digital-services/save', 'DigitalServiceManager::save');
+    $routes->post('digital-services/save-inline', 'DigitalServiceManager::saveInline');
+    $routes->post('digital-services/delete/(:any)', 'DigitalServiceManager::delete/$1');
+    $routes->post('digital-services/toggle-status/(:any)', 'DigitalServiceManager::toggleStatus/$1');
+    $routes->post('digital-services/reset', 'DigitalServiceManager::reset');
+
     // Government Procurement & e-GP Management Routes
     $routes->get('procurement', 'ProcurementManager::index');
     $routes->get('procurement/get-inline/(:any)', 'ProcurementManager::getInline/$1');
@@ -118,7 +128,28 @@ $routes->group('admin', ['namespace' => 'App\Controllers\Admin', 'filter' => 'au
     $routes->post('database-manager/execute-sql', 'DatabaseManager::executeSql');
     $routes->post('database-manager/import-sql', 'DatabaseManager::importSqlFile');
     $routes->get('database-manager/export-sql', 'DatabaseManager::exportSqlFile');
-    $routes->post('database-manager/optimize-tables', 'DatabaseManager::repairOptimizeTables');
+    // Directory & Contacts Management Routes
+    $routes->get('directory', 'DirectoryManager::index');
+    $routes->post('directory/save', 'DirectoryManager::save');
+    $routes->post('directory/delete', 'DirectoryManager::delete');
+    $routes->post('directory/save-ministry', 'DirectoryManager::saveMinistry');
+    $routes->post('directory/delete-ministry', 'DirectoryManager::deleteMinistry');
+    $routes->post('directory/save-department', 'DirectoryManager::saveDepartment');
+    $routes->post('directory/delete-department', 'DirectoryManager::deleteDepartment');
+    $routes->post('directory/sync', 'DirectoryManager::syncFromRemote');
+
+
+    // Damrongtham Statistics Manager Routes
+    $routes->get('damrongtham/stats', 'DamrongthamManager::stats');
+    $routes->post('damrongtham/stats/save', 'DamrongthamManager::saveStats');
+    $routes->post('damrongtham/stats/reset', 'DamrongthamManager::resetStats');
+    $routes->match(['get', 'post'], 'damrongtham/stats/reset-zero', 'DamrongthamManager::resetToZero');
+    $routes->post('damrongtham/daily/save', 'DamrongthamManager::saveDaily');
+    $routes->match(['get', 'post'], 'damrongtham/daily/delete-record', 'DamrongthamManager::deleteDaily');
+    $routes->match(['get', 'post'], 'damrongtham/daily-delete', 'DamrongthamManager::deleteDaily');
+    $routes->match(['get', 'post'], 'damrongtham/daily-delete/(:num)', 'DamrongthamManager::deleteDaily/$1');
+    $routes->match(['get', 'post'], 'damrongtham/daily/delete/(:num)', 'DamrongthamManager::deleteDaily/$1');
+    $routes->post('damrongtham/baseline/save', 'DamrongthamManager::saveBaseline');
 });
 
 // Direct Web-based Hosting Table Updater (Accessible with ?token=...)
@@ -154,6 +185,8 @@ $routes->post('news/upload-image', 'News::uploadImage');
 $routes->post('news/upload-doc', 'News::uploadDoc');
 $routes->post('news/save-category', 'News::saveCategory');
 $routes->post('news/resize-cover', 'News::resizeCover');
+$routes->post('news/toggle-featured', 'News::toggleFeatured');
+$routes->post('news/toggle-featured/(:any)', 'News::toggleFeatured/$1');
 
 /*
  * --------------------------------------------------------------------
@@ -280,6 +313,9 @@ $routes->post('admin/news-aggregator/import', 'Admin\NewsAggregator::import');
  * --------------------------------------------------------------------
  */
 $routes->get('governors', 'Governor::index');
+$routes->get('governor-hall', 'Governor::index');
+$routes->get('governor_hall', 'Governor::index');
+$routes->get('hall-of-governors', 'Governor::index');
 $routes->get('admin/governors', 'Admin\GovernorManager::index');
 $routes->get('admin/governors/get-item/(:any)', 'Admin\GovernorManager::getItem/$1');
 $routes->post('admin/governors/save-item', 'Admin\GovernorManager::saveItem');
@@ -316,14 +352,25 @@ $routes->post('admin/nora-ai/sync-knowledge', 'Admin\NoraAiManager::syncKnowledg
 $routes->post('admin/nora-ai/gemini-extract', 'Admin\NoraAiManager::geminiExtract');
 $routes->post('admin/nora-ai/save-multiple-qa', 'Admin\NoraAiManager::saveMultipleQa');
 $routes->post('admin/nora-ai/test-gemini', 'Admin\NoraAiManager::testGeminiConnection');
+$routes->get('admin/nora-ai/logs', 'Admin\NoraAiManager::getQuestionLogs');
+$routes->post('admin/nora-ai/delete-log/(:any)', 'Admin\NoraAiManager::deleteQuestionLog/$1');
+$routes->post('admin/nora-ai/clear-logs', 'Admin\NoraAiManager::clearQuestionLogs');
 
 /*
  * --------------------------------------------------------------------
  * Emergency & Disaster Early Warning System Routes
  * --------------------------------------------------------------------
  */
+$routes->get('admin/emergency', 'Admin\EmergencyManager::index');
 $routes->get('admin/emergency/get-alert', 'Admin\EmergencyManager::getAlert');
 $routes->post('admin/emergency/save-alert', 'Admin\EmergencyManager::saveAlert');
+$routes->post('admin/emergency/toggle', 'Admin\EmergencyManager::toggle');
+$routes->get('admin/emergency/sync-weather', 'Admin\EmergencyManager::syncWeather');
+$routes->post('admin/emergency/auto-apply-weather', 'Admin\EmergencyManager::autoApplyWeather');
+$routes->get('weather-radar', 'WeatherRadar::index');
+$routes->get('disaster-radar', 'WeatherRadar::index');
+$routes->get('cctv-flood', 'WeatherRadar::index');
+$routes->get('ddpm-radar', 'WeatherRadar::index');
 
 /*
  * --------------------------------------------------------------------
@@ -397,6 +444,19 @@ $routes->post('api/contact/submit', 'Contact::submit');
 $routes->get('api/contact/track', 'Contact::track');
 $routes->get('api/contact/track/(:any)', 'Contact::track/$1');
 
+/*
+ * --------------------------------------------------------------------
+ * Damrongtham Center Portal (ศูนย์ดำรงธรรมจังหวัดพัทลุง 1567)
+ * --------------------------------------------------------------------
+ */
+$routes->get('damrongtham', 'Damrongtham::index');
+$routes->get('damrongtham/presentation', 'Damrongtham::presentation');
+$routes->get('damrong', 'Damrongtham::index');
+$routes->get('damrongtham/stats-api', 'Damrongtham::statsApi');
+$routes->post('api/damrongtham/submit', 'Damrongtham::submit');
+$routes->get('api/damrongtham/track', 'Damrongtham::track');
+$routes->get('api/damrongtham/track/(:any)', 'Damrongtham::track/$1');
+
 // Admin Contact & Complaint Manager
 $routes->get('admin/contacts', 'Admin\ContactManager::index', ['filter' => 'auth']);
 $routes->get('admin/contacts/detail/(:num)', 'Admin\ContactManager::detail/$1', ['filter' => 'auth']);
@@ -411,6 +471,17 @@ $routes->post('admin/mailbox/toggle-star/(:num)', 'Admin\MailboxManager::toggleS
 $routes->post('admin/mailbox/delete/(:num)', 'Admin\MailboxManager::deleteEmail/$1', ['filter' => 'auth']);
 $routes->post('admin/mailbox/save-settings', 'Admin\MailboxManager::saveSettings', ['filter' => 'auth']);
 $routes->post('admin/mailbox/convert/(:num)', 'Admin\MailboxManager::convertToRequest/$1', ['filter' => 'auth']);
+
+/*
+ * --------------------------------------------------------------------
+ * Digital Directory & Phone Contacts Routes (ทำเนียบส่วนราชการและสมุดโทรศัพท์)
+ * --------------------------------------------------------------------
+ */
+$routes->get('directory', 'Directory::index');
+$routes->get('directory/export-vcf', 'Directory::exportVcf');
+$routes->get('directory/export-excel', 'Directory::exportExcel');
+$routes->get('directory/detail/(:num)', 'Directory::detail/$1');
+$routes->get('phone', 'Directory::index'); // Short alias for /phone
 
 /*
  * --------------------------------------------------------------------

@@ -246,10 +246,20 @@ $currRole   = $currRole ?? '';
                                         <span class="badge rounded-pill px-2.5 py-1.5" style="background: rgba(59, 130, 246, 0.12); color: #2563eb; border: 1px solid rgba(59, 130, 246, 0.25);">
                                             <i class="fa-solid fa-shield me-1"></i>เจ้าหน้าที่
                                         </span>
-                                        <div class="mt-1">
+                                        <div class="mt-1 d-flex flex-wrap gap-1 justify-content-center">
                                             <span class="badge bg-light text-primary border border-primary-subtle fw-semibold px-2 py-0.5" style="font-size: 0.72rem;">
                                                 <i class="fa-solid fa-key me-1"></i><?= $pCount ?> เมนู
                                             </span>
+                                            <?php if (is_array($uPerms) && in_array('directory_manager', $uPerms, true)): ?>
+                                                <span class="badge rounded-pill px-2 py-0.5" style="background: rgba(16, 185, 129, 0.12); color: #059669; border: 1px solid rgba(16, 185, 129, 0.3); font-size: 0.7rem;" title="มีสิทธิ์จัดการทำเนียบผู้บริหารและบุคลากรของหน่วยงานตนเอง">
+                                                    <i class="fa-solid fa-address-book me-0.5"></i>ดูแลทำเนียบ
+                                                </span>
+                                            <?php endif; ?>
+                                            <?php if (is_array($uPerms) && (in_array('damrongtham_stats', $uPerms, true) || in_array('contact_manager', $uPerms, true))): ?>
+                                                <span class="badge rounded-pill px-2 py-0.5" style="background: rgba(220, 38, 38, 0.12); color: #dc2626; border: 1px solid rgba(220, 38, 38, 0.3); font-size: 0.7rem;" title="มีสิทธิ์ในระบบศูนย์ดำรงธรรม 1567">
+                                                    <i class="fa-solid fa-scale-balanced me-0.5"></i>ศูนย์ดำรงธรรม
+                                                </span>
+                                            <?php endif; ?>
                                         </div>
                                     <?php endif; ?>
                                 </td>
@@ -273,12 +283,23 @@ $currRole   = $currRole ?? '';
                                 </td>
                                 <td class="text-center">
                                     <div class="btn-group btn-group-sm">
-                                        <!-- Quick Approve button for pending accounts -->
+                                        <!-- Approve & Bind Department button for pending accounts -->
                                         <?php if (($u['status'] ?? '') === 'pending'): ?>
-                                            <button type="button" class="btn btn-success" title="อนุมัติการใช้งาน" onclick="quickApprove(<?= $u['id'] ?>, '<?= htmlspecialchars($u['full_name'] ?? $u['username']) ?>')">
-                                                <i class="fa-solid fa-check"></i> อนุมัติ
+                                            <?php
+                                            $userDataJson = json_encode([
+                                                'id'          => (int)$u['id'],
+                                                'username'    => $u['username'] ?? '',
+                                                'full_name'   => $u['full_name'] ?? '',
+                                                'email'       => $u['email'] ?? '',
+                                                'phone'       => $u['phone'] ?? '',
+                                                'department'  => $u['department'] ?? '',
+                                                'permissions' => !empty($u['permissions']) ? json_decode($u['permissions'], true) : []
+                                            ], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE);
+                                            ?>
+                                            <button type="button" class="btn btn-success fw-semibold px-2.5" title="อนุมัติ & กำหนดหน่วยงาน" onclick='openApproveModal(<?= $userDataJson ?>)'>
+                                                <i class="fa-solid fa-user-check me-1"></i> อนุมัติ & ผูกสังกัด
                                             </button>
-                                            <button type="button" class="btn btn-danger" title="ปฏิเสธ" onclick="quickReject(<?= $u['id'] ?>, '<?= htmlspecialchars($u['full_name'] ?? $u['username']) ?>')">
+                                            <button type="button" class="btn btn-outline-danger" title="ปฏิเสธ" onclick="quickReject(<?= $u['id'] ?>, '<?= htmlspecialchars($u['full_name'] ?? $u['username'], ENT_QUOTES) ?>')">
                                                 <i class="fa-solid fa-xmark"></i>
                                             </button>
                                         <?php else: ?>
@@ -334,7 +355,18 @@ $currRole   = $currRole ?? '';
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-semibold" for="modalDepartment">หน่วยงาน / กลุ่มงาน / สังกัด</label>
-                            <input type="text" class="form-control" id="modalDepartment" name="department" placeholder="เช่น สำนักงานจังหวัดพัทลุง">
+                            <input type="text" class="form-control" id="modalDepartment" name="department" list="departmentList" placeholder="พิมพ์หรือเลือกหน่วยงานในทำเนียบ..." oninput="checkUserModalDepartment(this.value)">
+                            <datalist id="departmentList">
+                                <?php if (!empty($departments)): ?>
+                                    <?php foreach ($departments as $dept): ?>
+                                        <option value="<?= esc($dept['name']) ?>"><?= esc($dept['name']) ?></option>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </datalist>
+                            <small class="text-muted" style="font-size: 0.75rem;">* เลือกหรือพิมพ์ชื่อหน่วยงาน เพื่อจำกัดสิทธิ์เจ้าหน้าที่ให้จัดการได้เฉพาะหน่วยงานตนเอง</small>
+                            <div id="modalNewDeptNotice" class="alert alert-info py-1.5 px-2.5 mt-1.5 mb-0 rounded-2 fs-8 d-none">
+                                <i class="fa-solid fa-circle-info me-1"></i>หน่วยงานใหม่ที่ยังไม่มีในทำเนียบ: ระบบจะบันทึกลงในฐานข้อมูลทำเนียบ 330+ ให้อัตโนมัติ
+                            </div>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label fw-semibold" for="modalPhone">เบอร์โทรศัพท์ติดต่อ</label>
@@ -373,7 +405,10 @@ $currRole   = $currRole ?? '';
                                     </h6>
                                     <small class="text-muted" id="permSubText">เลือกเมนูที่อนุญาตให้เจ้าหน้าที่ท่านนี้มองเห็นและเข้าใช้งานใน Admin Portal</small>
                                 </div>
-                                <div class="d-flex gap-2" id="permQuickButtons">
+                                <div class="d-flex flex-wrap gap-2" id="permQuickButtons">
+                                    <button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-3 shadow-xs" onclick="setDamrongthamPermissionsPreset()" title="เลือกสิทธิ์เฉพาะระบบศูนย์ดำรงธรรม (สถิติรายวัน + เรื่องร้องเรียน 1567)">
+                                        <i class="fa-solid fa-scale-balanced me-1"></i> มอบสิทธิ์ศูนย์ดำรงธรรม (1567)
+                                    </button>
                                     <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3" onclick="toggleAllPermissions(true)">
                                         <i class="fa-solid fa-check-double me-1"></i> เลือกทั้งหมด
                                     </button>
@@ -483,13 +518,181 @@ $currRole   = $currRole ?? '';
     </div>
 </div>
 
+<!-- Modal: ตรวจสอบ อนุมัติ & ผูกหน่วยงานเจ้าหน้าที่ -->
+<div class="modal fade" id="approveModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+            <div class="modal-header border-bottom py-3 px-4" style="background: linear-gradient(135deg, #064e3b 0%, #047857 100%); color: #fff;">
+                <h5 class="modal-title fw-bold d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-user-check text-emerald"></i>
+                    <span>อนุมัติการใช้งาน & กำหนดหน่วยงานและสิทธิ์</span>
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="approveForm" onsubmit="handleApproveSubmit(event)">
+                <?= csrf_field() ?>
+                <input type="hidden" name="id" id="approveUserId" value="0">
+                <div class="modal-body p-4">
+                    <!-- Applicant Profile Card -->
+                    <div class="card border-0 bg-light rounded-3 p-3 mb-4 shadow-xs">
+                        <div class="d-flex align-items-start gap-3">
+                            <div class="avatar-circle rounded-circle bg-emerald bg-opacity-10 text-emerald d-flex align-items-center justify-content-center flex-shrink-0" style="width: 48px; height: 48px; font-size: 1.25rem;">
+                                <i class="fa-solid fa-user"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-1">
+                                    <h6 class="fw-bold text-dark mb-0 fs-6" id="approveFullName">-</h6>
+                                    <span class="badge bg-warning text-dark rounded-pill px-2.5 py-1">
+                                        <i class="fa-solid fa-clock me-1"></i>รออนุมัติ
+                                    </span>
+                                </div>
+                                <div class="d-flex flex-wrap gap-x-3 gap-y-1 text-muted fs-7">
+                                    <span><i class="fa-solid fa-id-badge me-1"></i>ผู้ใช้งาน: <strong class="text-dark" id="approveUsername">-</strong></span>
+                                    <span><i class="fa-solid fa-envelope me-1"></i><span id="approveEmail">-</span></span>
+                                    <span><i class="fa-solid fa-phone me-1"></i><span id="approvePhone">-</span></span>
+                                </div>
+                                <div class="mt-2 pt-2 border-top border-light-subtle d-flex align-items-center gap-2">
+                                    <span class="fs-7 text-muted">สังกัดที่ผู้สมัครระบุไว้:</span>
+                                    <span class="badge bg-white text-dark border border-secondary-subtle px-2.5 py-1 fw-semibold fs-7" id="approveApplicantDept">-</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Department Assignment Section -->
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-dark d-flex align-items-center justify-content-between" for="approveDepartment">
+                            <span>
+                                <i class="fa-solid fa-building-columns text-emerald me-1.5"></i>
+                                กำหนดส่วนราชการ / หน่วยงานในระบบทำเนียบ <span class="text-danger">*</span>
+                            </span>
+                            <small class="text-muted fw-normal">เลือกจากทำเนียบ 330+ หรือพิมพ์ชื่อหน่วยงานใหม่</small>
+                        </label>
+                        <input type="text" class="form-control form-control-lg fs-6" id="approveDepartment" name="department" list="departmentList" required placeholder="ค้นหาหรือพิมพ์ชื่อส่วนราชการ..." oninput="checkApproveDepartment(this.value)">
+                        
+                        <!-- Notice if department is new -->
+                        <div id="newDeptNotice" class="alert alert-info bg-info bg-opacity-10 border border-info border-opacity-25 rounded-3 py-2.5 px-3 mt-2 d-none">
+                            <div class="d-flex align-items-start gap-2">
+                                <i class="fa-solid fa-circle-info text-info mt-1"></i>
+                                <div class="fs-7">
+                                    <strong class="text-dark">หน่วยงานนี้ยังไม่มีในฐานข้อมูลทำเนียบ:</strong>
+                                    <span class="text-muted">ระบบจะบันทึกหน่วยงานนี้ลงในระบบทำเนียบ (Directory) ให้อัตโนมัติ เพื่อให้ผู้ใช้สามารถจัดการบุคลากรได้ทันที โปรดระบุกระทรวงต้นสังกัดด้านล่าง</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Ministry Selection for New Department -->
+                        <div id="approveMinistryGroup" class="mt-3 p-3 bg-light rounded-3 border border-light-subtle d-none">
+                            <label class="form-label fw-semibold text-dark fs-7 mb-1" for="approveMinistry">
+                                <i class="fa-solid fa-landmark text-primary me-1"></i> กระทรวง / ต้นสังกัดของหน่วยงานใหม่นี้ <span class="text-danger">*</span>
+                            </label>
+                            <select class="form-select fs-7" id="approveMinistry" name="ministry_id">
+                                <?php if (!empty($ministries)): ?>
+                                    <?php foreach ($ministries as $min): ?>
+                                        <option value="<?= (int)$min['id'] ?>" <?= ((int)$min['id'] === 12) ? 'selected' : '' ?>>
+                                            <?= esc($min['name']) ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <option value="12" selected>กระทรวงมหาดไทย</option>
+                                <?php endif; ?>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Permissions Assignment Section -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-dark mb-2">
+                            <i class="fa-solid fa-shield-halved text-emerald me-1.5"></i>
+                            การมอบสิทธิ์การใช้งาน (Permissions)
+                        </label>
+                        
+                        <!-- Directory Manager Checkbox (Key Feature) -->
+                        <div class="p-3 rounded-3 border border-success border-opacity-25 bg-success bg-opacity-10 mb-2.5">
+                            <div class="form-check form-switch d-flex align-items-start gap-2">
+                                <input class="form-check-input flex-shrink-0" type="checkbox" role="switch" id="approveGrantDirectory" name="grant_directory" value="1" checked style="width: 2.2rem; height: 1.2rem;">
+                                <div>
+                                    <label class="form-check-label fw-bold text-dark d-block cursor-pointer" for="approveGrantDirectory">
+                                        <i class="fa-solid fa-address-book text-success me-1"></i>
+                                        สิทธิ์จัดการทำเนียบผู้บริหารและบุคลากร (Directory Manager)
+                                    </label>
+                                    <small class="text-muted fs-7 d-block mt-0.5">
+                                        อนุญาตให้ผู้ใช้เข้าสู่ระบบและจัดการ เพิ่ม แก้ไข ปรับตำแหน่ง และอัปเดตรูปถ่ายของบุคลากร<strong>เฉพาะในหน่วยงานที่กำหนดข้างต้น</strong>เท่านั้น
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Damrongtham Option Checkbox -->
+                        <div class="p-3 rounded-3 border border-light-subtle bg-white mb-2">
+                            <div class="form-check form-switch d-flex align-items-start gap-2">
+                                <input class="form-check-input flex-shrink-0" type="checkbox" role="switch" id="approveDamrongtham" name="permissions[]" value="damrongtham_stats" onchange="toggleDamrongthamPerms(this.checked)" style="width: 2.2rem; height: 1.2rem;">
+                                <input type="hidden" name="permissions[]" id="approveDamrongthamContact" value="contact_manager" disabled>
+                                <div>
+                                    <label class="form-check-label fw-semibold text-dark d-block cursor-pointer" for="approveDamrongtham">
+                                        <i class="fa-solid fa-scale-balanced text-danger me-1"></i>
+                                        สิทธิ์ระบบศูนย์ดำรงธรรม 1567 (Damrongtham System)
+                                    </label>
+                                    <small class="text-muted fs-7 d-block mt-0.5">
+                                        เข้าถึงระบบบันทึกรายงานสถิติเรื่องร้องเรียนรายวัน 1567 และข้อมูลติดต่อ
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Collapsible Additional Permissions -->
+                        <div class="accordion accordion-flush" id="accordionExtraPerms">
+                            <div class="accordion-item border-0">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed py-2 px-0 bg-transparent text-primary fs-7 fw-semibold shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExtraPerms">
+                                        <i class="fa-solid fa-sliders me-1.5"></i> กำหนดสิทธิ์เมนูอื่นๆ เพิ่มเติม (ไม่บังคับ)
+                                    </button>
+                                </h2>
+                                <div id="collapseExtraPerms" class="accordion-collapse collapse">
+                                    <div class="accordion-body px-0 pt-2 pb-0">
+                                        <div class="row g-2">
+                                            <?php if (!empty($menuDefinitions)): ?>
+                                                <?php foreach ($menuDefinitions as $groupKey => $group): ?>
+                                                    <?php foreach ($group['items'] as $itemKey => $item): ?>
+                                                        <?php if (empty($item['admin_only']) && !in_array($itemKey, ['directory_manager', 'damrongtham_stats', 'contact_manager'])): ?>
+                                                            <div class="col-md-6">
+                                                                <label class="d-flex align-items-center gap-2 p-2 rounded-2 border bg-light-subtle fs-7 cursor-pointer mb-0">
+                                                                    <input type="checkbox" name="permissions[]" value="<?= htmlspecialchars($itemKey) ?>" class="form-check-input approve-extra-perm">
+                                                                    <span><?= htmlspecialchars($item['label'] ?? '') ?></span>
+                                                                </label>
+                                                            </div>
+                                                        <?php endif; ?>
+                                                    <?php endforeach; ?>
+                                                <?php endforeach; ?>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-top py-3 px-4 bg-light">
+                    <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">ยกเลิก</button>
+                    <button type="submit" class="btn btn-success rounded-pill px-4 fw-bold" id="btnConfirmApprove">
+                        <i class="fa-solid fa-check me-1.5"></i> ยืนยันการอนุมัติและบันทึกสิทธิ์
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script>
     let userModalInstance = null;
     let resetModalInstance = null;
+    let approveModalInstance = null;
+    const existingDepartmentNames = <?= json_encode(array_values(array_filter(array_map(fn($d) => trim($d['name'] ?? ''), $departments ?? []))), JSON_UNESCAPED_UNICODE) ?>;
 
     document.addEventListener('DOMContentLoaded', () => {
         userModalInstance = new bootstrap.Modal(document.getElementById('userModal'));
         resetModalInstance = new bootstrap.Modal(document.getElementById('resetPasswordModal'));
+        approveModalInstance = new bootstrap.Modal(document.getElementById('approveModal'));
     });
 
     function handleRoleChange(role) {
@@ -520,6 +723,32 @@ $currRole   = $currRole ?? '';
                     cb.disabled = true;
                 }
             });
+        }
+    }
+
+    function setDamrongthamPermissionsPreset() {
+        const role = document.getElementById('modalRole').value;
+        if (role === 'admin') return;
+
+        // สิทธิ์เฉพาะกลุ่มศูนย์ดำรงธรรม
+        const drtKeys = ['damrongtham_stats', 'contact_manager'];
+        const checkboxes = document.querySelectorAll('.perm-checkbox');
+        checkboxes.forEach(cb => {
+            if (cb.dataset.adminOnly === 'true') {
+                cb.checked = false;
+            } else {
+                cb.checked = drtKeys.includes(cb.value);
+            }
+        });
+
+        // แนะนำหน่วยงานหากยังว่างอยู่
+        const deptInput = document.getElementById('modalDepartment');
+        if (deptInput && (!deptInput.value || deptInput.value === 'สำนักงานจังหวัดพัทลุง')) {
+            deptInput.value = 'กลุ่มงานศูนย์ดำรงธรรมจังหวัดพัทลุง';
+        }
+
+        if (window.App && typeof App.toast === 'function') {
+            App.toast('เลือกสิทธิ์สำหรับเจ้าหน้าที่ศูนย์ดำรงธรรมเรียบร้อย (สถิติศูนย์ดำรงธรรม & รับเรื่องร้องเรียน 1567)', 'success');
         }
     }
 
@@ -569,7 +798,19 @@ $currRole   = $currRole ?? '';
         });
 
         handleRoleChange('officer');
+        checkUserModalDepartment('');
         userModalInstance.show();
+    }
+
+    function checkUserModalDepartment(val) {
+        const trimmed = (val || '').trim();
+        const notice = document.getElementById('modalNewDeptNotice');
+        if (!notice) return;
+        if (trimmed && Array.isArray(existingDepartmentNames) && !existingDepartmentNames.includes(trimmed)) {
+            notice.classList.remove('d-none');
+        } else {
+            notice.classList.add('d-none');
+        }
     }
 
     async function openEditUserModal(id) {
@@ -600,6 +841,7 @@ $currRole   = $currRole ?? '';
                 });
 
                 handleRoleChange(u.role || 'officer');
+                checkUserModalDepartment(u.department || '');
                 userModalInstance.show();
             } else {
                 App.toast(res.message || 'ไม่สามารถโหลดข้อมูลได้', 'error');
@@ -651,23 +893,103 @@ $currRole   = $currRole ?? '';
         }
     }
 
-    async function quickApprove(id, name) {
-        if (!confirm(`ยืนยันการอนุมัติสิทธิ์เข้าใช้งานให้แก่ "${name}" ใช่หรือไม่?`)) return;
+    function openApproveModal(userData) {
+        document.getElementById('approveForm').reset();
+        document.getElementById('approveUserId').value = userData.id;
+        document.getElementById('approveFullName').textContent = userData.full_name || userData.username || '-';
+        document.getElementById('approveUsername').textContent = userData.username || '-';
+        document.getElementById('approveEmail').textContent = userData.email || '-';
+        document.getElementById('approvePhone').textContent = userData.phone || '-';
+
+        const rawDept = (userData.department || '').trim();
+        document.getElementById('approveApplicantDept').textContent = rawDept ? rawDept : 'ไม่ได้ระบุ';
+
+        // Auto-match department with existing list if possible
+        let matchedDept = rawDept;
+        if (rawDept && Array.isArray(existingDepartmentNames)) {
+            const exact = existingDepartmentNames.find(d => d.toLowerCase() === rawDept.toLowerCase());
+            if (exact) {
+                matchedDept = exact;
+            } else {
+                const partial = existingDepartmentNames.find(d => d.includes(rawDept) || rawDept.includes(d));
+                if (partial) matchedDept = partial;
+            }
+        }
+
+        document.getElementById('approveDepartment').value = matchedDept;
+        checkApproveDepartment(matchedDept);
+
+        // Pre-configure switches
+        document.getElementById('approveGrantDirectory').checked = true;
+        const isDamrongtham = matchedDept.includes('ดำรงธรรม') || (Array.isArray(userData.permissions) && userData.permissions.includes('damrongtham_stats'));
+        document.getElementById('approveDamrongtham').checked = isDamrongtham;
+        toggleDamrongthamPerms(isDamrongtham);
+
+        // Extra permissions
+        document.querySelectorAll('.approve-extra-perm').forEach(cb => {
+            cb.checked = Array.isArray(userData.permissions) && userData.permissions.includes(cb.value);
+        });
+
+        approveModalInstance.show();
+    }
+
+    function checkApproveDepartment(val) {
+        const trimmed = (val || '').trim();
+        const notice = document.getElementById('newDeptNotice');
+        const minGroup = document.getElementById('approveMinistryGroup');
+        if (!notice || !minGroup) return;
+
+        if (trimmed && Array.isArray(existingDepartmentNames) && !existingDepartmentNames.includes(trimmed)) {
+            notice.classList.remove('d-none');
+            minGroup.classList.remove('d-none');
+        } else {
+            notice.classList.add('d-none');
+            minGroup.classList.add('d-none');
+        }
+    }
+
+    function toggleDamrongthamPerms(checked) {
+        const contactInput = document.getElementById('approveDamrongthamContact');
+        if (contactInput) {
+            contactInput.disabled = !checked;
+        }
+    }
+
+    async function handleApproveSubmit(e) {
+        e.preventDefault();
+        const id = document.getElementById('approveUserId').value;
+        const btn = document.getElementById('btnConfirmApprove');
+        const form = document.getElementById('approveForm');
+        const formData = new FormData(form);
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1.5"></i> กำลังบันทึก...';
 
         try {
             const res = await App.fetch(`<?= base_url('admin/users/approve') ?>/${id}`, {
-                method: 'POST'
+                method: 'POST',
+                body: formData
             });
 
             if (res.status === 'success') {
                 App.toast(res.message, 'success');
+                approveModalInstance.hide();
                 setTimeout(() => window.location.reload(), 800);
             } else {
-                App.toast(res.message || 'ดำเนินการไม่สำเร็จ', 'error');
+                App.toast(res.message || 'เกิดข้อผิดพลาดในการอนุมัติ', 'error');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-check me-1.5"></i> ยืนยันการอนุมัติและบันทึกสิทธิ์';
             }
         } catch (err) {
-            App.toast('เกิดข้อผิดพลาดในการอนุมัติ', 'error');
+            App.toast('เกิดข้อผิดพลาดในการเชื่อมต่อ', 'error');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-check me-1.5"></i> ยืนยันการอนุมัติและบันทึกสิทธิ์';
         }
+    }
+
+    async function quickApprove(id, name) {
+        // Fallback: If clicked directly, open modal if userData is found or confirm
+        openApproveModal({ id: id, full_name: name });
     }
 
     async function quickReject(id, name) {

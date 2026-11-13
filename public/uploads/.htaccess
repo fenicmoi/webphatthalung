@@ -1,0 +1,12 @@
+# ----------------------------------------------------------------------
+# Security: Block executable scripts in Uploads Directory
+# ----------------------------------------------------------------------
+<FilesMatch "(?i:\.(php[0-9]?|phtml|phps|phar|cgi|pl|py|sh|bash|exe|bat|cmd|dll|bin|vbs))$">
+    <IfModule authz_core_module>
+        Require all denied
+    </IfModule>
+    <IfModule !authz_core_module>
+        Order Allow,Deny
+        Deny from all
+    </IfModule>
+</FilesMatch>

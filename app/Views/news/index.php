@@ -5,19 +5,11 @@
 $isOfficer        = session()->get('isLoggedIn');
 $isProcurementCat = !empty($isProcurementCat);
 $isFinancialCat   = !empty($isFinancialCat);
-$financialReports = $financialReports ?? [];
-$financialYears   = $financialYears ?? [];
-$financialDepts   = $financialDepts ?? [];
-$financialSourceUrl = $financialSourceUrl ?? 'https://www.phatthalung.go.th/2022-stop/news_money';
 $newsList         = $newsList ?? [];
 $categories       = $categories ?? [];
 $currentCat       = $currentCat ?? null;
-$egpProjects      = $egpProjects ?? [];
 $pageTitle        = $pageTitle ?? 'ข่าวสารและประกาศ';
 ?>
-
-<!-- DataTables CSS for Bootstrap 5 -->
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
 
 <style>
 /* Clean & Eye-Soothing e-GP Table Styles */
@@ -137,36 +129,58 @@ $pageTitle        = $pageTitle ?? 'ข่าวสารและประกา
                 </h2>
                 <p class="text-secondary m-0">
                     <?php if ($isFinancialCat): ?>
-                        รายงานงบทดลอง งบกรมจังหวัดพัทลุง และงบสำนักงานจังหวัดพัทลุง ประจำเดือนและประจำปีงบประมาณ เชื่อมโยงข้อมูลระบบเดิม
+                        รายงานทางการเงิน งบทดลอง และเอกสารการเงินของจังหวัดพัทลุง (รายการที่เผยแพร่บนเว็บไซต์ใหม่)
                     <?php elseif ($isProcurementCat): ?>
-                        ข้อมูลโครงการจัดซื้อจัดจ้างภาครัฐ แผนการจัดซื้อจัดจ้าง และราคากลาง จากระบบ e-GP กรมบัญชีกลาง (เฉพาะหน่วยงานในจังหวัดพัทลุง)
+                        ประกาศจัดซื้อจัดจ้าง แผนการจัดซื้อจัดจ้าง และราคากลางของจังหวัดพัทลุง (รายการที่เผยแพร่บนเว็บไซต์ใหม่)
                     <?php else: ?>
                         ติดตามข่าวสาร กิจกรรมจังหวัด ประกาศประกวดราคา และคู่มือประชาชนทั้งหมด
                     <?php endif; ?>
                 </p>
             </div>
 
-            <?php if ($isOfficer): ?>
-                <div class="d-flex gap-2">
-                    <button type="button" onclick="NewsStudio.addCategory()" class="btn btn-outline-info px-4 py-2 rounded-pill fw-bold d-flex align-items-center gap-2">
-                        <i class="fa-solid fa-tags"></i> เพิ่มหมวดหมู่
-                    </button>
+            <div class="d-flex flex-wrap gap-2 align-items-center">
+                <?php if ($isFinancialCat): ?>
+                    <a href="https://www.phatthalung.go.th/2022-stop/news_money" target="_blank" rel="noopener noreferrer" class="btn btn-warning text-dark px-3.5 py-2 rounded-pill fw-bold d-inline-flex align-items-center gap-2 shadow-sm" style="background: linear-gradient(135deg, #f59e0b, #fbbf24); border: none;" title="เปิดดูระบบรายงานทางการเงินเว็บไซต์เดิม (2022-stop)">
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i> ไปยังระบบเดิม (2022-stop)
+                    </a>
+                    <a href="<?= base_url('financial-reports') ?>" class="btn btn-outline-light px-3.5 py-2 rounded-pill fw-semibold d-inline-flex align-items-center gap-2 text-white" style="font-size: 0.9rem;" title="ดูข้อมูลรายงานทางการเงินและงบทดลองย้อนหลังในคลังเว็บไซต์ใหม่">
+                        <i class="fa-solid fa-clock-rotate-left text-warning"></i> คลังข้อมูลเดิม (230 รายการ)
+                    </a>
+                <?php elseif ($isProcurementCat): ?>
+                    <a href="https://www.phatthalung.go.th/2022-stop/news?cid=3" target="_blank" rel="noopener noreferrer" class="btn btn-warning text-dark px-3.5 py-2 rounded-pill fw-bold d-inline-flex align-items-center gap-2 shadow-sm" style="background: linear-gradient(135deg, #f59e0b, #fbbf24); border: none;" title="เปิดดูประกาศจัดซื้อจัดจ้างในระบบเดิม (2022-stop)">
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i> ไปยังระบบเดิม (2022-stop)
+                    </a>
+                    <a href="<?= base_url('procurement') ?>" class="btn btn-outline-light px-3.5 py-2 rounded-pill fw-semibold d-inline-flex align-items-center gap-2 text-white" style="font-size: 0.9rem;" title="เปิดหน้าระบบสืบค้นจัดซื้อจัดจ้างภาครัฐ e-GP ฉบับเต็ม">
+                        <i class="fa-solid fa-gavel text-warning"></i> คลังจัดซื้อจัดจ้าง e-GP ฉบับเต็ม
+                    </a>
+                <?php endif; ?>
+                <?php if ($isOfficer): ?>
+                    <?php if (function_exists('is_super_admin') && is_super_admin()): ?>
+                        <button type="button" onclick="NewsStudio.addCategory()" class="btn btn-outline-info px-4 py-2 rounded-pill fw-bold d-flex align-items-center gap-2" title="เฉพาะ Super Admin เท่านั้น">
+                            <i class="fa-solid fa-tags"></i> เพิ่มหมวดหมู่
+                        </button>
+                    <?php endif; ?>
                     <button type="button" onclick="NewsStudio.open()" class="btn btn-warning px-4 py-2 rounded-pill fw-bold text-dark d-flex align-items-center gap-2 shadow-lg hover-scale" style="background: linear-gradient(135deg, #f59e0b, #fbbf24); border: none;">
                         <i class="fa-solid fa-circle-plus fs-5"></i> + สร้างข่าวสารใหม่ทันที (Studio)
                     </button>
-                </div>
-            <?php endif; ?>
+                <?php endif; ?>
+            </div>
         </div>
     </div>
 
     <!-- Category Pills Filter -->
     <div class="d-flex flex-wrap gap-2 mb-4 justify-content-start align-items-center">
         <span class="text-muted fw-bold small me-2"><i class="fa-solid fa-filter text-primary me-1"></i>หมวดหมู่:</span>
-        <a href="<?= base_url('news') ?>" class="btn btn-sm px-3.5 py-1.5 rounded-pill news-cat-btn <?= empty($currentCat) ? 'active' : '' ?>">
+        <a href="<?= base_url('news') ?>" class="btn btn-sm px-3.5 py-1.5 rounded-pill news-cat-btn <?= (empty($currentCat) && empty($isFeaturedFilter)) ? 'active' : '' ?>">
             ทั้งหมด
         </a>
+        <a href="<?= base_url('news?category=featured') ?>" class="btn btn-sm px-3.5 py-1.5 rounded-pill news-cat-btn <?= (!empty($isFeaturedFilter)) ? 'active' : '' ?>" style="<?= (!empty($isFeaturedFilter)) ? 'background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; border: none; font-weight: bold;' : '' ?>">
+            <i class="fa-solid fa-star text-warning me-1"></i> หัวข้อเด่น
+        </a>
         <?php foreach ($categories as $cat): 
-            $isActive = (strcasecmp(trim($currentCat ?? ''), trim($cat)) === 0);
+            $normCur = preg_replace('/\s*([\/\(\)])\s*/u', '$1', trim($currentCat ?? ''));
+            $normCat = preg_replace('/\s*([\/\(\)])\s*/u', '$1', trim($cat));
+            $isActive = (!empty($normCur) && strcasecmp($normCur, $normCat) === 0);
             $isEgpCat = (mb_stripos($cat, 'จัดซื้อจัดจ้าง') !== false || mb_stripos($cat, 'e-gp') !== false);
             $isFinCatItem = (mb_stripos($cat, 'การเงิน') !== false || mb_stripos($cat, 'งบทดลอง') !== false);
             $isPrdCatItem = (mb_stripos($cat, 'สปชส') !== false || mb_stripos($cat, 'สำนักงานประชาสัมพันธ์') !== false || mb_stripos($cat, 'กรมประชาสัมพันธ์') !== false || mb_stripos($cat, 'nnt') !== false || mb_stripos($cat, 'prd') !== false);
@@ -180,163 +194,35 @@ $pageTitle        = $pageTitle ?? 'ข่าวสารและประกา
         <?php endforeach; ?>
     </div>
 
-    <?php if ($isProcurementCat): ?>
-        <!-- ============================================================= -->
-        <!-- CLEAN, SIMPLE & EYE-SOOTHING e-GP DATATABLES SERVERSIDE UI -->
-        <!-- ============================================================= -->
-        <div class="card border-0 rounded-4 shadow-sm mb-5 overflow-hidden" style="background: #ffffff; border: 1px solid #e2e8f0 !important;">
-            
-            <!-- Top Controls Header -->
-            <div class="p-3.5 px-4 d-flex flex-wrap align-items-center justify-content-between gap-3 border-bottom" style="background-color: #ffffff;">
-                <div class="d-flex align-items-center gap-2">
-                    <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-3 py-1.5 rounded-pill fw-bold" style="font-size: 0.85rem;">
-                        <i class="fa-solid fa-circle-check text-success me-1"></i> e-GP DataTables (Server-side)
-                    </span>
-                    <span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 px-3 py-1.5 rounded-pill fw-bold" style="font-size: 0.85rem;">
-                        <i class="fa-solid fa-location-dot me-1"></i> พื้นที่จังหวัดพัทลุง
-                    </span>
-                </div>
-                <div class="d-flex align-items-center gap-2">
-                    <a href="https://www.phatthalung.go.th/2022-stop/news?cid=3" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1.5 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-xs">
-                        <i class="fa-solid fa-arrow-up-right-from-square text-warning"></i> ระบบเดิม (2022-stop/news)
-                    </a>
-                    <a href="<?= base_url('procurement') ?>" class="btn btn-sm btn-primary rounded-pill px-3 py-1.5 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-xs">
-                        <i class="fa-solid fa-table me-1"></i> หน้าสืบค้นจัดซื้อจัดจ้างฉบับเต็ม
-                    </a>
-                </div>
-            </div>
-
-            <!-- Clean Table with DataTables -->
-            <div class="p-3 p-md-4">
-                <div class="table-responsive">
-                    <table class="table egp-clean-table m-0" id="egpTable">
-                        <thead>
-                            <tr>
-                                <th class="text-center" style="width: 70px;">ลำดับ</th>
-                                <th style="width: 170px;">หน่วยงาน</th>
-                                <th style="width: 170px;">หน่วยจัดซื้อ</th>
-                                <th>ชื่อโครงการ</th>
-                                <th class="text-center" style="width: 160px;">วงเงินงบประมาณ<br><span style="font-size: 0.8rem; font-weight: 500;">(บาท)</span></th>
-                                <th class="text-center" style="width: 190px;">สถานะโครงการ</th>
-                                <th class="text-center" style="width: 90px;">ดูข้อมูล</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Populated via DataTables Server-side AJAX -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Footer -->
-            <div class="p-3 bg-light border-top d-flex flex-wrap align-items-center justify-content-between gap-2 text-muted small">
-                <span>
-                    <i class="fa-solid fa-circle-info text-primary me-1"></i> เชื่อมโยงข้อมูลจัดซื้อจัดจ้างภาครัฐ กรมบัญชีกลาง (e-GP) ของหน่วยงานในจังหวัดพัทลุง
-                </span>
-                <a href="https://www.phatthalung.go.th/2022-stop/news?cid=3" target="_blank" rel="noopener noreferrer" class="text-decoration-none fw-bold text-primary">
-                    <i class="fa-solid fa-arrow-up-right-from-square me-1 text-warning"></i> ดูประกาศจัดซื้อจัดจ้างในระบบเดิม (2022-stop) &raquo;
-                </a>
-            </div>
-        </div>
-
-    <?php endif; ?>
-
-    <?php if ($isFinancialCat): ?>
-        <!-- ============================================================= -->
-        <!-- FINANCIAL REPORTS (NEWS_MONEY) INTERACTIVE TABLE -->
-        <!-- ============================================================= -->
-        <div class="card border-0 rounded-4 shadow-sm mb-5 overflow-hidden" style="background: #ffffff; border: 1px solid #cbd5e1 !important;">
-            
-            <!-- Top Controls Header -->
-            <div class="p-3.5 px-4 d-flex flex-wrap align-items-center justify-content-between gap-3 border-bottom" style="background: linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 100%);">
-                <div class="d-flex align-items-center gap-2">
-                    <span class="badge bg-success bg-opacity-25 text-success border border-success border-opacity-50 px-3 py-1.5 rounded-pill fw-bold" style="font-size: 0.85rem;">
-                        <i class="fa-solid fa-file-invoice-dollar me-1"></i> รายงานทางการเงินและงบทดลอง
-                    </span>
-                    <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-3 py-1.5 rounded-pill fw-bold" style="font-size: 0.85rem;">
-                        <i class="fa-solid fa-database me-1"></i> รวม <?= count($financialReports) ?> รายการ
-                    </span>
-                </div>
-                <div class="d-flex align-items-center gap-2">
-                    <a href="https://www.phatthalung.go.th/2022-stop/news_money" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1.5 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-xs">
-                        <i class="fa-solid fa-arrow-up-right-from-square text-warning"></i> ระบบเดิม (2022-stop/news_money)
-                    </a>
-                    <a href="<?= base_url('financial-reports') ?>" class="btn btn-sm btn-success text-white rounded-pill px-3 py-1.5 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-xs" style="background: #047857;">
-                        <i class="fa-solid fa-table me-1"></i> เปิดหน้าสืบค้นฉบับเต็ม
-                    </a>
-                </div>
-            </div>
-
-            <!-- Table -->
-            <div class="p-3 p-md-4">
-                <div class="table-responsive">
-                    <table class="table egp-clean-table m-0" id="financialNewsTable">
-                        <thead>
-                            <tr>
-                                <th class="text-center" style="width: 70px;">ลำดับ</th>
-                                <th>ชื่อเอกสาร / รายงานงบทดลอง</th>
-                                <th class="text-center" style="width: 120px;">ปีงบประมาณ</th>
-                                <th class="text-center" style="width: 130px;">ประจำเดือน</th>
-                                <th style="width: 220px;">หน่วยงาน</th>
-                                <th class="text-center" style="width: 100px;">ขนาดไฟล์</th>
-                                <th class="text-center" style="width: 130px;">ดาวน์โหลด</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($financialReports as $fIdx => $fr): ?>
-                                <tr>
-                                    <td class="text-center text-muted fw-bold"><?= $fIdx + 1 ?></td>
-                                    <td>
-                                        <div class="fw-bold text-dark mb-1">
-                                            <?= esc($fr['title']) ?>
-                                        </div>
-                                    </td>
-                                    <td class="text-center">
-                                        <span class="badge bg-light text-dark border px-2.5 py-1 rounded-pill">
-                                            พ.ศ. <?= esc($fr['fiscal_year']) ?>
-                                        </span>
-                                    </td>
-                                    <td class="text-center text-secondary small">
-                                        <?= esc($fr['report_month'] ?: '-') ?>
-                                    </td>
-                                    <td class="small text-secondary">
-                                        <i class="fa-regular fa-building me-1 text-muted"></i><?= esc($fr['department']) ?>
-                                    </td>
-                                    <td class="text-center small text-muted">
-                                        <?= esc($fr['file_size'] ?: '-') ?>
-                                    </td>
-                                    <td class="text-center">
-                                        <a href="<?= esc($fr['doc_path']) ?>" target="_blank" rel="noopener noreferrer" class="btn btn-xs btn-danger px-3 py-1.5 rounded-pill fw-semibold text-white d-inline-flex align-items-center gap-1 shadow-xs" style="font-size: 0.82rem;">
-                                            <i class="fa-solid fa-file-pdf"></i> PDF
-                                        </a>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Footer -->
-            <div class="p-3 bg-light border-top d-flex flex-wrap align-items-center justify-content-between gap-2 text-muted small">
-                <span>
-                    <i class="fa-solid fa-circle-check text-success me-1"></i> เชื่อมโยงข้อมูลรายงานทางการเงินและงบทดลองจากระบบเดิม (https://www.phatthalung.go.th/2022-stop/news_money)
-                </span>
-                <a href="<?= base_url('financial-reports') ?>" class="text-decoration-none fw-bold text-success">
-                    เปิดโหมดกรองตามปี/เดือนแบบละเอียด &raquo;
-                </a>
-            </div>
-        </div>
-    <?php endif; ?>
-
-    <?php if (!$isFinancialCat): ?>
     <!-- Standard News List View -->
     <div class="card border-0 rounded-4 shadow-sm overflow-hidden mb-5" style="background: var(--card-bg, #ffffff); border: 1px solid rgba(15,23,42,0.08) !important;">
         <?php if ($isProcurementCat): ?>
-            <div class="card-header bg-light py-3 px-4 border-bottom">
+            <div class="card-header bg-light py-3 px-4 border-bottom d-flex flex-wrap align-items-center justify-content-between gap-2">
                 <h6 class="fw-bold m-0 text-dark">
-                    <i class="fa-solid fa-file-invoice text-primary me-1"></i> ประกาศจัดซื้อจัดจ้างและสรุปผล (สขร.1) เพิ่มเติมจากสำนักงาน
+                    <i class="fa-solid fa-gavel text-warning me-1"></i> ประกาศจัดซื้อจัดจ้าง (e-GP) (รายการที่เผยแพร่ใหม่บนเว็บไซต์)
                 </h6>
+                <div class="d-flex gap-2 align-items-center">
+                    <a href="https://www.phatthalung.go.th/2022-stop/news?cid=3" target="_blank" rel="noopener noreferrer" class="btn btn-xs btn-outline-warning text-dark rounded-pill px-2.5 py-1 fw-bold text-decoration-none">
+                        <i class="fa-solid fa-arrow-up-right-from-square me-1 text-warning"></i> ระบบเดิม (2022-stop)
+                    </a>
+                    <a href="<?= base_url('procurement') ?>" class="btn btn-xs btn-outline-secondary rounded-pill px-2.5 py-1 fw-semibold text-decoration-none">
+                        <i class="fa-solid fa-table me-1 text-primary"></i> คลังจัดซื้อจัดจ้าง e-GP ฉบับเต็ม &raquo;
+                    </a>
+                </div>
+            </div>
+        <?php elseif ($isFinancialCat): ?>
+            <div class="card-header bg-light py-3 px-4 border-bottom d-flex flex-wrap align-items-center justify-content-between gap-2">
+                <h6 class="fw-bold m-0 text-dark">
+                    <i class="fa-solid fa-file-invoice-dollar text-success me-1"></i> รายงานทางการเงินและงบทดลอง (รายการที่เผยแพร่ใหม่บนเว็บไซต์)
+                </h6>
+                <div class="d-flex gap-2 align-items-center">
+                    <a href="https://www.phatthalung.go.th/2022-stop/news_money" target="_blank" rel="noopener noreferrer" class="btn btn-xs btn-outline-warning text-dark rounded-pill px-2.5 py-1 fw-bold text-decoration-none">
+                        <i class="fa-solid fa-arrow-up-right-from-square me-1 text-warning"></i> ระบบเดิม (2022-stop)
+                    </a>
+                    <a href="<?= base_url('financial-reports') ?>" class="btn btn-xs btn-outline-secondary rounded-pill px-2.5 py-1 fw-semibold text-decoration-none">
+                        <i class="fa-solid fa-clock-rotate-left text-primary me-1"></i> คลังย้อนหลัง (230 รายการ) &raquo;
+                    </a>
+                </div>
             </div>
         <?php elseif (!empty($isPrdCat)): ?>
             <div class="card-header bg-success bg-opacity-10 py-3 px-4 border-bottom d-flex flex-wrap align-items-center justify-content-between gap-2">
@@ -391,7 +277,11 @@ $pageTitle        = $pageTitle ?? 'ข่าวสารและประกา
                                         </span>
                                     <?php endif; ?>
 
-                                    <?php if (!empty($item['is_pinned'])): ?>
+                                    <?php if (!empty($item['is_featured'])): ?>
+                                        <span class="badge bg-warning text-dark rounded-pill px-2.5 py-0.5 fw-bold" style="font-size: 0.72rem;">
+                                            <i class="fa-solid fa-star me-1 text-danger"></i> หัวข้อเด่น
+                                        </span>
+                                    <?php elseif (!empty($item['is_pinned'])): ?>
                                         <span class="badge bg-warning text-dark rounded-pill px-2 py-0.5" style="font-size: 0.68rem;">
                                             <i class="fa-solid fa-thumbtack me-1"></i> ปักหมุด
                                         </span>
@@ -428,6 +318,9 @@ $pageTitle        = $pageTitle ?? 'ข่าวสารและประกา
 
                             <?php if ($isOfficer && empty($item['is_prd'])): ?>
                                 <div class="d-flex gap-1 ms-1">
+                                    <button type="button" onclick="NewsStudio.toggleFeatured('<?= $item['id'] ?>')" class="btn btn-sm <?= !empty($item['is_featured']) ? 'btn-warning text-dark' : 'btn-outline-secondary' ?> rounded-circle p-0 d-flex align-items-center justify-content-center shadow-xs" style="width: 32px; height: 32px;" title="<?= !empty($item['is_featured']) ? 'หัวข้อเด่นหน้าหลัก (คลิกเพื่อยกเลิก)' : 'คลิกเพื่อตั้งเป็นหัวข้อเด่นหน้าหลัก' ?>">
+                                        <i class="fa-<?= !empty($item['is_featured']) ? 'solid' : 'regular' ?> fa-star"></i>
+                                    </button>
                                     <button type="button" onclick="NewsStudio.open('<?= $item['id'] ?>')" class="btn btn-sm btn-outline-info rounded-circle p-0 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;" title="แก้ไข">
                                         <i class="fa-solid fa-pen text-dark" style="font-size: 0.75rem;"></i>
                                     </button>
@@ -443,77 +336,6 @@ $pageTitle        = $pageTitle ?? 'ข่าวสารและประกา
             </div>
         <?php endif; ?>
     </div>
-    <?php endif; ?>
 </div>
-
-<!-- DataTables Scripts -->
-<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
-
-<script>
-$(document).ready(function() {
-    if ($('#financialNewsTable').length) {
-        $('#financialNewsTable').DataTable({
-            pageLength: 15,
-            lengthMenu: [[10, 15, 25, 50, 100], [10, 15, 25, 50, 100]],
-            language: {
-                search: '<i class="fa-solid fa-search text-primary me-1"></i> ค้นหารายงาน:',
-                searchPlaceholder: 'พิมพ์ชื่อรายงาน, เดือน, ปีงบประมาณ...',
-                lengthMenu: 'แสดง _MENU_ รายการต่อหน้า',
-                info: 'แสดง _START_ ถึง _END_ จากทั้งหมด _TOTAL_ รายการ',
-                infoEmpty: 'ไม่มีข้อมูล',
-                zeroRecords: 'ไม่พบข้อมูลรายงานที่ค้นหา',
-                paginate: {
-                    first: '<i class="fa-solid fa-angles-left"></i>',
-                    last: '<i class="fa-solid fa-angles-right"></i>',
-                    next: '<i class="fa-solid fa-chevron-right"></i>',
-                    previous: '<i class="fa-solid fa-chevron-left"></i>'
-                }
-            },
-            order: []
-        });
-    }
-
-    if ($('#egpTable').length) {
-        $('#egpTable').DataTable({
-            processing: true,
-            serverSide: true,
-            ajax: {
-                url: '<?= base_url('api/egp/datatable') ?>',
-                type: 'POST'
-            },
-            columns: [
-                { data: 'no', className: 'text-center', width: '65px', orderable: true },
-                { data: 'dept_name', width: '160px' },
-                { data: 'procure_unit', width: '160px' },
-                { data: 'project_name' },
-                { data: 'budget', className: 'text-end pe-4 fw-bold text-dark', width: '150px' },
-                { data: 'status', className: 'text-center', width: '180px' },
-                { data: 'action', className: 'text-center', width: '80px', orderable: false }
-            ],
-            order: [[0, 'asc']],
-            pageLength: 10,
-            lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
-            language: {
-                processing: '<div class="py-3 text-primary"><i class="fa-solid fa-spinner fa-spin fa-2x"></i><div class="mt-2 small fw-bold">กำลังโหลดข้อมูล e-GP...</div></div>',
-                search: '<i class="fa-solid fa-search text-primary me-1"></i> ค้นหาโครงการ:',
-                searchPlaceholder: 'พิมพ์ชื่อโครงการ, รหัส หรือหน่วยงาน...',
-                lengthMenu: 'แสดง _MENU_ แถวต่อหน้า',
-                info: 'แสดงโครงการที่ _START_ ถึง _END_ จากทั้งหมด _TOTAL_ โครงการ',
-                infoEmpty: 'ไม่พบรายการข้อมูล',
-                infoFiltered: '(กรองจากทั้งหมด _MAX_ รายการ)',
-                zeroRecords: '<div class="py-4 text-muted"><i class="fa-solid fa-folder-open fs-2 d-block mb-2 opacity-50"></i>ไม่พบข้อมูลโครงการที่ค้นหา</div>',
-                paginate: {
-                    first: '<i class="fa-solid fa-angles-left"></i>',
-                    last: '<i class="fa-solid fa-angles-right"></i>',
-                    next: '<i class="fa-solid fa-chevron-right"></i>',
-                    previous: '<i class="fa-solid fa-chevron-left"></i>'
-                }
-            }
-        });
-    }
-});
-</script>
 
 <?= $this->endSection() ?>

@@ -3,7 +3,7 @@
 
 <?php
 helper('settings');
-$isOfficer = session()->get('isLoggedIn');
+$isOfficer = function_exists('can_manage_gallery') ? can_manage_gallery() : false;
 $album = $album ?? [];
 $photos = $album['photos'] ?? [];
 $title = esc($album['title'] ?? 'ไม่ระบุชื่ออัลบั้ม');
@@ -316,8 +316,19 @@ if (empty($jsPhotoUrls) && !empty($album['cover_image'])) {
             <!-- Action Buttons: ขอบมน เพิ่ม Shadow บางๆ ดูพรีเมียม -->
             <div class="d-flex flex-wrap flex-sm-nowrap align-items-center gap-2 flex-shrink-0 mt-2 mt-lg-0">
                 <?php if ($isOfficer): ?>
-                    <button type="button" onclick="GalleryStudio.open('<?= $album['id'] ?>', '<?= esc($album['category'], 'js') ?>')" class="btn btn-edit-luxury">
-                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                    <?php
+                    $directAlbumData = [
+                        'id'          => $album['id'] ?? '',
+                        'title'       => $album['title'] ?? '',
+                        'category'    => $album['category'] ?? '',
+                        'date'        => $album['date'] ?? '',
+                        'cover_image' => $album['cover_image'] ?? '',
+                        'photos'      => $album['photos'] ?? []
+                    ];
+                    $directAlbumJson = htmlspecialchars(json_encode($directAlbumData, JSON_UNESCAPED_UNICODE), ENT_QUOTES, 'UTF-8');
+                    ?>
+                    <button type="button" onclick='GalleryStudio.open("<?= esc($album['id'], 'js') ?>", "<?= esc($album['category'], 'js') ?>", <?= $directAlbumJson ?>)' class="btn btn-edit-luxury">
+                        <i class="fa-solid fa-pen-to-square"></i>
                         <span>+ เพิ่มรูป / แก้ไขอัลบั้ม</span>
                     </button>
                 <?php endif; ?>
@@ -363,12 +374,6 @@ if (empty($jsPhotoUrls) && !empty($album['cover_image'])) {
         </a>
     </div>
 </div>
-
-<!-- Include Gallery Studio Component for officers -->
-<?= $this->include('components/gallery_studio') ?>
-
-<!-- Include ShadowBox Component directly -->
-<?= $this->include('components/shadow_box') ?>
 
 <script>
 var currentAlbumPhotos = <?= json_encode($jsPhotoUrls) ?>;

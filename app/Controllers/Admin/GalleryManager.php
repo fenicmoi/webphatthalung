@@ -15,8 +15,18 @@ class GalleryManager extends BaseController
     private function checkOfficerAuth(): ?ResponseInterface
     {
         if (!session()->get('isLoggedIn')) {
-            return $this->response->setJSON(['status' => 'error', 'message' => 'Unauthorized Access. กรุณาเข้าสู่ระบบก่อนดำเนินการ']);
+            return $this->response->setStatusCode(401)->setJSON(['status' => 'error', 'message' => 'Unauthorized Access. กรุณาเข้าสู่ระบบก่อนดำเนินการ']);
         }
+
+        // นโยบายความปลอดภัย: เจ้าหน้าที่สังกัดหน่วยงาน (stay in department) ไม่มีสิทธิ์แก้ไขคลังภาพส่วนกลาง
+        if (function_exists('can_manage_gallery') && !can_manage_gallery()) {
+            $deptName = session()->get('department') ?: 'หน่วยงาน';
+            return $this->response->setStatusCode(403)->setJSON([
+                'status'  => 'error',
+                'message' => 'ขออภัย บัญชีของท่านสังกัดหน่วยงาน (' . esc($deptName) . ') ไม่มีสิทธิ์แก้ไขหรือจัดการคลังภาพกิจกรรมจังหวัด (สงวนสิทธิ์เฉพาะผู้ดูแลระบบกลางเท่านั้น)'
+            ]);
+        }
+
         return null;
     }
 
@@ -28,6 +38,42 @@ class GalleryManager extends BaseController
         if ($auth = $this->checkOfficerAuth()) return $auth;
 
         $album = get_gallery_by_id($id);
+        if (!$album) {
+            $numericId = (int) preg_replace('/[^0-9]/', '', (string)$id);
+            if ($numericId > 0) {
+                try {
+                    $db = \Config\Database::connect();
+                    $row = $db->table('gallery_albums')->where('id', $numericId)->get()->getRowArray();
+                    if ($row) {
+                        $pRows = $db->table('gallery_photos')->where('album_id', $numericId)->get()->getResultArray();
+                        $photoUrls = array_column($pRows, 'image_path');
+                        if (empty($photoUrls) && !empty($row['cover_image'])) {
+                            $photoUrls[] = $row['cover_image'];
+                        }
+                        $cat = 'ประเพณีและวัฒนธรรม';
+                        $date = !empty($row['created_at']) ? substr($row['created_at'], 0, 10) : date('Y-m-d');
+                        if (!empty($row['description'])) {
+                            $desc = @json_decode($row['description'], true);
+                            if (is_array($desc)) {
+                                $cat = $desc['category'] ?? $cat;
+                                $date = $desc['date'] ?? $date;
+                            }
+                        }
+                        $album = [
+                            'id'          => 'gal_' . $row['id'],
+                            'db_id'       => $row['id'],
+                            'title'       => $row['title'],
+                            'category'    => $cat,
+                            'date'        => $date,
+                            'cover_image' => $row['cover_image'],
+                            'photos'      => $photoUrls,
+                            'active'      => true
+                        ];
+                    }
+                } catch (\Throwable $e) {}
+            }
+        }
+
         if (!$album) {
             return $this->response->setJSON(['status' => 'error', 'message' => 'ไม่พบข้อมูลอัลบั้ม']);
         }
@@ -126,11 +172,28 @@ class GalleryManager extends BaseController
             $existingPhotos[] = $coverImage;
         }
 
+        // ดึงยอดวิวเดิม (ถ้ามี) เพื่อไม่ให้ถูกรีเซ็ตเป็น 1 เมื่อแก้ไขอัลบั้ม
+        $currentViews = 1;
+        if ($existingDbAlbum && !empty($existingDbAlbum['description'])) {
+            $prevDesc = @json_decode($existingDbAlbum['description'], true);
+            if (is_array($prevDesc) && isset($prevDesc['views'])) {
+                $currentViews = max(1, (int)$prevDesc['views']);
+            }
+        } else {
+            $existingList = get_gallery_albums(null, null, false);
+            foreach ($existingList as $item) {
+                if ((string)($item['id'] ?? '') === (string)$id || ($numericId > 0 && (int)($item['db_id'] ?? 0) === $numericId)) {
+                    $currentViews = max(1, (int)($item['views'] ?? 1));
+                    break;
+                }
+            }
+        }
+
         // 1. บันทึกลงฐานข้อมูล MySQL (gallery_albums & gallery_photos)
         $descData = [
             'category' => $category ?: 'กิจกรรมสาธารณประโยชน์',
             'date'     => $date ?: date('Y-m-d'),
-            'views'    => 1
+            'views'    => $currentViews
         ];
 
         $albumDbData = [
@@ -192,7 +255,7 @@ class GalleryManager extends BaseController
             'title'       => $title,
             'category'    => $category ?: 'กิจกรรมสาธารณประโยชน์',
             'date'        => $date ?: date('Y-m-d'),
-            'views'       => 1,
+            'views'       => $currentViews,
             'cover_image' => $coverImage,
             'photos'      => array_values($existingPhotos),
             'active'      => true

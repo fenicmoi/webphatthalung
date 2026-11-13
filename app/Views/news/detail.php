@@ -4,7 +4,18 @@
 <?php
 $news = $news ?? [];
 $isOfficer = session()->get('isLoggedIn');
-$coverSrc = !empty($news['cover_image']) ? ((strpos((string)$news['cover_image'], 'http') === 0) ? $news['cover_image'] : base_url($news['cover_image'])) : base_url('assets/images/slider/sane_muanglung.png');
+
+$rawCover = (string)($news['cover_image'] ?? '');
+$isPlaceholder = empty($rawCover) || (strpos($rawCover, 'sane_muanglung.png') !== false);
+$hasRealCover = !empty($rawCover) && !$isPlaceholder;
+$coverSrc = $hasRealCover ? ((strpos($rawCover, 'http') === 0) ? $rawCover : base_url($rawCover)) : '';
+
+$hasAttachments = !empty($news['attachments']) && is_array($news['attachments']) && count($news['attachments']) > 0;
+
+$rawContent = trim((string)($news['content'] ?? ''));
+$hasMediaInContent = (stripos($rawContent, '<img') !== false || stripos($rawContent, '<iframe') !== false);
+$cleanContent = trim(strip_tags($rawContent));
+$hasContentText = $hasMediaInContent || (!empty($cleanContent) && $cleanContent !== '-' && $cleanContent !== '&nbsp;');
 ?>
 
 <!-- Article Header & Content Area -->
@@ -43,6 +54,10 @@ $coverSrc = !empty($news['cover_image']) ? ((strpos((string)$news['cover_image']
                         </div>
                     </div>
                     <div class="d-flex gap-2">
+                        <button type="button" onclick="NewsStudio.toggleFeatured('<?= $news['id'] ?>')" class="btn <?= !empty($news['is_featured']) ? 'btn-warning text-dark' : 'btn-outline-light' ?> px-3.5 py-2 rounded-pill fw-bold shadow-sm d-flex align-items-center gap-2">
+                            <i class="fa-<?= !empty($news['is_featured']) ? 'solid' : 'regular' ?> fa-star"></i>
+                            <span><?= !empty($news['is_featured']) ? 'หัวข้อเด่นหน้าหลัก' : 'ตั้งเป็นหัวข้อเด่น' ?></span>
+                        </button>
                         <button type="button" onclick="NewsStudio.open('<?= $news['id'] ?>')" class="btn btn-warning px-4 py-2 rounded-pill fw-bold text-dark shadow-sm hover-scale" style="background: linear-gradient(135deg, #f59e0b, #fbbf24); border: none;">
                             <i class="fa-solid fa-pen-to-square me-2"></i>แก้ไขบทความนี้ (Edit Article)
                         </button>
@@ -80,9 +95,16 @@ $coverSrc = !empty($news['cover_image']) ? ((strpos((string)$news['cover_image']
                 
                 <!-- Category & Meta Info Row -->
                 <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3 pb-2 border-bottom" style="border-color: rgba(0,0,0,0.06) !important;">
-                    <span class="badge px-3 py-2 rounded-pill fw-semibold shadow-xs article-cat-tag">
-                        <i class="fa-solid fa-folder me-1.5"></i><?= esc($news['category'] ?? 'ข่าวประชาสัมพันธ์') ?>
-                    </span>
+                    <div class="d-flex flex-wrap align-items-center gap-2">
+                        <span class="badge px-3 py-2 rounded-pill fw-semibold shadow-xs article-cat-tag">
+                            <i class="fa-solid fa-folder me-1.5"></i><?= esc($news['category'] ?? 'ข่าวประชาสัมพันธ์') ?>
+                        </span>
+                        <?php if (!empty($news['is_featured'])): ?>
+                            <span class="badge rounded-pill px-3 py-1.5 text-dark fw-bold shadow-xs" style="background: linear-gradient(135deg, #f59e0b, #fbbf24); font-size: 0.8rem;">
+                                <i class="fa-solid fa-star me-1 text-danger"></i> หัวข้อเด่นหน้าหลัก
+                            </span>
+                        <?php endif; ?>
+                    </div>
                     <div class="article-meta-info small d-flex flex-wrap align-items-center gap-3">
                         <span><i class="fa-regular fa-calendar me-1 text-success"></i> วันที่ประกาศ: <?= date('d/m/Y H:i', strtotime($news['created_at'] ?? 'now')) ?> น.</span>
                         <span><i class="fa-regular fa-eye me-1 text-success"></i> ยอดเข้าชม <?= number_format($news['views'] ?? 1) ?> ครั้ง</span>
@@ -99,14 +121,16 @@ $coverSrc = !empty($news['cover_image']) ? ((strpos((string)$news['cover_image']
                     <?= $this->include('components/content_share_toolbar', ['shareTitle' => $news['title'] ?? '']) ?>
                 </div>
 
-                <!-- Main Cover Image -->
-                <div class="rounded-4 overflow-hidden shadow-xs mb-4 text-center article-cover-wrapper position-relative" style="cursor: pointer;" onclick="openNewsGallery(0)" title="คลิกเพื่อชมภาพขนาดใหญ่">
-                    <img src="<?= $coverSrc ?>" class="w-100 article-cover-img" style="max-height: 520px; object-fit: <?= esc($news['cover_fit'] ?? 'cover') ?>;" alt="<?= esc($news['title']) ?>">
-                    <div class="position-absolute bottom-0 end-0 m-3 px-3 py-1.5 rounded-pill bg-dark bg-opacity-75 text-white small d-inline-flex align-items-center gap-1.5 shadow-sm" style="backdrop-filter: blur(8px); pointer-events: none;">
-                        <i class="fa-solid fa-magnifying-glass-plus text-warning"></i>
-                        <span>คลิกเพื่อดูภาพขนาดใหญ่</span>
+                <!-- Main Cover Image (แสดงเมื่อมีภาพถ่าย/โปสเตอร์จริง) -->
+                <?php if ($hasRealCover): ?>
+                    <div class="rounded-4 overflow-hidden shadow-xs mb-4 text-center article-cover-wrapper position-relative" style="cursor: pointer;" onclick="openNewsGallery(0)" title="คลิกเพื่อชมภาพขนาดใหญ่">
+                        <img src="<?= $coverSrc ?>" class="w-100 article-cover-img" style="max-height: 600px; object-fit: <?= esc($news['cover_fit'] ?? 'contain') ?>; background: rgba(0,0,0,0.02);" alt="<?= esc($news['title']) ?>">
+                        <div class="position-absolute bottom-0 end-0 m-3 px-3 py-1.5 rounded-pill bg-dark bg-opacity-75 text-white small d-inline-flex align-items-center gap-1.5 shadow-sm" style="backdrop-filter: blur(8px); pointer-events: none;">
+                            <i class="fa-solid fa-magnifying-glass-plus text-warning"></i>
+                            <span>คลิกเพื่อดูภาพขนาดใหญ่</span>
+                        </div>
                     </div>
-                </div>
+                <?php endif; ?>
 
                 <!-- Event Calendar & GPS Navigation Spotlight Banner (if applicable) -->
                 <?php if (!empty($news['is_event']) && ($news['is_event'] == true || $news['is_event'] === '1' || $news['is_event'] === 'true')): 
@@ -146,20 +170,20 @@ $coverSrc = !empty($news['cover_image']) ? ((strpos((string)$news['cover_image']
                 </div>
                 <?php endif; ?>
 
-                <!-- Rich Text Content Body -->
-                <div class="article-body pe-1 mb-5" style="font-size: 1.12rem; line-height: 1.95; color: #334155;">
-                    <?= $news['content'] ?? '' ?>
-                </div>
-
-                <!-- DOWNLOAD ATTACHMENTS BOX -->
-                <?php if (!empty($news['attachments']) && is_array($news['attachments'])): ?>
-                    <div class="p-4 rounded-4 mb-5 shadow-xs article-attach-box">
-                        <h5 class="fw-bold mb-3 d-flex align-items-center gap-2" style="color: #047857; font-size: 1.15rem;">
-                            <i class="fa-solid fa-folder-open text-warning fs-4"></i>
-                            <span>เอกสารและไฟล์ดาวน์โหลดที่เกี่ยวข้อง (Attachments)</span>
+                <!-- DOWNLOAD ATTACHMENTS & DOCUMENT VIEWER BOX (แสดงด้านบนทันทีสำหรับกรณีเป็นเอกสาร/รายงาน) -->
+                <?php if ($hasAttachments): ?>
+                    <div class="p-4 rounded-4 mb-4 shadow-xs article-attach-box" style="background: linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 100%); border: 1.5px solid #a7f3d0;">
+                        <h5 class="fw-bold mb-3 d-flex align-items-center justify-content-between flex-wrap gap-2" style="color: #047857; font-size: 1.15rem;">
+                            <span class="d-flex align-items-center gap-2">
+                                <i class="fa-solid fa-folder-open text-warning fs-4"></i>
+                                <span>เอกสารและไฟล์ดาวน์โหลดที่เกี่ยวข้อง (Attachments)</span>
+                            </span>
+                            <span class="badge bg-success rounded-pill px-3 py-1 fw-bold"><?= count($news['attachments']) ?> รายการ</span>
                         </h5>
                         <div class="row g-3">
-                            <?php foreach ($news['attachments'] as $doc): 
+                            <?php 
+                            $firstPdfUrl = null;
+                            foreach ($news['attachments'] as $doc): 
                                 $rawUrl = $doc['url'] ?? '';
                                 if (!empty($doc['path'])) {
                                     $docLink = base_url($doc['path']);
@@ -172,13 +196,16 @@ $coverSrc = !empty($news['cover_image']) ? ((strpos((string)$news['cover_image']
                                 } else {
                                     $docLink = !empty($rawUrl) ? base_url(ltrim($rawUrl, '/')) : '#';
                                 }
+                                if (!$firstPdfUrl && (stripos($doc['name'] ?? '', '.pdf') !== false || stripos($docLink, '.pdf') !== false)) {
+                                    $firstPdfUrl = $docLink;
+                                }
                             ?>
                                 <div class="col-md-6">
-                                    <a href="<?= esc($docLink) ?>" target="_blank" class="text-decoration-none d-flex align-items-center justify-content-between p-3 rounded-3 shadow-xs transition-all hover-lift article-attach-item">
+                                    <a href="<?= esc($docLink) ?>" target="_blank" class="text-decoration-none d-flex align-items-center justify-content-between p-3 rounded-3 shadow-xs transition-all hover-lift article-attach-item bg-white" style="border: 1px solid rgba(0,0,0,0.08);">
                                         <div class="d-flex align-items-center gap-3 overflow-hidden me-2">
                                             <i class="<?= esc($doc['icon'] ?? 'fa-solid fa-file-pdf') ?> fs-2 text-danger"></i>
                                             <div class="text-truncate">
-                                                <h6 class="fw-bold m-0 text-truncate article-attach-title" style="font-size: 0.95rem;"><?= esc($doc['name'] ?? 'ไฟล์ดาวน์โหลด') ?></h6>
+                                                <h6 class="fw-bold m-0 text-truncate article-attach-title text-dark" style="font-size: 0.95rem;"><?= esc($doc['name'] ?? 'ไฟล์ดาวน์โหลด') ?></h6>
                                                 <small class="text-muted"><?= esc($doc['size'] ?? 'PDF/Doc') ?></small>
                                             </div>
                                         </div>
@@ -189,13 +216,43 @@ $coverSrc = !empty($news['cover_image']) ? ((strpos((string)$news['cover_image']
                                 </div>
                             <?php endforeach; ?>
                         </div>
+
+                        <?php if ($firstPdfUrl): ?>
+                            <!-- Embedded PDF Preview for Documents -->
+                            <div class="mt-4 pt-3 border-top" style="border-color: rgba(4, 120, 87, 0.2) !important;">
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <span class="small fw-bold text-success d-inline-flex align-items-center gap-1.5">
+                                        <i class="fa-solid fa-file-pdf"></i> แสดงตัวอย่างเอกสารฉบับเต็ม (PDF Preview)
+                                    </span>
+                                    <a href="<?= esc($firstPdfUrl) ?>" target="_blank" class="btn btn-xs btn-outline-success rounded-pill px-3 py-1 fw-bold">
+                                        <i class="fa-solid fa-expand me-1"></i> เปิดดูเต็มจอ
+                                    </a>
+                                </div>
+                                <div class="rounded-3 overflow-hidden shadow-xs border bg-white" style="height: 650px;">
+                                    <iframe src="<?= esc($firstPdfUrl) ?>#toolbar=1" width="100%" height="100%" style="border:none;" title="PDF Preview"></iframe>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                <?php endif; ?>
+
+                <!-- Rich Text Content Body (แสดงเฉพาะเมื่อมีข้อความเนื้อหาจริง ไม่ใช่แค่ขีด - ) -->
+                <?php if ($hasContentText): ?>
+                    <div class="article-body pe-1 mb-5" style="font-size: 1.12rem; line-height: 1.95; color: #334155;">
+                        <?= $news['content'] ?? '' ?>
                     </div>
                 <?php endif; ?>
 
                 <!-- EXTRA IMAGE GALLERY EXHIBITION -->
                 <?php 
                 $galleryImages = !empty($news['images_gallery']) && is_array($news['images_gallery']) ? $news['images_gallery'] : [];
-                if (count($galleryImages) > 1 || (count($galleryImages) === 1 && $galleryImages[0] !== ($news['cover_image'] ?? ''))): 
+                $validGallery = [];
+                foreach ($galleryImages as $gImg) {
+                    if (!empty($gImg) && strpos($gImg, 'sane_muanglung.png') === false) {
+                        $validGallery[] = $gImg;
+                    }
+                }
+                if (count($validGallery) > 1 || (count($validGallery) === 1 && $validGallery[0] !== ($news['cover_image'] ?? ''))): 
                 ?>
                     <div class="pt-4 border-top" style="border-color: rgba(0,0,0,0.06) !important;">
                         <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">

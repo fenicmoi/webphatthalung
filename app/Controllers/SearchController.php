@@ -17,8 +17,21 @@ class SearchController extends BaseController
             ]);
         }
 
+        // If navigated directly via browser URL (e.g. GET /search?q=...), redirect to home with search param
+        if (!$this->request->isAJAX() && strpos($this->request->getHeaderLine('Accept'), 'text/html') !== false) {
+            return redirect()->to(base_url('/?q=' . urlencode($q)));
+        }
+
         if (function_exists('record_search_query')) {
             record_search_query($q);
+        }
+
+        $results = [];
+
+        // --- 1. ADD PROVINCIAL DIRECTORY (ทำเนียบส่วนราชการ, เบอร์โทรศัพท์, บุคลากร) TO TOP OF RESULTS ---
+        $dirResults = $this->searchDirectory($q, 8);
+        foreach ($dirResults as $dr) {
+            $results[] = $dr;
         }
 
         $model = new SearchIndexModel();
@@ -33,7 +46,10 @@ class SearchController extends BaseController
               ->groupEnd();
               
         // Limit results to keep UI clean
-        $results = $model->findAll(15);
+        $dbResults = $model->findAll(15);
+        foreach ($dbResults as $dbr) {
+            $results[] = $dbr;
+        }
         
         // --- ADD STATIC PAGES TO RESULTS ---
         $pageModel = new \App\Models\PageModel();
@@ -466,6 +482,16 @@ class SearchController extends BaseController
                     $badgeColor = 'bg-info text-dark';
                     $badgeText = 'หน้าเว็บไซต์ / ข้อมูลทั่วไป';
                     break;
+                case 'directory_dept':
+                    $icon = 'fa-solid fa-building-user text-success';
+                    $badgeColor = 'bg-success';
+                    $badgeText = $item['badge_text'] ?? 'ส่วนราชการ';
+                    break;
+                case 'directory_contact':
+                    $icon = 'fa-solid fa-phone-volume text-success';
+                    $badgeColor = 'bg-success';
+                    $badgeText = $item['badge_text'] ?? 'ทำเนียบ/เบอร์โทร';
+                    break;
             }
             
             $item['ui_icon'] = $icon;
@@ -479,5 +505,105 @@ class SearchController extends BaseController
             'success' => true,
             'data' => $mapped
         ]);
+    }
+
+    /**
+     * Search directory departments and contacts
+     */
+    private function searchDirectory(string $keyword, int $limit = 8): array
+    {
+        $keyword = trim($keyword);
+        if ($keyword === '') return [];
+
+        $results = [];
+        $deptFile = WRITEPATH . 'directory_departments.json';
+        $ministryFile = WRITEPATH . 'directory_ministries.json';
+        $contactsFile = WRITEPATH . 'directory_contacts.json';
+        $kwDigits = preg_replace('/[^0-9]/', '', $keyword);
+
+        $ministries = [];
+        if (file_exists($ministryFile)) {
+            $mRaw = json_decode(file_get_contents($ministryFile), true);
+            if (is_array($mRaw)) {
+                foreach ($mRaw as $m) {
+                    $ministries[$m['id']] = $m['name'];
+                }
+            }
+        }
+
+        $departmentsMap = [];
+        if (file_exists($deptFile)) {
+            $depts = json_decode(file_get_contents($deptFile), true);
+            if (is_array($depts)) {
+                foreach ($depts as $d) {
+                    $dId = (int)($d['id'] ?? 0);
+                    $dName = trim($d['name'] ?? '');
+                    if ($dName === '') continue;
+                    $departmentsMap[$dId] = $dName;
+                    $mName = $ministries[$d['ministry_id'] ?? 0] ?? 'สังกัดส่วนราชการ';
+
+                    if (mb_stripos($dName, $keyword) !== false || mb_stripos($mName, $keyword) !== false) {
+                        $results[] = [
+                            'source_type' => 'directory_dept',
+                            'source_id'   => 'dept_' . $dId,
+                            'title'       => $dName,
+                            'description' => 'สังกัด: ' . $mName . ' | คลิกดูบุคลากรและเบอร์ติดต่อภายในหน่วยงาน',
+                            'url'         => base_url('directory?dept=' . $dId),
+                            'image_url'   => null,
+                            'badge_text'  => 'ส่วนราชการ'
+                        ];
+                        if (count($results) >= 4) break;
+                    }
+                }
+            }
+        }
+
+        if (file_exists($contactsFile)) {
+            $contacts = json_decode(file_get_contents($contactsFile), true);
+            if (is_array($contacts)) {
+                foreach ($contacts as $c) {
+                    $cName = trim($c['name'] ?? '');
+                    $cPos  = trim($c['position'] ?? '');
+                    $cPhone = trim($c['phone'] ?? '');
+                    $cMobile = trim($c['mobile'] ?? '');
+                    $cHotline = trim($c['hotline'] ?? '');
+                    $cDept = $departmentsMap[$c['department_id'] ?? 0] ?? trim($c['department_name'] ?? '');
+
+                    $match = false;
+                    if ($cName !== '' && mb_stripos($cName, $keyword) !== false) $match = true;
+                    elseif ($cPos !== '' && mb_stripos($cPos, $keyword) !== false) $match = true;
+                    elseif ($cDept !== '' && mb_stripos($cDept, $keyword) !== false) $match = true;
+                    elseif ($kwDigits !== '' && strlen($kwDigits) >= 3) {
+                        $phoneDigits = preg_replace('/[^0-9]/', '', $cPhone . $cMobile . $cHotline);
+                        if ($phoneDigits !== '' && strpos($phoneDigits, $kwDigits) !== false) {
+                            $match = true;
+                        }
+                    }
+
+                    if ($match) {
+                        $phoneParts = [];
+                        if (!empty($cPhone)) $phoneParts[] = 'โทรโต๊ะ: ' . $cPhone;
+                        if (!empty($cMobile)) $phoneParts[] = 'มือถือ: ' . $cMobile;
+                        if (!empty($cHotline)) $phoneParts[] = 'ภายใน: ' . $cHotline;
+                        $phoneText = !empty($phoneParts) ? ' | ' . implode(', ', $phoneParts) : '';
+
+                        $badgeText = !empty($cPhone) ? $cPhone : (!empty($cMobile) ? $cMobile : 'ทำเนียบ');
+
+                        $results[] = [
+                            'source_type' => 'directory_contact',
+                            'source_id'   => 'contact_' . ($c['id'] ?? uniqid()),
+                            'title'       => $cName . ($cPos ? ' — ' . $cPos : ''),
+                            'description' => 'หน่วยงาน: ' . ($cDept ?: 'ส่วนราชการจังหวัดพัทลุง') . $phoneText,
+                            'url'         => base_url('directory?search=' . urlencode($cName)),
+                            'image_url'   => null,
+                            'badge_text'  => $badgeText
+                        ];
+                        if (count($results) >= $limit) break;
+                    }
+                }
+            }
+        }
+
+        return $results;
     }
 }

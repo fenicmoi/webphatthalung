@@ -33,7 +33,7 @@ $galCategories = get_gallery_categories();
                     </div>
                     <div>
                         <h5 class="fw-bold m-0 text-white" id="galleryStudioTitle">สร้างอัลบั้มภาพกิจกรรมจังหวัด</h5>
-                        <small class="text-info">ระบบจัดการคลังภาพกิจกรรมและประเพณี (Gallery On-Page Studio)</small>
+                        <small class="text-info" id="galleryStudioSubTitle">ระบบจัดการคลังภาพกิจกรรมและประเพณี (Gallery On-Page Studio)</small>
                     </div>
                 </div>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -122,7 +122,7 @@ $galCategories = get_gallery_categories();
             <div class="modal-footer border-top border-secondary border-opacity-25 px-4 py-3 d-flex justify-content-between flex-shrink-0" style="background: rgba(15, 23, 42, 0.7);">
                 <button type="button" class="btn btn-outline-secondary text-light rounded-pill px-4" data-bs-dismiss="modal">ยกเลิก</button>
                 <button type="submit" class="btn btn-warning fw-bold text-dark rounded-pill px-5 shadow-sm" id="galBtnSave">
-                    <i class="fa-solid fa-floppy-disk me-2"></i>บันทึกอัลบั้มกิจกรรม
+                    <i class="fa-solid fa-floppy-disk me-2"></i><span id="galBtnSaveText">บันทึกอัลบั้มกิจกรรม</span>
                 </button>
             </div>
         </form>
@@ -137,11 +137,11 @@ var GalleryStudio = {
     init: function() {
         var el = document.getElementById('galleryStudioModal');
         if (el && typeof bootstrap !== 'undefined') {
-            this.modal = new bootstrap.Modal(el);
+            this.modal = bootstrap.Modal.getInstance(el) || new bootstrap.Modal(el);
         }
     },
 
-    open: function(id, defaultCategory) {
+    open: function(id, defaultCategory, directData) {
         if (!this.modal) this.init();
         var form = document.getElementById('galleryStudioForm');
         if (form) form.reset();
@@ -152,61 +152,96 @@ var GalleryStudio = {
         this.currentAlbumId = id || '';
         document.getElementById('galId').value = this.currentAlbumId;
 
+        var titleEl = document.getElementById('galleryStudioTitle');
+        var subTitleEl = document.getElementById('galleryStudioSubTitle');
+        var btnTextEl = document.getElementById('galBtnSaveText');
+
         if (defaultCategory && document.getElementById('galCategory')) {
             document.getElementById('galCategory').value = defaultCategory;
         }
 
+        // Helper เติมข้อมูลลงฟอร์มและแสดงตัวอย่างภาพ
+        var populateAlbumData = function(alb) {
+            if (!alb) return;
+            if (alb.id) {
+                document.getElementById('galId').value = alb.id;
+                GalleryStudio.currentAlbumId = alb.id;
+            }
+            if (alb.title) document.getElementById('galTitle').value = alb.title;
+            if (alb.category) document.getElementById('galCategory').value = alb.category;
+            if (alb.date) document.getElementById('galDate').value = alb.date;
+            if (alb.cover_image) {
+                document.getElementById('galCoverUrl').value = alb.cover_image;
+                var cPrev = document.getElementById('coverImgPreview');
+                var cUrl = (alb.cover_image.startsWith('http') || alb.cover_image.startsWith('data:')) ? alb.cover_image : "<?= base_url() ?>/" + alb.cover_image;
+                cPrev.src = cUrl;
+                document.getElementById('coverPreviewContainer').classList.remove('d-none');
+            }
+
+            if (alb.photos && alb.photos.length > 0) {
+                document.getElementById('existingPhotosCard').classList.remove('d-none');
+                document.getElementById('existingCount').innerText = alb.photos.length;
+                var grid = document.getElementById('existingPhotosGrid');
+                grid.innerHTML = '';
+                alb.photos.forEach(function(pUrl) {
+                    var fullUrl = (pUrl.startsWith('http') || pUrl.startsWith('data:')) ? pUrl : "<?= base_url() ?>/" + pUrl;
+                    var col = document.createElement('div');
+                    col.className = 'col-6 col-sm-4 col-md-3 position-relative';
+                    col.innerHTML = `
+                        <div class="card bg-dark border border-secondary border-opacity-50 rounded-3 overflow-hidden shadow-sm h-100 position-relative">
+                            <img src="${fullUrl}" class="w-100 h-100" style="height: 110px !important; object-fit: cover;" alt="photo">
+                            <button type="button" onclick="GalleryStudio.deletePhoto('${alb.id}', '${pUrl}', this.closest('.col-6'))" class="btn btn-sm btn-danger rounded-circle position-absolute top-0 end-0 m-1 p-1 d-flex align-items-center justify-content-center" style="width: 26px; height: 26px;" title="ลบภาพนี้">
+                                <i class="fa-solid fa-xmark fs-8"></i>
+                            </button>
+                        </div>
+                    `;
+                    grid.appendChild(col);
+                });
+            }
+        };
+
+        // 1. กรณีส่งข้อมูล Object มาโดยตรง (เปิดจากหน้าดูอัลบั้มเดี่ยว โหลดทันทีไม่ต้องรอเน็ตเวิร์ก)
+        if (directData && typeof directData === 'object') {
+            if (titleEl) titleEl.innerHTML = '<i class="fa-solid fa-pen-to-square me-2 text-warning"></i>แก้ไขข้อมูลอัลบั้มภาพกิจกรรม';
+            if (subTitleEl) subTitleEl.innerText = 'แก้ไขชื่อ หมวดหมู่ วันที่ ภาพปก และรูปภาพในอัลบั้มนี้';
+            if (btnTextEl) btnTextEl.innerText = 'บันทึกการแก้ไขอัลบั้ม';
+            populateAlbumData(directData);
+            if (this.modal) this.modal.show();
+            return;
+        }
+
+        // 2. กรณีส่ง ID มา (โหลดผ่าน AJAX)
         if (id) {
-            document.getElementById('galleryStudioTitle').innerText = 'แก้ไขข้อมูลอัลบั้มภาพกิจกรรม';
-            // Load existing album data via AJAX
-            fetch("<?= base_url('admin/gallery/get-item') ?>/" + id, {
+            if (titleEl) titleEl.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2 text-info"></i>กำลังโหลดข้อมูลอัลบั้ม...';
+            if (subTitleEl) subTitleEl.innerText = 'กำลังดึงข้อมูลล่าสุดจากระบบ...';
+            if (btnTextEl) btnTextEl.innerText = 'บันทึกการแก้ไขอัลบั้ม';
+            if (this.modal) this.modal.show();
+
+            fetch("<?= base_url('admin/gallery/get-item') ?>/" + encodeURIComponent(id), {
                 headers: { "X-Requested-With": "XMLHttpRequest" }
             })
             .then(res => res.json())
             .then(data => {
                 if (data.status === 'success' && data.data) {
-                    var alb = data.data;
-                    document.getElementById('galTitle').value = alb.title || '';
-                    document.getElementById('galCategory').value = alb.category || 'ประเพณีและวัฒนธรรม';
-                    document.getElementById('galDate').value = alb.date || '';
-                    document.getElementById('galCoverUrl').value = alb.cover_image || '';
-                    
-                    if (alb.cover_image) {
-                        var cPrev = document.getElementById('coverImgPreview');
-                        cPrev.src = (alb.cover_image.startsWith('http') || alb.cover_image.startsWith('data:')) ? alb.cover_image : "<?= base_url() ?>/" + alb.cover_image;
-                        document.getElementById('coverPreviewContainer').classList.remove('d-none');
-                    }
-
-                    if (alb.photos && alb.photos.length > 0) {
-                        document.getElementById('existingPhotosCard').classList.remove('d-none');
-                        document.getElementById('existingCount').innerText = alb.photos.length;
-                        var grid = document.getElementById('existingPhotosGrid');
-                        grid.innerHTML = '';
-                        alb.photos.forEach(function(pUrl, idx) {
-                            var fullUrl = (pUrl.startsWith('http') || pUrl.startsWith('data:')) ? pUrl : "<?= base_url() ?>/" + pUrl;
-                            var col = document.createElement('div');
-                            col.className = 'col-6 col-sm-4 col-md-3 position-relative';
-                            col.innerHTML = `
-                                <div class="card bg-dark border border-secondary border-opacity-50 rounded-3 overflow-hidden shadow-sm h-100 position-relative">
-                                    <img src="${fullUrl}" class="w-100 h-100" style="height: 110px !important; object-fit: cover;" alt="photo">
-                                    <button type="button" onclick="GalleryStudio.deletePhoto('${alb.id}', '${pUrl}', this.closest('.col-6'))" class="btn btn-sm btn-danger rounded-circle position-absolute top-0 end-0 m-1 p-1 d-flex align-items-center justify-content-center" style="width: 26px; height: 26px;" title="ลบภาพนี้">
-                                        <i class="fa-solid fa-xmark fs-8"></i>
-                                    </button>
-                                </div>
-                            `;
-                            grid.appendChild(col);
-                        });
-                    }
+                    if (titleEl) titleEl.innerHTML = '<i class="fa-solid fa-pen-to-square me-2 text-warning"></i>แก้ไขข้อมูลอัลบั้มภาพกิจกรรม';
+                    if (subTitleEl) subTitleEl.innerText = 'แก้ไขชื่อ หมวดหมู่ วันที่ ภาพปก และรูปภาพในอัลบั้มนี้';
+                    populateAlbumData(data.data);
                 } else {
-                    if (typeof App !== 'undefined' && App.toast) App.toast('ไม่พบข้อมูลอัลบั้ม', 'error');
+                    if (titleEl) titleEl.innerHTML = '<i class="fa-solid fa-triangle-exclamation me-2 text-danger"></i>ไม่พบข้อมูลอัลบั้ม';
+                    if (typeof App !== 'undefined' && App.toast) App.toast(data.message || 'ไม่พบข้อมูลอัลบั้ม', 'error');
                 }
             })
-            .catch(err => console.error(err));
+            .catch(err => {
+                console.error(err);
+                if (titleEl) titleEl.innerHTML = '<i class="fa-solid fa-triangle-exclamation me-2 text-danger"></i>เกิดข้อผิดพลาดในการโหลด';
+            });
         } else {
-            document.getElementById('galleryStudioTitle').innerText = 'สร้างอัลบั้มภาพกิจกรรมจังหวัดใหม่';
+            // 3. กรณีสร้างอัลบั้มใหม่
+            if (titleEl) titleEl.innerHTML = '<i class="fa-solid fa-circle-plus me-2 text-warning"></i>สร้างอัลบั้มภาพกิจกรรมจังหวัดใหม่';
+            if (subTitleEl) subTitleEl.innerText = 'ระบบจัดการคลังภาพกิจกรรมและประเพณี (Gallery On-Page Studio)';
+            if (btnTextEl) btnTextEl.innerText = 'บันทึกและสร้างอัลบั้มใหม่';
+            if (this.modal) this.modal.show();
         }
-
-        if (this.modal) this.modal.show();
     },
 
     save: function(e) {

@@ -41,48 +41,63 @@ class News extends BaseController
             $categories[] = $prdCategoryName;
         }
 
-        $egpService = new \App\Libraries\EGpService();
+        $matchedCat = null;
+        if (!empty($cat) && $cat !== 'featured') {
+            $normReq = preg_replace('/\s*([\/\(\)])\s*/u', '$1', trim($cat));
+            foreach ($categories as $c) {
+                $normC = preg_replace('/\s*([\/\(\)])\s*/u', '$1', trim($c));
+                if (strcasecmp($normReq, $normC) === 0) {
+                    $matchedCat = $c;
+                    break;
+                }
+            }
+        }
+        $filterCat = $matchedCat ?: trim($cat);
+
         $isProcurementCat = !empty($cat) && (mb_stripos($cat, 'จัดซื้อจัดจ้าง') !== false || mb_stripos($cat, 'e-gp') !== false);
-        $egpProjects = $isProcurementCat ? $egpService->getPhatthalungProjects() : [];
 
         $isPrdCat = !empty($cat) && (mb_stripos($cat, 'สปชส') !== false || mb_stripos($cat, 'สำนักงานประชาสัมพันธ์') !== false || mb_stripos($cat, 'กรมประชาสัมพันธ์') !== false || mb_stripos($cat, 'nnt') !== false || mb_stripos($cat, 'prd') !== false);
         $prdNewsList = \App\Libraries\PrdNewsService::getPhatthalungNews(24);
 
         $isFinancialCat = !empty($cat) && (mb_stripos($cat, 'การเงิน') !== false || mb_stripos($cat, 'งบทดลอง') !== false || mb_stripos($cat, 'financial') !== false);
-        $financialReports = [];
-        $financialYears = [];
-        $financialDepts = [];
 
-        if ($isFinancialCat) {
-            $finModel = new \App\Models\FinancialReportModel();
-            $financialReports = $finModel->orderBy('fiscal_year', 'DESC')->orderBy('id', 'DESC')->findAll();
-            $yearsData = $finModel->distinct()->select('fiscal_year')->where('fiscal_year IS NOT NULL')->orderBy('fiscal_year', 'DESC')->findAll();
-            $financialYears = array_filter(array_column($yearsData, 'fiscal_year'));
-            $deptsData = $finModel->distinct()->select('department')->where('department IS NOT NULL')->orderBy('department', 'ASC')->findAll();
-            $financialDepts = array_filter(array_column($deptsData, 'department'));
-        }
+        $isFeaturedFilter = ($cat === 'featured' || $this->request->getGet('featured') === '1' || $this->request->getGet('featured') === 'true');
 
         if ($isPrdCat) {
             $newsList = $prdNewsList;
+        } elseif ($isFeaturedFilter) {
+            $newsList = get_site_news(null, null, true, true);
         } elseif ($isProcurementCat) {
-            $newsList = get_site_news(null, $cat, true);
+            $newsList = get_site_news(null, $filterCat, true, false, true);
         } else {
-            $newsList = get_site_news(null, $cat, true);
+            $newsList = get_site_news(null, $filterCat, true, false, true);
+        }
+
+        // สำหรับหน้ารวมข่าวสาร ให้เรียงตามวันที่ล่าสุด (วันที่ใหม่ที่สุดอยู่บนสุด) โดยไม่เรียงตามหัวข้อเด่น
+        if (!$isFeaturedFilter && is_array($newsList)) {
+            usort($newsList, function($a, $b) {
+                $dateA = !empty($a['created_at']) ? $a['created_at'] : (!empty($a['display_date']) ? $a['display_date'] : '');
+                $dateB = !empty($b['created_at']) ? $b['created_at'] : (!empty($b['display_date']) ? $b['display_date'] : '');
+                $timeA = !empty($dateA) ? strtotime($dateA) : 0;
+                $timeB = !empty($dateB) ? strtotime($dateB) : 0;
+                if ($timeA === $timeB) {
+                    $idA = is_numeric($a['id'] ?? null) ? (int)$a['id'] : 0;
+                    $idB = is_numeric($b['id'] ?? null) ? (int)$b['id'] : 0;
+                    return $idB <=> $idA;
+                }
+                return $timeB <=> $timeA;
+            });
         }
 
         return view('news/index', [
             'newsList'           => $newsList,
             'categories'         => $categories,
-            'currentCat'         => $cat,
+            'currentCat'         => $filterCat,
+            'isFeaturedFilter'   => $isFeaturedFilter,
             'isProcurementCat'   => $isProcurementCat,
             'isPrdCat'           => $isPrdCat,
             'isFinancialCat'     => $isFinancialCat,
-            'financialReports'   => $financialReports,
-            'financialYears'     => $financialYears,
-            'financialDepts'     => $financialDepts,
-            'financialSourceUrl' => 'https://www.phatthalung.go.th/2022-stop/news_money',
-            'egpProjects'        => $egpProjects,
-            'pageTitle'          => !empty($cat) ? esc($cat) . ' | ข่าวสารและประกาศ' : 'ข่าวสารและประกาศจากสำนักงาน'
+            'pageTitle'          => !empty($filterCat) ? esc($filterCat) . ' | ข่าวสารและประกาศ' : 'ข่าวสารและประกาศจากสำนักงาน'
         ]);
     }
 
@@ -209,6 +224,7 @@ class News extends BaseController
         $content = trim((string)$this->request->getPost('content'));
         $coverImage = trim((string)$this->request->getPost('cover_image'));
         
+        $isFeatured = !empty($this->request->getPost('is_featured')) && $this->request->getPost('is_featured') !== '0' && $this->request->getPost('is_featured') !== 'false';
         $isEvent = !empty($this->request->getPost('is_event')) && $this->request->getPost('is_event') !== '0' && $this->request->getPost('is_event') !== 'false';
         $eventStartDate = trim((string)$this->request->getPost('event_start_date'));
         $eventEndDate = trim((string)$this->request->getPost('event_end_date'));
@@ -257,6 +273,7 @@ class News extends BaseController
             'content' => $content,
             'cover_image' => !empty($coverImage) ? $coverImage : (!empty($imagesGallery[0]) ? $imagesGallery[0] : 'assets/images/slider/sane_muanglung.png'),
             'cover_fit' => trim((string)$this->request->getPost('cover_fit')) ?: 'cover',
+            'is_featured' => $isFeatured,
             'is_event' => $isEvent,
             'event_start_date' => $isEvent ? ($eventStartDate ?: date('Y-m-d')) : '',
             'event_end_date' => $isEvent ? ($eventEndDate ?: ($eventStartDate ?: date('Y-m-d'))) : '',
@@ -300,6 +317,15 @@ class News extends BaseController
                   `category` varchar(100) NOT NULL DEFAULT 'ข่าวประชาสัมพันธ์',
                   `content` longtext NOT NULL,
                   `thumbnail` varchar(255) DEFAULT NULL,
+                  `cover_fit` varchar(50) DEFAULT 'cover',
+                  `is_featured` tinyint(1) NOT NULL DEFAULT '0',
+                  `is_event` tinyint(1) NOT NULL DEFAULT '0',
+                  `event_start_date` varchar(50) DEFAULT NULL,
+                  `event_end_date` varchar(50) DEFAULT NULL,
+                  `event_location` varchar(255) DEFAULT NULL,
+                  `event_coordinates` varchar(255) DEFAULT NULL,
+                  `images_gallery` longtext,
+                  `attachments` longtext,
                   `status` enum('draft','published','archived') NOT NULL DEFAULT 'published',
                   `views_count` int NOT NULL DEFAULT '0',
                   `author_id` int unsigned DEFAULT NULL,
@@ -307,11 +333,19 @@ class News extends BaseController
                   `updated_at` datetime DEFAULT NULL,
                   PRIMARY KEY (`id`),
                   KEY `idx_slug` (`slug`),
-                  KEY `idx_category` (`category`)
+                  KEY `idx_category` (`category`),
+                  KEY `idx_featured` (`is_featured`)
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;");
             }
 
             if ($db->tableExists('news')) {
+                // ตรวจสอบและเพิ่มคอลัมน์ is_featured อัตโนมัติหากยังไม่มี
+                if (!$db->fieldExists('is_featured', 'news')) {
+                    try {
+                        $db->query("ALTER TABLE `news` ADD COLUMN `is_featured` TINYINT(1) NOT NULL DEFAULT 0 AFTER `cover_fit`");
+                    } catch (\Throwable $colErr) {}
+                }
+
                 // ตรวจสอบรายการเดิมด้วย ID (ถ้าเป็นตัวเลข) หรือค้นหาจากชื่อหัวข้อ
                 $existingDb = null;
                 if (is_numeric($id)) {
@@ -345,6 +379,7 @@ class News extends BaseController
                     'content'           => $content,
                     'thumbnail'         => mb_substr(!empty($coverImage) ? $coverImage : 'assets/images/slider/sane_muanglung.png', 0, 255),
                     'cover_fit'         => trim((string)$this->request->getPost('cover_fit')) ?: 'cover',
+                    'is_featured'       => $isFeatured ? 1 : 0,
                     'is_event'          => $isEvent ? 1 : 0,
                     'event_start_date'  => $isEvent ? ($eventStartDate ?: date('Y-m-d')) : null,
                     'event_end_date'    => $isEvent ? ($eventEndDate ?: null) : null,
@@ -452,6 +487,79 @@ class News extends BaseController
     }
 
     /**
+     * สลับสถานะหัวข้อเด่นหน้าหลัก (Toggle Featured Topic on Homepage) (Officer/Admin only)
+     */
+    public function toggleFeatured($id = null)
+    {
+        if (!session()->get('isLoggedIn')) {
+            return $this->respond(['status' => 'error', 'message' => 'ไม่มีสิทธิ์เข้าถึง กรุณาเข้าสู่ระบบก่อน'], 401);
+        }
+
+        if (empty($id)) {
+            $id = $this->request->getPost('id');
+        }
+
+        if (empty($id)) {
+            return $this->respond(['status' => 'error', 'message' => 'ไม่ระบุรหัสข่าว']);
+        }
+
+        helper('settings');
+        $allNews = get_site_news(null, null, false);
+        $found = false;
+        $newFeaturedState = false;
+        $newsTitle = '';
+
+        foreach ($allNews as &$item) {
+            if (strval($item['id']) === strval($id) || (!empty($item['slug']) && $item['slug'] === strval($id))) {
+                $item['is_featured'] = empty($item['is_featured']);
+                $newFeaturedState = (bool)$item['is_featured'];
+                $newsTitle = $item['title'] ?? '';
+                $found = true;
+                break;
+            }
+        }
+        unset($item);
+
+        if (!$found) {
+            return $this->respond(['status' => 'error', 'message' => 'ไม่พบข้อมูลข่าวที่ระบุ']);
+        }
+
+        // Save to JSON
+        $path = $this->getNewsPath();
+        @file_put_contents($path, json_encode(array_values($allNews), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+
+        // Update in MySQL
+        try {
+            $db = \Config\Database::connect();
+            if ($db->tableExists('news')) {
+                if (!$db->fieldExists('is_featured', 'news')) {
+                    try {
+                        $db->query("ALTER TABLE `news` ADD COLUMN `is_featured` TINYINT(1) NOT NULL DEFAULT 0 AFTER `cover_fit`");
+                    } catch (\Throwable $colErr) {}
+                }
+                $updateVal = $newFeaturedState ? 1 : 0;
+                if (is_numeric($id)) {
+                    $db->table('news')->where('id', (int)$id)->update(['is_featured' => $updateVal]);
+                } else {
+                    $db->table('news')->where('slug', $id)->orWhere('title', $newsTitle)->update(['is_featured' => $updateVal]);
+                }
+            }
+        } catch (\Throwable $e) {
+            log_message('error', 'toggleFeatured DB error: ' . $e->getMessage());
+        }
+
+        $msg = $newFeaturedState 
+            ? "ตั้งค่าเป็น 'หัวข้อเด่นหน้าหลัก' สำเร็จ ⭐" 
+            : "ยกเลิกการเป็นหัวข้อเด่นหน้าหลักแล้ว";
+
+        return $this->respond([
+            'status'      => 'success',
+            'is_featured' => $newFeaturedState,
+            'message'     => $msg
+        ]);
+    }
+
+    /**
      * API สำหรับอัปโหลดภาพ (Image Upload to public/uploads/news/)
      */
     public function uploadImage()
@@ -554,25 +662,33 @@ class News extends BaseController
     public function saveCategory()
     {
         if (!session()->get('isLoggedIn')) {
-            return $this->respond(['status' => 'error', 'message' => 'ไม่มีสิทธิ์เข้าถึง'], 401);
+            return $this->respond(['status' => 'error', 'message' => 'กรุณาเข้าสู่ระบบก่อนดำเนินการ'], 401);
+        }
+
+        helper('settings');
+        if (!function_exists('is_super_admin') || !is_super_admin()) {
+            return $this->respond([
+                'status'  => 'error',
+                'message' => 'ขออภัย เฉพาะผู้ดูแลระบบสูงสุด (Super Admin) เท่านั้นที่มีสิทธิ์เพิ่มหมวดหมู่ใหม่'
+            ], 403);
         }
 
         $newCategory = trim((string)$this->request->getPost('category_name'));
         if (empty($newCategory)) {
-            return $this->respond(['status' => 'error', 'message' => 'กรุณาระบุชื่อหมวดหมู่ที่ต้องการสร้าง']);
+            return $this->respond(['status' => 'error', 'message' => 'กรุณาระบุชื่อหมวดหมู่ที่ต้องการสร้าง'], 400);
         }
 
-        helper('settings');
         $cats = get_news_categories();
 
-        if (!in_array($newCategory, $cats)) {
+        if (!in_array($newCategory, $cats, true)) {
             $cats[] = $newCategory;
             @file_put_contents($this->getCategoriesPath(), json_encode(array_values($cats), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
         }
 
         return $this->respond([
-            'status' => 'success',
-            'message' => 'เพิ่มหมวดหมู่ใหม่เรียบร้อยแล้ว',
+            'status'     => 'success',
+            'message'    => 'เพิ่มหมวดหมู่ใหม่เรียบร้อยแล้ว',
+            'category'   => $newCategory,
             'categories' => $cats
         ]);
     }
@@ -657,6 +773,10 @@ class News extends BaseController
      */
     public function testDb()
     {
+        if (!session()->get('isLoggedIn')) {
+            return $this->respond(['status' => 'error', 'message' => 'ต้องเข้าสู่ระบบเจ้าหน้าที่ก่อนดำเนินการ (Unauthorized)'], 401);
+        }
+
         try {
             $db = \Config\Database::connect();
             $dbName = $db->getDatabase();
@@ -689,6 +809,10 @@ class News extends BaseController
      */
     public function syncDb()
     {
+        if (!session()->get('isLoggedIn')) {
+            return $this->respond(['status' => 'error', 'message' => 'ต้องเข้าสู่ระบบเจ้าหน้าที่ก่อนดำเนินการ (Unauthorized)'], 401);
+        }
+
         try {
             $db = \Config\Database::connect();
             if (!$db->tableExists('news')) {

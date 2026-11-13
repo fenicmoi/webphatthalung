@@ -181,6 +181,10 @@ $recentProcs = $recentProcs ?? 0;
             <i class="fa-solid fa-comments text-success"></i>
             <span>ห้องทดสอบสนทนา (Live Playground)</span>
         </button>
+        <button class="nav-link shadow-sm" id="logs-tab" data-bs-toggle="pill" data-bs-target="#pane-logs" type="button" role="tab">
+            <i class="fa-solid fa-clipboard-question text-danger"></i>
+            <span>กล่องคำถามประชาชน (<span id="tabLogCount"><?= count($questionLogs ?? []) ?></span>)</span>
+        </button>
         <button class="nav-link shadow-sm" id="settings-tab" data-bs-toggle="pill" data-bs-target="#pane-settings" type="button" role="tab">
             <i class="fa-solid fa-sliders text-info"></i>
             <span>ตั้งค่าระบบ & Gemini Engine</span>
@@ -534,6 +538,50 @@ $recentProcs = $recentProcs ?? 0;
             </div>
         </div>
 
+        <!-- ======================================================== -->
+        <!-- TAB 5: CITIZEN QUESTION LOGS (กล่องบันทึกคำถามจากประชาชน) -->
+        <!-- ======================================================== -->
+        <div class="tab-pane fade" id="pane-logs" role="tabpanel">
+            <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white">
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4 border-bottom pb-3">
+                    <div>
+                        <h4 class="fw-bold mb-1 text-dark d-flex align-items-center gap-2">
+                            <i class="fa-solid fa-clipboard-question text-danger"></i>
+                            <span>กล่องบันทึกคำถามจากประชาชน (Citizen Question Logs)</span>
+                        </h4>
+                        <p class="text-muted small mb-0">รวบรวมคำถามที่ประชาชนพิมพ์ถามน้องโนราบนหน้าเว็บ เพื่อให้เจ้าหน้าที่นำมาจัดทำคำตอบมาตรฐาน (Q&A) ที่ถูกต้องตรงระเบียบ</p>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <button type="button" onclick="AdminNora.refreshLogs()" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                            <i class="fa-solid fa-rotate me-1"></i> โหลดข้อมูลใหม่
+                        </button>
+                        <button type="button" onclick="AdminNora.clearAllLogs()" class="btn btn-outline-danger btn-sm rounded-pill px-3">
+                            <i class="fa-solid fa-trash-can me-1"></i> ล้างประวัติทั้งหมด
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Filter Controls -->
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+                    <div class="btn-group btn-group-sm rounded-pill p-1 bg-light border" role="group">
+                        <button type="button" class="btn btn-sm rounded-pill active px-3" onclick="AdminNora.filterLogs('all', this)">ทั้งหมด (<span id="logFilterAll"><?= count($questionLogs ?? []) ?></span>)</button>
+                        <button type="button" class="btn btn-sm rounded-pill px-3" onclick="AdminNora.filterLogs('unresolved', this)">รอจัดทำคำตอบมาตรฐาน</button>
+                        <button type="button" class="btn btn-sm rounded-pill px-3" onclick="AdminNora.filterLogs('gemini', this)">ตอบสดด้วย Gemini</button>
+                        <button type="button" class="btn btn-sm rounded-pill px-3" onclick="AdminNora.filterLogs('qa', this)">มีในคลัง Q&A แล้ว</button>
+                    </div>
+                    <div class="input-group input-group-sm" style="max-width: 320px;">
+                        <span class="input-group-text bg-light border-end-0 text-muted"><i class="fa-solid fa-magnifying-glass"></i></span>
+                        <input type="text" id="logSearchInput" onkeyup="AdminNora.filterLogCards()" class="form-control bg-light border-start-0 shadow-none" placeholder="ค้นหาคำถามในประวัติ...">
+                    </div>
+                </div>
+
+                <!-- Logs List Container -->
+                <div id="logsContainer" class="d-flex flex-column gap-3">
+                    <!-- Populated by AdminNora.renderLogs() -->
+                </div>
+            </div>
+        </div>
+
     </div>
 
 </div>
@@ -552,6 +600,7 @@ $recentProcs = $recentProcs ?? 0;
             </div>
             <form id="qaForm" onsubmit="event.preventDefault(); AdminNora.saveQa();">
                 <input type="hidden" id="modal_qa_id" name="id" value="">
+                <input type="hidden" id="modal_from_log_id" name="from_log_id" value="">
                 
                 <div class="modal-body p-4 bg-light">
                     <div class="card border-0 rounded-4 p-4 bg-white shadow-xs">
@@ -606,6 +655,8 @@ $recentProcs = $recentProcs ?? 0;
 <script>
 const AdminNora = {
     qaList: <?= json_encode($knowledge ?? []) ?>,
+    logs: <?= json_encode($questionLogs ?? []) ?>,
+    activeLogFilter: 'all',
     extractedItems: [],
     qaModalInstance: null,
     selectedFile: null,
@@ -1010,8 +1061,216 @@ const AdminNora = {
             }
         })
         .catch(err => this.notify('เกิดข้อผิดพลาด: ' + err.message, 'error'));
+    },
+
+    // ==========================================
+    // CITIZEN QUESTION LOGS METHODS
+    // ==========================================
+    filterLogs: function(type, btn) {
+        this.activeLogFilter = type;
+        if (btn && btn.parentElement) {
+            btn.parentElement.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+        this.renderLogs();
+    },
+
+    filterLogCards: function() {
+        this.renderLogs();
+    },
+
+    renderLogs: function() {
+        const container = document.getElementById('logsContainer');
+        if (!container) return;
+
+        const query = (document.getElementById('logSearchInput')?.value || '').toLowerCase().trim();
+        const filter = this.activeLogFilter;
+
+        let filtered = this.logs.filter(item => {
+            const q = (item.question || '').toLowerCase();
+            const a = (item.reply_preview || '').toLowerCase();
+            const matchQuery = !query || q.includes(query) || a.includes(query);
+
+            if (!matchQuery) return false;
+
+            if (filter === 'unresolved') return !item.is_resolved;
+            if (filter === 'qa') return item.matched_type === 'qa' || item.is_resolved;
+            if (filter === 'gemini') return item.matched_type === 'gemini';
+            return true;
+        });
+
+        if (filtered.length === 0) {
+            container.innerHTML = `
+                <div class="text-center py-5 text-muted">
+                    <i class="fa-solid fa-clipboard-check fs-1 d-block mb-3 opacity-40 text-success"></i>
+                    <h6 class="fw-bold">ยังไม่มีคำถามในหมวดนี้</h6>
+                    <small>เมื่อมีประชาชนสอบถามน้องโนราบนหน้าเว็บ คำถามจะปรากฏในกล่องนี้อัตโนมัติ</small>
+                </div>
+            `;
+            return;
+        }
+
+        let html = '';
+        filtered.forEach(log => {
+            let badgeClass = 'bg-secondary';
+            let badgeText = 'คำถามทั่วไป';
+            if (log.matched_type === 'qa') {
+                badgeClass = 'bg-success';
+                badgeText = '<i class="fa-solid fa-check-double me-1"></i> มีคำตอบตรงใน Q&A';
+            } else if (log.matched_type === 'gemini') {
+                badgeClass = 'bg-purple-600 text-white';
+                badgeText = '<i class="fa-solid fa-wand-magic-sparkles me-1"></i> ตอบสดด้วย Gemini AI';
+            } else if (log.matched_type === 'rule') {
+                badgeClass = 'bg-info text-dark';
+                badgeText = '<i class="fa-solid fa-shield-halved me-1"></i> ตรงตามกฎ/บริการของเว็บ';
+            } else if (log.matched_type === 'fallback') {
+                badgeClass = 'bg-danger';
+                badgeText = '<i class="fa-solid fa-circle-exclamation me-1"></i> ยังไม่มีคำตอบเฉพาะ (Fallback)';
+            }
+
+            const isResolvedBadge = log.is_resolved 
+                ? '<span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1 small fw-semibold"><i class="fa-solid fa-circle-check me-1"></i> จัดทำ Q&A แล้ว</span>'
+                : '<span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill px-2.5 py-1 small fw-semibold"><i class="fa-solid fa-clock me-1"></i> รอเพิ่มเป็นคำตอบมาตรฐาน</span>';
+
+            const cleanQ = (log.question || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+            const cleanA = (log.reply_preview || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+
+            html += `
+                <div class="card border rounded-4 p-3.5 shadow-xs transition-hover bg-light bg-opacity-40">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge ${badgeClass} rounded-pill px-2.5 py-1 small">${badgeText}</span>
+                            ${isResolvedBadge}
+                        </div>
+                        <div class="text-muted small">
+                            <i class="fa-regular fa-clock me-1"></i> ${log.created_at || '-'}
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex align-items-start gap-2.5 mb-2.5">
+                        <div class="p-2 rounded-circle bg-white text-danger shadow-xs flex-shrink-0" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fa-solid fa-quote-left text-primary" style="font-size: 0.85rem;"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h6 class="fw-bold text-dark mb-1" style="font-size: 1.02rem; line-height: 1.4;">${log.question}</h6>
+                            <div class="p-2.5 rounded-3 bg-white border text-muted small" style="line-height: 1.5; font-size: 0.88rem;">
+                                <strong class="text-dark d-block mb-1" style="font-size: 0.78rem;"><i class="fa-solid fa-reply text-success me-1"></i> คำตอบที่น้องโนราตอบกลับไป:</strong>
+                                ${log.reply_preview || '-'}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex align-items-center justify-content-between pt-2 border-top">
+                        <small class="text-muted" style="font-size: 0.76rem;"><i class="fa-solid fa-network-wired me-1"></i> IP: ${log.ip || '-'}</small>
+                        <div class="d-flex align-items-center gap-1.5">
+                            <button type="button" onclick="AdminNora.convertLogToQa('${log.id}', '${cleanQ}', '${cleanA}')" class="btn btn-warning btn-sm rounded-pill px-3 fw-bold text-dark shadow-xs d-inline-flex align-items-center gap-1">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                                <span>สร้างคำตอบมาตรฐาน (+ เพิ่มเป็น Q&A)</span>
+                            </button>
+                            <button type="button" onclick="AdminNora.deleteLog('${log.id}')" class="btn btn-outline-danger btn-sm rounded-circle p-1.5" title="ลบรายการนี้" style="width: 30px; height: 30px; display: inline-flex; align-items: center; justify-content: center;">
+                                <i class="fa-solid fa-trash" style="font-size: 0.75rem;"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+
+        container.innerHTML = html;
+    },
+
+    convertLogToQa: function(logId, question, replyPreview) {
+        document.getElementById('qaForm').reset();
+        document.getElementById('modal_qa_id').value = '';
+        document.getElementById('modal_from_log_id').value = logId || '';
+        document.getElementById('modal_qa_question').value = question || '';
+        
+        // Auto generate simple keywords from question
+        const words = (question || '')
+            .replace(/[?.,!/\\()]/g, ' ')
+            .split(/\s+/)
+            .filter(w => w.length > 2)
+            .slice(0, 5)
+            .join(', ');
+        document.getElementById('modal_qa_keywords').value = words || question;
+
+        // If answered by Gemini, pre-fill answer as draft
+        if (replyPreview && replyPreview.length > 10 && !replyPreview.includes('น้องโนรายังไม่มั่นใจ')) {
+            document.getElementById('modal_qa_answer').value = replyPreview;
+        }
+
+        document.getElementById('qaModalLabel').innerHTML = '<i class="fa-solid fa-wand-magic-sparkles text-warning me-2"></i>สร้างคำตอบมาตรฐานจากคำถามประชาชน';
+        
+        const el = document.getElementById('qaModal');
+        if (!this.qaModalInstance) this.qaModalInstance = new bootstrap.Modal(el);
+        this.qaModalInstance.show();
+    },
+
+    deleteLog: function(id) {
+        if (!confirm('คุณต้องการลบรายการคำถามนี้ออกจากประวัติใช่หรือไม่?')) return;
+
+        fetch('<?= base_url('admin/nora-ai/delete-log') ?>/' + id, {
+            method: 'POST',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'success') {
+                this.notify(data.message, 'success');
+                this.logs = this.logs.filter(x => x.id !== id);
+                document.getElementById('tabLogCount').textContent = this.logs.length;
+                document.getElementById('logFilterAll').textContent = this.logs.length;
+                this.renderLogs();
+            } else {
+                this.notify(data.message, 'error');
+            }
+        })
+        .catch(err => this.notify('เกิดข้อผิดพลาด: ' + err.message, 'error'));
+    },
+
+    clearAllLogs: function() {
+        if (!confirm('คุณต้องการล้างประวัติคำถามของประชาชนทั้งหมดใช่หรือไม่?')) return;
+
+        fetch('<?= base_url('admin/nora-ai/clear-logs') ?>', {
+            method: 'POST',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'success') {
+                this.notify(data.message, 'success');
+                this.logs = [];
+                document.getElementById('tabLogCount').textContent = 0;
+                document.getElementById('logFilterAll').textContent = 0;
+                this.renderLogs();
+            } else {
+                this.notify(data.message, 'error');
+            }
+        })
+        .catch(err => this.notify('เกิดข้อผิดพลาด: ' + err.message, 'error'));
+    },
+
+    refreshLogs: function() {
+        fetch('<?= base_url('admin/nora-ai/logs') ?>', {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'success') {
+                this.logs = data.logs || [];
+                document.getElementById('tabLogCount').textContent = this.logs.length;
+                document.getElementById('logFilterAll').textContent = this.logs.length;
+                this.renderLogs();
+                this.notify('โหลดประวัติคำถามล่าสุดเรียบร้อยแล้ว', 'success');
+            }
+        })
+        .catch(err => this.notify('ไม่สามารถโหลดข้อมูลใหม่ได้', 'error'));
     }
 };
+
+document.addEventListener('DOMContentLoaded', function() {
+    AdminNora.renderLogs();
+});
 </script>
 
 <?= $this->endSection() ?>

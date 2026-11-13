@@ -3,7 +3,7 @@
 
 <?php
 helper('settings');
-$isOfficer = session()->get('isLoggedIn');
+$isOfficer = function_exists('can_manage_gallery') ? can_manage_gallery() : false;
 $categories = $categories ?? get_gallery_categories();
 $selectedCat = $selectedCat ?? 'all';
 $albums = $albums ?? [];
@@ -567,9 +567,6 @@ if (!function_exists('format_thai_date_medium')) {
         <span>ติดต่อเจ้าหน้าที่</span>
     </a>
 </div>
-
-<!-- Include Gallery Studio Component for officers -->
-<?= $this->include('components/gallery_studio') ?>
 
 <script>
 var activeCat = "<?= esc($selectedCat, 'js') ?>";

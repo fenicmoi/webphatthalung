@@ -42,6 +42,7 @@ if (!empty($executives)) {
         $exName = $ex['name'] ?? '';
         $exPos = $ex['position'] ?? '';
         if ($exName === $govName || $exPos === $govPosition) continue;
+        if (isset($ex['active']) && !$ex['active']) continue;
         $exPhoto = !empty($ex['photo']) ? (strpos((string)$ex['photo'], 'http') === 0 ? $ex['photo'] : base_url($ex['photo'])) : '';
         $topExecutives[] = array_merge($ex, [
             'is_governor' => false,
@@ -53,36 +54,18 @@ if (!empty($executives)) {
     }
 }
 
-// Fallback if deputy governors are not in $executives
-if (count($topExecutives) < 3) {
-    $fallbackList = [
-        [
-            'id' => 'exec-2',
-            'name' => 'นายธราวุธ ช่วยเกิด',
-            'position' => 'รองผู้ว่าราชการจังหวัดพัทลุง (ด้านเศรษฐกิจและสังคม)',
-            'quote' => 'ขับเคลื่อนงานราชการและบริหารการปกครองเพื่อผลประโยชน์สูงสุดของพี่น้องชาวพัทลุง',
-            'photo' => base_url('uploads/executives/exec_1787543811_1787543811_4407c907ad0b1649e32d.jpg'),
-            'phone' => '074-613409',
-            'email' => 'phatthalung@moi.go.th',
-            'is_governor' => false,
-        ],
-        [
-            'id' => 'exec-3',
-            'name' => 'นางสาวศรอนงค์ สงสมพันธ์',
-            'position' => 'รองผู้ว่าราชการจังหวัดพัทลุง',
-            'quote' => 'มุ่งมั่นพัฒนาคุณภาพชีวิต ส่งเสริมการศึกษา สาธารณสุข และความผาสุกของประชาชนชาวพัทลุง',
-            'photo' => base_url('uploads/executives/exec_1787542204_1787542204_8f8e25b35550eef0c3c5.png'),
-            'phone' => '074-613409',
-            'email' => 'phatthalung@moi.go.th',
-            'is_governor' => false,
-        ]
+// Fallback only if no executives are available at all
+if (empty($topExecutives)) {
+    $topExecutives[] = [
+        'id' => 'exec-2',
+        'name' => 'นายธราวุธ ช่วยเกิด',
+        'position' => 'รองผู้ว่าราชการจังหวัดพัทลุง (ด้านเศรษฐกิจและสังคม)',
+        'quote' => 'ขับเคลื่อนงานราชการและบริหารการปกครองเพื่อผลประโยชน์สูงสุดของพี่น้องชาวพัทลุง',
+        'photo' => base_url('uploads/executives/exec_1787543811_1787543811_4407c907ad0b1649e32d.jpg'),
+        'phone' => '074-613409',
+        'email' => 'phatthalung@moi.go.th',
+        'is_governor' => false,
     ];
-    $existingNames = array_column($topExecutives, 'name');
-    foreach ($fallbackList as $fb) {
-        if (!in_array($fb['name'], $existingNames)) {
-            $topExecutives[] = $fb;
-        }
-    }
 }
 
 // Strategic Plan Books (5-Year Plan & 1-Year Action Plan)
@@ -201,7 +184,7 @@ $book1yrUrl = !empty($book1yr['url']) ? (strpos($book1yr['url'], 'http') === 0 ?
 
                         <!-- Banner 4: ศูนย์ดำรงธรรมจังหวัดพัทลุง -->
                         <div class="col-6">
-                            <a href="<?= base_url('contact') ?>" class="royal-banner-card d-flex flex-column h-100 rounded-3 overflow-hidden shadow-xs hover-lift" title="ศูนย์ดำรงธรรมจังหวัดพัทลุง 1567">
+                            <a href="<?= base_url('damrongtham') ?>" class="royal-banner-card d-flex flex-column h-100 rounded-3 overflow-hidden shadow-xs hover-lift" title="ศูนย์ดำรงธรรมจังหวัดพัทลุง 1567">
                                 <div class="royal-banner-img-wrap position-relative h-100 w-100 flex-grow-1">
                                     <img src="<?= base_url('assets/images/banners/banner_damrongdhama.jpg') ?>" alt="ศูนย์ดำรงธรรมจังหวัดพัทลุง 1567" loading="lazy">
                                     <div class="royal-banner-overlay d-flex align-items-end p-2">

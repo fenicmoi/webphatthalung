@@ -12,6 +12,10 @@ class ContactManager extends BaseController
      */
     public function index()
     {
+        if (function_exists('has_permission') && !has_permission('contact_manager')) {
+            return redirect()->to(base_url('admin/dashboard'))->with('toast_msg', 'ขออภัย คุณไม่มีสิทธิ์เข้าถึงระบบเรื่องร้องเรียนศูนย์ดำรงธรรม')->with('toast_type', 'error');
+        }
+
         $contactModel = new CitizenContactModel();
 
         $search   = trim($this->request->getGet('q') ?? '');

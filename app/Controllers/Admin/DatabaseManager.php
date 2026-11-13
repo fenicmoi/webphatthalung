@@ -380,6 +380,9 @@ class DatabaseManager extends BaseController
             if (!in_array('cover_fit', $cols)) {
                 $newsAlter[] = "ADD COLUMN `cover_fit` VARCHAR(50) NOT NULL DEFAULT 'cover' AFTER `attachments`";
             }
+            if (!in_array('is_featured', $cols)) {
+                $newsAlter[] = "ADD COLUMN `is_featured` TINYINT(1) NOT NULL DEFAULT 0 AFTER `cover_fit`";
+            }
             if (!in_array('is_event', $cols)) {
                 $newsAlter[] = "ADD COLUMN `is_event` TINYINT(1) NOT NULL DEFAULT 0 AFTER `cover_fit`";
             }

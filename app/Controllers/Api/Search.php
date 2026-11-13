@@ -267,6 +267,127 @@ class Search extends ResourceController
     }
 
     /**
+    /**
+     * ค้นหาข้อมูลทำเนียบส่วนราชการและสมุดโทรศัพท์แบบ Real-Time
+     */
+    private function searchDirectory(string $keyword, int $limit = 12): array
+    {
+        if ($keyword === '') {
+            return [
+                [
+                    'id'          => 'dir-portal',
+                    'type'        => 'directory',
+                    'title'       => 'ทำเนียบส่วนราชการและสมุดโทรศัพท์ดิจิทัล จังหวัดพัทลุง',
+                    'description' => 'ฐานข้อมูลเบอร์โทรศัพท์ 330 ส่วนราชการ และข้าราชการกว่า 2,000 ท่าน พร้อมดาวน์โหลด vCard',
+                    'url'         => base_url('directory'),
+                    'icon'        => 'fa-solid fa-address-book text-success',
+                    'badge'       => 'สมุดโทรศัพท์ดิจิทัล',
+                    'keywords'    => 'โทรศัพท์ เบอร์โทร สมุดโทรศัพท์ ทำเนียบ ติดต่อ ส่วนราชการ หน่วยงาน เบอร์ภายใน'
+                ]
+            ];
+        }
+
+        $results = [];
+        $count = 0;
+        $kwDigits = preg_replace('/[^0-9]/', '', $keyword);
+
+        // 1. ค้นหาในส่วนราชการ/หน่วยงาน (Departments)
+        $deptFile = WRITEPATH . 'directory_departments.json';
+        $minFile  = WRITEPATH . 'directory_ministries.json';
+        $ministries = [];
+        if (file_exists($minFile)) {
+            $mRaw = json_decode(file_get_contents($minFile), true);
+            if (is_array($mRaw)) {
+                foreach ($mRaw as $m) {
+                    $ministries[$m['id']] = $m['name'];
+                }
+            }
+        }
+
+        $departmentsMap = [];
+        if (file_exists($deptFile)) {
+            $depts = json_decode(file_get_contents($deptFile), true);
+            if (is_array($depts)) {
+                foreach ($depts as $d) {
+                    $dId = (int)($d['id'] ?? 0);
+                    $dName = trim($d['name'] ?? '');
+                    if ($dName === '') continue;
+                    $departmentsMap[$dId] = $dName;
+                    $mName = $ministries[$d['ministry_id'] ?? 0] ?? 'สังกัดส่วนราชการ';
+
+                    if (mb_stripos($dName, $keyword) !== false || mb_stripos($mName, $keyword) !== false) {
+                        $results[] = [
+                            'id'          => 'dept-' . $dId,
+                            'type'        => 'directory',
+                            'title'       => $dName,
+                            'description' => 'สังกัด: ' . $mName . ' | คลิกเพื่อดูรายชื่อบุคลากรและเบอร์ติดต่อภายในหน่วยงานนี้',
+                            'url'         => base_url('directory?dept=' . $dId),
+                            'icon'        => 'fa-solid fa-building-user text-success',
+                            'badge'       => 'ส่วนราชการ / หน่วยงาน',
+                            'keywords'    => $dName . ' ' . $mName . ' หน่วยงาน ทำเนียบ'
+                        ];
+                        $count++;
+                        if ($count >= 4) break;
+                    }
+                }
+            }
+        }
+
+        // 2. ค้นหาในรายชื่อข้าราชการ/เจ้าหน้าที่ (Contacts)
+        $contactsFile = WRITEPATH . 'directory_contacts.json';
+        if (file_exists($contactsFile)) {
+            $contacts = json_decode(file_get_contents($contactsFile), true);
+            if (is_array($contacts)) {
+                foreach ($contacts as $c) {
+                    $cName = trim($c['name'] ?? '');
+                    $cPos  = trim($c['position'] ?? '');
+                    $cPhone = trim($c['phone'] ?? '');
+                    $cMobile = trim($c['mobile'] ?? '');
+                    $cHotline = trim($c['hotline'] ?? '');
+                    $cDept = $departmentsMap[$c['department_id'] ?? 0] ?? trim($c['department_name'] ?? '');
+
+
+                    $match = false;
+                    if ($cName !== '' && mb_stripos($cName, $keyword) !== false) $match = true;
+                    elseif ($cPos !== '' && mb_stripos($cPos, $keyword) !== false) $match = true;
+                    elseif ($cDept !== '' && mb_stripos($cDept, $keyword) !== false) $match = true;
+                    elseif ($kwDigits !== '' && strlen($kwDigits) >= 3) {
+                        $phoneDigits = preg_replace('/[^0-9]/', '', $cPhone . $cMobile . $cHotline);
+                        if ($phoneDigits !== '' && strpos($phoneDigits, $kwDigits) !== false) {
+                            $match = true;
+                        }
+                    }
+
+                    if ($match) {
+                        $phoneParts = [];
+                        if (!empty($cPhone)) $phoneParts[] = 'โทรโต๊ะ: ' . $cPhone;
+                        if (!empty($cMobile)) $phoneParts[] = 'มือถือ: ' . $cMobile;
+                        if (!empty($cHotline)) $phoneParts[] = 'ภายใน: ' . $cHotline;
+                        $phoneText = !empty($phoneParts) ? ' | ' . implode(', ', $phoneParts) : '';
+
+                        $badgeText = !empty($cPhone) ? $cPhone : (!empty($cMobile) ? $cMobile : 'ทำเนียบข้าราชการ');
+
+                        $results[] = [
+                            'id'          => 'contact-' . ($c['id'] ?? uniqid()),
+                            'type'        => 'directory',
+                            'title'       => $cName . ($cPos ? ' — ' . $cPos : ''),
+                            'description' => 'หน่วยงาน: ' . ($cDept ?: 'ส่วนราชการจังหวัดพัทลุง') . $phoneText,
+                            'url'         => base_url('directory?search=' . urlencode($cName)),
+                            'icon'        => 'fa-solid fa-phone-volume text-success',
+                            'badge'       => $badgeText,
+                            'keywords'    => $cName . ' ' . $cPos . ' ' . $cDept . ' ' . $cPhone . ' ' . $cMobile
+                        ];
+                        $count++;
+                        if ($count >= $limit) break;
+                    }
+                }
+            }
+        }
+
+        return $results;
+    }
+
+    /**
      * Real-time query search endpoint
      * GET /api/search?q={keyword}
      */
@@ -276,9 +397,12 @@ class Search extends ResourceController
         $index = $this->getMasterIndex();
         $results = [];
 
+        // 1. ดึงผลการค้นหาจากทำเนียบส่วนราชการและสมุดโทรศัพท์ (Directory) แบบ Real-time
+        $dirResults = $this->searchDirectory($keyword, 10);
+
         if ($keyword === '') {
             // Return top trending items across categories
-            $results = array_slice($index, 0, 8);
+            $results = array_merge($dirResults, array_slice($index, 0, 7));
         } else {
             $kwLower = mb_strtolower($keyword, 'UTF-8');
 
@@ -291,14 +415,18 @@ class Search extends ResourceController
                     $results[] = $item;
                 }
             }
+
+            // นำผลลัพธ์จาก Directory มารวมกับผลลัพธ์ทั่วไป
+            $results = array_merge($dirResults, $results);
         }
 
-        // Categorize results for structured front-end display
+        // Categorize results for structured front-end display (Directory อยู่ลำดับต้นๆ เพื่อความสะดวกในการติดต่อราชการ)
         $categorized = [
+            'directory' => ['label' => '📞 ทำเนียบส่วนราชการ & สมุดโทรศัพท์ (Directory)', 'items' => []],
             'executive' => ['label' => '👔 คณะผู้บริหารจังหวัดพัทลุง (Executive Leadership)', 'items' => []],
             'governor'  => ['label' => '👑 ทำเนียบอดีตผู้ว่าราชการจังหวัดพัทลุง', 'items' => []],
-            'ita'       => ['label' => '🏆 ความโปร่งใส ITA/OIT & ชุดข้อมูลเปิด (Open Data)', 'items' => []],
             'service'   => ['label' => '⚙️ บริการออนไลน์และระบบราชการ (e-Services)', 'items' => []],
+            'ita'       => ['label' => '🏆 ความโปร่งใส ITA/OIT & ชุดข้อมูลเปิด (Open Data)', 'items' => []],
             'document'  => ['label' => '📂 คลังเอกสาร & ไฟล์ดาวน์โหลดดิจิทัล', 'items' => []],
             'video'     => ['label' => '🎬 สื่อวิดีทัศน์ Phatthalung Web TV', 'items' => []],
             'news'      => ['label' => '📰 ข่าวประชาสัมพันธ์ & ประกาศจังหวัด', 'items' => []],
@@ -338,14 +466,17 @@ class Search extends ResourceController
         return $this->respond([
             'status' => 'success',
             'keywords' => [
+                'สำนักงานที่ดิน',
+                'เบอร์โทรศัพท์ศาลากลาง',
+                'เกษตรจังหวัด',
                 'ประกาศต่อต้านการทุจริต',
                 'หนังสือเวียน 2569',
                 'ยื่นคำร้อง PDPA',
                 'ภาษีที่ดิน',
                 'ทะเลน้อย 4K',
-                'ร้องทุกข์ 24 ชม.',
-                'คู่มือ PDPA'
+                'ร้องทุกข์ 24 ชม.'
             ]
         ]);
     }
 }
+

@@ -67,7 +67,7 @@ if (!session()->get('isLoggedIn')) {
                             </div>
 
                             <div class="row g-3 mb-4">
-                                <div class="col-md-7">
+                                <div class="<?= (function_exists('is_super_admin') && is_super_admin()) ? 'col-md-7' : 'col-12' ?>">
                                     <label class="form-label fw-bold text-info"><i class="fa-solid fa-folder-tree me-1"></i> หมวดหมู่ข่าว</label>
                                     <select id="studioNewsCategory" class="form-select form-select-lg rounded-3 text-white fw-bold shadow-sm" style="background: #0f172a; border: 1px solid rgba(56, 189, 248, 0.5);">
                                         <?php 
@@ -77,11 +77,30 @@ if (!session()->get('isLoggedIn')) {
                                         <?php endforeach; ?>
                                     </select>
                                 </div>
-                                <div class="col-md-5 d-flex align-items-end">
-                                    <button type="button" onclick="NewsStudio.addCategory()" class="btn btn-outline-warning w-100 py-2 rounded-3 fw-bold d-flex align-items-center justify-content-center gap-2 shadow-sm">
-                                        <i class="fa-solid fa-circle-plus"></i>
-                                        <span>+ เพิ่มหมวดหมู่ใหม่</span>
-                                    </button>
+                                <?php if (function_exists('is_super_admin') && is_super_admin()): ?>
+                                    <div class="col-md-5 d-flex align-items-end">
+                                        <button type="button" onclick="NewsStudio.addCategory()" class="btn btn-outline-warning w-100 py-2 rounded-3 fw-bold d-flex align-items-center justify-content-center gap-2 shadow-sm" title="เฉพาะ Super Admin เท่านั้นที่มีสิทธิ์เพิ่มหมวดหมู่ใหม่">
+                                            <i class="fa-solid fa-circle-plus"></i>
+                                            <span>+ เพิ่มหมวดหมู่ใหม่</span>
+                                        </button>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+
+                            <!-- Featured Topic on Homepage Switch -->
+                            <div class="card p-3 rounded-4 shadow-sm mb-3 border" style="background: rgba(245, 158, 11, 0.09); border-color: rgba(245, 158, 11, 0.45) !important;">
+                                <div class="form-check form-switch d-flex align-items-center gap-3 m-0 p-0">
+                                    <input class="form-check-input ms-0 mt-0 flex-shrink-0 cursor-pointer" type="checkbox" role="switch" id="studioIsFeatured" style="width: 50px; height: 26px;">
+                                    <label class="form-check-label fw-bold text-white cursor-pointer" for="studioIsFeatured">
+                                        <span class="d-flex align-items-center gap-2">
+                                            <i class="fa-solid fa-star text-warning fs-5"></i>
+                                            <span class="fs-6">ตั้งค่าเป็น "หัวข้อเด่น" เพื่อแสดงผลที่หน้าหลัก</span>
+                                            <span class="badge rounded-pill px-2.5 py-0.5 text-dark fw-bold" style="background: linear-gradient(135deg, #f59e0b, #fbbf24); font-size: 0.75rem;">⭐ หน้าหลัก (Homepage)</span>
+                                        </span>
+                                        <small class="d-block text-light opacity-75 fw-normal mt-1" style="font-size: 0.82rem;">
+                                            เปิดใช้งานเมื่อต้องการนำข่าวนี้ไปแสดงบนพื้นที่ข่าวเด่นหน้าหลักของเว็บไซต์ (หากไม่เปิด ข้อมูลจะแสดงเฉพาะในหน้ารวมข่าวสารทั่วไป ไม่ขึ้นแสดงบนหน้าหลัก)
+                                        </small>
+                                    </label>
                                 </div>
                             </div>
 
@@ -328,6 +347,9 @@ window.NewsStudio = {
         }
 
 
+        const chkFeatured = document.getElementById('studioIsFeatured');
+        if (chkFeatured) chkFeatured.checked = false;
+
         const chkEvent = document.getElementById('studioIsEvent');
         if (chkEvent) chkEvent.checked = false;
         document.getElementById('studioEventStartDate').value = new Date().toISOString().split('T')[0];
@@ -349,7 +371,19 @@ window.NewsStudio = {
                         const n = data.data;
                         document.getElementById('studioNewsId').value = n.id || '';
                         document.getElementById('studioNewsTitle').value = n.title || '';
-                        document.getElementById('studioNewsCategory').value = n.category || 'ประกาศราชการ / แจ้งเตือน';
+                        const catSel = document.getElementById('studioNewsCategory');
+                        if (catSel) {
+                            catSel.value = n.category || 'ประกาศราชการ / แจ้งเตือน';
+                            if (!catSel.value && n.category) {
+                                const normTarget = n.category.replace(/\s*\/\s*/g, '/').trim().toLowerCase();
+                                for (let opt of catSel.options) {
+                                    if (opt.value.replace(/\s*\/\s*/g, '/').trim().toLowerCase() === normTarget) {
+                                        catSel.value = opt.value;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
                         document.getElementById('studioNewsSummary').value = n.summary || '';
                         if (this.quill) {
                             this.quill.root.innerHTML = n.content || '';
@@ -361,6 +395,9 @@ window.NewsStudio = {
                         const fitSel = document.getElementById('studioCoverFit');
                         if (fitSel) fitSel.value = coverFit;
                         this.changeCoverFit(coverFit);
+
+                        const isFeatured = n.is_featured == true || n.is_featured === 1 || n.is_featured === '1' || n.is_featured === 'true';
+                        if (chkFeatured) chkFeatured.checked = isFeatured;
 
                         const isEvent = n.is_event == true || n.is_event === '1' || n.is_event === 'true';
                         if (chkEvent) chkEvent.checked = isEvent;
@@ -388,6 +425,12 @@ window.NewsStudio = {
     },
 
     addCategory: async function() {
+        const isSuperAdmin = <?= (function_exists('is_super_admin') && is_super_admin()) ? 'true' : 'false' ?>;
+        if (!isSuperAdmin) {
+            App.toast('ขออภัย เฉพาะผู้ดูแลระบบสูงสุด (Super Admin) เท่านั้นที่มีสิทธิ์เพิ่มหมวดหมู่ข่าวใหม่', 'error');
+            return;
+        }
+
         const catName = prompt('กรุณาพิมพ์ชื่อหมวดหมู่ข่าวใหม่ที่ต้องการเพิ่ม (เช่น ข่าวประกวดราคา 2569):');
         if (!catName || !catName.trim()) return;
 
@@ -712,6 +755,9 @@ window.NewsStudio = {
         formData.append('cover_image', this.currentCover || document.getElementById('studioCoverImage').value);
         formData.append('cover_fit', document.getElementById('studioCoverFit') ? document.getElementById('studioCoverFit').value : 'cover');
         
+        const isFeatured = document.getElementById('studioIsFeatured')?.checked ? 'true' : 'false';
+        formData.append('is_featured', isFeatured);
+
         const isEvent = document.getElementById('studioIsEvent')?.checked ? 'true' : 'false';
         formData.append('is_event', isEvent);
         formData.append('event_start_date', document.getElementById('studioEventStartDate')?.value || '');
@@ -837,6 +883,28 @@ window.NewsStudio = {
         } catch(e) {
             console.error(e);
             App.toast('ลบข้อมูลผิดพลาด', 'error');
+        }
+    },
+
+    toggleFeatured: async function(id) {
+        if (!id) return;
+        const baseUrl = window.BASE_URL || '';
+        const formData = new FormData();
+        formData.append('id', id);
+
+        try {
+            App.toast('กำลังปรับปรุงสถานะหัวข้อเด่น...', 'info');
+            const res = await fetch(baseUrl + '/news/toggle-featured', { method: 'POST', body: formData });
+            const data = await res.json();
+            if (data.status === 'success') {
+                App.toast(data.message, 'success');
+                setTimeout(() => window.location.reload(), 600);
+            } else {
+                App.toast(data.message || 'ไม่สามารถปรับสถานะได้', 'error');
+            }
+        } catch(e) {
+            console.error(e);
+            App.toast('เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์', 'error');
         }
     }
 };

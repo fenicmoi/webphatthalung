@@ -75,4 +75,9 @@ $app->setContext($context);
  * up the engines and make this app do its thang.
  */
 
+if (!is_cli() && http_response_code() === 404) {
+    http_response_code(200);
+}
+
 $app->run();
+

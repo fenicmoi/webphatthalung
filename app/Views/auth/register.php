@@ -246,7 +246,15 @@
                         </label>
                         <div class="position-relative">
                             <i class="fa-solid fa-building-columns position-absolute reg-input-icon"></i>
-                            <input type="text" id="department" name="department" class="form-control reg-input" required placeholder="เช่น สำนักงานจังหวัดพัทลุง">
+                            <input type="text" id="department" name="department" list="deptSuggestions" class="form-control reg-input" required placeholder="เช่น กลุ่มงานศูนย์ดำรงธรรมจังหวัดพัทลุง">
+                            <datalist id="deptSuggestions">
+                                <option value="กลุ่มงานศูนย์ดำรงธรรมจังหวัดพัทลุง">
+                                <option value="สำนักงานจังหวัดพัทลุง">
+                                <option value="ที่ทำการปกครองจังหวัดพัทลุง">
+                                <option value="สำนักงานส่งเสริมการปกครองท้องถิ่นจังหวัดพัทลุง">
+                                <option value="สำนักงานประชาสัมพันธ์จังหวัดพัทลุง">
+                                <option value="สำนักงานคลังจังหวัดพัทลุง">
+                            </datalist>
                         </div>
                     </div>
 

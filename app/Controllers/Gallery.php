@@ -22,7 +22,7 @@ class Gallery extends BaseController
             'categories'  => $categories,
             'selectedCat' => $selectedCat,
             'albums'      => $albums,
-            'isOfficer'   => session()->get('isLoggedIn')
+            'isOfficer'   => function_exists('can_manage_gallery') ? can_manage_gallery() : false
         ];
 
         return view('gallery_portal', $data);
@@ -35,21 +35,14 @@ class Gallery extends BaseController
             return redirect()->to(base_url('gallery'))->with('error', 'ไม่พบอัลบั้มที่คุณต้องการดู');
         }
 
-        // เพิ่มยอดเข้าชม
-        $albums = get_gallery_albums(null, null, false);
-        foreach ($albums as &$a) {
-            if ((string)$a['id'] === (string)$id) {
-                $a['views'] = ($a['views'] ?? 1) + 1;
-                $album['views'] = $a['views'];
-                break;
-            }
-        }
-        save_gallery_albums($albums);
+        // เพิ่มยอดเข้าชม (ทั้งในฐานข้อมูล MySQL และ Cache)
+        $newViews = function_exists('increment_gallery_views') ? increment_gallery_views($id) : (int)($album['views'] ?? 1);
+        $album['views'] = $newViews;
 
         return view('gallery_album_view', [
             'title' => esc($album['title']) . ' | จังหวัดพัทลุง',
             'album' => $album,
-            'isOfficer' => session()->get('isLoggedIn')
+            'isOfficer' => function_exists('can_manage_gallery') ? can_manage_gallery() : false
         ]);
     }
 }

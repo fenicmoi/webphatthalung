@@ -248,6 +248,11 @@
         <span class="dock-item-label">ITA & ข้อมูลเปิด</span>
     </a>
 
+    <a href="<?= base_url() ?>#digitalServicesHub" class="dock-item" title="ศูนย์รวมระบบสารสนเทศและบริการดิจิทัล">
+        <div class="dock-item-icon" style="background: linear-gradient(135deg, #0284c7, #0369a1);"><i class="fa-solid fa-laptop-code text-white"></i></div>
+        <span class="dock-item-label">ระบบบริการ</span>
+    </a>
+
     <a href="http://www.ma-muanglung.go.th" target="_blank" rel="noopener noreferrer" class="dock-item" title="เปิดเว็บไซต์ท่องเที่ยวพัทลุง (www.ma-muanglung.go.th)">
         <div class="dock-item-icon" style="background: linear-gradient(135deg, #059669, #047857);"><i class="fa-solid fa-compass text-white"></i></div>
         <span class="dock-item-label">มาเมืองลุง (เที่ยว)</span>
@@ -260,9 +265,9 @@
         <span class="dock-item-label">ค้นหาสะดวก</span>
     </a>
 
-    <a href="javascript:void(0);" onclick="openCitizenRequest()" class="dock-item">
-        <div class="dock-item-icon" style="background: linear-gradient(135deg, #d97706, #b45309);"><i class="fa-solid fa-paper-plane text-white"></i></div>
-        <span class="dock-item-label">ร้องทุกข์</span>
+    <a href="<?= base_url('damrongtham') ?>" class="dock-item" title="ศูนย์ดำรงธรรมจังหวัดพัทลุง (สายด่วน 1567)">
+        <div class="dock-item-icon" style="background: linear-gradient(135deg, #dc2626, #991b1b);"><i class="fa-solid fa-scale-balanced text-white"></i></div>
+        <span class="dock-item-label">ศูนย์ดำรงธรรม</span>
     </a>
 
     <div class="dock-divider"></div>

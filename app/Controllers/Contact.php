@@ -71,6 +71,14 @@ class Contact extends BaseController
 
         $trackingCode = CitizenContactModel::generateTrackingCode();
         $categoryKey  = $this->request->getPost('category');
+
+        if ($categoryKey === 'damrongtham') {
+            return $this->response->setJSON([
+                'status'  => 'error',
+                'message' => '⚠️ ระบบรับเรื่องร้องเรียนศูนย์ดำรงธรรมผ่านเว็บไซต์ปิดให้บริการชั่วคราว หากท่านมีความประสงค์ยื่นเรื่องร้องเรียนเร่งด่วน กรุณาติดต่อสายด่วน 1567 (โทรฟรีตลอด 24 ชั่วโมง) หรือติดต่อศูนย์ดำรงธรรมจังหวัดพัทลุง'
+            ]);
+        }
+
         $allCategories = CitizenContactModel::getCategories();
         $categoryName = $allCategories[$categoryKey]['name'] ?? $categoryKey;
 

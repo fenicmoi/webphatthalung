@@ -168,12 +168,21 @@ try {
 <!-- 1.3 PR & PARTNER BANNERS 3D SLIDER (แถบแบนเนอร์ประชาสัมพันธ์และหน่วยงานสัมพันธ์) -->
 <?= $this->include('components/pr_banner_carousel') ?>
 
-<!-- 3. NEWS & MEDIA HUB (ศูนย์รวมข่าวสารและสื่อมัลติมีเดีย) -->
+<!-- 2. NEWS & MEDIA HUB (ศูนย์รวมข่าวสารและสื่อมัลติมีเดีย) -->
 <?php 
 try {
     echo $this->include('components/news_media_hub');
 } catch (\Throwable $e) {
     echo '<!-- news_media_hub error: ' . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8') . ' in ' . htmlspecialchars($e->getFile(), ENT_QUOTES, 'UTF-8') . ':' . $e->getLine() . ' -->';
+}
+?>
+
+<!-- 3. DIGITAL SERVICES & e-GOVERNMENT HUB (ศูนย์รวมระบบสารสนเทศและการบริการดิจิทัล) -->
+<?php 
+try {
+    echo $this->include('components/digital_services_hub');
+} catch (\Throwable $e) {
+    echo '<!-- digital_services_hub error: ' . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8') . ' in ' . htmlspecialchars($e->getFile(), ENT_QUOTES, 'UTF-8') . ':' . $e->getLine() . ' -->';
 }
 ?>
 
@@ -405,7 +414,14 @@ function stopVoiceSearch() {
 function triggerSearchSubmit() {
     const sInput = document.getElementById('globalSearchInput');
     if (sInput && sInput.value.trim().length > 0) {
-        window.location.href = `<?= base_url('search') ?>?q=${encodeURIComponent(sInput.value.trim())}`;
+        const query = sInput.value.trim();
+        if (typeof OmniSearch !== 'undefined' && typeof OmniSearch.open === 'function') {
+            OmniSearch.open(query);
+            const drop = document.getElementById('searchResultsDropdown');
+            if (drop) drop.style.display = 'none';
+        } else {
+            window.location.href = `<?= base_url('search') ?>?q=${encodeURIComponent(query)}`;
+        }
     } else if (sInput) {
         sInput.focus();
     }
@@ -419,6 +435,17 @@ function quickSearchTag(kw) {
         sInput.dispatchEvent(new Event('input'));
     }
 }
+
+// Auto open OmniSearch if URL has ?q= parameter
+document.addEventListener('DOMContentLoaded', function() {
+    try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const searchQ = urlParams.get('q');
+        if (searchQ && typeof OmniSearch !== 'undefined' && typeof OmniSearch.open === 'function') {
+            setTimeout(() => OmniSearch.open(searchQ), 300);
+        }
+    } catch(e) {}
+});
 
 if (searchInput) {
     // ซ่อน Dropdown เมื่อคลิกที่อื่น
@@ -506,8 +533,11 @@ function renderSearchResults(results, query) {
         
         // Add footer for all results link
         html += `
-        <div class="p-2.5 text-center border-top" style="border-color: var(--glass-border, #f1f5f9) !important; background: rgba(0,0,0,0.02);">
-            <small class="text-muted"><i class="fa-solid fa-circle-check text-success me-1"></i> พบผลลัพธ์ทั้งหมด ${results.length} รายการ (คลิกเพื่อเข้าสู่หน้าเนื้อหา)</small>
+        <div class="p-2.5 d-flex align-items-center justify-content-between px-3 border-top" style="border-color: var(--glass-border, #f1f5f9) !important; background: rgba(0,0,0,0.02);">
+            <small class="text-muted"><i class="fa-solid fa-circle-check text-success me-1"></i> พบผลลัพธ์ ${results.length} รายการ</small>
+            <a href="javascript:void(0)" onclick="if(typeof OmniSearch !== 'undefined') { OmniSearch.open(document.getElementById('globalSearchInput').value.trim()); document.getElementById('searchResultsDropdown').style.display='none'; }" class="text-decoration-none small text-success fw-bold">
+                <i class="fa-solid fa-wand-magic-sparkles me-1 text-warning"></i> ดูผลลัพธ์แบบละเอียด &raquo;
+            </a>
         </div>
         `;
         

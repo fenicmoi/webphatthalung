@@ -1,0 +1,125 @@
+{
+    "updated_at": "2026-11-05 09:53:00",
+    "cumulative": {
+        "title": "เรื่องร้องเรียนสะสมตั้งแต่เปิดศูนย์ตามประกาศ คสช. ฉบับที่ 96\/2557 ลงวันที่ 18 กรกฎาคม 2557",
+        "period_text": "18 กรกฎาคม 2557 – 4 พฤศจิกายน 2569",
+        "total_received": 12092,
+        "total_resolved": 12056,
+        "total_resolved_percent": 99.7,
+        "total_pending": 36,
+        "total_pending_percent": 0.3
+    },
+    "daily": {
+        "date_text": "5 พฤศจิกายน 2569",
+        "received": 0,
+        "resolved": 0,
+        "pending": 0,
+        "general_inquiries": 0
+    },
+    "monthly": {
+        "month_name": "ตุลาคม 2569",
+        "period_text": "ระหว่างวันที่ 1 - 31 ตุลาคม 2569",
+        "received": 40,
+        "resolved": 19,
+        "pending": 21,
+        "consultation_general": 13,
+        "channels": {
+            "walkin": 16,
+            "website": 7,
+            "phone": 7,
+            "letter": 10
+        },
+        "categories": {
+            "distress": 8,
+            "general": 13,
+            "whistleblowing": 1,
+            "officer": 10,
+            "welfare": 6,
+            "land": 2
+        }
+    },
+    "categories_breakdown": [
+        {
+            "key": "general",
+            "name": "เรื่องทั่วไป \/ อื่น ๆ (ให้คำปรึกษา\/ข้อมูล)",
+            "count": 5372,
+            "percent": 44.43,
+            "color": "#7c3aed"
+        },
+        {
+            "key": "welfare",
+            "name": "ขอความช่วยเหลือ \/ สาธารณภัย \/ สงเคราะห์",
+            "count": 3604,
+            "percent": 29.8,
+            "color": "#0284c7"
+        },
+        {
+            "key": "distress",
+            "name": "ปัญหาความเดือดร้อนรำคาญ \/ มลพิษ",
+            "count": 1353,
+            "percent": 11.19,
+            "color": "#f59e0b"
+        },
+        {
+            "key": "officer",
+            "name": "กล่าวโทษเจ้าหน้าที่ \/ ประพฤติมิชอบ",
+            "count": 857,
+            "percent": 7.09,
+            "color": "#e11d48"
+        },
+        {
+            "key": "whistleblowing",
+            "name": "แจ้งเบาะแสการกระทำผิด",
+            "count": 595,
+            "percent": 4.92,
+            "color": "#10b981"
+        },
+        {
+            "key": "land",
+            "name": "ปัญหาที่ดิน \/ ข้อพิพาท \/ หนี้สิน",
+            "count": 311,
+            "percent": 2.57,
+            "color": "#ea580c"
+        }
+    ],
+    "channels_breakdown": [
+        {
+            "key": "walkin",
+            "name": "มาด้วยตนเอง",
+            "count": 6157,
+            "percent": 50.92,
+            "color": "#be123c",
+            "icon": "fa-person-walking"
+        },
+        {
+            "key": "phone",
+            "name": "โทรศัพท์ (สายด่วน 1567)",
+            "count": 3511,
+            "percent": 29.04,
+            "color": "#0369a1",
+            "icon": "fa-phone-volume"
+        },
+        {
+            "key": "website",
+            "name": "เว็บไซต์ \/ E-Service",
+            "count": 1540,
+            "percent": 12.74,
+            "color": "#0d9488",
+            "icon": "fa-globe"
+        },
+        {
+            "key": "letter",
+            "name": "จดหมาย \/ หนังสือร้องเรียน",
+            "count": 884,
+            "percent": 7.31,
+            "color": "#b45309",
+            "icon": "fa-envelope-open-text"
+        }
+    ],
+    "database_stats": {
+        "total_records_count": 0,
+        "sum_daily_received": 0,
+        "sum_daily_resolved": 0,
+        "sum_daily_pending": 0
+    }
+}

@@ -283,6 +283,7 @@ function toggleActive(idx, isChecked) {
     if (serviceBanners[idx]) {
         serviceBanners[idx].active = isChecked;
         renderBannersList();
+        saveAllServiceBanners();
     }
 }
 
@@ -295,7 +296,7 @@ function moveOrder(idx, dir) {
     // re-assign sort_order
     serviceBanners.forEach((b, i) => { b.sort_order = i + 1; });
     renderBannersList();
-    App.toast('↔️ ยับเปลี่ยนลำดับแบนเนอร์แล้ว กรุณากดปุ่มบันทึกเพื่อให้อนุญาตผลจริง', 'info');
+    saveAllServiceBanners();
 }
 
 function addNewBanner() {
@@ -412,11 +413,12 @@ function submitNewBannerModal() {
 }
 
 function deleteBanner(idx) {
-    if (confirm(`คุณต้องการลบแบนเนอร์ "${serviceBanners[idx].title}" ใช่หรือไม่?`)) {
+    const bannerTitle = (serviceBanners[idx] && serviceBanners[idx].title) ? serviceBanners[idx].title : 'แบนเนอร์นี้';
+    if (confirm(`คุณต้องการลบแบนเนอร์ "${bannerTitle}" ออกจากระบบใช่หรือไม่?`)) {
         serviceBanners.splice(idx, 1);
         serviceBanners.forEach((b, i) => { b.sort_order = i + 1; });
         renderBannersList();
-        App.toast('🗑️ ลบออกจากรายการชั่วคราวแล้ว กรุณากดปุ่มบันทึกเพื่อยืนยัน', 'warning');
+        saveAllServiceBanners();
     }
 }
 

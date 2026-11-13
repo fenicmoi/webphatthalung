@@ -92,14 +92,14 @@ class MenuManager extends BaseController
                 'children' => [
                     [
                         'id' => 'sub_' . uniqid(),
-                        'title' => 'ยื่นเรื่องร้องเรียน ศูนย์ดำรงธรรม',
-                        'url' => '#damrongtham',
+                        'title' => 'ศูนย์ดำรงธรรมจังหวัดพัทลุง (สายด่วน 1567)',
+                        'url' => 'damrongtham',
                         'target' => '_self'
                     ],
                     [
                         'id' => 'sub_' . uniqid(),
-                        'title' => 'ระบบตรวจสอบรหัสสถานะคำร้อง',
-                        'url' => '#tracking',
+                        'title' => 'ระบบตรวจสอบสถานะเรื่องร้องเรียน',
+                        'url' => 'damrongtham#tracking-section',
                         'target' => '_self'
                     ],
                     [

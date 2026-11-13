@@ -1,0 +1,63 @@
+{
+  "name": "สมุดโทรศัพท์และทำเนียบข้าราชการพัทลุง",
+  "short_name": "พัทลุงโฟน",
+  "description": "ระบบค้นหาหมายเลขโทรศัพท์ส่วนราชการ หน่วยงานภาครัฐ และทำเนียบผู้บริหารจังหวัดพัทลุง",
+  "start_url": "./directory",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#064e3b",
+  "theme_color": "#047857",
+  "orientation": "portrait-primary",
+  "lang": "th",
+  "categories": [
+    "government",
+    "productivity",
+    "utilities"
+  ],
+  "icons": [
+    {
+      "src": "assets/images/pwa/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/images/pwa/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/images/pwa/icon-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "ทำเนียบข้าราชการ & สมุดโทรศัพท์",
+      "short_name": "สมุดโทรศัพท์",
+      "description": "ค้นหาเบอร์โทรติดต่อราชการและทำเนียบผู้บริหาร",
+      "url": "./directory",
+      "icons": [
+        {
+          "src": "assets/images/pwa/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "หน้าหลักพอร์ทัลจังหวัดพัทลุง",
+      "short_name": "หน้าหลัก",
+      "description": "ข่าวสารและบริการดิจิทัลจังหวัดพัทลุง",
+      "url": "./",
+      "icons": [
+        {
+          "src": "assets/images/pwa/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
+}

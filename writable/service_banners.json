@@ -22,29 +22,5 @@
         "image": "uploads\/service_banners\/banner_1789965237_696.png",
         "active": true,
         "sort_order": 2
-    },
-    {
-        "id": "sb-103",
-        "title": "โครงการไทยช่วยไทยลดค่าครองชีพ",
-        "desc": "กิจกรรมจำหน่ายสินค้าราคาประหยัด ปีงบประมาณ พ.ศ. 2570 เดือนตุลาคม 2569 จังหวัดพัทลุง กรมการค้าภายใน DIT",
-        "badge": "ลดค่าครองชีพ",
-        "badge_color": "danger",
-        "url": "https:\/\/www.dit.go.th",
-        "target": "_blank",
-        "image": "uploads\/service_banners\/banner_1791956879_615.png",
-        "active": true,
-        "sort_order": 3
-    },
-    {
-        "id": "sb-104",
-        "title": "งานประเพณีแข่งโพน - ลากพระ ชิงถ้วยพระราชทานฯ",
-        "desc": "วันที่ ๒๐ - ๒๙ ตุลาคม ๒๕๖๙ บริเวณหน้าสำนักงาน อบจ.พัทลุง และหน้าศาลาจตุรมุขพระพุทธนิรโรคันตรายฯ",
-        "badge": "ประเพณีเมืองลุง",
-        "badge_color": "warning",
-        "url": "https:\/\/www.phatthalung.go.th",
-        "target": "_blank",
-        "image": "uploads\/service_banners\/banner_1791958014_308.jpeg",
-        "active": true,
-        "sort_order": 4
     }
 ]
