@@ -92,7 +92,7 @@
     z-index: 2;
     animation: pulse 2s infinite;
 }
-@media (max-width: 1599px) {
+@media (max-width: 767px) {
     .nora-floating-launcher {
         padding: 0;
         width: 50px;
@@ -391,7 +391,7 @@
         <img src="<?= base_url('assets/images/nora_avatar.png') ?>" alt="น้องโนรา AI">
         <span class="nora-online-dot"></span>
     </div>
-    <span class="d-none d-xl-inline-block text-nowrap">ถามน้องโนรา AI</span>
+    <span class="d-none d-md-inline-block text-nowrap">ถามน้องโนรา AI</span>
 </button>
 <?php endif; ?>
 

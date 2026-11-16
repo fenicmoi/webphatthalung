@@ -6,63 +6,6 @@
 /* ==========================================================================
    W3C WCAG AAA UNIVERSAL ACCESSIBILITY SYSTEM (CSS CUSTOM TOKENS & OVERRIDES)
    ========================================================================== */
-.w3c-aaa-trigger {
-    position: fixed;
-    bottom: 22px;
-    left: 22px;
-    z-index: 1045;
-    background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
-    color: #ffffff !important;
-    border: 2px solid #38bdf8;
-    border-radius: 50px;
-    padding: 6px 14px 6px 6px;
-    box-shadow: 0 8px 24px rgba(2, 132, 199, 0.4), 0 0 15px rgba(56, 189, 248, 0.2);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    font-weight: 700;
-    font-size: 0.84rem;
-    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-    text-decoration: none;
-}
-.w3c-aaa-trigger:hover {
-    transform: translateY(-4px) scale(1.05);
-    box-shadow: 0 12px 30px rgba(2, 132, 199, 0.6);
-    color: #fff;
-    border-color: #00f0ff;
-}
-.w3c-icon-badge {
-    width: 36px;
-    height: 36px;
-    background: #fff;
-    color: #0284c7;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.15rem;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-    flex-shrink: 0;
-}
-@media (max-width: 1599px) {
-    .w3c-aaa-trigger {
-        padding: 0;
-        width: 48px;
-        height: 48px;
-        border-radius: 50%;
-        justify-content: center;
-    }
-    .w3c-aaa-trigger span {
-        display: none !important;
-    }
-    .w3c-icon-badge {
-        width: 40px;
-        height: 40px;
-        box-shadow: none;
-    }
-}
-
 /* Modal styling */
 .w3c-modal-header {
     background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0369a1 100%);
@@ -158,12 +101,6 @@ body.w3c-big-cursor * {
 
 <!-- READING RULER TRACKER ELEMENT -->
 <div id="w3cReadingRuler" aria-hidden="true"></div>
-
-<!-- FLOATING W3C AAA ACCESSIBILITY TRIGGER (BOTTOM LEFT) -->
-<button type="button" class="w3c-aaa-trigger" id="w3cTriggerBtn" onclick="W3CAccessibility.openModal()" title="เครื่องมือช่วยอ่านและปรับการแสดงผล (สำหรับผู้สูงอายุและผู้มีปัญหาการมองเห็น)">
-    <div class="w3c-icon-badge"><i class="fa-solid fa-universal-access animate-pulse"></i></div>
-    <span class="d-none d-xl-inline-block text-nowrap">ช่วยเหลือการเข้าถึง</span>
-</button>
 
 <!-- W3C WCAG AAA UNIVERSAL ACCESSIBILITY MODAL -->
 <div class="modal fade" id="w3cAaaAccessibilityModal" tabindex="-1" aria-labelledby="w3cAaaModalLabel" aria-hidden="true" data-bs-backdrop="static">

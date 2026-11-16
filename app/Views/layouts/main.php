@@ -96,6 +96,12 @@
                     <span><i class="fa-solid fa-landmark me-1.5 text-warning"></i>ศาลากลางจังหวัดพัทลุง โทร. 074-614130</span>
                 </div>
                 <div class="d-flex align-items-center gap-2">
+                    <!-- Accessibility / Universal Access Button -->
+                    <button type="button" class="btn btn-xs btn-outline-light rounded px-2 py-0 d-inline-flex align-items-center gap-1.5" onclick="if(window.W3CAccessibility) W3CAccessibility.openModal()" title="ช่วยเหลือการเข้าถึง (W3C WCAG AAA & เครื่องมือช่วยอ่านสำหรับประชาชนทุกคน)" style="font-size: 0.80rem; height: 22px; border-color: rgba(255,255,255,0.35); background: rgba(255,255,255,0.08);">
+                        <i class="fa-solid fa-universal-access" style="color: #38bdf8;"></i>
+                        <span>ช่วยเหลือการเข้าถึง</span>
+                    </button>
+                    <span class="opacity-40 mx-1">|</span>
                     <!-- Accessibility Font Size Adjuster -->
                     <span class="text-white-50 me-1" style="font-size: 0.82rem;">ขนาดตัวอักษร:</span>
                     <button type="button" class="btn btn-xs btn-outline-light rounded px-2 py-0 font-btn" onclick="adjustPortalFontSize(-1)" style="font-size: 0.80rem; height: 22px; min-width: 22px; display: inline-flex; align-items: center; justify-content: center;" title="ลดขนาดตัวอักษร">ก-</button>
@@ -211,6 +217,12 @@
                             </a>
                         </li>
                     <?php endif; ?>
+                    <li class="gov-nav-item d-xl-none border-top mt-2 pt-2">
+                        <a class="gov-nav-link text-info d-flex align-items-center gap-2" href="javascript:void(0);" onclick="if(window.W3CAccessibility) W3CAccessibility.openModal(); toggleGovMobileNav();">
+                            <i class="fa-solid fa-universal-access"></i>
+                            <span>ช่วยเหลือการเข้าถึง (Accessibility)</span>
+                        </a>
+                    </li>
                 </ul>
             </div>
         </header>
@@ -613,6 +625,24 @@
             App.toast('คืนสู่ขนาดตัวอักษรปกติ (Normal View)', 'info');
         }
     }
+
+    function scrollToSectionOrHome(sectionId) {
+        const el = document.getElementById(sectionId);
+        if (el) {
+            el.scrollIntoView({ behavior: 'smooth' });
+        } else {
+            window.location.href = "<?= base_url() ?>#" + sectionId;
+        }
+    }
+
+    function openOmniSearch() {
+        const el = document.getElementById('omniSearchModal');
+        if (el && typeof bootstrap !== 'undefined') {
+            new bootstrap.Modal(el).show();
+        } else {
+            window.location.href = "<?= base_url('api/search') ?>";
+        }
+    }
     </script>
 
     <?php // Include Frontend On-Page News & PR Studio for logged in Officer/Admin ?>
@@ -629,8 +659,8 @@
     <?php // Include Executive ShadowBox & Lightbox Suite for Interactive Galleries ?>
     <?= $this->include('components/shadow_box') ?>
 
-    <?php // Include Smart Floating Capsule Dock & Accessibility Suite ?>
-    <?= $this->include('components/smart_floating_dock') ?>
+
+
 
     <?php // Include 24/7 Citizen AI Assistant (น้องโนรา AI) & Brain Studio ?>
     <?= $this->include('components/nora_ai_assistant') ?>

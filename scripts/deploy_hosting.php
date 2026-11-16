@@ -603,11 +603,13 @@ $homeCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 curl_close($ch);
 
 $has3DBanner = strpos($homeHtml, 'prBanners3DSection') !== false;
-$hasFloatingDock = strpos($homeHtml, 'floating-capsule-dock') !== false;
+$hasNoraLauncher = strpos($homeHtml, 'noraLauncherBtn') !== false;
+$hasTopAccessibility = strpos($homeHtml, 'ช่วยเหลือการเข้าถึง') !== false;
 
 echo "   สถานะหน้าแรก: HTTP $homeCode\n";
 echo "   3D Banner Carousel: " . ($has3DBanner ? "✅ ติดตั้งสำเร็จ" : "⚠️ ยังตรวจไม่พบ") . "\n";
-echo "   Smart Floating Dock: " . ($hasFloatingDock ? "✅ ติดตั้งสำเร็จ" : "⚠️ ยังตรวจไม่พบ") . "\n";
+echo "   Nora AI Floating Launcher: " . ($hasNoraLauncher ? "✅ ติดตั้งสำเร็จ (ปุ่มลอยมุมขวาล่าง)" : "⚠️ ยังตรวจไม่พบ") . "\n";
+echo "   Top Utility Accessibility: " . ($hasTopAccessibility ? "✅ ติดตั้งสำเร็จ (แถบด้านบน)" : "⚠️ ยังตรวจไม่พบ") . "\n";
 
 // Check Procurement
 $procCh = curl_init($siteUrl . 'procurement');
