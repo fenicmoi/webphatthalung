@@ -275,6 +275,19 @@ class GalleryManager extends BaseController
             array_unshift($albums, $albumData);
         }
 
+        // บันทึกหมวดหมู่ใหม่ลง writable/gallery_categories.json โดยอัตโนมัติ
+        if (!empty($category)) {
+            try {
+                $writableDir = defined('WRITABLE') ? rtrim(\WRITABLE, '/\\') : realpath(__DIR__ . '/../../../writable');
+                $catJsonFile = $writableDir . DIRECTORY_SEPARATOR . 'gallery_categories.json';
+                $curCats = function_exists('get_gallery_categories') ? get_gallery_categories() : [];
+                if (!in_array($category, $curCats, true)) {
+                    $curCats[] = $category;
+                    @file_put_contents($catJsonFile, json_encode(array_values(array_unique(array_filter($curCats))), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+                }
+            } catch (\Throwable $e) {}
+        }
+
         save_gallery_albums($albums);
         return $this->response->setJSON(['status' => 'success', 'message' => $msg]);
     }

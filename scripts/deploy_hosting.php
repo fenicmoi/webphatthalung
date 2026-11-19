@@ -142,6 +142,7 @@ $essentialFiles = [
     'writable/site_executives.json',
     'writable/site_news.json',
     'writable/news_categories.json',
+    'writable/gallery_categories.json',
     'writable/visitor_stats.json',
     'app/Models/DirectoryModel.php',
     'app/Controllers/Directory.php',

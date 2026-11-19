@@ -1305,13 +1305,42 @@ if (!function_exists('get_gallery_categories')) {
      */
     function get_gallery_categories()
     {
-        return [
+        $writableDir = defined('WRITABLE') ? rtrim(\WRITABLE, '/\\') : realpath(__DIR__ . '/../../writable');
+        $jsonPath = $writableDir . DIRECTORY_SEPARATOR . 'gallery_categories.json';
+
+        $categories = [
             'ประเพณีและวัฒนธรรม',
             'ภารกิจผู้บริหารและจังหวัด',
             'กิจกรรมสาธารณประโยชน์',
             'การท่องเที่ยวและเศรษฐกิจ',
             'การศึกษานวัตกรรม'
         ];
+
+        if (is_file($jsonPath)) {
+            $saved = @json_decode(file_get_contents($jsonPath), true);
+            if (is_array($saved) && !empty($saved)) {
+                $categories = $saved;
+            }
+        }
+
+        // ดึงหมวดหมู่ที่มีอยู่ในฐานข้อมูล MySQL (ตาราง gallery_albums) มารวมด้วยอัตโนมัติ
+        try {
+            $db = \Config\Database::connect();
+            if ($db->tableExists('gallery_albums')) {
+                $rows = $db->table('gallery_albums')->select('description')->get()->getResultArray();
+                foreach ($rows as $r) {
+                    if (!empty($r['description'])) {
+                        $desc = @json_decode($r['description'], true);
+                        $c = is_array($desc) ? trim($desc['category'] ?? '') : trim($r['description']);
+                        if ($c !== '' && !in_array($c, $categories, true)) {
+                            $categories[] = $c;
+                        }
+                    }
+                }
+            }
+        } catch (\Throwable $e) {}
+
+        return array_values(array_unique(array_filter($categories)));
     }
 }
 

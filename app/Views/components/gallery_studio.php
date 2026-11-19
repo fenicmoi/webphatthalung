@@ -51,14 +51,28 @@ $galCategories = get_gallery_categories();
                 <div class="row g-3 mb-3">
                     <!-- 2. หมวดหมู่ -->
                     <div class="col-md-6">
-                        <label class="form-label fw-bold text-warning small">
-                            <i class="fa-solid fa-folder me-1"></i> หมวดหมู่กิจกรรม
-                        </label>
-                        <select class="form-select bg-dark text-white border-secondary border-opacity-50 py-2 rounded-3" name="category" id="galCategory">
+                        <div class="d-flex align-items-center justify-content-between mb-1">
+                            <label class="form-label fw-bold text-warning small m-0">
+                                <i class="fa-solid fa-folder me-1"></i> หมวดหมู่กิจกรรม
+                            </label>
+                            <button type="button" class="btn btn-link btn-sm text-info p-0 text-decoration-none" onclick="GalleryStudio.toggleCustomCategory()" id="btnToggleCatMode" style="font-size: 0.78rem;">
+                                <i class="fa-solid fa-circle-plus me-1"></i>เพิ่มหมวดใหม่
+                            </button>
+                        </div>
+                        <select class="form-select bg-dark text-white border-secondary border-opacity-50 py-2 rounded-3" id="galCategorySelect" onchange="GalleryStudio.onCategorySelectChange(this.value)">
                             <?php foreach ($galCategories as $gCat): ?>
                                 <option value="<?= esc($gCat) ?>"><?= esc($gCat) ?></option>
                             <?php endforeach; ?>
+                            <option value="__NEW__" style="color: #38bdf8; font-weight: bold;">➕ พิมพ์หมวดหมู่ใหม่...</option>
                         </select>
+                        <div id="customCategoryWrapper" class="mt-2 d-none">
+                            <div class="input-group">
+                                <span class="input-group-text bg-dark border-secondary border-opacity-50 text-info" style="font-size: 0.85rem;"><i class="fa-solid fa-pen-to-square"></i></span>
+                                <input type="text" class="form-control bg-dark text-white border-secondary border-opacity-50 py-2 rounded-end-3" id="galCustomCategoryInput" placeholder="พิมพ์ชื่อหมวดหมู่ใหม่ที่ต้องการ...">
+                            </div>
+                            <small class="text-white-50 mt-1 d-block" style="font-size: 0.75rem;">* หมวดหมู่ใหม่จะถูกบันทึกและแสดงในแท็บตัวกรองหน้าคลังภาพอัตโนมัติ</small>
+                        </div>
+                        <input type="hidden" name="category" id="galCategory" value="<?= esc($galCategories[0] ?? 'ประเพณีและวัฒนธรรม') ?>">
                     </div>
 
                     <!-- 3. วันที่จัดกิจกรรม -->
@@ -139,6 +153,70 @@ var GalleryStudio = {
         if (el && typeof bootstrap !== 'undefined') {
             this.modal = bootstrap.Modal.getInstance(el) || new bootstrap.Modal(el);
         }
+        var catInput = document.getElementById('galCustomCategoryInput');
+        if (catInput && !catInput._hasBind) {
+            catInput._hasBind = true;
+            catInput.addEventListener('input', function() {
+                var hiddenCat = document.getElementById('galCategory');
+                if (hiddenCat) hiddenCat.value = this.value.trim();
+            });
+        }
+    },
+
+    onCategorySelectChange: function(val) {
+        var wrapper = document.getElementById('customCategoryWrapper');
+        var input = document.getElementById('galCustomCategoryInput');
+        var hiddenCat = document.getElementById('galCategory');
+        if (val === '__NEW__') {
+            if (wrapper) wrapper.classList.remove('d-none');
+            if (input) {
+                input.focus();
+                if (hiddenCat) hiddenCat.value = input.value.trim();
+            }
+        } else {
+            if (wrapper) wrapper.classList.add('d-none');
+            if (hiddenCat) hiddenCat.value = val;
+        }
+    },
+
+    toggleCustomCategory: function() {
+        var select = document.getElementById('galCategorySelect');
+        if (select) {
+            select.value = '__NEW__';
+            this.onCategorySelectChange('__NEW__');
+        }
+    },
+
+    setCategoryValue: function(cat) {
+        cat = (cat || '').trim();
+        var select = document.getElementById('galCategorySelect');
+        var wrapper = document.getElementById('customCategoryWrapper');
+        var input = document.getElementById('galCustomCategoryInput');
+        var hiddenCat = document.getElementById('galCategory');
+        if (!select) return;
+
+        var found = false;
+        for (var i = 0; i < select.options.length; i++) {
+            if (select.options[i].value === cat) {
+                select.selectedIndex = i;
+                found = true;
+                break;
+            }
+        }
+
+        if (found) {
+            if (wrapper) wrapper.classList.add('d-none');
+            if (hiddenCat) hiddenCat.value = cat;
+        } else if (cat) {
+            select.value = '__NEW__';
+            if (wrapper) wrapper.classList.remove('d-none');
+            if (input) input.value = cat;
+            if (hiddenCat) hiddenCat.value = cat;
+        } else {
+            select.selectedIndex = 0;
+            if (wrapper) wrapper.classList.add('d-none');
+            if (hiddenCat) hiddenCat.value = select.value;
+        }
     },
 
     open: function(id, defaultCategory, directData) {
@@ -156,8 +234,10 @@ var GalleryStudio = {
         var subTitleEl = document.getElementById('galleryStudioSubTitle');
         var btnTextEl = document.getElementById('galBtnSaveText');
 
-        if (defaultCategory && document.getElementById('galCategory')) {
-            document.getElementById('galCategory').value = defaultCategory;
+        if (defaultCategory) {
+            this.setCategoryValue(defaultCategory);
+        } else {
+            this.setCategoryValue('');
         }
 
         // Helper เติมข้อมูลลงฟอร์มและแสดงตัวอย่างภาพ
@@ -168,7 +248,7 @@ var GalleryStudio = {
                 GalleryStudio.currentAlbumId = alb.id;
             }
             if (alb.title) document.getElementById('galTitle').value = alb.title;
-            if (alb.category) document.getElementById('galCategory').value = alb.category;
+            if (alb.category) GalleryStudio.setCategoryValue(alb.category);
             if (alb.date) document.getElementById('galDate').value = alb.date;
             if (alb.cover_image) {
                 document.getElementById('galCoverUrl').value = alb.cover_image;
@@ -246,6 +326,19 @@ var GalleryStudio = {
 
     save: function(e) {
         e.preventDefault();
+        var catSelect = document.getElementById('galCategorySelect');
+        var customInput = document.getElementById('galCustomCategoryInput');
+        var hiddenCat = document.getElementById('galCategory');
+        if (catSelect && catSelect.value === '__NEW__') {
+            var catVal = customInput ? customInput.value.trim() : '';
+            if (!catVal) {
+                if (typeof App !== 'undefined' && App.toast) App.toast('กรุณาระบุชื่อหมวดหมู่ใหม่', 'warning');
+                else alert('กรุณาระบุชื่อหมวดหมู่ใหม่');
+                if (customInput) customInput.focus();
+                return;
+            }
+            if (hiddenCat) hiddenCat.value = catVal;
+        }
         var form = document.getElementById('galleryStudioForm');
         var btn = document.getElementById('galBtnSave');
         var origText = btn.innerHTML;
