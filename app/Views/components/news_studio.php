@@ -320,7 +320,7 @@ window.NewsStudio = {
         }
     },
 
-    open: function(newsId = null) {
+    open: function(newsId = null, presetCategory = null) {
         this.init();
         this.imagesGallery = [];
         this.attachments = [];
@@ -418,6 +418,28 @@ window.NewsStudio = {
             if (fitSel) fitSel.value = 'cover';
             this.changeCoverFit('cover');
             this.updateCoverPreview('assets/images/slider/sane_muanglung.png');
+
+            if (presetCategory) {
+                const catSel = document.getElementById('studioNewsCategory');
+                if (catSel) {
+                    let found = false;
+                    for (let opt of catSel.options) {
+                        if (opt.value === presetCategory) {
+                            catSel.value = opt.value;
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found) {
+                        const newOpt = document.createElement('option');
+                        newOpt.value = presetCategory;
+                        newOpt.text = presetCategory;
+                        newOpt.selected = true;
+                        catSel.appendChild(newOpt);
+                    }
+                    catSel.value = presetCategory;
+                }
+            }
         }
 
         const modal = bootstrap.Modal.getOrCreateInstance(modalEl);

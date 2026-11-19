@@ -457,6 +457,15 @@ $routes->post('api/damrongtham/submit', 'Damrongtham::submit');
 $routes->get('api/damrongtham/track', 'Damrongtham::track');
 $routes->get('api/damrongtham/track/(:any)', 'Damrongtham::track/$1');
 
+/*
+ * --------------------------------------------------------------------
+ * Royal Volunteer 904 Portal (ศูนย์อำนวยการจิตอาสาพระราชทาน จังหวัดพัทลุง)
+ * --------------------------------------------------------------------
+ */
+$routes->get('volunteer', 'Volunteer::index');
+$routes->get('royal-volunteer', 'Volunteer::index');
+$routes->get('jitasaphra-ratchathan', 'Volunteer::index');
+
 // Admin Contact & Complaint Manager
 $routes->get('admin/contacts', 'Admin\ContactManager::index', ['filter' => 'auth']);
 $routes->get('admin/contacts/detail/(:num)', 'Admin\ContactManager::detail/$1', ['filter' => 'auth']);

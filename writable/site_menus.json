@@ -2,7 +2,7 @@
     {
         "id": "menu_6a7172486e6b1",
         "title": "หน้าหลัก",
-        "url": "/",
+        "url": "\/",
         "icon": "fa-solid fa-house",
         "target": "_self",
         "children": []
@@ -74,25 +74,25 @@
             {
                 "id": "sub_eoffice",
                 "title": "e-Office จังหวัดพัทลุง",
-                "url": "https://eoffice.phatthalung.go.th/",
+                "url": "https:\/\/eoffice.phatthalung.go.th\/",
                 "target": "_blank"
             },
             {
                 "id": "sub_crimemap",
                 "title": "CRIME MAP แผนที่อาชญากรรม 90 วัน",
-                "url": "https://www.phatthalung.go.th/90day/",
+                "url": "https:\/\/www.phatthalung.go.th\/90day\/",
                 "target": "_blank"
             },
             {
                 "id": "sub_phone",
                 "title": "ทำเนียบหัวหน้าส่วนราชการ (สมุดโทรศัพท์)",
-                "url": "https://www.phatthalung.go.th/2026/directory",
+                "url": "https:\/\/www.phatthalung.go.th\/2026\/directory",
                 "target": "_self"
             },
             {
                 "id": "sub_emenscr",
                 "title": "ระบบ eMENSCR (ยุทธศาสตร์ชาติ)",
-                "url": "https://emenscr.nesdc.go.th/",
+                "url": "https:\/\/emenscr.nesdc.go.th\/",
                 "target": "_blank"
             },
             {
@@ -126,6 +126,12 @@
                 "id": "sub_calendar_events",
                 "title": "ปฏิทินกิจกรรมและตารางงานจังหวัด",
                 "url": "calendar",
+                "target": "_self"
+            },
+            {
+                "id": "sub_volunteer_portal",
+                "title": "จิตอาสาพระราชทาน 904",
+                "url": "volunteer",
                 "target": "_self"
             },
             {

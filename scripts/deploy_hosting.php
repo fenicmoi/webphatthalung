@@ -173,7 +173,9 @@ $essentialFiles = [
     'app/Models/DamrongthamDailyModel.php',
     'app/Views/admin/damrongtham_stats.php',
     'public/assets/js/html2canvas.min.js',
-    'writable/damrongtham_stats.json'
+    'writable/damrongtham_stats.json',
+    'app/Controllers/Volunteer.php',
+    'app/Views/volunteer/index.php'
 ];
 
 $allFiles = array_unique(array_merge($files, $essentialFiles));
@@ -652,7 +654,21 @@ curl_close($docCh);
 
 $hasRiskDocs = (strpos($docHtml, 'แผนการบริหารความเสี่ยง') !== false || strpos($docHtml, 'การบริหารความเสี่ยง') !== false);
 echo "   สถานะหน้าคลังเอกสารหมวดการบริหารความเสี่ยง: HTTP $docCode\n";
-echo "   ข้อมูลการบริหารความเสี่ยง (cid=7): " . ($hasRiskDocs ? "✅ อัปเดตครบถ้วนสมบูรณ์ (8 รายการ)" : "⚠️ กำลังเตรียมการ") . "\n\n";
+echo "   ข้อมูลการบริหารความเสี่ยง (cid=7): " . ($hasRiskDocs ? "✅ อัปเดตครบถ้วนสมบูรณ์ (8 รายการ)" : "⚠️ กำลังเตรียมการ") . "\n";
+
+// Check Royal Volunteer Portal
+$volCh = curl_init($siteUrl . 'volunteer');
+curl_setopt($volCh, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($volCh, CURLOPT_SSL_VERIFYPEER, false);
+curl_setopt($volCh, CURLOPT_FOLLOWLOCATION, true);
+curl_setopt($volCh, CURLOPT_TIMEOUT, 30);
+$volHtml = curl_exec($volCh);
+$volCode = curl_getinfo($volCh, CURLINFO_HTTP_CODE);
+curl_close($volCh);
+
+$hasVolunteer = (strpos($volHtml, 'จิตอาสาพระราชทาน') !== false);
+echo "   สถานะหน้าจิตอาสาพระราชทาน (/2026/volunteer): HTTP $volCode\n";
+echo "   ระบบพอร์ทัลจิตอาสา 904: " . ($hasVolunteer ? "✅ อัปเดตครบถ้วนสมบูรณ์" : "⚠️ ยังตรวจไม่พบ") . "\n\n";
 
 echo "========================================================\n";
 echo "  🎉 อัปเดตขึ้น Hosting สำเร็จเรียบร้อยสมบูรณ์ 100%!\n";
