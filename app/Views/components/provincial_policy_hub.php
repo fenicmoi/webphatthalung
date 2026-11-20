@@ -172,7 +172,7 @@ $book1yrUrl = !empty($book1yr['url']) ? (strpos($book1yr['url'], 'http') === 0 ?
 
                         <!-- Banner 3: จิตอาสาพระราชทาน -->
                         <div class="col-6">
-                            <a href="https://www.royaloffice.th" target="_blank" class="royal-banner-card d-flex flex-column h-100 rounded-3 overflow-hidden shadow-xs hover-lift" title="จิตอาสาพระราชทาน">
+                            <a href="<?= base_url('volunteer') ?>" class="royal-banner-card d-flex flex-column h-100 rounded-3 overflow-hidden shadow-xs hover-lift" title="จิตอาสาพระราชทาน จังหวัดพัทลุง">
                                 <div class="royal-banner-img-wrap position-relative h-100 w-100 flex-grow-1">
                                     <img src="<?= base_url('assets/images/banners/banner_jitarsa.jpg') ?>" alt="จิตอาสาพระราชทาน" loading="lazy">
                                     <div class="royal-banner-overlay d-flex align-items-end p-2">
