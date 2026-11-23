@@ -92,8 +92,16 @@ class SearchController extends BaseController
                 $matchTag   = mb_stripos($d['sub_tag'] ?? '', $q) !== false;
 
                 if ($matchTitle || $matchCat || $matchTag) {
-                    $docUrl = !empty($d['file_url']) && $d['file_url'] !== '#' 
-                        ? (strpos($d['file_url'], 'http') === 0 ? $d['file_url'] : base_url($d['file_url'])) 
+                    $rawFileUrl = $d['file_url'] ?? '';
+                    if (!empty($rawFileUrl)) {
+                        $rawFileUrl = str_replace(
+                            ['phatthalung.go.th/2022/files/', 'phatthalung.go.th/2022-stop/files/'],
+                            'phatthalung.go.th/files/',
+                            $rawFileUrl
+                        );
+                    }
+                    $docUrl = !empty($rawFileUrl) && $rawFileUrl !== '#' 
+                        ? (strpos($rawFileUrl, 'http') === 0 ? $rawFileUrl : base_url($rawFileUrl)) 
                         : base_url('documents/category/' . urlencode((string)($d['category'] ?? '')));
 
                     $fType = strtolower($d['file_type'] ?? 'pdf');

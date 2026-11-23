@@ -1842,6 +1842,18 @@ if (!function_exists('get_site_documents')) {
             }
         }
 
+        // Self-healing legacy URL normalizer: ensure no broken /2022/files/ or /2022-stop/files/ links redirect to event.php
+        foreach ($docs as &$d) {
+            if (!empty($d['file_url'])) {
+                $d['file_url'] = str_replace(
+                    ['phatthalung.go.th/2022/files/', 'phatthalung.go.th/2022-stop/files/'],
+                    'phatthalung.go.th/files/',
+                    $d['file_url']
+                );
+            }
+        }
+        unset($d);
+
         if ($activeOnly) {
             $docs = array_filter($docs, static function($d) {
                 return !isset($d['active']) || (bool)$d['active'] === true;

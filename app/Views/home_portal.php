@@ -499,7 +499,12 @@ function renderSearchResults(results, query) {
     } else {
         let html = '<div class="list-group list-group-flush" style="border-radius: 12px; overflow: hidden;">';
         results.forEach(item => {
-            const link = item.url && item.url !== '#' ? item.url : 'javascript:void(0)';
+            let link = item.url && item.url !== '#' ? item.url : 'javascript:void(0)';
+            if (typeof link === 'string' && (link.includes('phatthalung.go.th/2022/files/') || link.includes('phatthalung.go.th/2022-stop/files/'))) {
+                link = link.replace(/phatthalung\.go\.th\/2022(-stop)?\/files\//g, 'phatthalung.go.th/files/');
+            }
+            const isExternalOrFile = link.startsWith('http') || link.endsWith('.pdf') || link.endsWith('.doc') || link.endsWith('.docx') || link.endsWith('.xls') || link.endsWith('.xlsx') || link.endsWith('.zip');
+            const targetAttr = isExternalOrFile ? 'target="_blank" rel="noopener noreferrer"' : '';
             
             const avatarHtml = item.image_url ? `
                 <div class="position-relative" style="width: 44px; height: 44px; flex-shrink: 0;">
@@ -514,7 +519,7 @@ function renderSearchResults(results, query) {
             `;
 
             html += `
-            <a href="${link}" class="list-group-item list-group-item-action d-flex align-items-center gap-3 p-3 text-decoration-none" style="background: transparent; border-bottom: 1px solid var(--glass-border, #f1f5f9); transition: all 0.2s;">
+            <a href="${link}" ${targetAttr} class="list-group-item list-group-item-action d-flex align-items-center gap-3 p-3 text-decoration-none" style="background: transparent; border-bottom: 1px solid var(--glass-border, #f1f5f9); transition: all 0.2s;">
                 ${avatarHtml}
                 <div class="flex-grow-1 overflow-hidden">
                     <div class="d-flex w-100 justify-content-between align-items-center mb-1">

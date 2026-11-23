@@ -175,7 +175,9 @@ $essentialFiles = [
     'public/assets/js/html2canvas.min.js',
     'writable/damrongtham_stats.json',
     'app/Controllers/Volunteer.php',
-    'app/Views/volunteer/index.php'
+    'app/Views/volunteer/index.php',
+    'writable/site_documents.json',
+    'writable/dump_ita_documents.json'
 ];
 
 $allFiles = array_unique(array_merge($files, $essentialFiles));
@@ -450,6 +452,7 @@ if ($zip->open($zipPath) === true) {
                         $iCode = (string)($ir["oit_code"] ?? "");
                         $iName = (string)($ir["name"] ?? "");
                         $iUrl = (string)($ir["url"] ?? "");
+                        $iUrl = str_replace([\'phatthalung.go.th/2022/files/\', \'phatthalung.go.th/2022-stop/files/\'], \'phatthalung.go.th/files/\', $iUrl);
                         $iYear = (string)($ir["year"] ?? "");
                         $iStat = (string)($ir["status"] ?? "active");
                         $iCreated = (string)($ir["created_at"] ?? date("Y-m-d H:i:s"));
