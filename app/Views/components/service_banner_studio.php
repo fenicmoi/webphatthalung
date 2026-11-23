@@ -60,17 +60,33 @@
                             </div>
 
                             <!-- Image Cover preview Box -->
-                            <div class="mb-4 text-center">
-                                <div class="position-relative rounded-4 overflow-hidden mb-2 border shadow-sm mx-auto" style="max-height: 190px; background: #0f172a; border-color: rgba(255,255,255,0.2) !important;">
-                                    <img src="<?= base_url('assets/images/banners/eservice_citizen.png') ?>" id="sb_preview_img" class="img-fluid w-100" style="max-height: 190px; object-fit: cover;" alt="Preview Banner">
-                                    <div class="position-absolute bottom-0 start-0 end-0 p-2 d-flex align-items-center justify-content-center" style="background: rgba(15, 23, 42, 0.75);">
-                                        <label class="btn btn-warning btn-sm fw-bold rounded-pill px-4 m-0 shadow text-dark" style="cursor: pointer;">
-                                            <i class="fa-solid fa-camera me-1"></i> เปลี่ยนรูปภาพแบนเนอร์ (Upload Image)...
+                            <div class="mb-3 text-center">
+                                <div class="position-relative rounded-4 overflow-hidden mb-2 border shadow-sm mx-auto" style="height: 190px; background: #0f172a; border-color: rgba(255,255,255,0.2) !important;">
+                                    <div id="sb_preview_backdrop" class="position-absolute" style="inset: -15px; background-size: cover; background-position: center; filter: blur(16px) brightness(0.65); opacity: 0.9; transform: scale(1.15); pointer-events: none; z-index: 1;"></div>
+                                    <img src="<?= base_url('assets/images/banners/eservice_citizen.png') ?>" id="sb_preview_img" class="w-100 h-100 position-relative" style="object-fit: contain; z-index: 2;" alt="Preview Banner">
+                                    <div class="position-absolute bottom-0 start-0 end-0 p-2 d-flex align-items-center justify-content-center gap-2" style="background: rgba(15, 23, 42, 0.78); z-index: 5;">
+                                        <label class="btn btn-warning btn-sm fw-bold rounded-pill px-3 m-0 shadow text-dark" style="cursor: pointer;">
+                                            <i class="fa-solid fa-camera me-1"></i> เปลี่ยนรูปภาพ...
                                             <input type="file" class="d-none" id="sb_image_input" accept="image/*" onchange="ServiceBannerStudio.handleUpload(this)">
                                         </label>
+                                        <button type="button" class="btn btn-outline-light btn-sm fw-bold rounded-pill px-3 shadow" onclick="ServiceBannerStudio.autoFitImageToSlide()" title="ปรับแต่งและจัดขนาดภาพให้พอดีสัดส่วนสไลด์ (380x220) ทันที">
+                                            <i class="fa-solid fa-wand-magic-sparkles text-warning me-1"></i> ปรับสัดส่วนพอดีสไลด์
+                                        </button>
                                     </div>
                                 </div>
-                                <small class="text-muted"><i class="fa-solid fa-circle-info me-1"></i>แนะนำขนาดภาพ 1280x600 px หรืออัตราส่วน 16:9 เพื่อความคมชัดทุกหน้าจอ</small>
+                                <div class="row g-2 align-items-center justify-content-center text-start">
+                                    <div class="col-sm-7">
+                                        <label class="form-label small fw-bold text-info mb-1"><i class="fa-solid fa-expand me-1"></i>รูปแบบการแสดงภาพให้พอดีสไลด์</label>
+                                        <select id="sb_cover_fit" name="cover_fit" class="form-select form-select-sm modern-input" onchange="ServiceBannerStudio.updatePreviewFit(this.value)">
+                                            <option value="contain" selected>🖼️ พอดีสไลด์ เห็นครบทั้งภาพ ไร้การตัดขอบ (Contain) [แนะนำ]</option>
+                                            <option value="cover">📐 ขยายเต็มกรอบสไลด์ ตัดส่วนเกิน (Cover)</option>
+                                            <option value="fill">↔️ ยืดภาพให้เต็มกรอบสไลด์ (Stretch / Fill)</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-5 text-end text-sm-start pt-sm-4">
+                                        <small class="text-muted"><i class="fa-solid fa-circle-info me-1"></i>สัดส่วนสไลด์: <b>380 × 220 px</b> (1.73:1)</small>
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="row g-3">
@@ -238,6 +254,111 @@ window.ServiceBannerStudio = {
         if (target) this.selectItem(target);
     },
 
+    updatePreviewFit: function(fit) {
+        const img = document.getElementById('sb_preview_img');
+        const backdrop = document.getElementById('sb_preview_backdrop');
+        if (!img) return;
+        const currentFit = fit || 'contain';
+        img.style.objectFit = currentFit;
+        if (backdrop) {
+            backdrop.style.display = (currentFit === 'contain') ? 'block' : 'none';
+            backdrop.style.backgroundImage = `url("${img.src}")`;
+        }
+    },
+
+    autoFitImageToSlide: function() {
+        const img = document.getElementById('sb_preview_img');
+        if (!img || !img.src) {
+            App.toast('ไม่พบรูปภาพสำหรับปรับสัดส่วน', 'warning');
+            return;
+        }
+
+        const loader = App.showLoader ? App.showLoader('กำลังประมวลผลและปรับภาพให้พอดีกับสไลด์ 380x220...') : null;
+        
+        const tempImg = new Image();
+        tempImg.crossOrigin = 'anonymous';
+        tempImg.onload = function() {
+            try {
+                // Target: 760 x 440 (2x Retina resolution of 380x220 banner slide)
+                const targetW = 760;
+                const targetH = 440;
+                const canvas = document.createElement('canvas');
+                canvas.width = targetW;
+                canvas.height = targetH;
+                const ctx = canvas.getContext('2d');
+
+                // 1. Draw blurred ambient backdrop filling 100% of canvas
+                const scaleBg = Math.max(targetW / tempImg.naturalWidth, targetH / tempImg.naturalHeight);
+                const bgW = tempImg.naturalWidth * scaleBg * 1.15;
+                const bgH = tempImg.naturalHeight * scaleBg * 1.15;
+                const bgX = (targetW - bgW) / 2;
+                const bgY = (targetH - bgH) / 2;
+
+                ctx.save();
+                ctx.filter = 'blur(20px) brightness(0.65)';
+                ctx.drawImage(tempImg, bgX, bgY, bgW, bgH);
+                ctx.restore();
+
+                // Darken layer for maximum text readability
+                ctx.fillStyle = 'rgba(15, 23, 42, 0.35)';
+                ctx.fillRect(0, 0, targetW, targetH);
+
+                // 2. Draw centered foreground image (contained, 100% visible without any clipping)
+                const scaleFg = Math.min(targetW / tempImg.naturalWidth, targetH / tempImg.naturalHeight);
+                const fgW = tempImg.naturalWidth * scaleFg;
+                const fgH = tempImg.naturalHeight * scaleFg;
+                const fgX = (targetW - fgW) / 2;
+                const fgY = (targetH - fgH) / 2;
+
+                ctx.drawImage(tempImg, fgX, fgY, fgW, fgH);
+
+                // Convert canvas to Blob and upload
+                canvas.toBlob(function(blob) {
+                    if (!blob) {
+                        if (loader && App.hideLoader) App.hideLoader(loader);
+                        App.toast('ไม่สามารถสร้างภาพปรับสัดส่วนได้', 'error');
+                        return;
+                    }
+                    const formData = new FormData();
+                    formData.append('image', blob, 'banner_fitted_' + Date.now() + '.png');
+                    fetch('<?= base_url("service-banners/upload-image") ?>', {
+                        method: 'POST',
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                        body: formData
+                    })
+                    .then(r => r.json())
+                    .then(data => {
+                        if (loader && App.hideLoader) App.hideLoader(loader);
+                        if (data.status === 'success') {
+                            document.getElementById('sb_image_path').value = data.path;
+                            img.src = data.url;
+                            const fitSelect = document.getElementById('sb_cover_fit');
+                            if (fitSelect) fitSelect.value = 'contain';
+                            ServiceBannerStudio.updatePreviewFit('contain');
+                            App.toast('✨ ปรับปรุงภาพให้มีขนาดพอดีกับสไลด์เรียบร้อยแล้ว!', 'success');
+                        } else {
+                            App.toast(data.message || 'บันทึกภาพปรับขนาดล้มเหลว', 'error');
+                        }
+                    })
+                    .catch(err => {
+                        if (loader && App.hideLoader) App.hideLoader(loader);
+                        console.error(err);
+                        App.toast('เกิดข้อผิดพลาดในการอัปโหลดภาพที่ปรับขนาด', 'error');
+                    });
+                }, 'image/png');
+            } catch (err) {
+                if (loader && App.hideLoader) App.hideLoader(loader);
+                console.error(err);
+                App.toast('เกิดข้อผิดพลาดในการคำนวณสัดส่วนภาพ', 'error');
+            }
+        };
+        tempImg.onerror = function() {
+            if (loader && App.hideLoader) App.hideLoader(loader);
+            App.toast('ไม่สามารถอ่านไฟล์ภาพต้นฉบับได้', 'error');
+        };
+        tempImg.src = img.src;
+    },
+
     selectItem: function(item) {
         this.currentItem = item;
         this.renderList(); // highlight
@@ -256,6 +377,11 @@ window.ServiceBannerStudio = {
             ? item.image
             : '<?= base_url() ?>' + (item.image || 'assets/images/banners/eservice_citizen.png');
         document.getElementById('sb_preview_img').src = imgUrl;
+
+        const coverFit = item.cover_fit || 'contain';
+        const fitSelect = document.getElementById('sb_cover_fit');
+        if (fitSelect) fitSelect.value = coverFit;
+        this.updatePreviewFit(coverFit);
 
         const sw = document.getElementById('sb_active');
         sw.checked = (item.active !== false && item.active !== '0' && item.active !== 0);
@@ -279,6 +405,10 @@ window.ServiceBannerStudio = {
         document.getElementById('sb_target').value = '_blank';
         document.getElementById('sb_image_path').value = 'assets/images/banners/eservice_citizen.png';
         document.getElementById('sb_preview_img').src = '<?= base_url("assets/images/banners/eservice_citizen.png") ?>';
+
+        const fitSelect = document.getElementById('sb_cover_fit');
+        if (fitSelect) fitSelect.value = 'contain';
+        this.updatePreviewFit('contain');
 
         const sw = document.getElementById('sb_active');
         sw.checked = true;
@@ -308,6 +438,8 @@ window.ServiceBannerStudio = {
             if (data.status === 'success') {
                 document.getElementById('sb_image_path').value = data.path;
                 document.getElementById('sb_preview_img').src = data.url;
+                const fitSelect = document.getElementById('sb_cover_fit');
+                ServiceBannerStudio.updatePreviewFit(fitSelect ? fitSelect.value : 'contain');
                 App.toast('อัปโหลดรูปภาพแบนเนอร์สำเร็จ', 'success');
             } else {
                 App.toast(data.message || 'อัปโหลดภาพล้มเหลว', 'error');
@@ -322,8 +454,12 @@ window.ServiceBannerStudio = {
     save: function() {
         const form = document.getElementById('sbStudioForm');
         const formData = new FormData(form);
-        // Ensure active state boolean is passed correctly
+        // Ensure active state boolean and cover_fit are passed correctly
         formData.set('active', document.getElementById('sb_active').checked ? '1' : '0');
+        const fitSelect = document.getElementById('sb_cover_fit');
+        if (fitSelect) {
+            formData.set('cover_fit', fitSelect.value || 'contain');
+        }
 
         const loader = App.showLoader ? App.showLoader('กำลังบันทึกและอัปเดตหน้าเว็บ...') : null;
         fetch('<?= base_url("service-banners/save-inline") ?>', {

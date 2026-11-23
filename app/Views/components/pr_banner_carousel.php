@@ -141,6 +141,19 @@ if ($origBannerCount > 0) {
     border-color: #cbd5e1;
 }
 
+/* Ambient blurred backdrop for contain mode */
+.pr-3d-backdrop {
+    position: absolute;
+    inset: -15px;
+    background-size: cover;
+    background-position: center;
+    filter: blur(18px) brightness(0.68) saturate(1.25);
+    opacity: 0.92;
+    transform: scale(1.15);
+    pointer-events: none;
+    z-index: 1;
+}
+
 /* Banner Image */
 .pr-3d-img {
     width: 100%;
@@ -149,6 +162,20 @@ if ($origBannerCount > 0) {
     display: block;
     border-radius: 16px;
     transition: transform 0.60s cubic-bezier(0.22, 1, 0.36, 1);
+    position: relative;
+    z-index: 2;
+}
+
+.pr-3d-img.fit-contain {
+    object-fit: contain !important;
+}
+
+.pr-3d-img.fit-cover {
+    object-fit: cover !important;
+}
+
+.pr-3d-img.fit-fill {
+    object-fit: fill !important;
 }
 
 .pr-3d-card.is-active:hover .pr-3d-img {
@@ -523,6 +550,7 @@ if ($origBannerCount > 0) {
                 $itemTitle = $item['title'] ?? 'แบนเนอร์ประชาสัมพันธ์';
                 $itemBadge = $item['badge'] ?? '';
                 $itemBadgeColor = $item['badge_color'] ?? 'primary';
+                $itemCoverFit = !empty($item['cover_fit']) ? $item['cover_fit'] : 'contain';
                 $origIdx = $item['__orig_index'] ?? $idx;
             ?>
                 <div class="pr-3d-card" data-index="<?= $idx ?>" data-original-index="<?= $origIdx ?>" data-url="<?= htmlspecialchars($targetUrl) ?>" data-target="<?= htmlspecialchars($targetAttr) ?>" title="<?= htmlspecialchars($itemTitle) ?>">
@@ -532,7 +560,11 @@ if ($origBannerCount > 0) {
                         <span>แนะนำ</span>
                     </div>
 
-                    <img src="<?= $imgUrl ?>" alt="<?= htmlspecialchars($itemTitle) ?>" class="pr-3d-img" loading="lazy" draggable="false">
+                    <?php if ($itemCoverFit === 'contain'): ?>
+                        <div class="pr-3d-backdrop" style="background-image: url('<?= htmlspecialchars($imgUrl) ?>');"></div>
+                    <?php endif; ?>
+
+                    <img src="<?= $imgUrl ?>" alt="<?= htmlspecialchars($itemTitle) ?>" class="pr-3d-img fit-<?= htmlspecialchars($itemCoverFit) ?>" loading="lazy" draggable="false" style="object-fit: <?= htmlspecialchars($itemCoverFit) ?>;">
                     
                     <!-- Banner Title & Badge Label Overlay -->
                     <div class="pr-3d-caption">

@@ -77,14 +77,31 @@
                     <div class="card p-3 mb-4 rounded-4 border shadow-sm" style="background: #0f172a; color: #fff;">
                         <div class="d-flex align-items-center justify-content-between mb-2">
                             <span class="fw-bold" style="font-size: 1rem;"><i class="fa-solid fa-image text-success me-2"></i>รูปภาพแบนเนอร์ <span class="text-danger">*</span></span>
-                            <span class="badge bg-secondary text-white px-2 py-1">ขนาดแนะนำ ~1200 x 500 px (อัตราส่วน 2.4:1)</span>
+                            <span class="badge bg-secondary text-white px-2 py-1">ขนาดสไลด์แนะนำ 380 × 220 px (หรือ 16:9)</span>
                         </div>
                         
-                        <div class="rounded-3 overflow-hidden position-relative text-center d-flex align-items-center justify-content-center mb-3" style="background: #1e293b; min-height: 190px; max-height: 240px; border: 2px dashed rgba(255,255,255,0.2);">
-                            <img id="newBannerPreview" src="<?= base_url('assets/images/banners/eservice_citizen.png') ?>" alt="Preview" style="max-height: 220px; max-width: 100%; object-fit: contain; border-radius: 8px;">
-                            <div id="uploadSpinner" class="position-absolute top-50 start-50 translate-middle d-none text-center bg-dark p-3 rounded-3 shadow" style="--bs-bg-opacity: .85;">
+                        <div class="rounded-3 overflow-hidden position-relative text-center d-flex align-items-center justify-content-center mb-3" style="background: #1e293b; height: 210px; border: 2px dashed rgba(255,255,255,0.2);">
+                            <div id="newBannerBackdrop" class="position-absolute" style="inset: -15px; background-size: cover; background-position: center; filter: blur(16px) brightness(0.65); opacity: 0.9; transform: scale(1.15); pointer-events: none; z-index: 1;"></div>
+                            <img id="newBannerPreview" src="<?= base_url('assets/images/banners/eservice_citizen.png') ?>" alt="Preview" class="position-relative" style="max-height: 200px; max-width: 100%; object-fit: contain; border-radius: 8px; z-index: 2;">
+                            <div id="uploadSpinner" class="position-absolute top-50 start-50 translate-middle d-none text-center bg-dark p-3 rounded-3 shadow" style="--bs-bg-opacity: .85; z-index: 10;">
                                 <div class="spinner-border text-success mb-2" role="status"></div>
                                 <div class="text-white small fw-bold">กำลังอัปโหลดรูปภาพ...</div>
+                            </div>
+                        </div>
+
+                        <div class="row g-2 align-items-center mb-2">
+                            <div class="col-sm-7">
+                                <label class="form-label small fw-bold text-info mb-1"><i class="fa-solid fa-expand me-1"></i>รูปแบบการแสดงภาพให้พอดีสไลด์</label>
+                                <select id="newBannerCoverFit" class="form-select form-select-sm bg-dark text-white border-secondary" onchange="updateNewBannerFit(this.value)">
+                                    <option value="contain" selected>🖼️ พอดีสไลด์ เห็นครบทั้งภาพ ไร้การตัดขอบ (Contain) [แนะนำ]</option>
+                                    <option value="cover">📐 ขยายเต็มกรอบสไลด์ ตัดส่วนเกิน (Cover)</option>
+                                    <option value="fill">↔️ ยืดภาพให้เต็มกรอบสไลด์ (Stretch / Fill)</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-5 d-flex align-items-end">
+                                <button type="button" class="btn btn-outline-warning btn-sm w-100 py-1.5 fw-bold" onclick="autoFitNewBanner()" title="ปรับแต่งและจัดขนาดภาพให้พอดีสัดส่วนสไลด์ (380x220) ทันที">
+                                    <i class="fa-solid fa-wand-magic-sparkles me-1"></i> ปรับสัดส่วนพอดีสไลด์
+                                </button>
                             </div>
                         </div>
 
@@ -92,7 +109,7 @@
                             <input type="file" id="newBannerFileInput" class="form-control form-control-sm bg-dark text-white border-secondary" accept="image/*" onchange="previewAndUploadNewBanner(event)">
                             <input type="hidden" id="newBannerImagePath" value="assets/images/banners/eservice_citizen.png">
                         </div>
-                        <small class="text-secondary mt-1 d-block"><i class="fa-solid fa-circle-info me-1"></i> สามารถเลือกไฟล์จากคอมพิวเตอร์ (.jpg, .png, .webp) ระบบจะอัปโหลดอัตโนมัติทันที</small>
+                        <small class="text-secondary mt-1 d-block"><i class="fa-solid fa-circle-info me-1"></i> สามารถเลือกไฟล์ภาพจากคอมพิวเตอร์ หรือกด "ปรับสัดส่วนพอดีสไลด์" เพื่อปรับภาพอัตโนมัติ</small>
                     </div>
 
                     <!-- Fields Row -->
@@ -205,16 +222,22 @@ function renderBannersList() {
 
                     <!-- Banner Image Preview & Upload Box -->
                     <div class="position-relative mb-3 rounded-4 overflow-hidden shadow-sm" style="height: 200px; background: #0f172a; border: 1px solid rgba(255,255,255,0.15);">
-                        <img src="${imgUrl}" id="preview_img_${idx}" class="w-100 h-100" style="object-fit: cover; transition: transform 0.3s;" alt="${item.title || 'Service Banner'}">
-                        <div class="position-absolute bottom-0 start-0 end-0 p-3 d-flex align-items-end justify-content-between" style="background: linear-gradient(to top, rgba(15, 23, 42, 0.9) 0%, transparent 100%);">
+                        <div class="position-absolute" style="inset: -15px; background-image: url('${imgUrl}'); background-size: cover; background-position: center; filter: blur(16px) brightness(0.65); opacity: ${item.cover_fit === 'cover' ? '0' : '0.9'}; transform: scale(1.15); pointer-events: none; z-index: 1;"></div>
+                        <img src="${imgUrl}" id="preview_img_${idx}" class="w-100 h-100 position-relative" style="object-fit: ${item.cover_fit || 'contain'}; transition: transform 0.3s; z-index: 2;" alt="${item.title || 'Service Banner'}">
+                        <div class="position-absolute bottom-0 start-0 end-0 p-3 d-flex align-items-end justify-content-between" style="background: linear-gradient(to top, rgba(15, 23, 42, 0.9) 0%, transparent 100%); z-index: 5;">
                             <div class="text-truncate pe-2">
                                 <span class="badge bg-${item.badge_color || 'primary'} mb-1">${item.badge || 'บริการออนไลน์'}</span>
                                 <h6 class="text-white fw-bold m-0 text-truncate">${item.title || 'ไม่ระบุชื่อบริการ'}</h6>
                             </div>
-                            <label class="btn btn-warning btn-sm fw-bold rounded-pill px-3 m-0 shadow text-dark flex-shrink-0" style="cursor: pointer;">
-                                <i class="fa-solid fa-camera me-1"></i> เปลี่ยนรูปภาพ...
-                                <input type="file" class="d-none" accept="image/*" onchange="uploadBannerImage(event, ${idx})">
-                            </label>
+                            <div class="d-flex align-items-center gap-2 flex-shrink-0">
+                                <button type="button" class="btn btn-outline-light btn-sm fw-bold rounded-pill px-2.5 shadow" onclick="autoFitBannerImage(${idx})" title="ปรับสัดส่วนภาพนี้ให้พอดีสไลด์ 380x220 อัตโนมัติ">
+                                    <i class="fa-solid fa-wand-magic-sparkles text-warning me-1"></i> ปรับพอดีสไลด์
+                                </button>
+                                <label class="btn btn-warning btn-sm fw-bold rounded-pill px-3 m-0 shadow text-dark flex-shrink-0" style="cursor: pointer;">
+                                    <i class="fa-solid fa-camera me-1"></i> เปลี่ยนรูป...
+                                    <input type="file" class="d-none" accept="image/*" onchange="uploadBannerImage(event, ${idx})">
+                                </label>
+                            </div>
                         </div>
                     </div>
 
@@ -242,18 +265,26 @@ function renderBannersList() {
                             <label class="form-label small fw-bold text-secondary mb-1"><i class="fa-solid fa-align-left me-1"></i> คำอธิบายย่อ (Description / Subtitle)</label>
                             <input type="text" class="form-control modern-input" value="${item.desc || ''}" onchange="updateProp(${idx}, 'desc', this.value)" placeholder="รายละเอียดสั้นๆ ของบริการและวัตถุประสงค์">
                         </div>
-                        <div class="col-md-8">
+                        <div class="col-md-5">
                             <label class="form-label small fw-bold text-warning mb-1"><i class="fa-solid fa-globe me-1"></i> ลิงก์ปลายทาง (Destination URL / Link)</label>
                             <div class="input-group">
                                 <span class="input-group-text bg-dark text-warning border-secondary"><i class="fa-solid fa-link"></i></span>
                                 <input type="text" class="form-control modern-input text-info fw-bold" value="${item.url || ''}" onchange="updateProp(${idx}, 'url', this.value)" placeholder="https://... หรือ #pdpa หรือรหัสสมอเรือ">
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <label class="form-label small fw-bold text-muted mb-1"><i class="fa-solid fa-window-restore me-1"></i> วิธีการเปิดลิงก์ (Target)</label>
+                        <div class="col-md-3">
+                            <label class="form-label small fw-bold text-muted mb-1"><i class="fa-solid fa-window-restore me-1"></i> วิธีการเปิดลิงก์</label>
                             <select class="form-select modern-input" onchange="updateProp(${idx}, 'target', this.value)">
-                                <option value="_blank" ${item.target === '_blank' || !item.target ? 'selected' : ''}>🌐 แท็บใหม่ (_blank)</option>
-                                <option value="_self" ${item.target === '_self' ? 'selected' : ''}>📱 หน้าต่างเดิม (_self)</option>
+                                <option value="_blank" ${item.target === '_blank' || !item.target ? 'selected' : ''}>🌐 แท็บใหม่</option>
+                                <option value="_self" ${item.target === '_self' ? 'selected' : ''}>📱 หน้าเดิม</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold text-info mb-1"><i class="fa-solid fa-expand me-1"></i> รูปแบบภาพให้พอดีสไลด์</label>
+                            <select class="form-select modern-input" onchange="updateProp(${idx}, 'cover_fit', this.value); renderBannersList();">
+                                <option value="contain" ${(!item.cover_fit || item.cover_fit === 'contain') ? 'selected' : ''}>🖼️ พอดีสไลด์ (เห็นครบ)</option>
+                                <option value="cover" ${item.cover_fit === 'cover' ? 'selected' : ''}>📐 ขยายเต็มกรอบ (ตัดส่วนเกิน)</option>
+                                <option value="fill" ${item.cover_fit === 'fill' ? 'selected' : ''}>↔️ ยืดภาพให้เต็มกรอบ (Fill)</option>
                             </select>
                         </div>
                     </div>
@@ -299,6 +330,120 @@ function moveOrder(idx, dir) {
     saveAllServiceBanners();
 }
 
+function updateNewBannerFit(fit) {
+    const preview = document.getElementById('newBannerPreview');
+    const backdrop = document.getElementById('newBannerBackdrop');
+    if (!preview) return;
+    const currentFit = fit || 'contain';
+    preview.style.objectFit = currentFit;
+    if (backdrop) {
+        backdrop.style.display = (currentFit === 'contain') ? 'block' : 'none';
+        backdrop.style.backgroundImage = `url("${preview.src}")`;
+    }
+}
+
+function autoFitCanvasProcess(imgElement, onDone) {
+    if (!imgElement || !imgElement.src) {
+        App.toast('ไม่พบรูปภาพสำหรับปรับสัดส่วน', 'warning');
+        return;
+    }
+    const loader = App.showLoader ? App.showLoader('กำลังปรับปรุงภาพให้มีขนาดพอดีกับสไลด์ 380x220...') : null;
+    const tempImg = new Image();
+    tempImg.crossOrigin = 'anonymous';
+    tempImg.onload = function() {
+        try {
+            const targetW = 760;
+            const targetH = 440;
+            const canvas = document.createElement('canvas');
+            canvas.width = targetW;
+            canvas.height = targetH;
+            const ctx = canvas.getContext('2d');
+
+            // 1. Blurred backdrop
+            const scaleBg = Math.max(targetW / tempImg.naturalWidth, targetH / tempImg.naturalHeight);
+            const bgW = tempImg.naturalWidth * scaleBg * 1.15;
+            const bgH = tempImg.naturalHeight * scaleBg * 1.15;
+            const bgX = (targetW - bgW) / 2;
+            const bgY = (targetH - bgH) / 2;
+
+            ctx.save();
+            ctx.filter = 'blur(20px) brightness(0.65)';
+            ctx.drawImage(tempImg, bgX, bgY, bgW, bgH);
+            ctx.restore();
+
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.35)';
+            ctx.fillRect(0, 0, targetW, targetH);
+
+            // 2. Centered foreground contained (100% visible, no crop)
+            const scaleFg = Math.min(targetW / tempImg.naturalWidth, targetH / tempImg.naturalHeight);
+            const fgW = tempImg.naturalWidth * scaleFg;
+            const fgH = tempImg.naturalHeight * scaleFg;
+            const fgX = (targetW - fgW) / 2;
+            const fgY = (targetH - fgH) / 2;
+
+            ctx.drawImage(tempImg, fgX, fgY, fgW, fgH);
+
+            canvas.toBlob(function(blob) {
+                if (!blob) {
+                    if (loader && App.hideLoader) App.hideLoader(loader);
+                    App.toast('ไม่สามารถสร้างภาพปรับสัดส่วนได้', 'error');
+                    return;
+                }
+                const formData = new FormData();
+                formData.append('image', blob, 'banner_fitted_' + Date.now() + '.png');
+                App.fetch('<?= base_url("admin/service-banners/upload") ?>', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(data => {
+                    if (loader && App.hideLoader) App.hideLoader(loader);
+                    if (data.status === 'success') {
+                        onDone(data.path, data.url || ('<?= base_url() ?>/' + data.path));
+                        App.toast('✨ ปรับแต่งภาพให้มีขนาดพอดีสไลด์เรียบร้อยแล้ว!', 'success');
+                    } else {
+                        App.toast(data.message || 'บันทึกภาพล้มเหลว', 'error');
+                    }
+                })
+                .catch(err => {
+                    if (loader && App.hideLoader) App.hideLoader(loader);
+                    console.error(err);
+                    App.toast('เกิดข้อผิดพลาดในการเชื่อมต่ออัปโหลด', 'error');
+                });
+            }, 'image/png');
+        } catch(e) {
+            if (loader && App.hideLoader) App.hideLoader(loader);
+            console.error(e);
+            App.toast('เกิดข้อผิดพลาดในการประมวลผลภาพ', 'error');
+        }
+    };
+    tempImg.onerror = function() {
+        if (loader && App.hideLoader) App.hideLoader(loader);
+        App.toast('ไม่สามารถอ่านไฟล์ภาพต้นฉบับได้', 'error');
+    };
+    tempImg.src = imgElement.src;
+}
+
+function autoFitNewBanner() {
+    const preview = document.getElementById('newBannerPreview');
+    autoFitCanvasProcess(preview, (path, url) => {
+        document.getElementById('newBannerImagePath').value = path;
+        preview.src = url;
+        const fitSelect = document.getElementById('newBannerCoverFit');
+        if (fitSelect) fitSelect.value = 'contain';
+        updateNewBannerFit('contain');
+    });
+}
+
+function autoFitBannerImage(idx) {
+    const imgEl = document.getElementById(`preview_img_${idx}`);
+    autoFitCanvasProcess(imgEl, (path, url) => {
+        serviceBanners[idx].image = path;
+        serviceBanners[idx].cover_fit = 'contain';
+        renderBannersList();
+        saveAllServiceBanners();
+    });
+}
+
 function addNewBanner() {
     try {
         // Reset form fields
@@ -312,6 +457,9 @@ function addNewBanner() {
         document.getElementById('newBannerImagePath').value = 'assets/images/banners/eservice_citizen.png';
         document.getElementById('newBannerPreview').src = '<?= base_url("assets/images/banners/eservice_citizen.png") ?>';
         document.getElementById('newBannerFileInput').value = '';
+        const fitSelect = document.getElementById('newBannerCoverFit');
+        if (fitSelect) fitSelect.value = 'contain';
+        updateNewBannerFit('contain');
         
         // Show Modal
         const modalEl = document.getElementById('modalAddBanner');
@@ -387,6 +535,7 @@ function submitNewBannerModal() {
         url: url,
         target: document.getElementById('newBannerTarget').value,
         image: document.getElementById('newBannerImagePath').value || 'assets/images/banners/eservice_citizen.png',
+        cover_fit: (document.getElementById('newBannerCoverFit') ? document.getElementById('newBannerCoverFit').value : 'contain'),
         active: document.getElementById('newBannerActive').value === '1',
         sort_order: 1 // We'll put it at the top
     };

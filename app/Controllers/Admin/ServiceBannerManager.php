@@ -31,6 +31,11 @@ class ServiceBannerManager extends BaseController
         if (!empty($bannersJson)) {
             $decoded = json_decode($bannersJson, true);
             if (is_array($decoded)) {
+                foreach ($decoded as &$b) {
+                    if (empty($b['cover_fit'])) {
+                        $b['cover_fit'] = 'contain';
+                    }
+                }
                 save_service_banners($decoded);
                 return $this->respond([
                     'status'  => 'success',
@@ -63,6 +68,7 @@ class ServiceBannerManager extends BaseController
             'url'         => trim((string)$this->request->getPost('url')) ?: '#',
             'target'      => trim((string)$this->request->getPost('target')) ?: '_blank',
             'image'       => trim((string)$this->request->getPost('image')) ?: 'assets/images/banners/eservice_citizen.png',
+            'cover_fit'   => trim((string)$this->request->getPost('cover_fit')) ?: 'contain',
             'active'      => $this->request->getPost('active') !== '0' && $this->request->getPost('active') !== 'false',
             'sort_order'  => (int)($this->request->getPost('sort_order') ?: (count($banners) + 1))
         ];

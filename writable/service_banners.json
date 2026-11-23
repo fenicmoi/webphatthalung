@@ -5,9 +5,10 @@
         "desc": "ความปลอดภัยของประชาชนคือภารกิจสำคัญที่สุด",
         "badge": "บริการออนไลน์ 24 ชม.",
         "badge_color": "success",
-        "url": "https:\/\/www.phatthalung.go.th\/90day",
+        "url": "https://www.phatthalung.go.th/90day",
         "target": "_blank",
-        "image": "uploads\/service_banners\/banner_1789964912_883.png",
+        "image": "uploads/service_banners/banner_1789964912_883.png",
+        "cover_fit": "contain",
         "active": true,
         "sort_order": 1
     },
@@ -17,9 +18,10 @@
         "desc": "ตามพระราชบัญญัติคุ้มครองข้อมูลส่วนบุคคล พ.ศ. 2562 (PDPA)",
         "badge": "คุ้มครองสิทธิ PDPA",
         "badge_color": "primary",
-        "url": "https:\/\/www.phatthalung.go.th\/2022\/pdpa",
+        "url": "https://www.phatthalung.go.th/2022/pdpa",
         "target": "_blank",
-        "image": "uploads\/service_banners\/banner_1789965237_696.png",
+        "image": "uploads/service_banners/banner_1789965237_696.png",
+        "cover_fit": "contain",
         "active": true,
         "sort_order": 2
     }
