@@ -178,7 +178,8 @@ $essentialFiles = [
     'app/Views/volunteer/index.php',
     'writable/site_documents.json',
     'writable/dump_ita_documents.json',
-    'writable/strategy_categories.json'
+    'writable/strategy_categories.json',
+    'writable/site_strategy.json'
 ];
 
 $allFiles = array_unique(array_merge($files, $essentialFiles));

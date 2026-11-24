@@ -592,7 +592,7 @@ $isOfficer = $isOfficer ?? false;
                     <div class="p-4 text-center text-muted" id="docEmptyMsg">ไม่มีเอกสารเพิ่มเติม</div>
                 <?php else: ?>
                     <?php foreach ($otherDocs as $doc): ?>
-                        <div class="list-group-item px-4 py-3.5 border-bottom transition-all hover-bg-light doc-list-row" data-title="<?= esc(mb_strtolower($doc['title'])) ?>" data-category="<?= esc($doc['category']) ?>" data-year="<?= esc($doc['year']) ?>">
+                        <div class="list-group-item px-4 py-3.5 border-bottom transition-all hover-bg-light doc-list-row" data-title="<?= esc(mb_strtolower($doc['title'])) ?>" data-category="<?= esc($doc['category']) ?>" data-subcategory="<?= esc(mb_strtolower($doc['sub_category'] ?? '')) ?>" data-year="<?= esc($doc['year']) ?>">
                             <div class="row align-items-center g-3">
                                 <!-- Year Badge -->
                                 <div class="col-auto">
@@ -604,10 +604,15 @@ $isOfficer = $isOfficer ?? false;
 
                                 <!-- Title & Details -->
                                 <div class="col">
-                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                    <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
                                         <span class="badge bg-light text-primary border rounded-pill small px-2 py-0.5" style="font-size: 0.72rem;">
                                             <?= esc($doc['category']) ?>
                                         </span>
+                                        <?php if (!empty($doc['sub_category'])): ?>
+                                            <span class="badge bg-white text-secondary border rounded-pill small px-2 py-0.5" style="font-size: 0.72rem;">
+                                                <i class="fa-solid fa-tag me-1 text-muted"></i><?= esc($doc['sub_category']) ?>
+                                            </span>
+                                        <?php endif; ?>
                                     </div>
                                     <h6 class="fw-bold text-dark mb-1 doc-item-title" style="font-size: 0.96rem; line-height: 1.4;">
                                         <?= esc($doc['title']) ?>
@@ -775,6 +780,14 @@ $isOfficer = $isOfficer ?? false;
                                         </div>
                                     </div>
 
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold text-dark small mb-1">
+                                            <i class="fa-solid fa-tags text-success me-1"></i> หมวดหมู่ย่อย (Sub-categories)
+                                        </label>
+                                        <input type="text" class="form-control rounded-3 py-2" id="cs_sub_categories" name="sub_categories" placeholder="คั่นด้วยเครื่องหมายจุลภาค เช่น แผนพัฒนาจังหวัด, ฉบับทบทวน, แผนพัฒนากลุ่มจังหวัด">
+                                        <div class="form-text small text-muted"><i class="fa-solid fa-circle-info me-1"></i> ระบุหมวดหมู่ย่อยสำหรับให้เจ้าหน้าที่เลือกเมื่อเพิ่ม/แก้ไขเอกสาร (คั่นแต่ละรายการด้วยเครื่องหมาย <code>,</code>)</div>
+                                    </div>
+
                                     <div class="mb-4">
                                         <label class="form-label fw-bold text-dark small mb-1">
                                             <i class="fa-solid fa-align-left text-secondary me-1"></i> คำอธิบายย่อ (Description)
@@ -829,16 +842,26 @@ $isOfficer = $isOfficer ?? false;
 
                     <div class="row g-3 mb-3">
                         <div class="col-md-6">
-                            <label class="form-label fw-bold text-dark small mb-1">หมวดหมู่เอกสาร <span class="text-danger">*</span></label>
-                            <select class="form-select rounded-3 py-2 fw-semibold" id="sd_category" name="category" required>
+                            <label class="form-label fw-bold text-dark small mb-1">หมวดหมู่หลัก <span class="text-danger">*</span></label>
+                            <select class="form-select rounded-3 py-2 fw-semibold" id="sd_category" name="category" required onchange="StrategyDocStudio.onCategoryChange()">
                                 <!-- Populated dynamically via JS -->
                             </select>
                         </div>
-                        <div class="col-md-3">
-                            <label class="form-label fw-bold text-dark small mb-1">ปีงบประมาณ</label>
-                            <input type="text" class="form-control rounded-3 py-2 text-center fw-bold" id="sd_year" name="year" placeholder="เช่น 2570">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-dark small mb-1">หมวดหมู่ย่อย (Sub-category)</label>
+                            <input type="text" class="form-control rounded-3 py-2" id="sd_sub_category" name="sub_category" list="sd_sub_category_list" placeholder="เช่น แผนพัฒนาจังหวัด, ฉบับทบทวน">
+                            <datalist id="sd_sub_category_list">
+                                <!-- Populated dynamically via JS -->
+                            </datalist>
                         </div>
-                        <div class="col-md-3">
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-dark small mb-1">ปีงบประมาณ</label>
+                            <input type="text" class="form-control rounded-3 py-2 text-center fw-bold" id="sd_year" name="year" placeholder="เช่น 2570 หรือ 2566-2570">
+                        </div>
+                        <div class="col-md-6">
                             <label class="form-label fw-bold text-dark small mb-1">จำนวนหน้า</label>
                             <input type="number" class="form-control rounded-3 py-2 text-center" id="sd_pages" name="pages" value="100">
                         </div>
@@ -924,6 +947,12 @@ window.CategoryStudio = {
         let html = '<div class="list-group list-group-flush">';
         this.categories.forEach((cat, idx) => {
             const count = document.querySelectorAll(`.doc-list-row[data-category="${cat.name}"]`).length;
+            let subChips = '';
+            if (cat.sub_categories && Array.isArray(cat.sub_categories) && cat.sub_categories.length > 0) {
+                subChips = '<div class="d-flex flex-wrap gap-1 mt-1.5">' + 
+                    cat.sub_categories.map(s => `<span class="badge bg-light text-secondary border px-1.5 py-0.5" style="font-size: 0.68rem;"><i class="fa-solid fa-tag me-1 text-muted"></i>${s}</span>`).join('') + 
+                    '</div>';
+            }
             html += `
             <div class="list-group-item p-3 border-bottom d-flex align-items-center justify-content-between gap-3 bg-white hover-bg-light transition-all rounded-3 mb-1">
                 <div class="d-flex align-items-center gap-2.5 overflow-hidden">
@@ -933,6 +962,7 @@ window.CategoryStudio = {
                     <div class="overflow-hidden">
                         <h6 class="mb-0 fw-bold text-dark text-truncate" style="font-size: 0.95rem;">${cat.name}</h6>
                         <small class="text-muted d-block text-truncate">${cat.desc || 'เอกสารในหมวดนี้'}</small>
+                        ${subChips}
                     </div>
                 </div>
                 <div class="d-flex align-items-center gap-1.5 flex-shrink-0">
@@ -964,6 +994,8 @@ window.CategoryStudio = {
         if (iconEl) iconEl.value = 'fa-solid fa-folder';
         const badgeEl = document.getElementById('cs_badge_color');
         if (badgeEl) badgeEl.value = 'primary';
+        const subEl = document.getElementById('cs_sub_categories');
+        if (subEl) subEl.value = '';
         const descEl = document.getElementById('cs_desc');
         if (descEl) descEl.value = '';
         this.updateIconPreview('fa-solid fa-folder');
@@ -981,6 +1013,8 @@ window.CategoryStudio = {
         document.getElementById('cs_name').value = cat.name || '';
         document.getElementById('cs_icon').value = cat.icon || 'fa-solid fa-folder';
         document.getElementById('cs_badge_color').value = cat.badge_color || 'primary';
+        const subEl = document.getElementById('cs_sub_categories');
+        if (subEl) subEl.value = Array.isArray(cat.sub_categories) ? cat.sub_categories.join(', ') : '';
         document.getElementById('cs_desc').value = cat.desc || '';
         this.updateIconPreview(cat.icon || 'fa-solid fa-folder');
         const btnSave = document.getElementById('btnSaveCategory');
@@ -1120,7 +1154,7 @@ window.StrategyDocStudio = {
         }
     },
 
-    populateCategoryDropdown: function(selectedCategory = '') {
+    populateCategoryDropdown: function(selectedCategory = '', selectedSubCategory = '') {
         const sel = document.getElementById('sd_category');
         if (!sel) return;
         const cats = CategoryStudio.categories || [];
@@ -1132,6 +1166,33 @@ window.StrategyDocStudio = {
             if (c.name === selectedCategory) opt.selected = true;
             sel.appendChild(opt);
         });
+        const activeCat = selectedCategory || (cats[0] ? cats[0].name : '');
+        this.updateSubCategoryDatalist(activeCat);
+        const subInput = document.getElementById('sd_sub_category');
+        if (subInput && selectedSubCategory !== undefined) {
+            subInput.value = selectedSubCategory;
+        }
+    },
+
+    onCategoryChange: function() {
+        const sel = document.getElementById('sd_category');
+        if (!sel) return;
+        this.updateSubCategoryDatalist(sel.value);
+    },
+
+    updateSubCategoryDatalist: function(categoryName = '') {
+        const datalist = document.getElementById('sd_sub_category_list');
+        if (!datalist) return;
+        datalist.innerHTML = '';
+        const cats = CategoryStudio.categories || [];
+        const found = cats.find(c => (c.name || c) === categoryName);
+        if (found && Array.isArray(found.sub_categories)) {
+            found.sub_categories.forEach(sub => {
+                const opt = document.createElement('option');
+                opt.value = sub;
+                datalist.appendChild(opt);
+            });
+        }
     },
 
     createNew: function() {
@@ -1139,12 +1200,13 @@ window.StrategyDocStudio = {
         document.getElementById('strategyDocModalTitle').innerHTML = '<i class="fa-solid fa-file-circle-plus text-success me-2"></i>เพิ่มเอกสารแผนพัฒนา / ยุทธศาสตร์ใหม่';
         document.getElementById('sd_id').value = '';
         document.getElementById('sd_title').value = '';
+        document.getElementById('sd_sub_category').value = '';
         document.getElementById('sd_year').value = new Date().getFullYear() + 543;
         document.getElementById('sd_pages').value = '100';
         document.getElementById('sd_file').value = '';
         document.getElementById('sd_file_url').value = '';
         document.getElementById('sd_is_featured').checked = false;
-        this.populateCategoryDropdown();
+        this.populateCategoryDropdown('', '');
         if (this.modalInstance) this.modalInstance.show();
     },
 
@@ -1158,7 +1220,7 @@ window.StrategyDocStudio = {
         document.getElementById('sd_file').value = '';
         document.getElementById('sd_file_url').value = doc.file_url || '';
         document.getElementById('sd_is_featured').checked = !!doc.is_featured;
-        this.populateCategoryDropdown(doc.category || '');
+        this.populateCategoryDropdown(doc.category || '', doc.sub_category || doc.sub_tag || '');
         if (this.modalInstance) this.modalInstance.show();
     },
 
@@ -1295,9 +1357,10 @@ function filterStrategyDocs() {
     rows.forEach(row => {
         const title = row.getAttribute('data-title') || '';
         const cat = row.getAttribute('data-category') || '';
+        const subcat = row.getAttribute('data-subcategory') || '';
         const year = row.getAttribute('data-year') || '';
 
-        const matchSearch = !searchVal || title.includes(searchVal) || cat.toLowerCase().includes(searchVal) || year.includes(searchVal);
+        const matchSearch = !searchVal || title.includes(searchVal) || cat.toLowerCase().includes(searchVal) || subcat.includes(searchVal) || year.includes(searchVal);
         const matchYear = !yearVal || year === yearVal;
         const matchCat = !currentDocCategory || cat === currentDocCategory;
 

@@ -334,7 +334,16 @@ $book1yr = $planBooks['book_1yr'] ?? [
                                             </div>
                                         </div>
                                     </td>
-                                    <td><span class="badge bg-light text-primary border"><?= esc($doc['category']) ?></span></td>
+                                    <td>
+                                        <span class="badge bg-light text-primary border"><?= esc($doc['category']) ?></span>
+                                        <?php if (!empty($doc['sub_category'])): ?>
+                                            <div class="mt-1">
+                                                <span class="badge bg-white text-secondary border" style="font-size: 0.72rem;">
+                                                    <i class="fa-solid fa-tag me-1 text-muted"></i><?= esc($doc['sub_category']) ?>
+                                                </span>
+                                            </div>
+                                        <?php endif; ?>
+                                    </td>
                                     <td class="text-center"><span class="badge bg-dark text-warning"><?= esc($doc['year']) ?></span></td>
                                     <td class="text-center fw-bold"><?= number_format($doc['downloads'] ?? 0) ?></td>
                                     <td class="text-end pe-4">
@@ -524,8 +533,8 @@ $book1yr = $planBooks['book_1yr'] ?? [
 
                     <div class="row g-3 mb-3">
                         <div class="col-md-6">
-                            <label class="form-label fw-bold">หมวดหมู่เอกสาร</label>
-                            <select class="form-select" id="docCategory" name="category">
+                            <label class="form-label fw-bold">หมวดหมู่หลัก (Category)</label>
+                            <select class="form-select" id="docCategory" name="category" onchange="updateAdminSubCategories()">
                                 <?php 
                                 $catList = $categories ?? (function_exists('get_strategy_categories') ? get_strategy_categories() : []);
                                 foreach ($catList as $cat): 
@@ -536,11 +545,21 @@ $book1yr = $planBooks['book_1yr'] ?? [
                                 <?php endforeach; ?>
                             </select>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">หมวดหมู่ย่อย (Sub-category)</label>
+                            <input type="text" class="form-control" id="docSubCategory" name="sub_category" list="adminSubCategoryList" placeholder="เช่น แผนพัฒนาจังหวัด, แผนพัฒนากลุ่มจังหวัด, ฉบับทบทวน">
+                            <datalist id="adminSubCategoryList">
+                                <!-- Populated dynamically based on category -->
+                            </datalist>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
                             <label class="form-label fw-bold">ปีงบประมาณ</label>
                             <input type="text" class="form-control" id="docYear" name="year" placeholder="2569">
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-6">
                             <label class="form-label fw-bold">จำนวนหน้า</label>
                             <input type="number" class="form-control" id="docPages" name="pages" value="100">
                         </div>
@@ -948,9 +967,29 @@ async function deleteKpi(id, title) {
     }
 }
 
+const adminCategories = <?= json_encode($categories ?? []) ?>;
+
+function updateAdminSubCategories() {
+    const selCatEl = document.getElementById('docCategory');
+    const datalist = document.getElementById('adminSubCategoryList');
+    if (!selCatEl || !datalist) return;
+    const selCat = selCatEl.value;
+    datalist.innerHTML = '';
+    const foundCat = adminCategories.find(c => (c.name || c) === selCat);
+    if (foundCat && Array.isArray(foundCat.sub_categories)) {
+        foundCat.sub_categories.forEach(sub => {
+            const opt = document.createElement('option');
+            opt.value = sub;
+            datalist.appendChild(opt);
+        });
+    }
+}
+
 function openDocModal() {
     document.getElementById('docId').value = '';
     document.getElementById('docForm').reset();
+    document.getElementById('docSubCategory').value = '';
+    updateAdminSubCategories();
     document.getElementById('docModalTitle').innerHTML = '<i class="fa-solid fa-plus-circle me-1 text-primary"></i> เพิ่มเอกสารแผนพัฒนาฯ';
     docModalInstance.show();
 }
@@ -959,6 +998,8 @@ function editDoc(doc) {
     document.getElementById('docId').value = doc.id || '';
     document.getElementById('docTitle').value = doc.title || '';
     document.getElementById('docCategory').value = doc.category || 'แผนปฏิบัติราชการประจำปี';
+    document.getElementById('docSubCategory').value = doc.sub_category || doc.sub_tag || '';
+    updateAdminSubCategories();
     document.getElementById('docYear').value = doc.year || '';
     document.getElementById('docPages').value = doc.pages || 100;
     document.getElementById('docFileUrl').value = doc.file_url || '';

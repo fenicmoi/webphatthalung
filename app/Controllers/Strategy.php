@@ -67,6 +67,15 @@ class Strategy extends Controller
         $desc = trim((string)$this->request->getPost('desc'));
         $sortOrder = (int)$this->request->getPost('sort_order') ?: (count($categories) + 1);
 
+        // จัดการหมวดหมู่ย่อย (Sub-categories)
+        $rawSubCats = $this->request->getPost('sub_categories');
+        $subCats = [];
+        if (is_array($rawSubCats)) {
+            $subCats = array_values(array_filter(array_map('trim', $rawSubCats)));
+        } elseif (is_string($rawSubCats)) {
+            $subCats = array_values(array_filter(array_map('trim', preg_split('/[,;\n]+/', $rawSubCats))));
+        }
+
         if (empty($name)) {
             return $this->response->setJSON(['status' => 'error', 'message' => 'กรุณาระบุชื่อหมวดหมู่']);
         }
@@ -81,6 +90,7 @@ class Strategy extends Controller
                     $cat['icon'] = $icon;
                     $cat['badge_color'] = $badgeColor;
                     $cat['desc'] = $desc;
+                    $cat['sub_categories'] = $subCats;
                     $cat['sort_order'] = $sortOrder;
                     $found = true;
                     break;
@@ -95,6 +105,7 @@ class Strategy extends Controller
                     'icon' => $icon,
                     'badge_color' => $badgeColor,
                     'desc' => $desc,
+                    'sub_categories' => $subCats,
                     'sort_order' => $sortOrder,
                     'active' => true
                 ];
@@ -107,6 +118,7 @@ class Strategy extends Controller
                 'icon' => $icon,
                 'badge_color' => $badgeColor,
                 'desc' => $desc,
+                'sub_categories' => $subCats,
                 'sort_order' => $sortOrder,
                 'active' => true
             ];
@@ -211,6 +223,7 @@ class Strategy extends Controller
         $id = trim((string)$this->request->getPost('id'));
         $title = trim((string)$this->request->getPost('title'));
         $category = trim((string)$this->request->getPost('category')) ?: 'แผนปฏิบัติราชการประจำปี';
+        $subCategory = trim((string)$this->request->getPost('sub_category'));
         $year = trim((string)$this->request->getPost('year')) ?: (string)(date('Y') + 543);
         $fileUrl = trim((string)$this->request->getPost('file_url'));
         $fileSize = trim((string)$this->request->getPost('file_size')) ?: '5.0 MB';
@@ -243,6 +256,7 @@ class Strategy extends Controller
                 if ($d['id'] === $id) {
                     $d['title'] = $title;
                     $d['category'] = $category;
+                    $d['sub_category'] = $subCategory;
                     $d['year'] = $year;
                     if (!empty($fileUrl)) $d['file_url'] = $fileUrl;
                     $d['file_size'] = $fileSize;
@@ -259,6 +273,7 @@ class Strategy extends Controller
                     'id' => $id,
                     'title' => $title,
                     'category' => $category,
+                    'sub_category' => $subCategory,
                     'year' => $year,
                     'file_url' => $fileUrl ?: '#',
                     'file_size' => $fileSize,
@@ -275,6 +290,7 @@ class Strategy extends Controller
                 'id' => $newId,
                 'title' => $title,
                 'category' => $category,
+                'sub_category' => $subCategory,
                 'year' => $year,
                 'file_url' => $fileUrl ?: '#',
                 'file_size' => $fileSize,

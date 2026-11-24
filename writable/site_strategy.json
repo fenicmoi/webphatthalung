@@ -167,7 +167,8 @@
             "pages": 245,
             "downloads": 1420,
             "is_featured": true,
-            "updated_at": "2026-01-15"
+            "updated_at": "2026-01-15",
+            "sub_category": "ฉบับทบทวน"
         },
         {
             "id": "doc_plan_2569",
@@ -180,7 +181,8 @@
             "pages": 180,
             "downloads": 891,
             "is_featured": true,
-            "updated_at": "2025-10-01"
+            "updated_at": "2025-10-01",
+            "sub_category": "แผนพัฒนาจังหวัด"
         },
         {
             "id": "doc_plan_2568",
@@ -193,7 +195,8 @@
             "pages": 165,
             "downloads": 1250,
             "is_featured": false,
-            "updated_at": "2024-10-01"
+            "updated_at": "2024-10-01",
+            "sub_category": "แผนพัฒนาจังหวัด"
         },
         {
             "id": "doc_plan_2567",
@@ -206,7 +209,8 @@
             "pages": 150,
             "downloads": 1840,
             "is_featured": false,
-            "updated_at": "2023-10-01"
+            "updated_at": "2023-10-01",
+            "sub_category": "แผนพัฒนาจังหวัด"
         },
         {
             "id": "doc_me_report",
@@ -219,7 +223,8 @@
             "pages": 85,
             "downloads": 620,
             "is_featured": false,
-            "updated_at": "2025-11-20"
+            "updated_at": "2025-11-20",
+            "sub_category": "รายงานประจำปี"
         }
     ],
     "plan_books": {

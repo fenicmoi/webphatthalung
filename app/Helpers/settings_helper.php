@@ -3125,6 +3125,13 @@ if (!function_exists('get_strategy_categories')) {
         if (file_exists($jsonPath)) {
             $categories = json_decode(file_get_contents($jsonPath), true);
             if (is_array($categories) && !empty($categories)) {
+                // ให้แน่ใจว่าทุกหมวดหมู่มีคีย์ sub_categories เป็น array
+                foreach ($categories as &$c) {
+                    if (!isset($c['sub_categories']) || !is_array($c['sub_categories'])) {
+                        $c['sub_categories'] = [];
+                    }
+                }
+                unset($c);
                 usort($categories, static function($a, $b) {
                     return ($a['sort_order'] ?? 99) - ($b['sort_order'] ?? 99);
                 });
@@ -3140,6 +3147,7 @@ if (!function_exists('get_strategy_categories')) {
                 'icon' => 'fa-solid fa-flag',
                 'badge_color' => 'primary',
                 'desc' => 'แผนพัฒนาจังหวัดพัทลุงฉบับแม่บท 5 ปี (พ.ศ. 2566 - 2570)',
+                'sub_categories' => ['แผนพัฒนาจังหวัด', 'ฉบับทบทวน', 'ฉบับสมบูรณ์'],
                 'sort_order' => 1,
                 'active' => true
             ],
@@ -3149,6 +3157,7 @@ if (!function_exists('get_strategy_categories')) {
                 'icon' => 'fa-solid fa-file-contract',
                 'badge_color' => 'success',
                 'desc' => 'แผนปฏิบัติราชการประจำปีงบประมาณของจังหวัดพัทลุง',
+                'sub_categories' => ['แผนพัฒนาจังหวัด', 'แผนพัฒนากลุ่มจังหวัด', 'คำชี้แจงงบประมาณ'],
                 'sort_order' => 2,
                 'active' => true
             ],
@@ -3158,6 +3167,7 @@ if (!function_exists('get_strategy_categories')) {
                 'icon' => 'fa-solid fa-chart-line',
                 'badge_color' => 'info',
                 'desc' => 'รายงานติดตามและประเมินผลสัมฤทธิ์ของแผนพัฒนาและโครงการ',
+                'sub_categories' => ['รายงานรอบ 6 เดือน', 'รายงานประจำปี', 'ผลการประเมิน ITA'],
                 'sort_order' => 3,
                 'active' => true
             ],
@@ -3167,6 +3177,7 @@ if (!function_exists('get_strategy_categories')) {
                 'icon' => 'fa-solid fa-layer-group',
                 'badge_color' => 'warning',
                 'desc' => 'แผนพัฒนาระดับกลุ่มจังหวัด (พัทลุง นครศรีธรรมราช สุราษฎร์ธานี ชุมพร สงขลา)',
+                'sub_categories' => ['แผนแม่บท', 'แผนปฏิบัติราชการ', 'โครงการบูรณาการ'],
                 'sort_order' => 4,
                 'active' => true
             ],
@@ -3176,6 +3187,7 @@ if (!function_exists('get_strategy_categories')) {
                 'icon' => 'fa-solid fa-book-bookmark',
                 'badge_color' => 'secondary',
                 'desc' => 'คู่มือ ระเบียบ และแนวทางการจัดทำและประสานแผนพัฒนาในพื้นที่',
+                'sub_categories' => ['คู่มือปฏิบัติงาน', 'ระเบียบและกฎหมาย', 'แบบฟอร์ม'],
                 'sort_order' => 5,
                 'active' => true
             ]

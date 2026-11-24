@@ -297,6 +297,7 @@ class StrategyManager extends BaseController
         $id = $this->request->getPost('id');
         $title = trim($this->request->getPost('title') ?? '');
         $category = trim($this->request->getPost('category') ?? 'แผนปฏิบัติราชการประจำปี');
+        $subCategory = trim($this->request->getPost('sub_category') ?? '');
         $year = trim($this->request->getPost('year') ?? date('Y') + 543);
         $fileUrl = trim($this->request->getPost('file_url') ?? '');
         $fileSize = trim($this->request->getPost('file_size') ?? '5.0 MB');
@@ -329,6 +330,7 @@ class StrategyManager extends BaseController
                 if ($d['id'] === $id) {
                     $d['title'] = $title;
                     $d['category'] = $category;
+                    $d['sub_category'] = $subCategory;
                     $d['year'] = $year;
                     if (!empty($fileUrl)) $d['file_url'] = $fileUrl;
                     $d['file_size'] = $fileSize;
@@ -345,6 +347,7 @@ class StrategyManager extends BaseController
                     'id' => $id,
                     'title' => $title,
                     'category' => $category,
+                    'sub_category' => $subCategory,
                     'year' => $year,
                     'file_url' => $fileUrl ?: '#',
                     'file_size' => $fileSize,
@@ -362,6 +365,7 @@ class StrategyManager extends BaseController
                 'id' => $newId,
                 'title' => $title,
                 'category' => $category,
+                'sub_category' => $subCategory,
                 'year' => $year,
                 'file_url' => $fileUrl ?: '#',
                 'file_size' => $fileSize,
