@@ -82,7 +82,7 @@ $book1yr = $planBooks['book_1yr'] ?? [
                 <h6 class="mb-0 fw-bold"><i class="fa-solid fa-bullseye me-2 text-warning"></i> กำหนดวิสัยทัศน์ พันธกิจ และค่านิยมจังหวัดพัทลุง</h6>
             </div>
             <div class="admin-card-body p-4">
-                <form id="visionForm">
+                <form id="visionForm" onsubmit="saveVision(event)">
                     <div class="row g-4 mb-3">
                         <div class="col-md-8">
                             <label class="form-label fw-bold">หัวข้อวิสัยทัศน์ (Vision Title)</label>
@@ -115,8 +115,8 @@ $book1yr = $planBooks['book_1yr'] ?? [
                     </div>
 
                     <div class="text-end">
-                        <button type="button" class="btn btn-primary px-4 fw-bold shadow-sm" onclick="saveVision()">
-                            <i class="fa-solid fa-save me-1.5"></i> บันทึกวิสัยทัศน์และพันธกิจ
+                        <button type="submit" class="btn btn-primary px-4 fw-bold shadow-sm" id="btnSaveVision">
+                            <i class="fa-solid fa-save me-1"></i> บันทึกวิสัยทัศน์และพันธกิจ
                         </button>
                     </div>
                 </form>
@@ -781,7 +781,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-async function saveVision() {
+async function saveVision(e) {
+    if (e) e.preventDefault();
     const form = document.getElementById('visionForm');
     if (!form) { alert('ไม่พบฟอร์มวิสัยทัศน์'); return; }
 
@@ -794,7 +795,7 @@ async function saveVision() {
         missions:  (form.querySelector('[name="missions"]') || {}).value || ''
     };
 
-    const btn = form.querySelector('button[onclick="saveVision()"]');
+    const btn = document.getElementById('btnSaveVision');
     const origHtml = btn ? btn.innerHTML : '';
     if (btn) {
         btn.disabled = true;
@@ -825,7 +826,7 @@ async function saveVision() {
         if (newCsrf && csrfMeta) { csrfMeta.content = newCsrf; }
 
         let data;
-        try { data = await response.json(); } catch(e) { throw new Error('เซิร์ฟเวอร์ตอบกลับไม่ถูกต้อง'); }
+        try { data = await response.json(); } catch(ex) { throw new Error('เซิร์ฟเวอร์ตอบกลับไม่ถูกต้อง (HTTP ' + response.status + ')'); }
 
         if (data && data.status === 'success') {
             if (typeof App !== 'undefined' && App.toast) {
@@ -838,8 +839,8 @@ async function saveVision() {
             if (typeof App !== 'undefined' && App.toast) { App.toast(msg, 'error'); }
             else { alert('❌ ' + msg); }
         }
-    } catch (e) {
-        const msg = 'เกิดข้อผิดพลาด: ' + (e.message || e);
+    } catch (err) {
+        const msg = 'เกิดข้อผิดพลาด: ' + (err.message || err);
         if (typeof App !== 'undefined' && App.toast) { App.toast(msg, 'error'); }
         else { alert(msg); }
     } finally {
