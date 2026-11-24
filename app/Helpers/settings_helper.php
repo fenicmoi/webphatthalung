@@ -3113,6 +3113,104 @@ if (!function_exists('save_site_strategy')) {
     }
 }
 
+if (!function_exists('get_strategy_categories')) {
+    /**
+     * ดึงรายการหมวดหมู่เอกสารยุทธศาสตร์และแผนพัฒนาจังหวัด
+     */
+    function get_strategy_categories(): array
+    {
+        $writableDir = defined('WRITABLE') ? rtrim(\WRITABLE, '/\\') : realpath(__DIR__ . '/../../writable');
+        $jsonPath = $writableDir . DIRECTORY_SEPARATOR . 'strategy_categories.json';
+
+        if (file_exists($jsonPath)) {
+            $categories = json_decode(file_get_contents($jsonPath), true);
+            if (is_array($categories) && !empty($categories)) {
+                usort($categories, static function($a, $b) {
+                    return ($a['sort_order'] ?? 99) - ($b['sort_order'] ?? 99);
+                });
+                return $categories;
+            }
+        }
+
+        // ค่าเริ่มต้นมาตรฐานสำหรับหมวดหมู่เอกสารยุทธศาสตร์ (Default Categories)
+        $defaults = [
+            [
+                'id' => 'scat_1',
+                'name' => 'แผนพัฒนาจังหวัด 5 ปี',
+                'icon' => 'fa-solid fa-flag',
+                'badge_color' => 'primary',
+                'desc' => 'แผนพัฒนาจังหวัดพัทลุงฉบับแม่บท 5 ปี (พ.ศ. 2566 - 2570)',
+                'sort_order' => 1,
+                'active' => true
+            ],
+            [
+                'id' => 'scat_2',
+                'name' => 'แผนปฏิบัติราชการประจำปี',
+                'icon' => 'fa-solid fa-file-contract',
+                'badge_color' => 'success',
+                'desc' => 'แผนปฏิบัติราชการประจำปีงบประมาณของจังหวัดพัทลุง',
+                'sort_order' => 2,
+                'active' => true
+            ],
+            [
+                'id' => 'scat_3',
+                'name' => 'รายงานผลการดำเนินงาน (M&E)',
+                'icon' => 'fa-solid fa-chart-line',
+                'badge_color' => 'info',
+                'desc' => 'รายงานติดตามและประเมินผลสัมฤทธิ์ของแผนพัฒนาและโครงการ',
+                'sort_order' => 3,
+                'active' => true
+            ],
+            [
+                'id' => 'scat_4',
+                'name' => 'แผนพัฒนากลุ่มจังหวัดภาคใต้ฝั่งอ่าวไทย',
+                'icon' => 'fa-solid fa-layer-group',
+                'badge_color' => 'warning',
+                'desc' => 'แผนพัฒนาระดับกลุ่มจังหวัด (พัทลุง นครศรีธรรมราช สุราษฎร์ธานี ชุมพร สงขลา)',
+                'sort_order' => 4,
+                'active' => true
+            ],
+            [
+                'id' => 'scat_5',
+                'name' => 'คู่มือและแนวทางปฏิบัติการจัดทำแผน',
+                'icon' => 'fa-solid fa-book-bookmark',
+                'badge_color' => 'secondary',
+                'desc' => 'คู่มือ ระเบียบ และแนวทางการจัดทำและประสานแผนพัฒนาในพื้นที่',
+                'sort_order' => 5,
+                'active' => true
+            ]
+        ];
+
+        save_strategy_categories($defaults);
+        return $defaults;
+    }
+}
+
+if (!function_exists('save_strategy_categories')) {
+    /**
+     * บันทึกรายการหมวดหมู่เอกสารยุทธศาสตร์
+     */
+    function save_strategy_categories(array $categories): bool
+    {
+        $writableDir = defined('WRITABLE') ? rtrim(\WRITABLE, '/\\') : realpath(__DIR__ . '/../../writable');
+        if (!is_dir($writableDir)) {
+            @mkdir($writableDir, 0777, true);
+        }
+        $jsonPath = $writableDir . DIRECTORY_SEPARATOR . 'strategy_categories.json';
+        
+        foreach ($categories as $i => &$cat) {
+            $cat['sort_order'] = (int)($cat['sort_order'] ?? ($i + 1));
+        }
+        unset($cat);
+
+        usort($categories, static function($a, $b) {
+            return ($a['sort_order'] ?? 99) - ($b['sort_order'] ?? 99);
+        });
+
+        return (bool) file_put_contents($jsonPath, json_encode(array_values($categories), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+    }
+}
+
 if (!function_exists('record_search_query')) {
     /**
      * บันทึกคำค้นหาจริงของผู้ใช้งานลงระบบประมวลผลคำค้นหายอดนิยม

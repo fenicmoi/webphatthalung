@@ -440,8 +440,18 @@ $isOfficer = $isOfficer ?? false;
                     ศูนย์เอกสารแผนพัฒนาและแผนปฏิบัติราชการประจำปี
                 </h3>
             </div>
-            <div class="text-muted small">
-                เอกสารฉบับทางการรับรองโดย สำนักงานจังหวัดพัทลุง
+            <div class="d-flex flex-wrap align-items-center gap-2">
+                <?php if ($isOfficer): ?>
+                    <button type="button" class="btn btn-outline-primary btn-sm rounded-pill px-3 py-1.5 fw-bold shadow-xs d-inline-flex align-items-center gap-1.5" onclick="CategoryStudio.open()">
+                        <i class="fa-solid fa-folder-tree text-primary"></i> จัดการหมวดหมู่เอกสาร
+                    </button>
+                    <button type="button" class="btn btn-success btn-sm rounded-pill px-3 py-1.5 fw-bold shadow-xs d-inline-flex align-items-center gap-1.5" onclick="StrategyDocStudio.createNew()">
+                        <i class="fa-solid fa-circle-plus"></i> เพิ่มเอกสารยุทธศาสตร์
+                    </button>
+                <?php endif; ?>
+                <div class="text-muted small">
+                    เอกสารฉบับทางการรับรองโดย สำนักงานจังหวัดพัทลุง
+                </div>
             </div>
         </div>
 
@@ -556,19 +566,24 @@ $isOfficer = $isOfficer ?? false;
                 </div>
 
                 <!-- Category Filter Pills -->
-                <div class="d-flex flex-wrap gap-1.5 pt-3">
+                <div class="d-flex flex-wrap gap-1.5 pt-3" id="docCategoryPills">
                     <button type="button" class="btn btn-sm btn-dark rounded-pill px-3 py-1 fw-bold category-filter-btn active" data-category="" onclick="setDocCategoryFilter('', this)">
-                        ทั้งหมด
+                        ทั้งหมด (<span id="totalDocCount"><?= count($otherDocs) ?></span>)
                     </button>
-                    <button type="button" class="btn btn-sm btn-light border rounded-pill px-3 py-1 fw-bold category-filter-btn" data-category="แผนปฏิบัติราชการประจำปี" onclick="setDocCategoryFilter('แผนปฏิบัติราชการประจำปี', this)">
-                        แผนปฏิบัติราชการประจำปี
-                    </button>
-                    <button type="button" class="btn btn-sm btn-light border rounded-pill px-3 py-1 fw-bold category-filter-btn" data-category="รายงานผลการดำเนินงาน (M&E)" onclick="setDocCategoryFilter('รายงานผลการดำเนินงาน (M&E)', this)">
-                        รายงาน M&E
-                    </button>
-                    <button type="button" class="btn btn-sm btn-light border rounded-pill px-3 py-1 fw-bold category-filter-btn" data-category="แผนพัฒนาจังหวัด 5 ปี" onclick="setDocCategoryFilter('แผนพัฒนาจังหวัด 5 ปี', this)">
-                        แผนพัฒนา 5 ปี
-                    </button>
+                    <?php 
+                    $categories = $categories ?? (function_exists('get_strategy_categories') ? get_strategy_categories() : []);
+                    foreach ($categories as $cat): 
+                        $cName = is_array($cat) ? ($cat['name'] ?? '') : $cat;
+                        $cIcon = is_array($cat) ? ($cat['icon'] ?? 'fa-solid fa-folder') : 'fa-solid fa-folder';
+                        $cColor = is_array($cat) ? ($cat['badge_color'] ?? 'primary') : 'primary';
+                        if (empty($cName)) continue;
+                        $cCount = count(array_filter($otherDocs, fn($d) => ($d['category'] ?? '') === $cName));
+                    ?>
+                        <button type="button" class="btn btn-sm btn-light border rounded-pill px-3 py-1 fw-bold category-filter-btn" data-category="<?= esc($cName) ?>" onclick="setDocCategoryFilter('<?= esc($cName) ?>', this)">
+                            <i class="<?= esc($cIcon) ?> me-1 text-<?= esc($cColor) ?>"></i><?= esc($cName) ?>
+                            <span class="badge bg-secondary bg-opacity-25 text-dark ms-1" style="font-size: 0.72rem;"><?= $cCount ?></span>
+                        </button>
+                    <?php endforeach; ?>
                 </div>
             </div>
 
@@ -605,13 +620,21 @@ $isOfficer = $isOfficer ?? false;
                                 </div>
 
                                 <!-- Action Buttons -->
-                                <div class="col-12 col-md-auto d-flex gap-2">
+                                <div class="col-12 col-md-auto d-flex flex-wrap align-items-center gap-2">
                                     <button type="button" class="btn btn-outline-primary btn-sm rounded-pill px-3 py-1.5 fw-bold d-inline-flex align-items-center gap-1.5" onclick="previewStrategyDoc('<?= esc($doc['title']) ?>', '<?= base_url($doc['file_url']) ?>')">
                                         <i class="fa-solid fa-eye"></i> เปิดอ่าน
                                     </button>
                                     <a href="<?= base_url($doc['file_url']) ?>" download class="btn btn-primary btn-sm rounded-pill px-3 py-1.5 fw-bold d-inline-flex align-items-center gap-1.5 shadow-sm" onclick="trackStrategyDownload('<?= $doc['id'] ?>')">
                                         <i class="fa-solid fa-download"></i> ดาวน์โหลด PDF
                                     </a>
+                                    <?php if ($isOfficer): ?>
+                                        <button type="button" class="btn btn-outline-warning btn-sm rounded-pill px-2.5 py-1.5" onclick="StrategyDocStudio.edit(<?= htmlspecialchars(json_encode($doc), ENT_QUOTES, 'UTF-8') ?>)" title="แก้ไขเอกสาร">
+                                            <i class="fa-solid fa-pen-to-square"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-outline-danger btn-sm rounded-pill px-2.5 py-1.5" onclick="StrategyDocStudio.delete('<?= esc($doc['id']) ?>', '<?= esc($doc['title']) ?>')" title="ลบเอกสาร">
+                                            <i class="fa-solid fa-trash-can"></i>
+                                        </button>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>
@@ -656,8 +679,558 @@ $isOfficer = $isOfficer ?? false;
     </div>
 </div>
 
+<?php if ($isOfficer): ?>
+<!-- ======================================================== -->
+<!-- MODAL: STRATEGY DOCUMENT CATEGORY STUDIO (ระบบจัดการหมวดหมู่เอกสาร) -->
+<!-- ======================================================== -->
+<div class="modal fade" id="categoryStudioModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content border-0 rounded-4 shadow-2xl overflow-hidden" style="background: #ffffff;">
+            <!-- Header -->
+            <div class="modal-header px-4 py-3 border-bottom text-white d-flex align-items-center justify-content-between" style="background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="p-2.5 rounded-3 bg-white bg-opacity-15 border border-white border-opacity-20 d-flex align-items-center justify-content-center">
+                        <i class="fa-solid fa-folder-tree text-warning fs-4"></i>
+                    </div>
+                    <div>
+                        <h5 class="modal-title fw-bold text-white mb-0">ระบบจัดการหมวดหมู่เอกสารยุทธศาสตร์</h5>
+                        <small class="text-white text-opacity-75">เพิ่ม แก้ไข ลบ และจัดเรียงหมวดหมู่เอกสารแผนพัฒนาของจังหวัดพัทลุง</small>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <!-- Body -->
+            <div class="modal-body p-4 p-md-4.5 bg-light bg-opacity-50">
+                <div class="row g-4">
+                    <!-- Left Column: Category List -->
+                    <div class="col-lg-6">
+                        <div class="card border-0 rounded-4 shadow-sm h-100 bg-white">
+                            <div class="card-header bg-white border-bottom px-4 py-3 d-flex align-items-center justify-content-between">
+                                <h6 class="fw-bold text-dark m-0 d-flex align-items-center gap-2">
+                                    <i class="fa-solid fa-list-ol text-primary"></i> หมวดหมู่เอกสารปัจจุบัน
+                                </h6>
+                                <button type="button" class="btn btn-sm btn-outline-success rounded-pill px-3 fw-bold" onclick="CategoryStudio.resetForm()">
+                                    <i class="fa-solid fa-plus me-1"></i> เพิ่มหมวดใหม่
+                                </button>
+                            </div>
+                            <div class="card-body p-3 overflow-y-auto" style="max-height: 480px;" id="catStudioListBox">
+                                <!-- Rendered via JS -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Add / Edit Category Form -->
+                    <div class="col-lg-6">
+                        <div class="card border-0 rounded-4 shadow-sm bg-white">
+                            <div class="card-header bg-white border-bottom px-4 py-3">
+                                <h6 class="fw-bold text-dark m-0" id="catFormTitle">
+                                    <i class="fa-solid fa-plus-circle text-success me-1"></i> เพิ่มหมวดหมู่เอกสารใหม่
+                                </h6>
+                            </div>
+                            <div class="card-body p-4">
+                                <form id="catStudioForm" onsubmit="event.preventDefault(); CategoryStudio.submit();">
+                                    <input type="hidden" id="cs_id" name="id" value="">
+                                    <input type="hidden" id="cs_sort_order" name="sort_order" value="">
+
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold text-dark small mb-1">
+                                            <i class="fa-solid fa-heading text-primary me-1"></i> ชื่อหมวดหมู่เอกสาร <span class="text-danger">*</span>
+                                        </label>
+                                        <input type="text" class="form-control rounded-3 py-2 fw-semibold" id="cs_name" name="name" required placeholder="เช่น แผนพัฒนากลุ่มจังหวัด, แผนปฏิบัติราชการประจำปี">
+                                    </div>
+
+                                    <div class="row g-3 mb-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-bold text-dark small mb-1">
+                                                <i class="fa-solid fa-icons text-info me-1"></i> ไอคอนหมวดหมู่
+                                            </label>
+                                            <div class="input-group">
+                                                <span class="input-group-text bg-light" id="cs_icon_preview"><i class="fa-solid fa-folder"></i></span>
+                                                <input type="text" class="form-control" id="cs_icon" name="icon" value="fa-solid fa-folder" oninput="CategoryStudio.updateIconPreview(this.value)">
+                                            </div>
+                                            <div class="d-flex flex-wrap gap-1 mt-2">
+                                                <button type="button" class="btn btn-xs btn-outline-secondary py-0.5 px-2 small" onclick="CategoryStudio.setIcon('fa-solid fa-flag')"><i class="fa-solid fa-flag"></i></button>
+                                                <button type="button" class="btn btn-xs btn-outline-secondary py-0.5 px-2 small" onclick="CategoryStudio.setIcon('fa-solid fa-file-contract')"><i class="fa-solid fa-file-contract"></i></button>
+                                                <button type="button" class="btn btn-xs btn-outline-secondary py-0.5 px-2 small" onclick="CategoryStudio.setIcon('fa-solid fa-chart-line')"><i class="fa-solid fa-chart-line"></i></button>
+                                                <button type="button" class="btn btn-xs btn-outline-secondary py-0.5 px-2 small" onclick="CategoryStudio.setIcon('fa-solid fa-layer-group')"><i class="fa-solid fa-layer-group"></i></button>
+                                                <button type="button" class="btn btn-xs btn-outline-secondary py-0.5 px-2 small" onclick="CategoryStudio.setIcon('fa-solid fa-book-bookmark')"><i class="fa-solid fa-book-bookmark"></i></button>
+                                                <button type="button" class="btn btn-xs btn-outline-secondary py-0.5 px-2 small" onclick="CategoryStudio.setIcon('fa-solid fa-scale-balanced')"><i class="fa-solid fa-scale-balanced"></i></button>
+                                                <button type="button" class="btn btn-xs btn-outline-secondary py-0.5 px-2 small" onclick="CategoryStudio.setIcon('fa-solid fa-star')"><i class="fa-solid fa-star"></i></button>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-bold text-dark small mb-1">
+                                                <i class="fa-solid fa-palette text-warning me-1"></i> สีของป้ายกำกับ
+                                            </label>
+                                            <select class="form-select rounded-3 py-2 fw-semibold" id="cs_badge_color" name="badge_color">
+                                                <option value="primary">🔵 สีน้ำเงิน (Primary)</option>
+                                                <option value="success">🟢 สีเขียว (Success)</option>
+                                                <option value="info">🔷 สีฟ้า/คราม (Info)</option>
+                                                <option value="warning">🟡 สีเหลือง/ทอง (Warning)</option>
+                                                <option value="danger">🔴 สีแดง (Danger)</option>
+                                                <option value="dark">⚫ สีดำ/เทาเข้ม (Dark)</option>
+                                                <option value="secondary">⚪ สีเทา (Secondary)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label class="form-label fw-bold text-dark small mb-1">
+                                            <i class="fa-solid fa-align-left text-secondary me-1"></i> คำอธิบายย่อ (Description)
+                                        </label>
+                                        <textarea class="form-control rounded-3" id="cs_desc" name="desc" rows="2" placeholder="คำอธิบายรายละเอียดประเภทเอกสารในหมวดหมู่นี้..."></textarea>
+                                    </div>
+
+                                    <div class="d-flex align-items-center justify-content-between pt-3 border-top">
+                                        <button type="button" class="btn btn-light rounded-pill px-3 py-2 fw-bold text-muted" onclick="CategoryStudio.resetForm()">
+                                            <i class="fa-solid fa-rotate-left me-1"></i> ล้างข้อมูล
+                                        </button>
+                                        <button type="submit" class="btn btn-primary rounded-pill px-4 py-2 fw-bold shadow-sm d-inline-flex align-items-center gap-1.5" id="btnSaveCategory">
+                                            <i class="fa-solid fa-floppy-disk"></i> บันทึกหมวดหมู่
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="modal-footer px-4 py-2.5 bg-white border-top d-flex justify-content-between">
+                <small class="text-muted"><i class="fa-solid fa-circle-info me-1 text-primary"></i> หมวดหมู่ที่บันทึกจะมีผลกับการกรองเอกสารบนหน้า /strategy และในระบบแอดมินทันที</small>
+                <button type="button" class="btn btn-secondary btn-sm rounded-pill px-4 fw-bold" data-bs-dismiss="modal">ปิดหน้าต่าง</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ======================================================== -->
+<!-- MODAL: ON-PAGE STRATEGY DOCUMENT ADD/EDIT STUDIO -->
+<!-- ======================================================== -->
+<div class="modal fade" id="strategyDocModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 rounded-4 shadow-2xl overflow-hidden">
+            <div class="modal-header px-4 py-3 bg-dark text-white border-0">
+                <h6 class="modal-title fw-bold text-white mb-0" id="strategyDocModalTitle">
+                    <i class="fa-solid fa-file-pdf text-warning me-2"></i>จัดการเอกสารยุทธศาสตร์
+                </h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4 bg-light bg-opacity-50">
+                <form id="strategyDocForm" onsubmit="event.preventDefault(); StrategyDocStudio.submit();">
+                    <input type="hidden" id="sd_id" name="id" value="">
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-dark small mb-1">ชื่อเอกสาร / แผนพัฒนา <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control rounded-3 py-2 fw-semibold" id="sd_title" name="title" required placeholder="เช่น แผนปฏิบัติราชการประจำปีของจังหวัดพัทลุง พ.ศ. 2570">
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-dark small mb-1">หมวดหมู่เอกสาร <span class="text-danger">*</span></label>
+                            <select class="form-select rounded-3 py-2 fw-semibold" id="sd_category" name="category" required>
+                                <!-- Populated dynamically via JS -->
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold text-dark small mb-1">ปีงบประมาณ</label>
+                            <input type="text" class="form-control rounded-3 py-2 text-center fw-bold" id="sd_year" name="year" placeholder="เช่น 2570">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold text-dark small mb-1">จำนวนหน้า</label>
+                            <input type="number" class="form-control rounded-3 py-2 text-center" id="sd_pages" name="pages" value="100">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-dark small mb-1">อัปโหลดไฟล์ PDF (เลือกไฟล์จากเครื่อง หรือระบุลิงก์ URL)</label>
+                        <input type="file" class="form-control rounded-3 mb-2" id="sd_file" name="doc_file" accept=".pdf">
+                        <div class="input-group">
+                            <span class="input-group-text bg-white small text-muted">URL ไฟล์:</span>
+                            <input type="text" class="form-control small" id="sd_file_url" name="file_url" placeholder="uploads/strategy/... หรือ https://...">
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="sd_is_featured" name="is_featured" value="1">
+                            <label class="form-check-label fw-bold text-dark small" for="sd_is_featured">
+                                ⭐ กำหนดเป็น "แผนแม่บทเด่นประจำหน้า" (Hero Featured Master Plan)
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="d-flex align-items-center justify-content-end gap-2 pt-3 border-top">
+                        <button type="button" class="btn btn-outline-secondary rounded-pill px-4 py-2 fw-bold" data-bs-dismiss="modal">ยกเลิก</button>
+                        <button type="submit" class="btn btn-success rounded-pill px-5 py-2 fw-bold shadow-sm" id="btnSaveDoc">
+                            <i class="fa-solid fa-floppy-disk me-1"></i> บันทึกเอกสาร
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
+
 <script>
 let currentDocCategory = '';
+
+// =========================================================================
+// CATEGORY STUDIO CONTROLLER
+// =========================================================================
+window.CategoryStudio = {
+    modalInstance: null,
+    categories: <?= json_encode($categories ?? [], JSON_UNESCAPED_UNICODE) ?> || [],
+
+    init: function() {
+        const modalEl = document.getElementById('categoryStudioModal');
+        if (modalEl && typeof bootstrap !== 'undefined') {
+            this.modalInstance = new bootstrap.Modal(modalEl);
+        }
+    },
+
+    open: function() {
+        if (!this.modalInstance) this.init();
+        this.renderList();
+        this.resetForm();
+        if (this.modalInstance) this.modalInstance.show();
+    },
+
+    loadAndRefresh: function() {
+        fetch('<?= base_url("strategy/categories") ?>', { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+        .then(r => r.json())
+        .then(data => {
+            if (data.status === 'success' && data.categories) {
+                this.categories = data.categories;
+                this.renderList();
+                this.updatePillsOnPage();
+            }
+        })
+        .catch(e => console.error(e));
+    },
+
+    renderList: function() {
+        const box = document.getElementById('catStudioListBox');
+        if (!box) return;
+
+        if (!this.categories || this.categories.length === 0) {
+            box.innerHTML = '<div class="p-4 text-center text-muted">ยังไม่มีรายการหมวดหมู่</div>';
+            return;
+        }
+
+        let html = '<div class="list-group list-group-flush">';
+        this.categories.forEach((cat, idx) => {
+            const count = document.querySelectorAll(`.doc-list-row[data-category="${cat.name}"]`).length;
+            html += `
+            <div class="list-group-item p-3 border-bottom d-flex align-items-center justify-content-between gap-3 bg-white hover-bg-light transition-all rounded-3 mb-1">
+                <div class="d-flex align-items-center gap-2.5 overflow-hidden">
+                    <span class="badge bg-${cat.badge_color || 'primary'} rounded-3 p-2 d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
+                        <i class="${cat.icon || 'fa-solid fa-folder'} fs-6"></i>
+                    </span>
+                    <div class="overflow-hidden">
+                        <h6 class="mb-0 fw-bold text-dark text-truncate" style="font-size: 0.95rem;">${cat.name}</h6>
+                        <small class="text-muted d-block text-truncate">${cat.desc || 'เอกสารในหมวดนี้'}</small>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center gap-1.5 flex-shrink-0">
+                    <span class="badge bg-light text-secondary border px-2 py-1 me-1" title="จำนวนเอกสาร">${count} ไฟล์</span>
+                    <button type="button" class="btn btn-sm btn-outline-primary px-2 py-1 rounded-pill" onclick="CategoryStudio.editCategory(${idx})" title="แก้ไขหมวดนี้">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-danger px-2 py-1 rounded-pill" onclick="CategoryStudio.deleteCategory('${cat.id}', '${cat.name.replace(/'/g, "\\'")}')" title="ลบหมวดนี้">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                </div>
+            </div>
+            `;
+        });
+        html += '</div>';
+        box.innerHTML = html;
+    },
+
+    resetForm: function() {
+        const titleEl = document.getElementById('catFormTitle');
+        if (titleEl) titleEl.innerHTML = '<i class="fa-solid fa-plus-circle text-success me-1"></i> เพิ่มหมวดหมู่เอกสารใหม่';
+        const idEl = document.getElementById('cs_id');
+        if (idEl) idEl.value = '';
+        const sortEl = document.getElementById('cs_sort_order');
+        if (sortEl) sortEl.value = this.categories.length + 1;
+        const nameEl = document.getElementById('cs_name');
+        if (nameEl) nameEl.value = '';
+        const iconEl = document.getElementById('cs_icon');
+        if (iconEl) iconEl.value = 'fa-solid fa-folder';
+        const badgeEl = document.getElementById('cs_badge_color');
+        if (badgeEl) badgeEl.value = 'primary';
+        const descEl = document.getElementById('cs_desc');
+        if (descEl) descEl.value = '';
+        this.updateIconPreview('fa-solid fa-folder');
+        const btnSave = document.getElementById('btnSaveCategory');
+        if (btnSave) btnSave.innerHTML = '<i class="fa-solid fa-plus me-1"></i> เพิ่มหมวดหมู่';
+    },
+
+    editCategory: function(idx) {
+        const cat = this.categories[idx];
+        if (!cat) return;
+        const titleEl = document.getElementById('catFormTitle');
+        if (titleEl) titleEl.innerHTML = '<i class="fa-solid fa-pen-to-square text-warning me-1"></i> แก้ไขหมวดหมู่: ' + cat.name;
+        document.getElementById('cs_id').value = cat.id || '';
+        document.getElementById('cs_sort_order').value = cat.sort_order || (idx + 1);
+        document.getElementById('cs_name').value = cat.name || '';
+        document.getElementById('cs_icon').value = cat.icon || 'fa-solid fa-folder';
+        document.getElementById('cs_badge_color').value = cat.badge_color || 'primary';
+        document.getElementById('cs_desc').value = cat.desc || '';
+        this.updateIconPreview(cat.icon || 'fa-solid fa-folder');
+        const btnSave = document.getElementById('btnSaveCategory');
+        if (btnSave) btnSave.innerHTML = '<i class="fa-solid fa-floppy-disk me-1"></i> บันทึกการแก้ไข';
+        document.getElementById('cs_name').focus();
+    },
+
+    setIcon: function(iconClass) {
+        const iconEl = document.getElementById('cs_icon');
+        if (iconEl) iconEl.value = iconClass;
+        this.updateIconPreview(iconClass);
+    },
+
+    updateIconPreview: function(iconClass) {
+        const preview = document.getElementById('cs_icon_preview');
+        if (preview) {
+            preview.innerHTML = `<i class="${iconClass || 'fa-solid fa-folder'}"></i>`;
+        }
+    },
+
+    submit: function() {
+        const nameInput = document.getElementById('cs_name');
+        const name = nameInput ? nameInput.value.trim() : '';
+        if (!name) {
+            alert('กรุณากรอกชื่อหมวดหมู่');
+            return;
+        }
+
+        const form = document.getElementById('catStudioForm');
+        const formData = new FormData(form);
+
+        const btn = document.getElementById('btnSaveCategory');
+        const origBtnText = btn ? btn.innerHTML : '';
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> กำลังบันทึก...';
+        }
+
+        fetch('<?= base_url("strategy/categories/save") ?>', {
+            method: 'POST',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            body: formData
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = origBtnText;
+            }
+            if (data.status === 'success') {
+                if (typeof App !== 'undefined' && App.toast) {
+                    App.toast(data.message, 'success');
+                } else {
+                    alert(data.message);
+                }
+                this.loadAndRefresh();
+                this.resetForm();
+            } else {
+                alert(data.message || 'บันทึกล้มเหลว');
+            }
+        })
+        .catch(err => {
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = origBtnText;
+            }
+            console.error(err);
+            alert('เกิดข้อผิดพลาดในการเชื่อมต่อ');
+        });
+    },
+
+    deleteCategory: function(id, name) {
+        if (!confirm(`คุณต้องการลบหมวดหมู่ "${name}" ใช่หรือไม่?\n(หากมีเอกสารในหมวดนี้ ระบบจะย้ายเอกสารไปไว้ในหมวดแรกให้โดยอัตโนมัติ)`)) {
+            return;
+        }
+
+        fetch('<?= base_url("strategy/categories/delete") ?>/' + id, {
+            method: 'POST',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.status === 'success') {
+                if (typeof App !== 'undefined' && App.toast) {
+                    App.toast(data.message, 'success');
+                } else {
+                    alert(data.message);
+                }
+                this.loadAndRefresh();
+                setTimeout(() => location.reload(), 800);
+            } else {
+                alert(data.message || 'ลบล้มเหลว');
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert('เกิดข้อผิดพลาดในการเชื่อมต่อ');
+        });
+    },
+
+    updatePillsOnPage: function() {
+        const container = document.getElementById('docCategoryPills');
+        if (!container) return;
+
+        const totalDocs = document.querySelectorAll('.doc-list-row').length;
+        let html = `
+        <button type="button" class="btn btn-sm ${currentDocCategory === '' ? 'btn-dark active' : 'btn-light border'} rounded-pill px-3 py-1 fw-bold category-filter-btn" data-category="" onclick="setDocCategoryFilter('', this)">
+            ทั้งหมด (<span id="totalDocCount">${totalDocs}</span>)
+        </button>
+        `;
+
+        this.categories.forEach(cat => {
+            const count = document.querySelectorAll(`.doc-list-row[data-category="${cat.name}"]`).length;
+            const isActive = currentDocCategory === cat.name;
+            html += `
+            <button type="button" class="btn btn-sm ${isActive ? 'btn-dark active' : 'btn-light border'} rounded-pill px-3 py-1 fw-bold category-filter-btn" data-category="${cat.name}" onclick="setDocCategoryFilter('${cat.name}', this)">
+                <i class="${cat.icon || 'fa-solid fa-folder'} me-1 text-${cat.badge_color || 'primary'}"></i>${cat.name}
+                <span class="badge bg-secondary bg-opacity-25 text-dark ms-1" style="font-size: 0.72rem;">${count}</span>
+            </button>
+            `;
+        });
+
+        container.innerHTML = html;
+    }
+};
+
+// =========================================================================
+// STRATEGY DOCUMENT STUDIO CONTROLLER
+// =========================================================================
+window.StrategyDocStudio = {
+    modalInstance: null,
+
+    init: function() {
+        const modalEl = document.getElementById('strategyDocModal');
+        if (modalEl && typeof bootstrap !== 'undefined') {
+            this.modalInstance = new bootstrap.Modal(modalEl);
+        }
+    },
+
+    populateCategoryDropdown: function(selectedCategory = '') {
+        const sel = document.getElementById('sd_category');
+        if (!sel) return;
+        const cats = CategoryStudio.categories || [];
+        sel.innerHTML = '';
+        cats.forEach(c => {
+            const opt = document.createElement('option');
+            opt.value = c.name;
+            opt.textContent = c.name;
+            if (c.name === selectedCategory) opt.selected = true;
+            sel.appendChild(opt);
+        });
+    },
+
+    createNew: function() {
+        if (!this.modalInstance) this.init();
+        document.getElementById('strategyDocModalTitle').innerHTML = '<i class="fa-solid fa-file-circle-plus text-success me-2"></i>เพิ่มเอกสารแผนพัฒนา / ยุทธศาสตร์ใหม่';
+        document.getElementById('sd_id').value = '';
+        document.getElementById('sd_title').value = '';
+        document.getElementById('sd_year').value = new Date().getFullYear() + 543;
+        document.getElementById('sd_pages').value = '100';
+        document.getElementById('sd_file').value = '';
+        document.getElementById('sd_file_url').value = '';
+        document.getElementById('sd_is_featured').checked = false;
+        this.populateCategoryDropdown();
+        if (this.modalInstance) this.modalInstance.show();
+    },
+
+    edit: function(doc) {
+        if (!this.modalInstance) this.init();
+        document.getElementById('strategyDocModalTitle').innerHTML = '<i class="fa-solid fa-pen-to-square text-warning me-2"></i>แก้ไขเอกสาร: ' + (doc.title || '');
+        document.getElementById('sd_id').value = doc.id || '';
+        document.getElementById('sd_title').value = doc.title || '';
+        document.getElementById('sd_year').value = doc.year || (new Date().getFullYear() + 543);
+        document.getElementById('sd_pages').value = doc.pages || '100';
+        document.getElementById('sd_file').value = '';
+        document.getElementById('sd_file_url').value = doc.file_url || '';
+        document.getElementById('sd_is_featured').checked = !!doc.is_featured;
+        this.populateCategoryDropdown(doc.category || '');
+        if (this.modalInstance) this.modalInstance.show();
+    },
+
+    submit: function() {
+        const form = document.getElementById('strategyDocForm');
+        const formData = new FormData(form);
+
+        const btn = document.getElementById('btnSaveDoc');
+        const origText = btn ? btn.innerHTML : '';
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> กำลังบันทึก...';
+        }
+
+        fetch('<?= base_url("strategy/document/save-inline") ?>', {
+            method: 'POST',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            body: formData
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = origText;
+            }
+            if (data.status === 'success') {
+                if (typeof App !== 'undefined' && App.toast) {
+                    App.toast(data.message, 'success');
+                } else {
+                    alert(data.message);
+                }
+                setTimeout(() => location.reload(), 700);
+            } else {
+                alert(data.message || 'บันทึกล้มเหลว');
+            }
+        })
+        .catch(err => {
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = origText;
+            }
+            console.error(err);
+            alert('เกิดข้อผิดพลาดในการเชื่อมต่อ');
+        });
+    },
+
+    delete: function(id, title) {
+        if (!confirm(`คุณต้องการลบเอกสาร "${title}" ใช่หรือไม่?`)) return;
+
+        fetch('<?= base_url("strategy/document/delete-inline") ?>/' + id, {
+            method: 'POST',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.status === 'success') {
+                if (typeof App !== 'undefined' && App.toast) {
+                    App.toast(data.message, 'success');
+                } else {
+                    alert(data.message);
+                }
+                setTimeout(() => location.reload(), 700);
+            } else {
+                alert(data.message || 'ลบล้มเหลว');
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert('เกิดข้อผิดพลาดในการเชื่อมต่อ');
+        });
+    }
+};
 
 function previewStrategyDoc(title, fileUrl) {
     document.getElementById('docPreviewTitle').textContent = title;

@@ -23,7 +23,8 @@ class StrategyManager extends BaseController
             'kpis' => $strategy['kpis'] ?? [],
             'pillars' => $strategy['pillars'] ?? [],
             'documents' => $strategy['documents'] ?? [],
-            'planBooks' => $strategy['plan_books'] ?? []
+            'planBooks' => $strategy['plan_books'] ?? [],
+            'categories' => function_exists('get_strategy_categories') ? get_strategy_categories() : []
         ];
 
         return view('admin/strategy_manager', $data);

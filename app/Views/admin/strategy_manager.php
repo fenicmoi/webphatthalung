@@ -295,6 +295,9 @@ $book1yr = $planBooks['book_1yr'] ?? [
                         <span class="input-group-text bg-white"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
                         <input type="text" class="form-control" id="adminDocSearch" placeholder="ค้นหาชื่อเอกสาร..." oninput="filterAdminDocs()">
                     </div>
+                    <a href="<?= base_url('strategy#documents') ?>" target="_blank" class="btn btn-sm btn-outline-info rounded-pill px-3 fw-bold flex-shrink-0" title="เปิดหน้าพอร์ทัลยุทธศาสตร์เพื่อจัดการหมวดหมู่และจัดเรียงเอกสาร">
+                        <i class="fa-solid fa-tags me-1"></i> จัดการหมวดหมู่เอกสาร
+                    </a>
                     <button type="button" class="btn btn-sm btn-primary rounded-pill px-3 fw-bold flex-shrink-0" onclick="openDocModal()">
                         <i class="fa-solid fa-plus me-1"></i> เพิ่มเอกสารแผนพัฒนาฯ
                     </button>
@@ -523,10 +526,14 @@ $book1yr = $planBooks['book_1yr'] ?? [
                         <div class="col-md-6">
                             <label class="form-label fw-bold">หมวดหมู่เอกสาร</label>
                             <select class="form-select" id="docCategory" name="category">
-                                <option value="แผนพัฒนาจังหวัด 5 ปี">แผนพัฒนาจังหวัด 5 ปี</option>
-                                <option value="แผนปฏิบัติราชการประจำปี" selected>แผนปฏิบัติราชการประจำปี</option>
-                                <option value="รายงานผลการดำเนินงาน (M&E)">รายงานผลการดำเนินงาน (M&E)</option>
-                                <option value="แผนพัฒนาอำเภอและชุมชน">แผนพัฒนาอำเภอและชุมชน</option>
+                                <?php 
+                                $catList = $categories ?? (function_exists('get_strategy_categories') ? get_strategy_categories() : []);
+                                foreach ($catList as $cat): 
+                                    $catName = is_array($cat) ? ($cat['name'] ?? '') : $cat;
+                                    if (empty($catName)) continue;
+                                ?>
+                                    <option value="<?= esc($catName) ?>"><?= esc($catName) ?></option>
+                                <?php endforeach; ?>
                             </select>
                         </div>
                         <div class="col-md-3">

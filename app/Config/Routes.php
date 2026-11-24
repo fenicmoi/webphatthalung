@@ -397,6 +397,12 @@ $routes->post('admin/pages/upload-image', 'Admin\PageManager::uploadImage', ['fi
  */
 $routes->get('strategy', 'Strategy::index');
 $routes->get('strategy/download/(:any)', 'Strategy::download/$1');
+$routes->get('strategy/categories', 'Strategy::getCategories');
+$routes->post('strategy/categories/save', 'Strategy::saveCategory');
+$routes->post('strategy/categories/delete/(:any)', 'Strategy::deleteCategory/$1');
+$routes->post('strategy/document/save-inline', 'Strategy::saveDocumentInline');
+$routes->post('strategy/document/delete-inline/(:any)', 'Strategy::deleteDocumentInline/$1');
+
 $routes->get('admin/strategy', 'Admin\StrategyManager::index', ['filter' => 'auth']);
 $routes->post('admin/strategy/save-vision', 'Admin\StrategyManager::saveVision', ['filter' => 'auth']);
 $routes->post('admin/strategy/save-kpis', 'Admin\StrategyManager::saveKpis', ['filter' => 'auth']);
