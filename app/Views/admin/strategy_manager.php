@@ -781,6 +781,38 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+async function saveVision() {
+    const form = document.getElementById('visionForm');
+    if (!form) return;
+    const formData = new FormData(form);
+    const btn = form.querySelector('button[onclick="saveVision()"]');
+    const origHtml = btn ? btn.innerHTML : '';
+
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1.5"></i> กำลังบันทึก...';
+    }
+
+    try {
+        const res = await App.fetch('<?= base_url("admin/strategy/save-vision") ?>', {
+            method: 'POST',
+            body: formData
+        });
+        if (res && res.status === 'success') {
+            App.toast(res.message || 'บันทึกวิสัยทัศน์และพันธกิจเรียบร้อยแล้ว', 'success');
+        } else {
+            App.toast((res && res.message) ? res.message : 'เกิดข้อผิดพลาดในการบันทึก', 'error');
+        }
+    } catch (e) {
+        App.toast('เกิดข้อผิดพลาด: ' + (e.message || e), 'error');
+    } finally {
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = origHtml;
+        }
+    }
+}
+
 function openPillarModal() {
     document.getElementById('pillarId').value = '';
     document.getElementById('pillarItemForm').reset();

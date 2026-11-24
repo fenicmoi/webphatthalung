@@ -38,10 +38,14 @@ class StrategyManager extends BaseController
         helper(['settings']);
         $strategy = get_site_strategy();
 
-        $statement = $this->request->getPost('statement') ?? $strategy['vision']['statement'];
-        $motto = $this->request->getPost('motto') ?? $strategy['vision']['motto'];
-        $period = $this->request->getPost('period') ?? $strategy['vision']['period'];
-        $title = $this->request->getPost('title') ?? $strategy['vision']['title'];
+        $statement = $this->request->getPost('statement') ?? ($strategy['vision']['statement'] ?? '');
+        $motto = $this->request->getPost('motto') ?? ($strategy['vision']['motto'] ?? '');
+        $period = $this->request->getPost('period') ?? ($strategy['vision']['period'] ?? '');
+        $title = $this->request->getPost('title') ?? ($strategy['vision']['title'] ?? '');
+
+        if (!isset($strategy['vision'])) {
+            $strategy['vision'] = [];
+        }
 
         $strategy['vision']['statement'] = trim($statement);
         $strategy['vision']['motto'] = trim($motto);
@@ -50,11 +54,9 @@ class StrategyManager extends BaseController
 
         // Missions
         $missionsText = $this->request->getPost('missions');
-        if (!empty($missionsText)) {
+        if ($missionsText !== null) {
             $missionsArray = array_values(array_filter(array_map('trim', explode("\n", $missionsText))));
-            if (!empty($missionsArray)) {
-                $strategy['missions'] = $missionsArray;
-            }
+            $strategy['missions'] = $missionsArray;
         }
 
         save_site_strategy($strategy);
