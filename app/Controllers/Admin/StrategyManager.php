@@ -38,22 +38,33 @@ class StrategyManager extends BaseController
         helper(['settings']);
         $strategy = get_site_strategy();
 
-        $statement = $this->request->getPost('statement') ?? ($strategy['vision']['statement'] ?? '');
-        $motto = $this->request->getPost('motto') ?? ($strategy['vision']['motto'] ?? '');
-        $period = $this->request->getPost('period') ?? ($strategy['vision']['period'] ?? '');
-        $title = $this->request->getPost('title') ?? ($strategy['vision']['title'] ?? '');
+        // รองรับทั้ง JSON body (Content-Type: application/json) และ POST form
+        $isJson = strpos($this->request->getHeaderLine('Content-Type'), 'application/json') !== false;
+        if ($isJson) {
+            $json = $this->request->getJSON(true);
+            $statement = $json['statement'] ?? ($strategy['vision']['statement'] ?? '');
+            $motto     = $json['motto']     ?? ($strategy['vision']['motto']     ?? '');
+            $period    = $json['period']    ?? ($strategy['vision']['period']    ?? '');
+            $title     = $json['title']     ?? ($strategy['vision']['title']     ?? '');
+            $missionsText = $json['missions'] ?? null;
+        } else {
+            $statement = $this->request->getPost('statement') ?? ($strategy['vision']['statement'] ?? '');
+            $motto     = $this->request->getPost('motto')     ?? ($strategy['vision']['motto']     ?? '');
+            $period    = $this->request->getPost('period')    ?? ($strategy['vision']['period']    ?? '');
+            $title     = $this->request->getPost('title')     ?? ($strategy['vision']['title']     ?? '');
+            $missionsText = $this->request->getPost('missions');
+        }
 
         if (!isset($strategy['vision'])) {
             $strategy['vision'] = [];
         }
 
         $strategy['vision']['statement'] = trim($statement);
-        $strategy['vision']['motto'] = trim($motto);
-        $strategy['vision']['period'] = trim($period);
-        $strategy['vision']['title'] = trim($title);
+        $strategy['vision']['motto']     = trim($motto);
+        $strategy['vision']['period']    = trim($period);
+        $strategy['vision']['title']     = trim($title);
 
-        // Missions
-        $missionsText = $this->request->getPost('missions');
+        // Missions: แปลง string หลายบรรทัดเป็น array
         if ($missionsText !== null) {
             $missionsArray = array_values(array_filter(array_map('trim', explode("\n", $missionsText))));
             $strategy['missions'] = $missionsArray;
@@ -62,7 +73,7 @@ class StrategyManager extends BaseController
         save_site_strategy($strategy);
 
         return $this->response->setJSON([
-            'status' => 'success',
+            'status'  => 'success',
             'message' => 'บันทึกวิสัยทัศน์และพันธกิจเรียบร้อยแล้ว'
         ]);
     }

@@ -783,33 +783,67 @@ document.addEventListener('DOMContentLoaded', function() {
 
 async function saveVision() {
     const form = document.getElementById('visionForm');
-    if (!form) return;
-    const formData = new FormData(form);
+    if (!form) { alert('ไม่พบฟอร์มวิสัยทัศน์'); return; }
+
+    // เก็บค่าจากฟอร์มเป็น JSON แทน FormData เพื่อให้ CSRF header ทำงานถูกต้อง
+    const payload = {
+        title:     (form.querySelector('[name="title"]') || {}).value || '',
+        period:    (form.querySelector('[name="period"]') || {}).value || '',
+        statement: (form.querySelector('[name="statement"]') || {}).value || '',
+        motto:     (form.querySelector('[name="motto"]') || {}).value || '',
+        missions:  (form.querySelector('[name="missions"]') || {}).value || ''
+    };
+
     const btn = form.querySelector('button[onclick="saveVision()"]');
     const origHtml = btn ? btn.innerHTML : '';
-
     if (btn) {
         btn.disabled = true;
-        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1.5"></i> กำลังบันทึก...';
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i> กำลังบันทึก...';
     }
 
     try {
-        const res = await App.fetch('<?= base_url("admin/strategy/save-vision") ?>', {
+        // ใช้ native fetch โดยตรง + CSRF จาก meta tag
+        const csrfMeta   = document.querySelector('meta[name="X-CSRF-TOKEN"]');
+        const csrfHeader = document.querySelector('meta[name="X-CSRF-HEADER"]');
+        const headers = {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        };
+        if (csrfMeta && csrfHeader) {
+            headers[csrfHeader.content] = csrfMeta.content;
+        }
+
+        const response = await fetch('<?= base_url("admin/strategy/save-vision") ?>', {
             method: 'POST',
-            body: formData
+            headers: headers,
+            body: JSON.stringify(payload)
         });
-        if (res && res.status === 'success') {
-            App.toast(res.message || 'บันทึกวิสัยทัศน์และพันธกิจเรียบร้อยแล้ว', 'success');
+
+        // อัปเดต CSRF token ใหม่จาก response header
+        const newCsrf = response.headers.get('X-CSRF-TOKEN');
+        if (newCsrf && csrfMeta) { csrfMeta.content = newCsrf; }
+
+        let data;
+        try { data = await response.json(); } catch(e) { throw new Error('เซิร์ฟเวอร์ตอบกลับไม่ถูกต้อง'); }
+
+        if (data && data.status === 'success') {
+            if (typeof App !== 'undefined' && App.toast) {
+                App.toast(data.message || 'บันทึกวิสัยทัศน์และพันธกิจเรียบร้อยแล้ว', 'success');
+            } else {
+                alert('✅ ' + (data.message || 'บันทึกสำเร็จ'));
+            }
         } else {
-            App.toast((res && res.message) ? res.message : 'เกิดข้อผิดพลาดในการบันทึก', 'error');
+            const msg = (data && data.message) ? data.message : 'เกิดข้อผิดพลาดในการบันทึก';
+            if (typeof App !== 'undefined' && App.toast) { App.toast(msg, 'error'); }
+            else { alert('❌ ' + msg); }
         }
     } catch (e) {
-        App.toast('เกิดข้อผิดพลาด: ' + (e.message || e), 'error');
+        const msg = 'เกิดข้อผิดพลาด: ' + (e.message || e);
+        if (typeof App !== 'undefined' && App.toast) { App.toast(msg, 'error'); }
+        else { alert(msg); }
     } finally {
-        if (btn) {
-            btn.disabled = false;
-            btn.innerHTML = origHtml;
-        }
+        if (btn) { btn.disabled = false; btn.innerHTML = origHtml; }
     }
 }
 
