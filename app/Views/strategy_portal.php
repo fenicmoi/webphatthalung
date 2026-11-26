@@ -155,305 +155,57 @@ $isOfficer = $isOfficer ?? false;
 <div class="container py-4">
 
     <!-- ======================================================== -->
-    <!-- 1. REGAL HERO BANNER & PROVINCIAL VISION 2566-2570 -->
+    <!-- COMPACT HEADER BANNER: ศูนย์เอกสารแผนพัฒนาและแผนปฏิบัติราชการประจำปี -->
     <!-- ======================================================== -->
-    <section class="strategy-hero">
+    <section class="strategy-hero mb-4" style="padding: 1.75rem 2rem; border-radius: 22px;">
         <div class="position-relative z-2">
             <!-- Breadcrumb -->
-            <nav aria-label="breadcrumb" class="mb-3">
-                <ol class="breadcrumb mb-0" style="font-size: 0.88rem;">
+            <nav aria-label="breadcrumb" class="mb-2">
+                <ol class="breadcrumb mb-0" style="font-size: 0.85rem;">
                     <li class="breadcrumb-item"><a href="<?= base_url() ?>" class="text-white text-opacity-75 text-decoration-none"><i class="fa-solid fa-house me-1"></i>หน้าแรก</a></li>
-                    <li class="breadcrumb-item text-white text-opacity-75">เกี่ยวกับจังหวัด</li>
-                    <li class="breadcrumb-item active text-warning fw-bold" aria-current="page">ยุทธศาสตร์การพัฒนาจังหวัดพัทลุง</li>
+                    <li class="breadcrumb-item active text-warning fw-bold" aria-current="page">ศูนย์เอกสารแผนพัฒนาและแผนปฏิบัติราชการประจำปี</li>
                 </ol>
             </nav>
 
-            <div class="row align-items-center g-4">
+            <div class="row align-items-center g-3">
                 <div class="col-lg-8">
-                    <div class="d-inline-flex align-items-center gap-2 px-3 py-1.5 rounded-pill bg-warning bg-opacity-20 border border-warning border-opacity-30 text-warning fw-bold small mb-3">
-                        <i class="fa-solid fa-compass"></i> แผนพัฒนาจังหวัด 5 ปี (พ.ศ. 2566 – 2570) ฉบับทบทวน
+                    <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill bg-warning bg-opacity-20 border border-warning border-opacity-30 text-warning fw-bold small mb-2">
+                        <i class="fa-solid fa-book-open-reader"></i> Official Plans &amp; E-Book Center
                     </div>
-                    
-                    <h1 class="display-6 fw-bold mb-3 text-white" style="letter-spacing: -0.02em;">
-                        ยุทธศาสตร์การพัฒนาจังหวัดพัทลุง
+                    <h1 class="h3 fw-bold mb-1.5 text-white" style="letter-spacing: -0.01em;">
+                        ศูนย์เอกสารแผนพัฒนาและแผนปฏิบัติราชการประจำปี
                     </h1>
-                    <p class="text-white text-opacity-80 fs-5 mb-4 fw-light">
-                        กรอบทิศทางการขับเคลื่อนเศรษฐกิจ สังคม ท่องเที่ยว และสิ่งแวดล้อม สู่เมืองอัจฉริยะที่ยั่งยืน
+                    <p class="text-white text-opacity-80 mb-0 small">
+                        เอกสารฉบับทางการรับรองโดย สำนักงานจังหวัดพัทลุง • รองรับการเปิดอ่านแบบหนังสือ E-Book พลิกหน้า 3D และดาวน์โหลดไฟล์ PDF
                     </p>
+                </div>
 
-                    <!-- Vision Box -->
-                    <div class="strategy-vision-box mb-4">
-                        <div class="small text-warning text-uppercase fw-bold mb-1 letter-spacing-1">
-                            <i class="fa-solid fa-bullseye me-1"></i> วิสัยทัศน์จังหวัดพัทลุง (Provincial Vision)
-                        </div>
-                        <h4 class="fw-bold text-white mb-2" style="line-height: 1.5;">
-                            "<?= esc($vision['statement'] ?? 'เมืองเกษตรคุณค่าสูง ท่องเที่ยวเชิงนิเวศและวัฒนธรรมระดับสากล คุณภาพชีวิตที่ดี สังคมเป็นสุข ทรัพยากรธรรมชาติและสิ่งแวดล้อมยั่งยืน') ?>"
-                        </h4>
-                        <div class="d-flex align-items-center gap-2 text-white text-opacity-75 small">
-                            <i class="fa-solid fa-circle-check text-success"></i>
-                            <span><?= esc($vision['motto'] ?? 'เมืองลุงน่าอยู่ เกษตรปลอดภัย ทะเลน้อยมรดกโลก สังคมเป็นสุข') ?></span>
-                        </div>
-                    </div>
-
-                    <!-- Quick Action Buttons -->
-                    <div class="d-flex flex-wrap gap-2.5">
-                        <a href="#pillarsSection" class="btn btn-warning rounded-pill px-4 py-2.5 fw-bold shadow-sm text-dark d-inline-flex align-items-center gap-2">
-                            <i class="fa-solid fa-layer-group"></i> ประเด็นการพัฒนาจังหวัด
+                <div class="col-lg-4 d-flex flex-wrap justify-content-lg-end align-items-center gap-2">
+                    <?php if ($isOfficer): ?>
+                        <button type="button" class="btn btn-warning btn-sm rounded-pill px-3.5 py-2 fw-bold text-dark shadow-sm d-inline-flex align-items-center gap-1.5" onclick="StrategyDocStudio.createNew()">
+                            <i class="fa-solid fa-circle-plus"></i> เพิ่มเอกสาร
+                        </button>
+                        <button type="button" class="btn btn-outline-light btn-sm rounded-pill px-3 py-2 fw-bold d-inline-flex align-items-center gap-1.5" onclick="CategoryStudio.open()">
+                            <i class="fa-solid fa-folder-tree"></i> จัดการหมวดหมู่
+                        </button>
+                        <a href="<?= base_url('admin/strategy') ?>" class="btn btn-light btn-sm rounded-pill px-3 py-2 fw-bold text-dark d-inline-flex align-items-center gap-1.5" title="จัดการข้อมูลยุทธศาสตร์หลังบ้าน">
+                            <i class="fa-solid fa-sliders text-primary"></i> หลังบ้าน
                         </a>
-                        <a href="#documentsSection" class="btn btn-outline-light rounded-pill px-4 py-2.5 fw-bold d-inline-flex align-items-center gap-2">
-                            <i class="fa-solid fa-file-pdf"></i> ศูนย์ดาวน์โหลดแผนพัฒนาฯ
-                        </a>
-                        <a href="#kpiSection" class="btn btn-outline-info rounded-pill px-3 py-2.5 fw-bold d-inline-flex align-items-center gap-2 text-white">
-                            <i class="fa-solid fa-chart-pie"></i> ตัวชี้วัดเป้าหมาย
-                        </a>
-                        <?php if ($isOfficer): ?>
-                            <a href="<?= base_url('admin/strategy') ?>" class="btn btn-light rounded-pill px-3.5 py-2.5 fw-bold text-dark d-inline-flex align-items-center gap-2">
-                                <i class="fa-solid fa-sliders text-primary"></i> จัดการข้อมูลยุทธศาสตร์
-                            </a>
-                        <?php endif; ?>
-                    </div>
-                </div>
-
-                <div class="col-lg-4 text-center d-none d-lg-block">
-                    <div class="p-4 rounded-circle bg-white bg-opacity-10 border border-white border-opacity-20 shadow-lg d-inline-flex align-items-center justify-content-center" style="width: 240px; height: 240px; backdrop-filter: blur(10px);">
-                        <picture>
-                            <source srcset="<?= base_url('uploads/logo/logo_1787048018.webp') ?>" type="image/webp">
-                            <img src="<?= base_url('uploads/logo/logo_1787048018.png') ?>" alt="ตราประจำจังหวัดพัทลุง" class="img-fluid" style="max-height: 180px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));" width="180" height="180" loading="lazy" decoding="async">
-                        </picture>
-                    </div>
-                    <div class="mt-3 text-white text-opacity-90 fw-bold fs-6">
-                        จังหวัดพัทลุง • Phatthalung Province
-                    </div>
+                    <?php else: ?>
+                        <div class="px-3.5 py-2 rounded-4 bg-white bg-opacity-10 border border-white border-opacity-20 text-white text-end">
+                            <div class="small text-white text-opacity-75">เอกสารทั้งหมดในระบบ</div>
+                            <div class="h4 fw-bold text-warning mb-0 lh-1"><?= number_format(count($documents)) ?> <span class="fs-6 fw-normal text-white">เล่ม</span></div>
+                        </div>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- ======================================================== -->
-    <!-- 2. CORE VALUES & MISSIONS (พันธกิจและค่านิยมหลัก) -->
+    <!-- DOCUMENT DOWNLOAD & E-BOOK CENTER (ศูนย์ดาวน์โหลดแผนพัฒนาฯ) -->
     <!-- ======================================================== -->
-    <section class="mb-5">
-        <div class="row g-4 mb-4">
-            <?php foreach ($core_values as $cv): ?>
-                <div class="col-6 col-md-3">
-                    <div class="p-3.5 rounded-4 border bg-white shadow-sm h-100 d-flex align-items-center gap-3 transition-all hover-lift" style="border-radius: 18px;">
-                        <div class="p-3 rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 48px; height: 48px; background: rgba(2, 132, 199, 0.1); color: #0284c7;">
-                            <i class="<?= esc($cv['icon']) ?> fs-5"></i>
-                        </div>
-                        <div>
-                            <div class="fw-bold text-dark fs-6"><?= esc($cv['title']) ?></div>
-                            <small class="text-muted" style="font-size: 0.8rem;"><?= esc($cv['desc']) ?></small>
-                        </div>
-                    </div>
-                </div>
-            <?php endforeach; ?>
-        </div>
-
-        <!-- Missions Card -->
-        <div class="card border-0 rounded-4 shadow-sm p-4 p-lg-4.5 bg-white mb-4">
-            <div class="d-flex align-items-center gap-2 mb-3">
-                <i class="fa-solid fa-flag text-primary fs-5"></i>
-                <h5 class="fw-bold text-dark m-0">พันธกิจการพัฒนาจังหวัดพัทลุง (Provincial Missions)</h5>
-            </div>
-            <div class="row g-3">
-                <?php foreach ($missions as $mIdx => $missionText): ?>
-                    <div class="col-md-6">
-                        <div class="d-flex align-items-start gap-3 p-3 rounded-3 bg-light h-100">
-                            <span class="badge bg-primary rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 28px; height: 28px; font-size: 0.85rem;">
-                                <?= $mIdx + 1 ?>
-                            </span>
-                            <span class="text-secondary fw-medium" style="font-size: 0.95rem; line-height: 1.55;">
-                                <?= esc($missionText) ?>
-                            </span>
-                        </div>
-                    </div>
-                <?php endforeach; ?>
-            </div>
-        </div>
-    </section>
-
-    <!-- ======================================================== -->
-    <!-- 3. PROVINCIAL DEVELOPMENT THEMES (ประเด็นการพัฒนาจังหวัด) -->
-    <!-- ======================================================== -->
-    <section id="pillarsSection" class="mb-5 pt-3">
-        <div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-4">
-            <div>
-                <span class="badge bg-primary bg-opacity-10 text-primary fw-bold px-3 py-1.5 rounded-pill mb-2">Development Themes</span>
-                <h3 class="fw-bold text-dark m-0">
-                    <i class="fa-solid fa-layer-group text-warning me-2"></i>ประเด็นการพัฒนาจังหวัด (<?= count($pillars) ?> ประเด็น)
-                </h3>
-            </div>
-            <p class="text-muted m-0" style="max-width: 500px; font-size: 0.92rem;">
-                จำแนกตามประเด็นยุทธศาสตร์หลัก ครอบคลุมการพัฒนาเศรษฐกิจ สังคม สิ่งแวดล้อม และการบริหารภาครัฐ
-            </p>
-        </div>
-
-        <div class="row g-4">
-            <?php 
-                $pillarColClass = 'col-lg-6 col-xl-4';
-                if (count($pillars) === 2) $pillarColClass = 'col-lg-6';
-                elseif (count($pillars) === 3) $pillarColClass = 'col-lg-4';
-                elseif (count($pillars) === 4) $pillarColClass = 'col-md-6 col-xl-3';
-            ?>
-            <?php foreach ($pillars as $pillar): ?>
-                <div class="<?= $pillarColClass ?>">
-                    <div class="pillar-card">
-                        <!-- Pillar Header -->
-                        <div class="d-flex align-items-center gap-3 mb-3">
-                            <div class="pillar-badge-num" style="background: <?= esc($pillar['bg_gradient'] ?? 'linear-gradient(135deg, #059669, #10b981)') ?>;">
-                                <?= $pillar['number'] ?>
-                            </div>
-                            <div>
-                                <span class="badge px-2.5 py-1 rounded-pill mb-1" style="background: rgba(2, 132, 199, 0.1); color: <?= esc($pillar['color'] ?? '#059669') ?>; font-size: 0.78rem;">
-                                    ประเด็นที่ <?= $pillar['number'] ?>
-                                </span>
-                                <h5 class="fw-bold text-dark m-0" style="font-size: 1.15rem; line-height: 1.35;">
-                                    <?= esc($pillar['short_title']) ?>
-                                </h5>
-                            </div>
-                        </div>
-
-                        <!-- Summary -->
-                        <p class="text-secondary small mb-3" style="line-height: 1.6; min-height: 48px;">
-                            <?= esc($pillar['summary']) ?>
-                        </p>
-
-                        <!-- Key Strategies Bullet List -->
-                        <div class="mb-3 flex-grow-1">
-                            <h6 class="fw-bold text-dark small mb-2 d-flex align-items-center gap-1.5">
-                                <i class="fa-solid fa-list-check text-primary"></i> กลยุทธ์การดำเนินงาน:
-                            </h6>
-                            <ul class="list-unstyled mb-0 small text-secondary ps-1">
-                                <?php foreach ($pillar['strategies'] as $st): ?>
-                                    <li class="mb-2 d-flex align-items-start gap-2">
-                                        <i class="fa-solid fa-check text-success mt-1" style="font-size: 0.75rem;"></i>
-                                        <span><?= esc($st) ?></span>
-                                    </li>
-                                <?php endforeach; ?>
-                            </ul>
-                        </div>
-
-                        <!-- Flagship Project Box -->
-                        <div class="p-3 rounded-3 border-start border-4 border-warning bg-light mt-auto">
-                            <span class="badge bg-warning text-dark fw-bold px-2 py-0.5 mb-1" style="font-size: 0.7rem;">
-                                <i class="fa-solid fa-star me-1"></i> โครงการเรือธง (Flagship)
-                            </span>
-                            <div class="small fw-bold text-dark" style="line-height: 1.4;">
-                                <?= esc($pillar['flagship']) ?>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            <?php endforeach; ?>
-        </div>
-    </section>
-
-    <!-- ======================================================== -->
-    <!-- 4. KEY TARGET INDICATORS (ตัวชี้วัดเป้าหมายสำคัญ) -->
-    <!-- ======================================================== -->
-    <section id="kpiSection" class="mb-5 pt-3">
-        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
-            <div>
-                <span class="badge bg-success bg-opacity-10 text-success fw-bold px-3 py-1.5 rounded-pill mb-2">Target & KPIs</span>
-                <h3 class="fw-bold text-dark m-0">
-                    <i class="fa-solid fa-chart-pie text-success me-2"></i>เป้าหมายและตัวชี้วัดความสำเร็จที่สำคัญ
-                </h3>
-            </div>
-            <span class="text-muted small">เป้าประสงค์รวมระยะ 5 ปี (พ.ศ. 2566 – 2570)</span>
-        </div>
-
-        <div class="row g-4">
-            <?php 
-                $kpiColClass = (count($kpis) === 3) ? 'col-md-4' : 'col-sm-6 col-lg-3';
-            ?>
-            <?php foreach ($kpis as $kpi): ?>
-                <div class="<?= $kpiColClass ?>">
-                    <div class="kpi-metric-card h-100 d-flex flex-column">
-                        <div class="p-3 rounded-circle d-inline-flex align-items-center justify-content-center mb-3 shadow-sm mx-auto" style="width: 56px; height: 56px; background: rgba(0,0,0,0.04); color: <?= esc($kpi['color'] ?? '#2563eb') ?>;">
-                            <i class="<?= esc($kpi['icon'] ?? 'fa-solid fa-chart-line') ?> fs-4"></i>
-                        </div>
-                        <h6 class="fw-bold text-secondary mb-2" style="font-size: 0.95rem; min-height: 42px;"><?= esc($kpi['title']) ?></h6>
-                        <div class="display-6 fw-bold mb-1" style="color: <?= esc($kpi['color'] ?? '#2563eb') ?>;">
-                            <?= esc($kpi['target']) ?>
-                        </div>
-                        <div class="text-muted small mb-2"><?= esc($kpi['unit']) ?></div>
-                        
-                        <?php if (!empty($kpi['current'])): ?>
-                            <div class="mb-2">
-                                <span class="badge bg-light text-secondary border px-2.5 py-1 small">
-                                    สถานะปัจจุบัน: <strong><?= esc($kpi['current']) ?></strong>
-                                </span>
-                            </div>
-                        <?php endif; ?>
-
-                        <p class="text-secondary small mt-auto mb-0" style="font-size: 0.82rem; line-height: 1.45;">
-                            <?= esc($kpi['desc'] ?? '') ?>
-                        </p>
-                    </div>
-                </div>
-            <?php endforeach; ?>
-        </div>
-    </section>
-
-    <!-- ======================================================== -->
-    <!-- 5. FLAGSHIP MEGA PROJECTS HIGHLIGHT -->
-    <!-- ======================================================== -->
-    <section class="mb-5">
-        <div class="flagship-banner shadow-lg">
-            <div class="row align-items-center g-4">
-                <div class="col-lg-8">
-                    <div class="d-inline-flex align-items-center gap-1.5 px-3 py-1 rounded-pill bg-white bg-opacity-20 text-white fw-bold small mb-2">
-                        <i class="fa-solid fa-gem text-warning"></i> โครงการขับเคลื่อนการพัฒนาเชิงพื้นที่ระดับสากล
-                    </div>
-                    <h3 class="fw-bold text-white mb-2">
-                        มรดกทางการเกษตรโลก (GIAHS) & พื้นที่ชุ่มน้ำทะเลน้อย แรมซาร์ไซต์
-                    </h3>
-                    <p class="text-white text-opacity-90 mb-4" style="line-height: 1.7;">
-                        จังหวัดพัทลุงมุ่งมั่นขับเคลื่อน <strong>"ระบบการเลี้ยงควายปลักในพื้นที่ชุ่มน้ำทะเลน้อย"</strong> ซึ่งได้รับการขึ้นทะเบียนเป็นระบบมรดกทางการเกษตรโลก (GIAHS) โดย FAO สหประชาชาติ ควบคู่กับการอนุรักษ์พื้นที่ชุ่มน้ำโลกและยกระดับเศรษฐกิจชุมชนอย่างยั่งยืน
-                    </p>
-                    <div class="d-flex flex-wrap gap-2">
-                        <span class="badge bg-white text-dark px-3 py-2 rounded-pill fw-bold">🌿 เกษตรอินทรีย์ GI</span>
-                        <span class="badge bg-white text-dark px-3 py-2 rounded-pill fw-bold">🐃 ควายน้ำทะเลน้อย GIAHS</span>
-                        <span class="badge bg-white text-dark px-3 py-2 rounded-pill fw-bold">🌊 ลุ่มน้ำทะเลสาบสงขลา</span>
-                        <span class="badge bg-white text-dark px-3 py-2 rounded-pill fw-bold">🛡️ Smart & Green City</span>
-                    </div>
-                </div>
-                <div class="col-lg-4 text-center">
-                    <a href="<?= base_url('page/thale-noi-giahs') ?>" class="btn btn-warning rounded-pill px-4 py-3 fw-bold text-dark shadow hover-scale d-inline-flex align-items-center gap-2">
-                        <i class="fa-solid fa-arrow-up-right-from-square"></i> ศึกษาข้อมูลมรดกโลก
-                    </a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ======================================================== -->
-    <!-- 6. DOCUMENT DOWNLOAD & E-BOOK CENTER (ศูนย์ดาวน์โหลดแผนพัฒนาฯ) -->
-    <!-- ======================================================== -->
-    <section id="documentsSection" class="mb-5 pt-3">
-        <div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-4">
-            <div>
-                <span class="badge bg-primary bg-opacity-10 text-primary fw-bold px-3 py-1.5 rounded-pill mb-2">
-                    <i class="fa-solid fa-folder-open me-1"></i> Official Plans & Documents
-                </span>
-                <h3 class="fw-bold text-dark m-0">
-                    ศูนย์เอกสารแผนพัฒนาและแผนปฏิบัติราชการประจำปี
-                </h3>
-            </div>
-            <div class="d-flex flex-wrap align-items-center gap-2">
-                <?php if ($isOfficer): ?>
-                    <button type="button" class="btn btn-outline-primary btn-sm rounded-pill px-3 py-1.5 fw-bold shadow-xs d-inline-flex align-items-center gap-1.5" onclick="CategoryStudio.open()">
-                        <i class="fa-solid fa-folder-tree text-primary"></i> จัดการหมวดหมู่เอกสาร
-                    </button>
-                    <button type="button" class="btn btn-success btn-sm rounded-pill px-3 py-1.5 fw-bold shadow-xs d-inline-flex align-items-center gap-1.5" onclick="StrategyDocStudio.createNew()">
-                        <i class="fa-solid fa-circle-plus"></i> เพิ่มเอกสารยุทธศาสตร์
-                    </button>
-                <?php endif; ?>
-                <div class="text-muted small">
-                    เอกสารฉบับทางการรับรองโดย สำนักงานจังหวัดพัทลุง
-                </div>
-            </div>
-        </div>
+    <section id="documentsSection" class="mb-5">
 
         <?php
             // แสดงการ์ดแนะนำด้านบนเฉพาะเอกสารที่ตั้งค่า "แผนแม่บทหลัก (is_featured)"
