@@ -625,10 +625,13 @@
 
     <!-- BOTTOM CONTROLS -->
     <footer class="ebook-bottombar">
-        <!-- Thumbnails Toggle -->
+        <!-- Thumbnails & Page Mode Toggle -->
         <div class="ctrl-group">
             <button type="button" class="ctrl-btn" id="btnThumbToggle" onclick="toggleThumbDrawer()" title="แสดงสารบัญภาพย่อทุกหน้า">
                 <i class="fa-solid fa-table-cells-large"></i>
+            </button>
+            <button type="button" class="ctrl-btn" id="btnPageMode" onclick="toggleSinglePageMode()" title="สลับโหมด 1 หน้าเดี่ยว / 2 หน้าคู่">
+                <i class="fa-solid fa-book-open"></i>
             </button>
         </div>
 
@@ -653,6 +656,16 @@
             </button>
         </div>
 
+        <!-- Rotate Controls (สำหรับหน้าตารางแนวนอน/ตะแคง) -->
+        <div class="ctrl-group">
+            <button type="button" class="ctrl-btn" onclick="rotateBook(-90)" title="หมุนซ้าย 90° (Shift+R)">
+                <i class="fa-solid fa-rotate-left"></i>
+            </button>
+            <button type="button" class="ctrl-btn" id="btnRotateRight" onclick="rotateBook(90)" title="หมุนขวา 90° สำหรับหน้าตารางแนวนอน (R)">
+                <i class="fa-solid fa-rotate-right"></i>
+            </button>
+        </div>
+
         <!-- Zoom Controls -->
         <div class="ctrl-group zoom-group">
             <button type="button" class="ctrl-btn" onclick="changeZoom(-0.2)" title="ซูมออก (-)">
@@ -662,8 +675,8 @@
             <button type="button" class="ctrl-btn" onclick="changeZoom(0.2)" title="ซูมเข้า (+)">
                 <i class="fa-solid fa-magnifying-glass-plus"></i>
             </button>
-            <button type="button" class="ctrl-btn" onclick="resetZoom()" title="รีเซ็ตขนาด">
-                <i class="fa-solid fa-rotate-left"></i>
+            <button type="button" class="ctrl-btn" onclick="resetZoom()" title="รีเซ็ตขนาดและการหมุน (0)">
+                <i class="fa-solid fa-arrows-rotate"></i>
             </button>
         </div>
 
@@ -706,10 +719,13 @@ let renderingPages = new Set();
 let soundEnabled = true;
 let audioCtx = null;
 
-// Zoom & Pan state
+// Zoom, Rotate & View Mode state
 let currentZoom = 1;
+let currentRotation = 0;
 let panX = 0, panY = 0;
 let isDragging = false, dragStartX = 0, dragStartY = 0;
+let singlePageMode = window.innerWidth <= 768;
+let bookAspectRatio = 0.707;
 
 function showToast(msg) {
     const el = document.getElementById('ebookToast');
@@ -848,14 +864,14 @@ function updatePageUI(pageIndex) {
 function computeBookDimensions(aspectRatio) {
     const stage = document.getElementById('stageWrap');
     const isMobile = window.innerWidth <= 768;
+    const isPortraitMode = singlePageMode || isMobile;
     const availW = stage.clientWidth - (isMobile ? 28 : 140);
     const availH = stage.clientHeight - 36;
 
-    // หนังสือแบบ 2 หน้าคู่ (desktop) ต้องแบ่งความกว้างครึ่งหนึ่งต่อ 1 หน้า
     let pageH = Math.min(availH, 860);
     let pageW = Math.floor(pageH * aspectRatio);
 
-    if (!isMobile) {
+    if (!isPortraitMode) {
         if (pageW * 2 > availW) {
             pageW = Math.floor(availW / 2);
             pageH = Math.floor(pageW / aspectRatio);
@@ -870,7 +886,7 @@ function computeBookDimensions(aspectRatio) {
     return {
         width: Math.max(240, pageW),
         height: Math.max(320, pageH),
-        isPortrait: isMobile
+        isPortrait: isPortraitMode
     };
 }
 
@@ -974,32 +990,12 @@ async function initEbookViewer() {
         // อ่านสัดส่วนหน้าแรกเพื่อกำหนดขนาดรูปเล่มให้ตรงกับ PDF จริง
         const firstPage = await pdfDoc.getPage(1);
         const firstVp = firstPage.getViewport({ scale: 1 });
-        const aspectRatio = firstVp.width / firstVp.height;
-        const dims = computeBookDimensions(aspectRatio);
+        bookAspectRatio = firstVp.width / firstVp.height;
 
-        // สร้าง DOM หน้ากระดาษ + รายการ Thumbnails
-        const container = document.getElementById('flipbookContainer');
+        // สร้างรายการ Thumbnails
         const thumbList = document.getElementById('thumbList');
-        container.innerHTML = '';
         thumbList.innerHTML = '';
-
         for (let i = 1; i <= totalPages; i++) {
-            const pageDiv = document.createElement('div');
-            pageDiv.className = 'ebook-page';
-            pageDiv.id = 'ebook-page-' + i;
-            if (i === 1 || i === totalPages) {
-                pageDiv.setAttribute('data-density', 'hard');
-            }
-            pageDiv.innerHTML = `
-                <canvas></canvas>
-                <div class="page-placeholder">
-                    <i class="fa-solid fa-spinner fa-spin fa-lg"></i>
-                    <span>กำลังโหลดหน้า ${i}...</span>
-                </div>
-                <div class="page-number-stamp">${i}</div>
-            `;
-            container.appendChild(pageDiv);
-
             const thumbItem = document.createElement('div');
             thumbItem.className = 'thumb-item' + (i === 1 ? ' active' : '');
             thumbItem.dataset.page = i;
@@ -1014,43 +1010,103 @@ async function initEbookViewer() {
             thumbList.appendChild(thumbItem);
         }
 
-        // เริ่มต้น StPageFlip 3D Flipbook
-        pageFlip = new St.PageFlip(container, {
-            width: dims.width,
-            height: dims.height,
-            size: 'fixed',
-            minWidth: 240,
-            maxWidth: 900,
-            minHeight: 320,
-            maxHeight: 1100,
-            maxShadowOpacity: 0.55,
-            showCover: true,
-            mobileScrollSupport: true,
-            usePortrait: dims.isPortrait,
-            drawShadow: true,
-            flippingTime: 650,
-            startZIndex: 2
-        });
-
-        pageFlip.loadFromHTML(document.querySelectorAll('.ebook-page'));
-
-        pageFlip.on('flip', (e) => {
-            playFlipSound();
-            updatePageUI(e.data);
-            renderVisibleWindow(e.data);
-        });
-
-        // เรนเดอร์หน้าปกและหน้าแรกๆ ทันที
-        await renderPdfPage(1);
+        await buildFlipbook(0);
         document.getElementById('loadingProgress').style.width = '100%';
         document.getElementById('loadingOverlay').classList.add('hidden');
-        updatePageUI(0);
-        renderVisibleWindow(0);
+        updatePageModeButton();
 
     } catch (err) {
         console.error('E-Book init error:', err);
         showError('ไม่สามารถโหลดไฟล์ PDF นี้ได้ (' + (err.message || 'ไม่พบไฟล์บนเซิร์ฟเวอร์') + ') คุณสามารถลองกดเปิดไฟล์ PDF โดยตรงด้านล่างครับ');
     }
+}
+
+async function buildFlipbook(startPageIndex = 0) {
+    if (pageFlip) {
+        try { pageFlip.destroy(); } catch (e) {}
+        pageFlip = null;
+    }
+
+    renderedPages.clear();
+    renderingPages.clear();
+
+    const zoomLayer = document.getElementById('zoomLayer');
+    let container = document.getElementById('flipbookContainer');
+    if (container) container.remove();
+    container = document.createElement('div');
+    container.id = 'flipbookContainer';
+    zoomLayer.appendChild(container);
+
+    const dims = computeBookDimensions(bookAspectRatio);
+
+    for (let i = 1; i <= totalPages; i++) {
+        const pageDiv = document.createElement('div');
+        pageDiv.className = 'ebook-page';
+        pageDiv.id = 'ebook-page-' + i;
+        if (i === 1 || i === totalPages) {
+            pageDiv.setAttribute('data-density', 'hard');
+        }
+        pageDiv.innerHTML = `
+            <canvas></canvas>
+            <div class="page-placeholder">
+                <i class="fa-solid fa-spinner fa-spin fa-lg"></i>
+                <span>กำลังโหลดหน้า ${i}...</span>
+            </div>
+            <div class="page-number-stamp">${i}</div>
+        `;
+        container.appendChild(pageDiv);
+    }
+
+    pageFlip = new St.PageFlip(container, {
+        width: dims.width,
+        height: dims.height,
+        size: 'fixed',
+        minWidth: 240,
+        maxWidth: 960,
+        minHeight: 320,
+        maxHeight: 1100,
+        maxShadowOpacity: 0.55,
+        showCover: !dims.isPortrait,
+        mobileScrollSupport: true,
+        usePortrait: dims.isPortrait,
+        drawShadow: true,
+        flippingTime: 650,
+        startPage: startPageIndex,
+        startZIndex: 2
+    });
+
+    pageFlip.loadFromHTML(document.querySelectorAll('.ebook-page'));
+
+    pageFlip.on('flip', (e) => {
+        playFlipSound();
+        updatePageUI(e.data);
+        renderVisibleWindow(e.data);
+    });
+
+    await renderPdfPage(startPageIndex + 1);
+    updatePageUI(startPageIndex);
+    renderVisibleWindow(startPageIndex);
+}
+
+function updatePageModeButton() {
+    const btn = document.getElementById('btnPageMode');
+    if (!btn) return;
+    btn.classList.toggle('active', singlePageMode);
+    btn.innerHTML = singlePageMode
+        ? '<i class="fa-regular fa-file-lines"></i>'
+        : '<i class="fa-solid fa-book-open"></i>';
+    btn.title = singlePageMode
+        ? 'กำลังแสดงแบบ 1 หน้าเดี่ยว (คลิกเพื่อสลับเป็น 2 หน้าคู่)'
+        : 'กำลังแสดงแบบ 2 หน้าคู่ (คลิกเพื่อสลับเป็น 1 หน้าเดี่ยว)';
+}
+
+async function toggleSinglePageMode() {
+    if (!pdfDoc || !pageFlip) return;
+    const curIndex = pageFlip.getCurrentPageIndex();
+    singlePageMode = !singlePageMode;
+    updatePageModeButton();
+    await buildFlipbook(curIndex);
+    showToast(singlePageMode ? 'สลับเป็นโหมดแสดง 1 หน้าเต็มจอแล้ว' : 'สลับเป็นโหมดหนังสือ 2 หน้าคู่แล้ว');
 }
 
 function flipPrev() { if (pageFlip) pageFlip.flipPrev(); }
@@ -1084,12 +1140,22 @@ function toggleThumbDrawer(forceState) {
     }
 }
 
-// Zoom & Pan
+// Zoom, Rotate & Pan
 function applyZoomTransform() {
     const layer = document.getElementById('zoomLayer');
-    layer.style.transform = `translate(${panX}px, ${panY}px) scale(${currentZoom})`;
-    layer.classList.toggle('is-zoomed', currentZoom > 1);
+    layer.style.transform = `translate(${panX}px, ${panY}px) scale(${currentZoom}) rotate(${currentRotation}deg)`;
+    layer.classList.toggle('is-zoomed', currentZoom > 1 || currentRotation !== 0);
     document.getElementById('zoomLabel').textContent = Math.round(currentZoom * 100) + '%';
+    const rotBtn = document.getElementById('btnRotateRight');
+    if (rotBtn) rotBtn.classList.toggle('active', currentRotation % 360 !== 0);
+}
+
+function rotateBook(delta) {
+    currentRotation = (currentRotation + delta + 360) % 360;
+    panX = 0;
+    panY = 0;
+    applyZoomTransform();
+    showToast(currentRotation === 0 ? 'รีเซ็ตมุมกระดาษเป็นปกติ (0°)' : `หมุนหน้ากระดาษเป็น ${currentRotation}°`);
 }
 
 function changeZoom(delta) {
@@ -1100,9 +1166,11 @@ function changeZoom(delta) {
 
 function resetZoom() {
     currentZoom = 1;
+    currentRotation = 0;
     panX = 0;
     panY = 0;
     applyZoomTransform();
+    showToast('รีเซ็ตขนาดและมุมกระดาษแล้ว');
 }
 
 // Drag to pan when zoomed
@@ -1171,6 +1239,7 @@ document.addEventListener('keydown', (e) => {
     else if (e.key === '+' || e.key === '=') { changeZoom(0.2); }
     else if (e.key === '-') { changeZoom(-0.2); }
     else if (e.key === '0') { resetZoom(); }
+    else if (e.key.toLowerCase() === 'r') { rotateBook(e.shiftKey ? -90 : 90); }
     else if (e.key.toLowerCase() === 'f') { toggleFullscreen(); }
 });
 
