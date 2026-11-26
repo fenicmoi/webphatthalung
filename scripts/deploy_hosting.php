@@ -44,17 +44,22 @@ if (!empty($headDiff)) {
     $files = array_merge($files, $headDiff);
 }
 @exec('git status -s', $statusLines);
+$protectedLiveJson = [
+    'writable/service_banners.json',
+    'writable/site_strategy.json',
+    'writable/strategy_categories.json',
+];
 if (!empty($statusLines)) {
     foreach ($statusLines as $line) {
         $path = trim(substr($line, 3));
         if ($path && file_exists($rootDir . DIRECTORY_SEPARATOR . $path)) {
-            if ($path === 'writable/service_banners.json') continue;
+            if (in_array($path, $protectedLiveJson, true)) continue;
             $files[] = $path;
         }
     }
 }
-$files = array_values(array_filter($files, function($p) {
-    return $p !== 'writable/service_banners.json';
+$files = array_values(array_filter($files, function($p) use ($protectedLiveJson) {
+    return !in_array($p, $protectedLiveJson, true);
 }));
 
 $essentialFiles = [
@@ -182,9 +187,7 @@ $essentialFiles = [
     'app/Controllers/Volunteer.php',
     'app/Views/volunteer/index.php',
     'writable/site_documents.json',
-    'writable/dump_ita_documents.json',
-    'writable/strategy_categories.json',
-    'writable/site_strategy.json'
+    'writable/dump_ita_documents.json'
 ];
 
 $allFiles = array_unique(array_merge($files, $essentialFiles));
