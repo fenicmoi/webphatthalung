@@ -87,7 +87,8 @@ class Ebook extends Controller
             if (preg_match('#^https?://#i', $fileUrl)) {
                 $resolvedDirectUrl = $fileUrl;
                 $host = strtolower((string) parse_url($fileUrl, PHP_URL_HOST));
-                if (in_array($host, ['phatthalung.go.th', 'www.phatthalung.go.th'], true)) {
+                $allowedProxyHosts = ['phatthalung.go.th', 'www.phatthalung.go.th', 'bb.go.th', 'www.bb.go.th'];
+                if (in_array($host, $allowedProxyHosts, true)) {
                     $streamUrl = base_url('ebook/stream?src=' . urlencode($fileUrl));
                 } else {
                     $streamUrl = $fileUrl;
@@ -127,10 +128,11 @@ class Ebook extends Controller
             return $this->response->setStatusCode(400)->setBody('Missing source');
         }
 
-        // กรณีเป็น URL ของ phatthalung.go.th (เช่น ไฟล์จาก /2022/files/...)
+        // กรณีเป็น URL ของ phatthalung.go.th หรือ bb.go.th (สำนักงบประมาณ)
         if (preg_match('#^https?://#i', $src)) {
             $host = strtolower((string) parse_url($src, PHP_URL_HOST));
-            if (!in_array($host, ['phatthalung.go.th', 'www.phatthalung.go.th'], true)) {
+            $allowedProxyHosts = ['phatthalung.go.th', 'www.phatthalung.go.th', 'bb.go.th', 'www.bb.go.th'];
+            if (!in_array($host, $allowedProxyHosts, true)) {
                 return $this->response->setStatusCode(403)->setBody('Forbidden host');
             }
 

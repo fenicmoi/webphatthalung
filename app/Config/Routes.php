@@ -407,6 +407,9 @@ $routes->post('strategy/document/delete-inline/(:any)', 'Strategy::deleteDocumen
 $routes->get('ebook/view', 'Ebook::view');
 $routes->get('ebook/stream', 'Ebook::stream');
 
+// Provincial Budget Summary Portal (Bureau of the Budget FY 2568-2570)
+$routes->get('budget', 'Budget::index');
+
 $routes->get('admin/strategy', 'Admin\StrategyManager::index', ['filter' => 'auth']);
 $routes->post('admin/strategy/save-vision', 'Admin\StrategyManager::saveVision', ['filter' => 'auth']);
 $routes->post('admin/strategy/save-kpis', 'Admin\StrategyManager::saveKpis', ['filter' => 'auth']);
