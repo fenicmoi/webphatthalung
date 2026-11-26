@@ -456,20 +456,16 @@ $isOfficer = $isOfficer ?? false;
         </div>
 
         <?php
-            // Separate Featured 5-Year Master Plan from annual plans
+            // แสดงการ์ดแนะนำด้านบนเฉพาะเอกสารที่ตั้งค่า "แผนแม่บทหลัก (is_featured)"
+            // แต่ยังคงแสดงเอกสารทั้งหมดทุกรายการในตารางค้นหา/กรองหมวดหมู่ด้านล่างเพื่อไม่ให้เอกสารหายจากหมวดหมู่
             $featuredDoc = null;
-            $otherDocs = [];
             foreach ($documents as $d) {
-                if (!empty($d['is_featured']) && $featuredDoc === null) {
+                if (!empty($d['is_featured'])) {
                     $featuredDoc = $d;
-                } else {
-                    $otherDocs[] = $d;
+                    break;
                 }
             }
-            if (!$featuredDoc && !empty($documents)) {
-                $featuredDoc = $documents[0];
-                $otherDocs = array_slice($documents, 1);
-            }
+            $otherDocs = $documents;
         ?>
 
         <!-- 🌟 PRIMARY FOCUS: HERO FEATURED MASTER PLAN CARD -->
@@ -481,7 +477,7 @@ $isOfficer = $isOfficer ?? false;
                         <div class="col-auto">
                             <div class="p-3.5 rounded-4 bg-white bg-opacity-15 border border-white border-opacity-20 d-flex flex-column align-items-center justify-content-center text-center shadow-sm" style="width: 88px; height: 100px;">
                                 <i class="fa-solid fa-file-pdf text-warning fs-1 mb-1"></i>
-                                <span class="badge bg-warning text-dark fw-bold px-1.5 py-0.5" style="font-size: 0.68rem;">แผนแม่บท</span>
+                                <span class="badge bg-warning text-dark fw-bold px-1.5 py-0.5" style="font-size: 0.68rem;">แนะนำ</span>
                             </div>
                         </div>
 
@@ -489,7 +485,7 @@ $isOfficer = $isOfficer ?? false;
                         <div class="col">
                             <div class="d-flex flex-wrap align-items-center gap-2 mb-1.5">
                                 <span class="badge bg-warning bg-opacity-20 text-warning border border-warning border-opacity-30 rounded-pill px-3 py-1 small fw-bold">
-                                    <i class="fa-solid fa-star me-1"></i> แผนแม่บท 5 ปี ฉบับทางการ
+                                    <i class="fa-solid fa-star me-1"></i> <?= esc($featuredDoc['category'] ?? 'เอกสารแผนพัฒนาจังหวัด') ?>
                                 </span>
                                 <span class="text-white text-opacity-75 small">
                                     <i class="fa-regular fa-calendar-check me-1"></i>พ.ศ. <?= esc($featuredDoc['year']) ?>
