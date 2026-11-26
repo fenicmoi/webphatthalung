@@ -85,7 +85,7 @@ $book1yr = $planBooks['book_1yr'] ?? [
                 <form id="visionForm" onsubmit="saveVision(event)">
                     <div class="row g-4 mb-3">
                         <div class="col-md-8">
-                            <label class="form-label fw-bold">หัวข้อวิสัยทัศน์ (Vision Title)</label>
+                            <label class="form-label fw-bold">เป้าหมายการพัฒนาจังหวัดพัทลุง</label>
                             <input type="text" class="form-control" name="title" value="<?= esc($vision['title'] ?? 'วิสัยทัศน์การพัฒนาจังหวัดพัทลุง (พ.ศ. 2566 - 2570)') ?>">
                         </div>
                         <div class="col-md-4">
@@ -766,19 +766,32 @@ let docModalInstance = null;
 let kpiModalInstance = null;
 let pillarModalInstance = null;
 
+function getDocModal() {
+    const el = document.getElementById('strategyDocModal');
+    if (el && typeof bootstrap !== 'undefined') {
+        docModalInstance = bootstrap.Modal.getOrCreateInstance(el);
+    }
+    return docModalInstance;
+}
+function getKpiModal() {
+    const el = document.getElementById('kpiModal');
+    if (el && typeof bootstrap !== 'undefined') {
+        kpiModalInstance = bootstrap.Modal.getOrCreateInstance(el);
+    }
+    return kpiModalInstance;
+}
+function getPillarModal() {
+    const el = document.getElementById('pillarModal');
+    if (el && typeof bootstrap !== 'undefined') {
+        pillarModalInstance = bootstrap.Modal.getOrCreateInstance(el);
+    }
+    return pillarModalInstance;
+}
+
 document.addEventListener('DOMContentLoaded', function() {
-    const docModalEl = document.getElementById('strategyDocModal');
-    if (docModalEl && typeof bootstrap !== 'undefined') {
-        docModalInstance = new bootstrap.Modal(docModalEl);
-    }
-    const kpiModalEl = document.getElementById('kpiModal');
-    if (kpiModalEl && typeof bootstrap !== 'undefined') {
-        kpiModalInstance = new bootstrap.Modal(kpiModalEl);
-    }
-    const pillarModalEl = document.getElementById('pillarModal');
-    if (pillarModalEl && typeof bootstrap !== 'undefined') {
-        pillarModalInstance = new bootstrap.Modal(pillarModalEl);
-    }
+    getDocModal();
+    getKpiModal();
+    getPillarModal();
 });
 
 async function saveVision(e) {
@@ -857,7 +870,8 @@ function openPillarModal() {
     document.getElementById('pillarIcon').value = 'fa-solid fa-seedling';
     updatePillarIconPreview('fa-solid fa-seedling');
     document.getElementById('pillarModalTitle').innerHTML = '<i class="fa-solid fa-plus-circle me-1 text-primary"></i> เพิ่มประเด็นการพัฒนาจังหวัด';
-    pillarModalInstance.show();
+    const modal = getPillarModal();
+    if (modal) modal.show();
 }
 
 function editPillar(p) {
@@ -882,7 +896,8 @@ function editPillar(p) {
     updatePillarIconPreview(icon);
 
     document.getElementById('pillarModalTitle').innerHTML = '<i class="fa-solid fa-pen-to-square me-1 text-warning"></i> แก้ไขประเด็นการพัฒนาที่ ' + (p.number || '');
-    pillarModalInstance.show();
+    const modal = getPillarModal();
+    if (modal) modal.show();
 }
 
 function selectPillarIcon(iconClass, color) {
@@ -903,6 +918,14 @@ function updatePillarIconPreview(iconClass) {
 
 async function savePillar() {
     const form = document.getElementById('pillarItemForm');
+    const titleVal = (document.getElementById('pillarTitle')?.value || '').trim();
+    const shortVal = (document.getElementById('pillarShortTitle')?.value || '').trim();
+    if (!titleVal && !shortVal) {
+        App.toast('กรุณาระบุชื่อประเด็นการพัฒนาจังหวัด', 'error');
+        document.getElementById('pillarTitle')?.focus();
+        return;
+    }
+
     const formData = new FormData(form);
     const btn = document.getElementById('btnSavePillar');
 
@@ -914,13 +937,16 @@ async function savePillar() {
             method: 'POST',
             body: formData
         });
-        if (res.status === 'success') {
-            App.toast('บันทึกประเด็นการพัฒนาสำเร็จ', 'success');
-            pillarModalInstance.hide();
+        if (res && res.status === 'success') {
+            App.toast(res.message || 'บันทึกประเด็นการพัฒนาสำเร็จ', 'success');
+            const modal = getPillarModal();
+            if (modal) modal.hide();
             setTimeout(() => location.reload(), 700);
+        } else {
+            App.toast((res && res.message) ? res.message : 'ไม่สามารถบันทึกประเด็นการพัฒนาได้', 'error');
         }
     } catch (e) {
-        App.toast('เกิดข้อผิดพลาด: ' + e.message, 'error');
+        App.toast('เกิดข้อผิดพลาด: ' + (e.message || e), 'error');
     } finally {
         btn.disabled = false;
         btn.innerHTML = '<i class="fa-solid fa-save me-1"></i> บันทึกประเด็นการพัฒนา';

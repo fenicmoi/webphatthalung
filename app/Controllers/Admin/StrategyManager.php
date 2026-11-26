@@ -175,7 +175,10 @@ class StrategyManager extends BaseController
         $stratText = $this->request->getPost('strategies') ?? '';
         $strategiesArray = array_values(array_filter(array_map('trim', explode("\n", $stratText))));
 
-        if (empty($shortTitle)) {
+        if (empty($title) && !empty($shortTitle)) {
+            $title = $shortTitle;
+        }
+        if (empty($shortTitle) && !empty($title)) {
             $shortTitle = $title;
         }
 
