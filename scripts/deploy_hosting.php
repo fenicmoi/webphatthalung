@@ -113,6 +113,8 @@ $essentialFiles = [
     'app/Controllers/Strategy.php',
     'app/Controllers/Admin/StrategyManager.php',
     'app/Views/admin/strategy_manager.php',
+    'app/Controllers/Ebook.php',
+    'app/Views/ebook/viewer.php',
     'app/Controllers/Procurement.php',
     'app/Libraries/EGpService.php',
     'app/Views/procurement/detail.php',

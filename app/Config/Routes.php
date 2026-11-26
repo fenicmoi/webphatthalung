@@ -403,6 +403,10 @@ $routes->post('strategy/categories/delete/(:any)', 'Strategy::deleteCategory/$1'
 $routes->post('strategy/document/save-inline', 'Strategy::saveDocumentInline');
 $routes->post('strategy/document/delete-inline/(:any)', 'Strategy::deleteDocumentInline/$1');
 
+// Interactive 3D E-Book Flipbook Viewer
+$routes->get('ebook/view', 'Ebook::view');
+$routes->get('ebook/stream', 'Ebook::stream');
+
 $routes->get('admin/strategy', 'Admin\StrategyManager::index', ['filter' => 'auth']);
 $routes->post('admin/strategy/save-vision', 'Admin\StrategyManager::saveVision', ['filter' => 'auth']);
 $routes->post('admin/strategy/save-kpis', 'Admin\StrategyManager::saveKpis', ['filter' => 'auth']);

@@ -507,10 +507,10 @@ $isOfficer = $isOfficer ?? false;
 
                         <!-- Right Action Buttons -->
                         <div class="col-12 col-lg-auto d-flex flex-sm-row flex-lg-column gap-2.5">
-                            <button type="button" class="btn btn-warning rounded-pill px-4 py-2.5 fw-bold text-dark shadow d-inline-flex align-items-center justify-content-center gap-2" onclick="previewStrategyDoc('<?= esc($featuredDoc['title']) ?>', '<?= base_url($featuredDoc['file_url']) ?>')">
+                            <a href="<?= base_url('ebook/view?doc=' . urlencode($featuredDoc['id'])) ?>" target="_blank" class="btn btn-warning rounded-pill px-4 py-2.5 fw-bold text-dark shadow d-inline-flex align-items-center justify-content-center gap-2">
                                 <i class="fa-solid fa-book-open-reader"></i> เปิดอ่าน E-Book
-                            </button>
-                            <a href="<?= base_url($featuredDoc['file_url']) ?>" download class="btn btn-outline-light rounded-pill px-4 py-2.5 fw-bold d-inline-flex align-items-center justify-content-center gap-2" onclick="trackStrategyDownload('<?= $featuredDoc['id'] ?>')">
+                            </a>
+                            <a href="<?= preg_match('#^https?://#i', $featuredDoc['file_url']) ? esc($featuredDoc['file_url']) : base_url($featuredDoc['file_url']) ?>" download class="btn btn-outline-light rounded-pill px-4 py-2.5 fw-bold d-inline-flex align-items-center justify-content-center gap-2" onclick="trackStrategyDownload('<?= $featuredDoc['id'] ?>')">
                                 <i class="fa-solid fa-download"></i> ดาวน์โหลด PDF
                             </a>
                         </div>
@@ -626,10 +626,10 @@ $isOfficer = $isOfficer ?? false;
 
                                 <!-- Action Buttons -->
                                 <div class="col-12 col-md-auto d-flex flex-wrap align-items-center gap-2">
-                                    <button type="button" class="btn btn-outline-primary btn-sm rounded-pill px-3 py-1.5 fw-bold d-inline-flex align-items-center gap-1.5" onclick="previewStrategyDoc('<?= esc($doc['title']) ?>', '<?= base_url($doc['file_url']) ?>')">
-                                        <i class="fa-solid fa-eye"></i> เปิดอ่าน
-                                    </button>
-                                    <a href="<?= base_url($doc['file_url']) ?>" download class="btn btn-primary btn-sm rounded-pill px-3 py-1.5 fw-bold d-inline-flex align-items-center gap-1.5 shadow-sm" onclick="trackStrategyDownload('<?= $doc['id'] ?>')">
+                                    <a href="<?= base_url('ebook/view?doc=' . urlencode($doc['id'])) ?>" target="_blank" class="btn btn-outline-primary btn-sm rounded-pill px-3 py-1.5 fw-bold d-inline-flex align-items-center gap-1.5">
+                                        <i class="fa-solid fa-book-open-reader"></i> อ่าน E-Book
+                                    </a>
+                                    <a href="<?= preg_match('#^https?://#i', $doc['file_url']) ? esc($doc['file_url']) : base_url($doc['file_url']) ?>" download class="btn btn-primary btn-sm rounded-pill px-3 py-1.5 fw-bold d-inline-flex align-items-center gap-1.5 shadow-sm" onclick="trackStrategyDownload('<?= $doc['id'] ?>')">
                                         <i class="fa-solid fa-download"></i> ดาวน์โหลด PDF
                                     </a>
                                     <?php if ($isOfficer): ?>

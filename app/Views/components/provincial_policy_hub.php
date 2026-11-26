@@ -89,8 +89,14 @@ $book1yr = $planBooks['book_1yr'] ?? [
     'cover_theme' => 'royal_blue',
     'url' => 'strategy'
 ];
-$book5yrUrl = !empty($book5yr['url']) ? (strpos($book5yr['url'], 'http') === 0 ? $book5yr['url'] : base_url($book5yr['url'])) : base_url('strategy');
-$book1yrUrl = !empty($book1yr['url']) ? (strpos($book1yr['url'], 'http') === 0 ? $book1yr['url'] : base_url($book1yr['url'])) : base_url('strategy');
+$rawBook5yrUrl = $book5yr['url'] ?? '';
+$rawBook1yrUrl = $book1yr['url'] ?? '';
+$book5yrUrl = !empty($rawBook5yrUrl)
+    ? (preg_match('/\.pdf(\?.*)?$/i', $rawBook5yrUrl) ? base_url('ebook/view?book=5yr') : (strpos($rawBook5yrUrl, 'http') === 0 ? $rawBook5yrUrl : base_url($rawBook5yrUrl)))
+    : base_url('strategy');
+$book1yrUrl = !empty($rawBook1yrUrl)
+    ? (preg_match('/\.pdf(\?.*)?$/i', $rawBook1yrUrl) ? base_url('ebook/view?book=1yr') : (strpos($rawBook1yrUrl, 'http') === 0 ? $rawBook1yrUrl : base_url($rawBook1yrUrl)))
+    : base_url('strategy');
 ?>
 
 <section class="provincial-policy-section mb-5">
