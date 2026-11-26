@@ -14,6 +14,18 @@ class StrategyManager extends BaseController
         helper(['settings']);
         $strategy = get_site_strategy();
 
+        $documents = $strategy['documents'] ?? [];
+        usort($documents, function ($a, $b) {
+            preg_match('/(\d{4})/', (string)($a['year'] ?? ''), $ma);
+            preg_match('/(\d{4})/', (string)($b['year'] ?? ''), $mb);
+            $ya = isset($ma[1]) ? (int)$ma[1] : 0;
+            $yb = isset($mb[1]) ? (int)$mb[1] : 0;
+            if ($yb !== $ya) {
+                return $yb <=> $ya;
+            }
+            return strcmp((string)($b['updated_at'] ?? ''), (string)($a['updated_at'] ?? ''));
+        });
+
         $data = [
             'title' => 'จัดการยุทธศาสตร์และแผนพัฒนาจังหวัด | Phatthalung Admin Studio',
             'activeMenu' => 'strategy_manager',
@@ -22,7 +34,7 @@ class StrategyManager extends BaseController
             'missions' => $strategy['missions'] ?? [],
             'kpis' => $strategy['kpis'] ?? [],
             'pillars' => $strategy['pillars'] ?? [],
-            'documents' => $strategy['documents'] ?? [],
+            'documents' => $documents,
             'planBooks' => $strategy['plan_books'] ?? [],
             'categories' => function_exists('get_strategy_categories') ? get_strategy_categories() : []
         ];

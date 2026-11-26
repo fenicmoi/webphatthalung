@@ -17,8 +17,20 @@ class Strategy extends Controller
         $categories = get_strategy_categories();
         $isOfficer = (bool)session()->get('isLoggedIn');
         
+        $documents = $strategyData['documents'] ?? [];
+        usort($documents, function ($a, $b) {
+            preg_match('/(\d{4})/', (string)($a['year'] ?? ''), $ma);
+            preg_match('/(\d{4})/', (string)($b['year'] ?? ''), $mb);
+            $ya = isset($ma[1]) ? (int)$ma[1] : 0;
+            $yb = isset($mb[1]) ? (int)$mb[1] : 0;
+            if ($yb !== $ya) {
+                return $yb <=> $ya;
+            }
+            return strcmp((string)($b['updated_at'] ?? ''), (string)($a['updated_at'] ?? ''));
+        });
+
         $data = [
-            'title' => 'ยุทธศาสตร์การพัฒนาจังหวัดพัทลุง (พ.ศ. 2566 - 2570) | แผนพัฒนาจังหวัดและแผนปฏิบัติราชการประจำปี',
+            'title' => 'ศูนย์เอกสารแผนพัฒนาและแผนปฏิบัติราชการประจำปี | จังหวัดพัทลุง',
             'meta_description' => 'ศูนย์ข้อมูลยุทธศาสตร์การพัฒนาจังหวัดพัทลุง 5 ปี วิสัยทัศน์ พันธกิจ 5 เสาหลักยุทธศาสตร์ ตัวชี้วัดเป้าหมาย และดาวน์โหลดแผนปฏิบัติราชการประจำปี',
             'strategy' => $strategyData,
             'vision' => $strategyData['vision'] ?? [],
@@ -26,7 +38,7 @@ class Strategy extends Controller
             'core_values' => $strategyData['core_values'] ?? [],
             'kpis' => $strategyData['kpis'] ?? [],
             'pillars' => $strategyData['pillars'] ?? [],
-            'documents' => $strategyData['documents'] ?? [],
+            'documents' => $documents,
             'categories' => $categories,
             'isOfficer' => $isOfficer
         ];
