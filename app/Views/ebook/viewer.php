@@ -741,44 +741,79 @@ function showError(msg) {
     document.getElementById('errorOverlay').classList.remove('hidden');
 }
 
-// สังเคราะห์เสียงพลิกกระดาษนุ่มๆ ด้วย Web Audio API (ไม่ต้องโหลดไฟล์ mp3)
-function playFlipSound() {
-    if (!soundEnabled) return;
+// ปลดล็อก Web Audio API ตั้งแต่คลิก/แตะหน้าจอครั้งแรก (แก้ Browser Autoplay Policy)
+let lastFlipSoundAt = 0;
+function ensureAudioContext() {
+    if (!audioCtx) {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContextClass) return null;
+        audioCtx = new AudioContextClass();
+    }
+    if (audioCtx.state === 'suspended') {
+        audioCtx.resume().catch(() => {});
+    }
+    return audioCtx;
+}
+['pointerdown', 'touchstart', 'keydown'].forEach(evt => {
+    window.addEventListener(evt, () => ensureAudioContext(), { passive: true });
+});
+
+// สังเคราะห์เสียงพลิกกระดาษสมจริงด้วย Web Audio API (2 ชั้น: เสียงลมพลิก + เสียงวางกระดาษ)
+async function playFlipSound(force = false) {
+    if (!soundEnabled && !force) return;
+    const nowMs = Date.now();
+    if (!force && nowMs - lastFlipSoundAt < 220) return;
+    lastFlipSoundAt = nowMs;
+
     try {
-        if (!audioCtx) {
-            const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-            if (!AudioContextClass) return;
-            audioCtx = new AudioContextClass();
+        const ctx = ensureAudioContext();
+        if (!ctx) return;
+        if (ctx.state === 'suspended') {
+            await ctx.resume();
         }
-        if (audioCtx.state === 'suspended') {
-            audioCtx.resume();
-        }
-        const duration = 0.16;
-        const bufferSize = Math.floor(audioCtx.sampleRate * duration);
-        const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+
+        const now = ctx.currentTime;
+        const duration = 0.28;
+        const bufferSize = Math.floor(ctx.sampleRate * duration);
+        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
         const data = buffer.getChannelData(0);
+
+        // สร้างคลื่นเสียงกระดาษพลิก (whoosh + crisp rustle)
         for (let i = 0; i < bufferSize; i++) {
-            const env = Math.sin((i / bufferSize) * Math.PI);
-            data[i] = (Math.random() * 2 - 1) * env * 0.16;
+            const t = i / bufferSize;
+            // envelope โค้งขึ้นไวแล้วค่อยๆ จาง + จังหวะกระดาษแตะลงท้ายเสียง
+            const rustle = Math.sin(Math.pow(t, 0.65) * Math.PI);
+            const settle = (t > 0.72) ? Math.sin(((t - 0.72) / 0.28) * Math.PI) * 0.45 : 0;
+            data[i] = (Math.random() * 2 - 1) * (rustle + settle) * 0.85;
         }
-        const noise = audioCtx.createBufferSource();
+
+        const noise = ctx.createBufferSource();
         noise.buffer = buffer;
 
-        const filter = audioCtx.createBiquadFilter();
-        filter.type = 'bandpass';
-        filter.frequency.setValueAtTime(1400, audioCtx.currentTime);
-        filter.frequency.exponentialRampToValueAtTime(550, audioCtx.currentTime + duration);
-        filter.Q.value = 1.1;
+        const bandpass = ctx.createBiquadFilter();
+        bandpass.type = 'bandpass';
+        bandpass.frequency.setValueAtTime(1900, now);
+        bandpass.frequency.exponentialRampToValueAtTime(650, now + duration);
+        bandpass.Q.value = 0.85;
 
-        const gain = audioCtx.createGain();
-        gain.gain.setValueAtTime(0.35, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+        const highshelf = ctx.createBiquadFilter();
+        highshelf.type = 'highshelf';
+        highshelf.frequency.value = 2600;
+        highshelf.gain.value = 4;
 
-        noise.connect(filter);
-        filter.connect(gain);
-        gain.connect(audioCtx.destination);
-        noise.start();
-    } catch (e) {}
+        const gain = ctx.createGain();
+        gain.gain.setValueAtTime(0.01, now);
+        gain.gain.linearRampToValueAtTime(0.85, now + 0.04);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + duration);
+
+        noise.connect(bandpass);
+        bandpass.connect(highshelf);
+        highshelf.connect(gain);
+        gain.connect(ctx.destination);
+        noise.start(now);
+    } catch (e) {
+        console.warn('Flip sound error:', e);
+    }
 }
 
 function toggleFlipSound() {
@@ -788,6 +823,9 @@ function toggleFlipSound() {
     btn.innerHTML = soundEnabled
         ? '<i class="fa-solid fa-volume-high"></i>'
         : '<i class="fa-solid fa-volume-xmark"></i>';
+    if (soundEnabled) {
+        playFlipSound(true);
+    }
     showToast(soundEnabled ? 'เปิดเสียงพลิกกระดาษแล้ว' : 'ปิดเสียงพลิกกระดาษแล้ว');
 }
 
@@ -1076,6 +1114,12 @@ async function buildFlipbook(startPageIndex = 0) {
     });
 
     pageFlip.loadFromHTML(document.querySelectorAll('.ebook-page'));
+
+    pageFlip.on('changeState', (e) => {
+        if (e.data === 'flipping') {
+            playFlipSound();
+        }
+    });
 
     pageFlip.on('flip', (e) => {
         playFlipSound();
