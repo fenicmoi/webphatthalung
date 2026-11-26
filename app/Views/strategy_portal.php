@@ -150,6 +150,88 @@ $isOfficer = $isOfficer ?? false;
     color: #cbd5e1;
     border-color: rgba(255,255,255,0.1);
 }
+
+/* Clean & Modern Document List Row */
+.doc-list-row {
+    border-left: 4px solid transparent !important;
+    transition: all 0.2s ease;
+    padding: 1.05rem 1.5rem !important;
+}
+.doc-list-row:hover {
+    background-color: #f8fbff !important;
+    border-left-color: #0284c7 !important;
+}
+.doc-year-badge {
+    width: 64px;
+    height: 60px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #eff6ff 0%, #e0f2fe 100%);
+    border: 1px solid rgba(2, 132, 199, 0.16);
+    color: #0369a1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.doc-year-badge .yr-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    opacity: 0.75;
+    line-height: 1.1;
+}
+.doc-year-badge .yr-num {
+    font-size: 1.08rem;
+    font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+}
+.doc-item-title {
+    font-size: 1.04rem !important;
+    line-height: 1.45 !important;
+    color: #0f172a;
+    font-weight: 700;
+}
+.doc-meta-line {
+    font-size: 0.82rem;
+    color: #64748b;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 0.9rem;
+}
+.doc-meta-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: #cbd5e1;
+    display: inline-block;
+}
+.btn-ebook-read {
+    background: #f0fdf4;
+    color: #047857;
+    border: 1px solid #bbf7d0;
+    transition: all 0.18s ease;
+}
+.btn-ebook-read:hover {
+    background: #059669;
+    color: #ffffff;
+    border-color: #059669;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(5, 150, 105, 0.25);
+}
+.btn-pdf-dl {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    color: #ffffff;
+    border: none;
+    transition: all 0.18s ease;
+}
+.btn-pdf-dl:hover {
+    background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.32);
+}
 </style>
 
 <div class="container py-4">
@@ -340,51 +422,48 @@ $isOfficer = $isOfficer ?? false;
                     <div class="p-4 text-center text-muted" id="docEmptyMsg">ไม่มีเอกสารเพิ่มเติม</div>
                 <?php else: ?>
                     <?php foreach ($otherDocs as $doc): ?>
-                        <div class="list-group-item px-4 py-3.5 border-bottom transition-all hover-bg-light doc-list-row" data-title="<?= esc(mb_strtolower($doc['title'])) ?>" data-category="<?= esc($doc['category']) ?>" data-subcategory="<?= esc(mb_strtolower($doc['sub_category'] ?? '')) ?>" data-year="<?= esc($doc['year']) ?>">
+                        <?php $docYearTrim = trim((string)($doc['year'] ?? '')); ?>
+                        <div class="list-group-item border-bottom doc-list-row" data-title="<?= esc(mb_strtolower($doc['title'])) ?>" data-category="<?= esc($doc['category']) ?>" data-subcategory="<?= esc(mb_strtolower($doc['sub_category'] ?? '')) ?>" data-year="<?= esc($docYearTrim) ?>">
                             <div class="row align-items-center g-3">
                                 <!-- Year Badge -->
                                 <div class="col-auto">
-                                    <div class="p-2 rounded-3 text-center d-flex flex-column align-items-center justify-content-center" style="width: 60px; background: rgba(2, 132, 199, 0.08); color: #0284c7;">
-                                        <span style="font-size: 0.68rem; font-weight: 700; text-transform: uppercase;">ปีงบฯ</span>
-                                        <span class="fw-bold fs-6 lh-1"><?= esc($doc['year']) ?></span>
+                                    <div class="doc-year-badge">
+                                        <?php if ($docYearTrim !== ''): ?>
+                                            <span class="yr-label">ปีงบฯ</span>
+                                            <span class="yr-num"><?= esc($docYearTrim) ?></span>
+                                        <?php else: ?>
+                                            <i class="fa-solid fa-book-bookmark fs-4"></i>
+                                        <?php endif; ?>
                                     </div>
                                 </div>
 
-                                <!-- Title & Details -->
+                                <!-- Title & Clean Meta Details (No Category/Tag Badges) -->
                                 <div class="col">
-                                    <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
-                                        <span class="badge bg-light text-primary border rounded-pill small px-2 py-0.5" style="font-size: 0.72rem;">
-                                            <?= esc($doc['category']) ?>
-                                        </span>
-                                        <?php if (!empty($doc['sub_category'])): ?>
-                                            <span class="badge bg-white text-secondary border rounded-pill small px-2 py-0.5" style="font-size: 0.72rem;">
-                                                <i class="fa-solid fa-tag me-1 text-muted"></i><?= esc($doc['sub_category']) ?>
-                                            </span>
-                                        <?php endif; ?>
-                                    </div>
-                                    <h6 class="fw-bold text-dark mb-1 doc-item-title" style="font-size: 0.96rem; line-height: 1.4;">
+                                    <h6 class="mb-1.5 doc-item-title">
                                         <?= esc($doc['title']) ?>
                                     </h6>
-                                    <div class="text-muted small d-flex flex-wrap gap-3" style="font-size: 0.8rem;">
-                                        <span><i class="fa-solid fa-hard-drive me-1 text-secondary"></i><?= esc($doc['file_size']) ?></span>
-                                        <span><i class="fa-solid fa-file-lines me-1 text-secondary"></i><?= esc($doc['pages'] ?? '-') ?> หน้า</span>
-                                        <span><i class="fa-solid fa-download me-1 text-secondary"></i><?= number_format($doc['downloads'] ?? 0) ?> ครั้ง</span>
+                                    <div class="doc-meta-line">
+                                        <span><i class="fa-regular fa-file-pdf me-1 text-danger"></i><?= esc($doc['file_size'] ?: '-') ?></span>
+                                        <span class="doc-meta-dot"></span>
+                                        <span><i class="fa-regular fa-copy me-1 text-primary"></i><?= esc($doc['pages'] ?? '-') ?> หน้า</span>
+                                        <span class="doc-meta-dot"></span>
+                                        <span><i class="fa-solid fa-download me-1 text-success"></i><?= number_format($doc['downloads'] ?? 0) ?> ครั้ง</span>
                                     </div>
                                 </div>
 
                                 <!-- Action Buttons -->
                                 <div class="col-12 col-md-auto d-flex flex-wrap align-items-center gap-2">
-                                    <a href="<?= base_url('ebook/view?doc=' . urlencode($doc['id'])) ?>" target="_blank" class="btn btn-outline-primary btn-sm rounded-pill px-3 py-1.5 fw-bold d-inline-flex align-items-center gap-1.5">
+                                    <a href="<?= base_url('ebook/view?doc=' . urlencode($doc['id'])) ?>" target="_blank" class="btn btn-ebook-read btn-sm rounded-pill px-3.5 py-2 fw-bold d-inline-flex align-items-center gap-1.5">
                                         <i class="fa-solid fa-book-open-reader"></i> อ่าน E-Book
                                     </a>
-                                    <a href="<?= preg_match('#^https?://#i', $doc['file_url']) ? esc($doc['file_url']) : base_url($doc['file_url']) ?>" download class="btn btn-primary btn-sm rounded-pill px-3 py-1.5 fw-bold d-inline-flex align-items-center gap-1.5 shadow-sm" onclick="trackStrategyDownload('<?= $doc['id'] ?>')">
+                                    <a href="<?= preg_match('#^https?://#i', $doc['file_url']) ? esc($doc['file_url']) : base_url($doc['file_url']) ?>" download class="btn btn-pdf-dl btn-sm rounded-pill px-3.5 py-2 fw-bold d-inline-flex align-items-center gap-1.5 shadow-sm" onclick="trackStrategyDownload('<?= $doc['id'] ?>')">
                                         <i class="fa-solid fa-download"></i> ดาวน์โหลด PDF
                                     </a>
                                     <?php if ($isOfficer): ?>
-                                        <button type="button" class="btn btn-outline-warning btn-sm rounded-pill px-2.5 py-1.5" onclick="StrategyDocStudio.edit(<?= htmlspecialchars(json_encode($doc), ENT_QUOTES, 'UTF-8') ?>)" title="แก้ไขเอกสาร">
+                                        <button type="button" class="btn btn-outline-warning btn-sm rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 34px; height: 34px;" onclick="StrategyDocStudio.edit(<?= htmlspecialchars(json_encode($doc), ENT_QUOTES, 'UTF-8') ?>)" title="แก้ไขเอกสาร">
                                             <i class="fa-solid fa-pen-to-square"></i>
                                         </button>
-                                        <button type="button" class="btn btn-outline-danger btn-sm rounded-pill px-2.5 py-1.5" onclick="StrategyDocStudio.delete('<?= esc($doc['id']) ?>', '<?= esc($doc['title']) ?>')" title="ลบเอกสาร">
+                                        <button type="button" class="btn btn-outline-danger btn-sm rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 34px; height: 34px;" onclick="StrategyDocStudio.delete('<?= esc($doc['id']) ?>', '<?= esc($doc['title']) ?>')" title="ลบเอกสาร">
                                             <i class="fa-solid fa-trash-can"></i>
                                         </button>
                                     <?php endif; ?>
