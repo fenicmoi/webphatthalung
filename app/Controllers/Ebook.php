@@ -97,7 +97,8 @@ class Ebook extends Controller
                 $cleanRel = ltrim(str_replace('\\', '/', $fileUrl), '/');
                 if (strpos($cleanRel, '..') === false) {
                     $resolvedDirectUrl = base_url($cleanRel);
-                    $streamUrl         = base_url('ebook/stream?src=' . urlencode($cleanRel));
+                    // ไฟล์อยู่ในโดเมนเดียวกัน โหลดตรงจาก static file จะเร็วกว่าและรองรับ Content-Length/Range เต็มรูปแบบ
+                    $streamUrl         = $resolvedDirectUrl;
                     $isValidPdf        = true;
                 }
             }

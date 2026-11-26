@@ -874,6 +874,64 @@ function computeBookDimensions(aspectRatio) {
     };
 }
 
+async function preparePdfWorker() {
+    if (typeof pdfjsLib === 'undefined') return false;
+    try {
+        const workerUrl = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        const res = await fetch(workerUrl);
+        if (res.ok) {
+            const code = await res.text();
+            const blob = new Blob([code], { type: 'application/javascript' });
+            pdfjsLib.GlobalWorkerOptions.workerSrc = URL.createObjectURL(blob);
+            return true;
+        }
+    } catch (e) {
+        console.warn('Blob worker fallback:', e);
+    }
+    return false;
+}
+
+async function fetchPdfBytesWithProgress(url) {
+    const res = await fetch(url, { credentials: 'same-origin' });
+    if (!res.ok) {
+        throw new Error(`HTTP ${res.status} - ไม่พบไฟล์เอกสารบนเซิร์ฟเวอร์`);
+    }
+    const contentLength = parseInt(res.headers.get('content-length') || '0', 10);
+    if (!res.body || !res.body.getReader) {
+        const buf = await res.arrayBuffer();
+        document.getElementById('loadingProgress').style.width = '90%';
+        return new Uint8Array(buf);
+    }
+
+    const reader = res.body.getReader();
+    const chunks = [];
+    let received = 0;
+
+    while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        chunks.push(value);
+        received += value.length;
+        if (contentLength > 0) {
+            const pct = Math.min(90, Math.round((received / contentLength) * 90));
+            document.getElementById('loadingProgress').style.width = pct + '%';
+            document.getElementById('loadingStatus').textContent = `กำลังดาวน์โหลดเอกสาร PDF... (${pct}%)`;
+        } else {
+            const mb = (received / (1024 * 1024)).toFixed(1);
+            document.getElementById('loadingProgress').style.width = '55%';
+            document.getElementById('loadingStatus').textContent = `กำลังดาวน์โหลดเอกสาร PDF... (${mb} MB)`;
+        }
+    }
+
+    const combined = new Uint8Array(received);
+    let offset = 0;
+    for (const chunk of chunks) {
+        combined.set(chunk, offset);
+        offset += chunk.length;
+    }
+    return combined;
+}
+
 async function initEbookViewer() {
     if (!EBOOK_CONFIG.isValidPdf || !EBOOK_CONFIG.streamUrl) {
         showError('ไม่พบลิงก์ไฟล์เอกสาร PDF สำหรับเปิดอ่าน E-Book');
@@ -886,19 +944,24 @@ async function initEbookViewer() {
     }
 
     try {
-        const loadingTask = pdfjsLib.getDocument({
-            url: EBOOK_CONFIG.streamUrl,
-            cMapUrl: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/cmaps/',
-            cMapPacked: true
-        });
+        document.getElementById('loadingStatus').textContent = 'กำลังเชื่อมต่อไฟล์เอกสาร PDF...';
+        document.getElementById('loadingProgress').style.width = '10%';
 
-        loadingTask.onProgress = (progressData) => {
-            if (progressData.total > 0) {
-                const pct = Math.min(95, Math.round((progressData.loaded / progressData.total) * 100));
-                document.getElementById('loadingProgress').style.width = pct + '%';
-                document.getElementById('loadingStatus').textContent = `กำลังดาวน์โหลดเอกสาร PDF... (${pct}%)`;
-            }
-        };
+        // โหลด PDF Worker เป็น Same-Origin Blob URL + ดาวน์โหลดไฟล์ PDF พร้อมกัน
+        const [workerReady, pdfBytes] = await Promise.all([
+            preparePdfWorker(),
+            fetchPdfBytesWithProgress(EBOOK_CONFIG.streamUrl)
+        ]);
+
+        document.getElementById('loadingStatus').textContent = 'กำลังประมวลผลหน้าหนังสือ...';
+        document.getElementById('loadingProgress').style.width = '94%';
+
+        const loadingTask = pdfjsLib.getDocument({
+            data: pdfBytes,
+            cMapUrl: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/cmaps/',
+            cMapPacked: true,
+            disableWorker: !workerReady
+        });
 
         pdfDoc = await loadingTask.promise;
         totalPages = pdfDoc.numPages;
