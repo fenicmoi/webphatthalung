@@ -3021,73 +3021,7 @@ if (!function_exists('get_site_strategy')) {
                     'flagship' => 'โครงการ Phatthalung Smart Province 2026 ยกระดับบริการดิจิทัลเพื่อประชาชน 24 ชม.'
                 ]
             ],
-            'documents' => [
-                [
-                    'id' => 'doc_plan_5y',
-                    'title' => 'แผนพัฒนาจังหวัดพัทลุง 5 ปี (พ.ศ. 2566 - 2570) ฉบับทบทวน',
-                    'category' => 'แผนพัฒนาจังหวัด 5 ปี',
-                    'year' => '2566-2570',
-                    'file_url' => 'uploads/strategy/plan_5years_2566_2570.pdf',
-                    'file_size' => '18.4 MB',
-                    'file_type' => 'pdf',
-                    'pages' => 245,
-                    'downloads' => 1420,
-                    'is_featured' => true,
-                    'updated_at' => '2026-01-15'
-                ],
-                [
-                    'id' => 'doc_plan_2569',
-                    'title' => 'แผนปฏิบัติราชการประจำปีของจังหวัดพัทลุง ประจำปีงบประมาณ พ.ศ. 2569',
-                    'category' => 'แผนปฏิบัติราชการประจำปี',
-                    'year' => '2569',
-                    'file_url' => 'uploads/strategy/action_plan_2569.pdf',
-                    'file_size' => '12.8 MB',
-                    'file_type' => 'pdf',
-                    'pages' => 180,
-                    'downloads' => 890,
-                    'is_featured' => true,
-                    'updated_at' => '2025-10-01'
-                ],
-                [
-                    'id' => 'doc_plan_2568',
-                    'title' => 'แผนปฏิบัติราชการประจำปีของจังหวัดพัทลุง ประจำปีงบประมาณ พ.ศ. 2568',
-                    'category' => 'แผนปฏิบัติราชการประจำปี',
-                    'year' => '2568',
-                    'file_url' => 'uploads/strategy/action_plan_2568.pdf',
-                    'file_size' => '11.5 MB',
-                    'file_type' => 'pdf',
-                    'pages' => 165,
-                    'downloads' => 1250,
-                    'is_featured' => false,
-                    'updated_at' => '2024-10-01'
-                ],
-                [
-                    'id' => 'doc_plan_2567',
-                    'title' => 'แผนปฏิบัติราชการประจำปีของจังหวัดพัทลุง ประจำปีงบประมาณ พ.ศ. 2567',
-                    'category' => 'แผนปฏิบัติราชการประจำปี',
-                    'year' => '2567',
-                    'file_url' => 'uploads/strategy/action_plan_2567.pdf',
-                    'file_size' => '9.8 MB',
-                    'file_type' => 'pdf',
-                    'pages' => 150,
-                    'downloads' => 1840,
-                    'is_featured' => false,
-                    'updated_at' => '2023-10-01'
-                ],
-                [
-                    'id' => 'doc_me_report',
-                    'title' => 'รายงานสรุปผลการติดตามและประเมินผลสัมฤทธิ์แผนพัฒนาจังหวัดพัทลุง',
-                    'category' => 'รายงานผลการดำเนินงาน (M&E)',
-                    'year' => '2568',
-                    'file_url' => 'uploads/strategy/me_report_2568.pdf',
-                    'file_size' => '6.4 MB',
-                    'file_type' => 'pdf',
-                    'pages' => 85,
-                    'downloads' => 620,
-                    'is_featured' => false,
-                    'updated_at' => '2025-11-20'
-                ]
-            ]
+            'documents' => []
         ];
 
         if (is_dir($writableDir)) {
