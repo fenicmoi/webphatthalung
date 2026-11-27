@@ -1,6 +1,6 @@
 <?php $siteConfig = function_exists('get_site_settings') ? get_site_settings() : []; ?>
 <!DOCTYPE html>
-<html lang="th" data-theme="<?= htmlspecialchars($siteConfig['default_theme'] ?? 'light') ?>">
+<html lang="th" data-theme="<?= htmlspecialchars($siteConfig['default_theme'] ?? 'light') ?>" data-soft-theme="mint">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -53,8 +53,12 @@
     (function(){
         try {
             var st = localStorage.getItem('ptl_soft_theme');
-            if (st === 'mint' || st === 'sky') {
+            if (st === 'classic') {
+                document.documentElement.removeAttribute('data-soft-theme');
+            } else if (st === 'sky' || st === 'mint') {
                 document.documentElement.setAttribute('data-soft-theme', st);
+            } else {
+                document.documentElement.setAttribute('data-soft-theme', 'mint');
             }
         } catch(e) {}
     })();
@@ -809,7 +813,7 @@
     <script>
     window.SoftThemeSwitcher = {
         current: function() {
-            try { return localStorage.getItem('ptl_soft_theme') || 'classic'; } catch(e) { return 'classic'; }
+            try { return localStorage.getItem('ptl_soft_theme') || 'mint'; } catch(e) { return 'mint'; }
         },
         syncUI: function() {
             var cur = this.current();
