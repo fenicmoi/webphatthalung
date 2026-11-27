@@ -58,105 +58,136 @@ $layoutMode = $cfg['layout_mode'] ?? 'hybrid_widescreen';
     0% { transform: scale(0.6); opacity: 0.5; }
     100% { transform: scale(1.2); opacity: 1; background: #34d399; }
 }
+
+/* Floating Glass Search Overlap Bar */
+.floating-search-section {
+    margin-top: -46px;
+    margin-bottom: 1.75rem;
+    position: relative;
+    z-index: 25;
+}
+.floating-search-shell {
+    max-width: 880px;
+    margin: 0 auto;
+}
+.floating-search-pill {
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1.5px solid rgba(16, 185, 129, 0.28);
+    border-radius: 999px;
+    padding: 7px 8px 7px 10px;
+    box-shadow: 0 18px 42px rgba(6, 78, 59, 0.14), 0 4px 12px rgba(15, 23, 42, 0.05);
+    transition: all 0.25s ease;
+}
+.floating-search-pill:focus-within {
+    border-color: #10b981;
+    box-shadow: 0 20px 46px rgba(16, 185, 129, 0.2), 0 0 0 4px rgba(16, 185, 129, 0.12);
+    background: #ffffff;
+}
+.floating-trending-chip {
+    background: rgba(255, 255, 255, 0.85);
+    color: #065f46;
+    border: 1px solid rgba(16, 185, 129, 0.22);
+    font-size: 0.77rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+.floating-trending-chip:hover {
+    background: #ecfdf5;
+    color: #047857;
+    border-color: #10b981;
+    transform: translateY(-1px);
+}
+@media (max-width: 768px) {
+    .floating-search-section {
+        margin-top: -22px;
+        margin-bottom: 1.25rem;
+    }
+    .floating-search-pill {
+        padding: 5px 6px 5px 8px;
+    }
+}
 </style>
 
-<!-- 1.1 GLOBAL SMART SEARCH DOCK (High-Visibility Prestigious Emerald Command Deck) -->
-<section class="mb-5 position-relative z-3">
-    <div class="card border-0 p-4 p-lg-4 text-white shadow-xl" 
-         style="border-radius: 26px; background: linear-gradient(135deg, #022c22 0%, #064e3b 55%, #047857 100%); border: 1px solid rgba(16, 185, 129, 0.4) !important; border-top: 3px solid #10b981 !important; box-shadow: 0 20px 45px -10px rgba(2, 44, 34, 0.45), 0 0 0 1px rgba(16, 185, 129, 0.25) !important;">
-        <div class="row align-items-center g-3">
-            
-            <!-- Search Title & Subtitle Badge -->
-            <div class="col-lg-3 text-center text-lg-start">
-                <div class="d-inline-flex align-items-center gap-2.5">
-                    <span class="p-2.5 rounded-3 text-white d-inline-flex align-items-center justify-content-center shadow-md" style="background: rgba(255,255,255,0.15); width: 44px; height: 44px; border: 1px solid rgba(255,255,255,0.25);">
-                        <i class="fa-solid fa-wand-magic-sparkles text-warning fs-5"></i>
-                    </span>
-                    <div>
-                        <h5 class="fw-bold mb-0 text-white" style="font-size: 1.15rem; letter-spacing: -0.2px;"><?= site_text('search_dock_title', 'ระบบค้นหาอัจฉริยะ', 'หัวข้อระบบค้นหา') ?></h5>
-                        <small class="text-light opacity-75" style="font-size: 0.78rem;"><?= site_text('search_dock_subtitle', 'Smart AI & Voice Search', 'คำโปรยระบบค้นหา') ?></small>
-                    </div>
-                </div>
+<!-- 1.1 FLOATING GLASS SMART SEARCH BAR (ลอยคร่อมขอบล่าง Slide Banner สไตล์นุ่มนวล) -->
+<section class="floating-search-section">
+    <div class="floating-search-shell position-relative">
+        <div class="floating-search-pill d-flex align-items-center gap-1.5" id="mainSearchWrapper">
+            <div class="d-flex align-items-center justify-content-center rounded-circle flex-shrink-0" style="width: 42px; height: 42px; background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); color: #059669;">
+                <i class="fa-solid fa-magnifying-glass" style="font-size: 1.05rem;"></i>
             </div>
 
-            <!-- Search Input with Voice Dictation -->
-            <div class="col-lg-9 position-relative">
-                <div class="search-container d-flex align-items-center p-1.5 transition-all shadow-lg" 
-                     style="background: #ffffff; border: 2px solid #10b981; border-radius: 50px; transition: all 0.3s ease;"
-                     id="mainSearchWrapper">
-                    
-                    <div class="search-icon-wrapper d-flex align-items-center justify-content-center text-success rounded-circle ms-2" style="width: 38px; height: 38px; flex-shrink: 0; background: #ecfdf5;">
-                        <i class="fa-solid fa-search" style="color: #047857; font-size: 1.05rem;"></i>
-                    </div>
-                    
-                    <input type="text" id="globalSearchInput" placeholder="<?= site_text('search_input_placeholder', 'พิมพ์หรือกดไมโครโฟนเพื่อค้นหา (เช่น e-bidding, ทะเลน้อย, ผู้ว่า)...', 'ข้อความกล่องค้นหา', true) ?>" 
-                           class="flex-grow-1 px-3"
-                           style="border: none; background: transparent; color: #0f172a; outline: none; font-size: 1.02rem; font-weight: 500;" autocomplete="off"
-                           onkeydown="if(event.key === 'Enter') triggerSearchSubmit();">
-                    
-                    <!-- Search Spinner -->
-                    <div id="searchSpinner" class="spinner-border text-success spinner-border-sm mx-2 d-none" role="status" style="width: 1.3rem; height: 1.3rem;">
-                        <span class="visually-hidden">Loading...</span>
-                    </div>
+            <input type="text" id="globalSearchInput"
+                   placeholder="<?= site_text('search_input_placeholder', 'ค้นหาข่าว, แผนพัฒนา, จัดซื้อจัดจ้าง, ทะเลน้อย, ผู้ว่า... หรือกดไมค์พูด', 'ข้อความกล่องค้นหา', true) ?>"
+                   class="flex-grow-1 px-2.5"
+                   style="border: none; background: transparent; color: #0f172a; outline: none; font-size: 1.02rem; font-weight: 500; min-width: 0;"
+                   autocomplete="off"
+                   onkeydown="if(event.key === 'Enter') triggerSearchSubmit();">
 
-                    <!-- Voice Search Button (Futuristic Voice AI) -->
-                    <button type="button" id="btnVoiceSearch" class="btn btn-sm rounded-circle d-flex align-items-center justify-content-center me-1 voice-search-btn shadow-xs" 
-                            title="พิมพ์ค้นหาด้วยเสียงพูด (Voice Search)" 
-                            onclick="toggleVoiceSearch()" 
-                            style="width: 42px; height: 42px; border: 1.5px solid rgba(16, 185, 129, 0.4); background: #ecfdf5; color: #047857; transition: all 0.25s ease;">
-                        <i class="fa-solid fa-microphone" id="voiceMicIcon" style="font-size: 1.05rem;"></i>
-                    </button>
-                    
-                    <!-- Submit / Search Button -->
-                    <button type="button" class="btn rounded-pill px-4 py-2 me-1 fw-bold text-white shadow-sm transition-all hover-scale" 
-                            style="background: linear-gradient(135deg, #059669 0%, #047857 100%); border: none; white-space: nowrap; font-size: 0.98rem;" 
-                            onclick="triggerSearchSubmit()">
-                        <span>ค้นหา</span>
-                    </button>
-                </div>
-
-                <!-- Voice Listening Status Bar (Pop-down feedback) -->
-                <div id="voiceListeningBar" class="d-none align-items-center justify-content-between px-3 py-2 mt-2 rounded-pill shadow-lg" style="background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); color: #ffffff; border: 1.5px solid #10b981; font-size: 0.88rem;">
-                    <div class="d-flex align-items-center gap-2">
-                        <span class="voice-wave-dot"></span>
-                        <span class="voice-wave-dot" style="animation-delay: 0.2s;"></span>
-                        <span class="voice-wave-dot" style="animation-delay: 0.4s;"></span>
-                        <span id="voiceListeningStatusText" class="ms-1 fw-semibold text-warning">กำลังฟังเสียงของคุณ (พูดคำที่ต้องการค้นหา)...</span>
-                    </div>
-                    <button type="button" class="btn btn-xs btn-outline-light rounded-pill px-2.5 py-0.5" style="font-size: 0.75rem;" onclick="stopVoiceSearch()">ยกเลิก</button>
-                </div>
-
-                <!-- Quick Trending Search Pills -->
-                <?php 
-                $trendingKeywords = function_exists('get_trending_keywords') ? get_trending_keywords(6) : [];
-                if (!empty($trendingKeywords)): 
-                ?>
-                    <div class="d-flex flex-wrap align-items-center gap-2 mt-2.5 pt-2 border-top" style="border-color: rgba(255,255,255,0.12) !important;">
-                        <span class="text-light opacity-75 small fw-semibold" style="font-size: 0.8rem;">
-                            <i class="fa-solid fa-fire text-warning me-1"></i> คำค้นหายอดนิยม:
-                        </span>
-                        <?php foreach ($trendingKeywords as $item): 
-                            $kw = is_array($item) ? ($item['keyword'] ?? '') : $item;
-                            $icon = is_array($item) ? ($item['icon'] ?? '🔥') : '🔥';
-                            if (empty($kw)) continue;
-                        ?>
-                            <a href="javascript:void(0)" onclick="quickSearchTag('<?= esc($kw) ?>')" class="badge rounded-pill px-2.5 py-1 text-decoration-none shadow-xs hover-scale" style="background: rgba(255,255,255,0.15); color: #ffffff; border: 1px solid rgba(255,255,255,0.25); font-size: 0.78rem; transition: all 0.2s;">
-                                <span><?= $icon ?></span> <?= esc($kw) ?>
-                            </a>
-                        <?php endforeach; ?>
-                    </div>
-                <?php endif; ?>
-                
-                <!-- Search Results Dropdown -->
-                <div id="searchResultsDropdown" class="dropdown-menu w-100 mt-2 p-0 border-0" style="border-radius: 18px; max-height: 450px; overflow-y: auto; display: none; position: absolute; z-index: 1050; background: #ffffff; box-shadow: 0 20px 45px rgba(0,0,0,0.25); border: 2px solid rgba(16, 185, 129, 0.4) !important;">
-                    <!-- Results will be injected here via JS -->
-                </div>
+            <!-- Search Spinner -->
+            <div id="searchSpinner" class="spinner-border text-success spinner-border-sm mx-1 d-none" role="status" style="width: 1.2rem; height: 1.2rem;">
+                <span class="visually-hidden">Loading...</span>
             </div>
+
+            <!-- Voice Search Button -->
+            <button type="button" id="btnVoiceSearch"
+                    class="btn btn-sm rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 voice-search-btn"
+                    title="ค้นหาด้วยเสียงพูด (Voice Search)"
+                    onclick="toggleVoiceSearch()"
+                    style="width: 40px; height: 40px; border: 1px solid rgba(16, 185, 129, 0.3); background: #ecfdf5; color: #059669; transition: all 0.25s ease;">
+                <i class="fa-solid fa-microphone" id="voiceMicIcon" style="font-size: 0.98rem;"></i>
+            </button>
+
+            <!-- Submit Button -->
+            <button type="button"
+                    class="btn rounded-pill px-4 py-2 fw-bold text-white shadow-sm flex-shrink-0"
+                    style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border: none; white-space: nowrap; font-size: 0.95rem;"
+                    onclick="triggerSearchSubmit()">
+                <span>ค้นหา</span>
+            </button>
         </div>
+
+        <!-- Voice Listening Status Bar -->
+        <div id="voiceListeningBar" class="d-none align-items-center justify-content-between px-3 py-2 mt-2 rounded-pill shadow-lg" style="background: rgba(6, 78, 59, 0.95); backdrop-filter: blur(10px); color: #ffffff; border: 1.5px solid #10b981; font-size: 0.86rem;">
+            <div class="d-flex align-items-center gap-2">
+                <span class="voice-wave-dot"></span>
+                <span class="voice-wave-dot" style="animation-delay: 0.2s;"></span>
+                <span class="voice-wave-dot" style="animation-delay: 0.4s;"></span>
+                <span id="voiceListeningStatusText" class="ms-1 fw-semibold text-warning">กำลังฟังเสียงของคุณ (พูดคำที่ต้องการค้นหา)...</span>
+            </div>
+            <button type="button" class="btn btn-xs btn-outline-light rounded-pill px-2.5 py-0.5" style="font-size: 0.75rem;" onclick="stopVoiceSearch()">ยกเลิก</button>
+        </div>
+
+        <!-- Search Results Dropdown -->
+        <div id="searchResultsDropdown" class="dropdown-menu w-100 mt-2 p-0 border-0" style="border-radius: 20px; max-height: 450px; overflow-y: auto; display: none; position: absolute; z-index: 1050; background: #ffffff; box-shadow: 0 22px 50px rgba(15, 23, 42, 0.22); border: 1.5px solid rgba(16, 185, 129, 0.32) !important;">
+            <!-- Results will be injected here via JS -->
+        </div>
+
+        <!-- Trending Keywords (Slim & Soft) -->
+        <?php 
+        $trendingKeywords = function_exists('get_trending_keywords') ? get_trending_keywords(6) : [];
+        if (!empty($trendingKeywords)): 
+        ?>
+            <div class="d-flex flex-wrap align-items-center justify-content-center gap-1.5 mt-2.5">
+                <span class="text-muted small fw-semibold me-1" style="font-size: 0.78rem;">
+                    <i class="fa-solid fa-fire text-warning me-1"></i>ยอดนิยม:
+                </span>
+                <?php foreach ($trendingKeywords as $item): 
+                    $kw = is_array($item) ? ($item['keyword'] ?? '') : $item;
+                    $icon = is_array($item) ? ($item['icon'] ?? '🔥') : '🔥';
+                    if (empty($kw)) continue;
+                ?>
+                    <a href="javascript:void(0)" onclick="quickSearchTag('<?= esc($kw) ?>')" class="badge rounded-pill px-2.5 py-1.5 text-decoration-none floating-trending-chip">
+                        <span><?= $icon ?></span> <?= esc($kw) ?>
+                    </a>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
     </div>
 
     <!-- Quick Jump Bar (ทางลัดข้ามหมวดสำคัญใน 1 คลิก) -->
-    <div class="d-flex flex-wrap align-items-center justify-content-center gap-2 mt-3">
+    <div class="d-flex flex-wrap align-items-center justify-content-center gap-2 mt-2.5">
         <a href="#news-media-hub" class="btn btn-sm rounded-pill px-3 py-1.5 fw-bold shadow-xs d-inline-flex align-items-center gap-1.5" style="background: #ffffff; color: #047857; border: 1px solid rgba(4, 120, 87, 0.22);">
             <i class="fa-solid fa-newspaper text-success"></i> ข่าวสารล่าสุด
         </a>
