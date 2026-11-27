@@ -59,50 +59,63 @@ $layoutMode = $cfg['layout_mode'] ?? 'hybrid_widescreen';
     100% { transform: scale(1.2); opacity: 1; background: #34d399; }
 }
 
-/* Floating Glass Search Overlap Bar */
+/* Clean Floating Soft Search Bar */
 .floating-search-section {
-    margin-top: -46px;
-    margin-bottom: 1.75rem;
+    margin-top: 4px;
+    margin-bottom: 1.5rem;
     position: relative;
     z-index: 25;
 }
 .floating-search-shell {
-    max-width: 880px;
+    max-width: 860px;
     margin: 0 auto;
 }
 .floating-search-pill {
-    background: rgba(255, 255, 255, 0.94);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    border: 1.5px solid rgba(16, 185, 129, 0.28);
+    background: #ffffff;
+    border: 1.5px solid rgba(16, 185, 129, 0.25);
     border-radius: 999px;
-    padding: 7px 8px 7px 10px;
-    box-shadow: 0 18px 42px rgba(6, 78, 59, 0.14), 0 4px 12px rgba(15, 23, 42, 0.05);
+    padding: 6px 7px 6px 9px;
+    box-shadow: 0 10px 30px rgba(16, 185, 129, 0.09), 0 2px 8px rgba(15, 23, 42, 0.04);
     transition: all 0.25s ease;
 }
 .floating-search-pill:focus-within {
     border-color: #10b981;
-    box-shadow: 0 20px 46px rgba(16, 185, 129, 0.2), 0 0 0 4px rgba(16, 185, 129, 0.12);
+    box-shadow: 0 14px 36px rgba(16, 185, 129, 0.16), 0 0 0 4px rgba(16, 185, 129, 0.1);
+}
+.floating-trending-popover {
+    display: none;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(100% + 8px);
     background: #ffffff;
+    border: 1px solid rgba(16, 185, 129, 0.22);
+    border-radius: 18px;
+    padding: 12px 16px;
+    box-shadow: 0 16px 38px rgba(15, 23, 42, 0.12);
+    z-index: 1040;
+}
+.floating-trending-popover.show {
+    display: block;
 }
 .floating-trending-chip {
-    background: rgba(255, 255, 255, 0.85);
+    background: #f4faf6;
     color: #065f46;
     border: 1px solid rgba(16, 185, 129, 0.22);
-    font-size: 0.77rem;
+    font-size: 0.78rem;
     font-weight: 600;
     transition: all 0.2s ease;
 }
 .floating-trending-chip:hover {
-    background: #ecfdf5;
-    color: #047857;
+    background: #10b981;
+    color: #ffffff;
     border-color: #10b981;
     transform: translateY(-1px);
 }
 @media (max-width: 768px) {
     .floating-search-section {
-        margin-top: -22px;
-        margin-bottom: 1.25rem;
+        margin-top: 2px;
+        margin-bottom: 1.15rem;
     }
     .floating-search-pill {
         padding: 5px 6px 5px 8px;
@@ -123,7 +136,9 @@ $layoutMode = $cfg['layout_mode'] ?? 'hybrid_widescreen';
                    class="flex-grow-1 px-2.5"
                    style="border: none; background: transparent; color: #0f172a; outline: none; font-size: 1.02rem; font-weight: 500; min-width: 0;"
                    autocomplete="off"
-                   onkeydown="if(event.key === 'Enter') triggerSearchSubmit();">
+                   onfocus="showTrendingPopover(true)"
+                   oninput="if(this.value.trim().length > 0) showTrendingPopover(false);"
+                   onkeydown="if(event.key === 'Enter') { showTrendingPopover(false); triggerSearchSubmit(); }">
 
             <!-- Search Spinner -->
             <div id="searchSpinner" class="spinner-border text-success spinner-border-sm mx-1 d-none" role="status" style="width: 1.2rem; height: 1.2rem;">
@@ -164,30 +179,54 @@ $layoutMode = $cfg['layout_mode'] ?? 'hybrid_widescreen';
             <!-- Results will be injected here via JS -->
         </div>
 
-        <!-- Trending Keywords (Slim & Soft) -->
+        <!-- Trending Keywords Popover (แสดงเฉพาะเมื่อคลิกช่องค้นหา เพื่อให้หน้าหลักโล่งสบายตา) -->
         <?php 
         $trendingKeywords = function_exists('get_trending_keywords') ? get_trending_keywords(6) : [];
         if (!empty($trendingKeywords)): 
         ?>
-            <div class="d-flex flex-wrap align-items-center justify-content-center gap-1.5 mt-2.5">
-                <span class="text-muted small fw-semibold me-1" style="font-size: 0.78rem;">
-                    <i class="fa-solid fa-fire text-warning me-1"></i>ยอดนิยม:
-                </span>
-                <?php foreach ($trendingKeywords as $item): 
-                    $kw = is_array($item) ? ($item['keyword'] ?? '') : $item;
-                    $icon = is_array($item) ? ($item['icon'] ?? '🔥') : '🔥';
-                    if (empty($kw)) continue;
-                ?>
-                    <a href="javascript:void(0)" onclick="quickSearchTag('<?= esc($kw) ?>')" class="badge rounded-pill px-2.5 py-1.5 text-decoration-none floating-trending-chip">
-                        <span><?= $icon ?></span> <?= esc($kw) ?>
-                    </a>
-                <?php endforeach; ?>
+            <div id="trendingSearchPopover" class="floating-trending-popover">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <span class="text-muted small fw-bold" style="font-size: 0.78rem;">
+                        <i class="fa-solid fa-fire text-warning me-1"></i> คำค้นหายอดนิยม
+                    </span>
+                    <button type="button" onclick="showTrendingPopover(false)" style="background:none;border:none;color:#94a3b8;font-size:0.9rem;cursor:pointer;line-height:1;">&times;</button>
+                </div>
+                <div class="d-flex flex-wrap gap-1.5">
+                    <?php foreach ($trendingKeywords as $item): 
+                        $kw = is_array($item) ? ($item['keyword'] ?? '') : $item;
+                        $icon = is_array($item) ? ($item['icon'] ?? '🔥') : '🔥';
+                        if (empty($kw)) continue;
+                    ?>
+                        <a href="javascript:void(0)" onclick="showTrendingPopover(false); quickSearchTag('<?= esc($kw) ?>')" class="badge rounded-pill px-2.5 py-1.5 text-decoration-none floating-trending-chip">
+                            <span><?= $icon ?></span> <?= esc($kw) ?>
+                        </a>
+                    <?php endforeach; ?>
+                </div>
             </div>
         <?php endif; ?>
     </div>
 
-    <!-- Quick Jump Bar (ทางลัดข้ามหมวดสำคัญใน 1 คลิก) -->
-    <div class="d-flex flex-wrap align-items-center justify-content-center gap-2 mt-2.5">
+    <script>
+    function showTrendingPopover(show) {
+        var pop = document.getElementById('trendingSearchPopover');
+        var inp = document.getElementById('globalSearchInput');
+        if (!pop) return;
+        if (show && (!inp || inp.value.trim() === '')) {
+            pop.classList.add('show');
+        } else {
+            pop.classList.remove('show');
+        }
+    }
+    document.addEventListener('click', function(e) {
+        var shell = document.querySelector('.floating-search-shell');
+        if (shell && !shell.contains(e.target)) {
+            showTrendingPopover(false);
+        }
+    });
+    </script>
+
+    <!-- Quick Jump Bar (ทางลัดข้ามหมวดสำคัญใน 1 คลิก — แถวเดียวโล่งสบายตา) -->
+    <div class="d-flex flex-wrap align-items-center justify-content-center gap-2 mt-3">
         <a href="#news-media-hub" class="btn btn-sm rounded-pill px-3 py-1.5 fw-bold shadow-xs d-inline-flex align-items-center gap-1.5" style="background: #ffffff; color: #047857; border: 1px solid rgba(4, 120, 87, 0.22);">
             <i class="fa-solid fa-newspaper text-success"></i> ข่าวสารล่าสุด
         </a>
