@@ -661,48 +661,80 @@ $filteredUpcomingEvents = array_filter($homeEvents, function($ev) use ($todayStr
 $upcomingEvents = array_slice(array_values($filteredUpcomingEvents), 0, 4);
 ?>
 
-<?php if (!empty($upcomingEvents)): ?>
+<?php $hasUpcomingEvents = !empty($upcomingEvents); ?>
 <!-- =========================================================================
-     SECTION 2: กำหนดการ & ไฮไลท์กิจกรรมเมืองลุง (Visual Event Spotlight Cards)
+     SECTION 2: ศูนย์กิจกรรมจังหวัด คลังภาพ และวิดีทัศน์ Web TV (Unified Tabbed Hub)
      ========================================================================= -->
-<section id="provincial-calendar-section" class="my-5 py-2">
+<section id="multimedia-gallery-section" class="my-5 py-2">
+    <div id="provincial-calendar-section"></div>
     <div class="card gov-section-card border-0 p-4 p-lg-5 shadow-sm" style="border-radius: 28px; position: relative; overflow: hidden;">
         
         <!-- Ambient Decorative Glow -->
-        <div class="position-absolute top-0 end-0 rounded-circle" style="width: 250px; height: 250px; background: radial-gradient(circle, rgba(16, 185, 129, 0.12) 0%, transparent 70%); pointer-events: none; z-index: 0;"></div>
+        <div class="position-absolute top-0 end-0 rounded-circle" style="width: 260px; height: 260px; background: radial-gradient(circle, rgba(124, 58, 237, 0.1) 0%, transparent 70%); pointer-events: none; z-index: 0;"></div>
 
-        <!-- Section Header Strip -->
+        <!-- Unified Header + Modern Pill Tabs -->
         <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4 pb-3 border-bottom position-relative" style="border-color: rgba(0,0,0,0.06) !important; z-index: 1;">
             <div class="d-flex align-items-center gap-3">
-                <div class="section-icon-box text-white" style="width: 48px; height: 48px; min-width: 48px; border-radius: 16px; background: linear-gradient(135deg, #059669 0%, #047857 100%); display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(5, 150, 105, 0.25);">
-                    <i class="fa-solid fa-calendar-check fs-5"></i>
+                <div class="section-icon-box text-white" style="background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);">
+                    <i class="fa-solid fa-photo-film fs-5"></i>
                 </div>
                 <div>
+                    <h3 class="fw-bold mb-0 text-dark" style="color: var(--text-primary); font-size: 1.35rem;">กิจกรรมจังหวัด คลังภาพ และวิดีทัศน์ Web TV</h3>
+                    <p class="text-muted small mb-0 mt-0.5">เลือกสลับชมกำหนดการกิจกรรม ประมวลภาพภารกิจ และวิดีทัศน์ประชาสัมพันธ์ได้ในจุดเดียว</p>
+                </div>
+            </div>
+
+            <!-- Interactive Tab Switcher -->
+            <ul class="nav nav-pills gap-2 p-1.5 rounded-pill bg-light border" id="homeMediaHubTabs" role="tablist">
+                <?php if ($hasUpcomingEvents): ?>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active rounded-pill px-3.5 py-1.5 fw-bold small d-inline-flex align-items-center gap-1.5" id="tab-events-btn" data-bs-toggle="pill" data-bs-target="#pane-home-events" type="button" role="tab">
+                        <i class="fa-solid fa-calendar-check"></i> กิจกรรมจังหวัด
+                        <span class="badge bg-warning text-dark rounded-pill"><?= count($upcomingEvents) ?></span>
+                    </button>
+                </li>
+                <?php endif; ?>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link <?= !$hasUpcomingEvents ? 'active' : '' ?> rounded-pill px-3.5 py-1.5 fw-bold small d-inline-flex align-items-center gap-1.5" id="tab-gallery-btn" data-bs-toggle="pill" data-bs-target="#pane-home-gallery" type="button" role="tab">
+                        <i class="fa-solid fa-camera"></i> คลังภาพกิจกรรม
+                        <span class="badge bg-primary bg-opacity-15 text-primary rounded-pill"><?= $totalAlbums ?></span>
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link rounded-pill px-3.5 py-1.5 fw-bold small d-inline-flex align-items-center gap-1.5" id="tab-videos-btn" data-bs-toggle="pill" data-bs-target="#pane-home-videos" type="button" role="tab">
+                        <i class="fa-brands fa-youtube"></i> วิดีทัศน์ Web TV
+                        <span class="badge bg-danger bg-opacity-15 text-danger rounded-pill"><?= count($homeVideos) ?></span>
+                    </button>
+                </li>
+            </ul>
+        </div>
+
+        <div class="tab-content position-relative" style="z-index: 1;">
+
+            <?php if ($hasUpcomingEvents): ?>
+            <!-- TAB 1: กำหนดการ & ไฮไลท์กิจกรรมเมืองลุง -->
+            <div class="tab-pane fade show active" id="pane-home-events" role="tabpanel">
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3.5">
                     <div class="d-flex align-items-center gap-2">
-                        <h3 class="fw-bold mb-0 text-dark" style="color: var(--text-primary); font-size: 1.35rem;">กำหนดการ & ไฮไลท์กิจกรรมเมืองลุง</h3>
                         <span class="badge rounded-pill px-2.5 py-1 text-white shadow-xs" style="background: linear-gradient(135deg, #f59e0b, #d97706); font-size: 0.72rem;">
                             <i class="fa-solid fa-fire text-warning me-1"></i> เร็วๆ นี้
                         </span>
+                        <span class="fw-bold text-dark small">ประมวลวาระงานสำคัญ ประเพณีท้องถิ่น และกิจกรรมขับเคลื่อนจังหวัดพัทลุง</span>
                     </div>
-                    <p class="text-muted small mb-0 mt-0.5" style="font-size: 0.84rem;">ประมวลวาระงานสำคัญ ประเพณีท้องถิ่น และกิจกรรมขับเคลื่อนจังหวัดพัทลุง</p>
+                    <div class="d-flex align-items-center gap-2">
+                        <?php if ($isOfficer): ?>
+                            <a href="<?= base_url('calendar') ?>" class="btn btn-xs btn-warning rounded-pill px-3 py-1.5 fw-bold text-dark shadow-xs" style="background: linear-gradient(135deg, #f59e0b, #fbbf24); border: none; font-size: 0.82rem;">
+                                <i class="fa-solid fa-calendar-plus me-1"></i> จัดการปฏิทิน
+                            </a>
+                        <?php endif; ?>
+                        <a href="<?= base_url('calendar') ?>" class="btn btn-sm btn-outline-success rounded-pill px-3.5 py-1.5 fw-bold d-inline-flex align-items-center gap-2 hover-scale shadow-xs" style="border-width: 1.5px; color: #047857; border-color: #047857; font-size: 0.84rem;">
+                            <span>ดูปฏิทินฉบับเต็ม</span>
+                            <i class="fa-solid fa-arrow-right-long" style="font-size: 0.8rem;"></i>
+                        </a>
+                    </div>
                 </div>
-            </div>
 
-            <div class="d-flex align-items-center gap-2">
-                <?php if ($isOfficer): ?>
-                    <a href="<?= base_url('calendar') ?>" class="btn btn-sm btn-warning rounded-pill px-3 py-1.5 fw-bold text-dark shadow-xs" style="background: linear-gradient(135deg, #f59e0b, #fbbf24); border: none; font-size: 0.82rem;">
-                        <i class="fa-solid fa-calendar-plus me-1"></i> จัดการปฏิทิน
-                    </a>
-                <?php endif; ?>
-                <a href="<?= base_url('calendar') ?>" class="btn btn-sm btn-outline-success rounded-pill px-3.5 py-1.5 fw-bold d-inline-flex align-items-center gap-2 hover-scale shadow-xs" style="border-width: 1.5px; color: #047857; border-color: #047857; font-size: 0.84rem;">
-                    <span>ดูปฏิทินและตารางงานฉบับเต็ม</span>
-                    <i class="fa-solid fa-arrow-right-long" style="font-size: 0.8rem;"></i>
-                </a>
-            </div>
-        </div>
-
-        <!-- Upcoming Visual Event Cards -->
-        <div class="row g-4 position-relative" style="z-index: 1;">
+                <div class="row g-4">
             <?php foreach ($upcomingEvents as $ev): 
                 $startDate = !empty($ev['event_start_date']) ? $ev['event_start_date'] : ($ev['created_at'] ?? date('Y-m-d'));
                 $time = strtotime($startDate);
@@ -800,199 +832,170 @@ $upcomingEvents = array_slice(array_values($filteredUpcomingEvents), 0, 4);
                     </div>
                 </div>
             <?php endforeach; ?>
-        </div>
-
-    </div>
-</section>
-<?php endif; ?>
-
-<!-- =========================================================================
-     SECTION 3: สื่อมัลติมีเดียเมืองลุง (Photo Gallery & Web TV Cinema)
-     ========================================================================= -->
-<section id="multimedia-gallery-section" class="my-5 py-2">
-    <div class="card gov-section-card border-0 p-4 p-lg-5 shadow-sm">
-        
-        <!-- Section Header -->
-        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4 pb-3 border-bottom" style="border-color: rgba(0,0,0,0.06) !important;">
-            <div class="d-flex align-items-center gap-3">
-                <div class="section-icon-box text-white" style="background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);">
-                    <i class="fa-solid fa-photo-film fs-5"></i>
-                </div>
-                <div>
-                    <h3 class="fw-bold mb-0 text-dark" style="color: var(--text-primary);">คลังภาพกิจกรรม และ วิดีทัศน์ Web TV</h3>
-                    <p class="text-muted small mb-0 mt-0.5">ประมวลภาพถ่ายภารกิจ กิจกรรมสำคัญ และวิดีโอสารคดีเมืองพัทลุง</p>
                 </div>
             </div>
-        </div>
+            <?php endif; ?>
 
-        <!-- 3.1 PHOTO GALLERY BLOCK -->
-        <div class="mb-5">
-            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3.5">
-                <h5 class="fw-bold mb-0 text-dark d-flex align-items-center gap-2">
-                    <span class="badge rounded-circle p-1.5 bg-primary bg-opacity-10 text-primary">
-                        <i class="fa-solid fa-camera"></i>
-                    </span>
-                    <span>ภาพถ่ายภารกิจและกิจกรรมสำคัญ</span>
-                </h5>
-                
-                <div class="d-flex align-items-center gap-2">
-                    <?php if (function_exists('can_manage_gallery') && can_manage_gallery()): ?>
-                        <button type="button" onclick="GalleryStudio.open()" class="btn btn-xs btn-warning rounded-pill px-3 py-1.5 fw-bold text-dark" style="background: linear-gradient(135deg, #f59e0b, #fbbf24); border: none;">
-                            <i class="fa-solid fa-circle-plus"></i> เพิ่มอัลบั้มใหม่
-                        </button>
-                    <?php endif; ?>
-                    <a href="<?= base_url('gallery') ?>" class="btn btn-sm btn-outline-primary rounded-pill px-3.5 py-1.5 fw-bold d-inline-flex align-items-center gap-1.5">
-                        <span>ดูคลังภาพทั้งหมด (<?= $totalAlbums ?> อัลบั้ม)</span>
-                        <i class="fa-solid fa-arrow-right-long" style="font-size: 0.8rem;"></i>
-                    </a>
-                </div>
-            </div>
-
-            <div class="row g-4">
-                <?php if (empty($homeGalleryAlbums)): ?>
-                    <div class="col-12 text-center py-4 bg-light rounded-4">
-                        <i class="fa-regular fa-image fs-1 text-muted mb-2"></i>
-                        <p class="text-muted m-0">ยังไม่มีอัลบั้มรูปภาพในระบบขณะนี้</p>
-                    </div>
-                <?php else: ?>
-                    <?php foreach ($homeGalleryAlbums as $alb): 
-                        $covUrl = (!empty($alb['cover_image']) && (strpos($alb['cover_image'], 'http') === 0 || strpos($alb['cover_image'], 'data:') === 0 || strpos($alb['cover_image'], 'uploads/') === 0)) ? ((strpos($alb['cover_image'], 'http') === 0) ? $alb['cover_image'] : base_url($alb['cover_image'])) : 'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?auto=format&fit=crop&w=800&q=80';
-                        $pCnt = !empty($alb['photos']) ? count($alb['photos']) : 0;
-                    ?>
-                        <div class="col-12 col-md-6 col-lg-3">
-                            <a href="<?= base_url('gallery/album/' . $alb['id']) ?>" class="text-decoration-none h-100 d-block">
-                                <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden transition-transform hover-scale" style="background: var(--card-bg, #ffffff); border: 1px solid rgba(15,23,42,0.08) !important;">
-                                    <div class="position-relative" style="padding-top: 65%; overflow: hidden; background: #0f172a;">
-                                        <img src="<?= $covUrl ?>" alt="<?= esc($alb['title']) ?>" class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover transition-all" loading="lazy" style="object-fit: cover;">
-                                        <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, transparent 40%, rgba(0,0,0,0.7) 100%);"></div>
-                                        <span class="badge position-absolute top-0 start-0 m-3 rounded-pill px-3 py-1 shadow" style="background: linear-gradient(135deg, #a855f7, #6b21a8); font-size: 0.75rem;">
-                                            <?= esc($alb['category'] ?? 'กิจกรรมจังหวัด') ?>
-                                        </span>
-                                        <span class="badge position-absolute bottom-0 end-0 m-3 rounded-pill px-3 py-1 bg-dark text-info border border-secondary border-opacity-50 shadow" style="font-size: 0.78rem;">
-                                            <i class="fa-solid fa-camera me-1"></i> <?= $pCnt ?> ภาพ
-                                        </span>
-                                    </div>
-                                    <div class="card-body p-3 d-flex flex-column justify-content-between flex-grow-1">
-                                        <h6 class="fw-bold mb-2 text-dark" style="line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
-                                            <?= esc($alb['title']) ?>
-                                        </h6>
-                                        <div class="d-flex align-items-center justify-content-between text-muted mt-3 pt-2 border-top small" style="font-size: 0.78rem; border-color: rgba(0,0,0,0.06) !important;">
-                                            <span><i class="fa-regular fa-calendar me-1 text-primary"></i> <?= $alb['date'] ?? '' ?></span>
-                                            <span><i class="fa-regular fa-eye me-1 text-secondary"></i> <?= number_format($alb['views'] ?? 1) ?> ครั้ง</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                    <?php endforeach; ?>
-                <?php endif; ?>
-            </div>
-        </div>
-
-        <!-- DIVIDER WITH AMBIENT GLOW -->
-        <div class="my-5 position-relative">
-            <hr style="border-color: rgba(0,0,0,0.08); margin: 0;">
-            <div class="position-absolute top-50 start-50 translate-middle px-3 bg-white" style="background: var(--card-bg, #ffffff);">
-                <span class="badge bg-danger bg-opacity-10 text-danger rounded-pill px-3 py-1 fw-bold" style="font-size: 0.8rem;">
-                    <i class="fa-solid fa-video me-1"></i> วิดีทัศน์ & สารคดี Web TV
-                </span>
-            </div>
-        </div>
-
-        <!-- 3.2 WEB TV & VIDEO CINEMA BLOCK -->
-        <div>
-            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3.5">
-                <h5 class="fw-bold mb-0 text-dark d-flex align-items-center gap-2">
-                    <span class="badge rounded-circle p-1.5 bg-danger bg-opacity-10 text-danger">
-                        <i class="fa-brands fa-youtube fs-5"></i>
-                    </span>
-                    <span>วิดีทัศน์นำเสนอและสารคดีเมืองลุง (Web TV)</span>
-                </h5>
-
-                <div class="d-flex align-items-center gap-2">
-                    <?php if ($isOfficer): ?>
-                        <button type="button" onclick="openHomeVideoAddModal()" class="btn btn-xs btn-danger rounded-pill px-3 py-1.5 fw-bold shadow-sm d-flex align-items-center gap-1.5">
-                            <i class="fa-solid fa-plus"></i> เพิ่มวิดีโอใหม่
-                        </button>
-                        <a href="<?= base_url('admin/videos') ?>" class="btn btn-xs btn-outline-dark rounded-pill px-3 py-1.5 fw-bold d-flex align-items-center gap-1.5">
-                            <i class="fa-solid fa-sliders"></i> สตูดิโอหลังบ้าน
+            <!-- TAB 2: PHOTO GALLERY BLOCK -->
+            <div class="tab-pane fade <?= !$hasUpcomingEvents ? 'show active' : '' ?>" id="pane-home-gallery" role="tabpanel">
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3.5">
+                    <h5 class="fw-bold mb-0 text-dark d-flex align-items-center gap-2">
+                        <span class="badge rounded-circle p-1.5 bg-primary bg-opacity-10 text-primary">
+                            <i class="fa-solid fa-camera"></i>
+                        </span>
+                        <span>ภาพถ่ายภารกิจและกิจกรรมสำคัญ</span>
+                    </h5>
+                    
+                    <div class="d-flex align-items-center gap-2">
+                        <?php if (function_exists('can_manage_gallery') && can_manage_gallery()): ?>
+                            <button type="button" onclick="GalleryStudio.open()" class="btn btn-xs btn-warning rounded-pill px-3 py-1.5 fw-bold text-dark" style="background: linear-gradient(135deg, #f59e0b, #fbbf24); border: none;">
+                                <i class="fa-solid fa-circle-plus"></i> เพิ่มอัลบั้มใหม่
+                            </button>
+                        <?php endif; ?>
+                        <a href="<?= base_url('gallery') ?>" class="btn btn-sm btn-outline-primary rounded-pill px-3.5 py-1.5 fw-bold d-inline-flex align-items-center gap-1.5">
+                            <span>ดูคลังภาพทั้งหมด (<?= $totalAlbums ?> อัลบั้ม)</span>
+                            <i class="fa-solid fa-arrow-right-long" style="font-size: 0.8rem;"></i>
                         </a>
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    <?php if (empty($homeGalleryAlbums)): ?>
+                        <div class="col-12 text-center py-4 bg-light rounded-4">
+                            <i class="fa-regular fa-image fs-1 text-muted mb-2"></i>
+                            <p class="text-muted m-0">ยังไม่มีอัลบั้มรูปภาพในระบบขณะนี้</p>
+                        </div>
+                    <?php else: ?>
+                        <?php foreach ($homeGalleryAlbums as $alb): 
+                            $covUrl = (!empty($alb['cover_image']) && (strpos($alb['cover_image'], 'http') === 0 || strpos($alb['cover_image'], 'data:') === 0 || strpos($alb['cover_image'], 'uploads/') === 0)) ? ((strpos($alb['cover_image'], 'http') === 0) ? $alb['cover_image'] : base_url($alb['cover_image'])) : 'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?auto=format&fit=crop&w=800&q=80';
+                            $pCnt = !empty($alb['photos']) ? count($alb['photos']) : 0;
+                        ?>
+                            <div class="col-12 col-md-6 col-lg-3">
+                                <a href="<?= base_url('gallery/album/' . $alb['id']) ?>" class="text-decoration-none h-100 d-block">
+                                    <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden transition-transform hover-scale" style="background: var(--card-bg, #ffffff); border: 1px solid rgba(15,23,42,0.08) !important;">
+                                        <div class="position-relative" style="padding-top: 65%; overflow: hidden; background: #0f172a;">
+                                            <img src="<?= $covUrl ?>" alt="<?= esc($alb['title']) ?>" class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover transition-all" loading="lazy" style="object-fit: cover;">
+                                            <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, transparent 40%, rgba(0,0,0,0.7) 100%);"></div>
+                                            <span class="badge position-absolute top-0 start-0 m-3 rounded-pill px-3 py-1 shadow" style="background: linear-gradient(135deg, #a855f7, #6b21a8); font-size: 0.75rem;">
+                                                <?= esc($alb['category'] ?? 'กิจกรรมจังหวัด') ?>
+                                            </span>
+                                            <span class="badge position-absolute bottom-0 end-0 m-3 rounded-pill px-3 py-1 bg-dark text-info border border-secondary border-opacity-50 shadow" style="font-size: 0.78rem;">
+                                                <i class="fa-solid fa-camera me-1"></i> <?= $pCnt ?> ภาพ
+                                            </span>
+                                        </div>
+                                        <div class="card-body p-3 d-flex flex-column justify-content-between flex-grow-1">
+                                            <h6 class="fw-bold mb-2 text-dark" style="line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                                                <?= esc($alb['title']) ?>
+                                            </h6>
+                                            <div class="d-flex align-items-center justify-content-between text-muted mt-3 pt-2 border-top small" style="font-size: 0.78rem; border-color: rgba(0,0,0,0.06) !important;">
+                                                <span><i class="fa-regular fa-calendar me-1 text-primary"></i> <?= $alb['date'] ?? '' ?></span>
+                                                <span><i class="fa-regular fa-eye me-1 text-secondary"></i> <?= number_format($alb['views'] ?? 1) ?> ครั้ง</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        <?php endforeach; ?>
                     <?php endif; ?>
-                    <a href="<?= base_url('video') ?>" class="btn btn-sm btn-outline-danger rounded-pill px-3.5 py-1.5 fw-bold d-inline-flex align-items-center gap-1.5">
-                        <span>ดูวิดีโอทั้งหมด</span>
-                        <i class="fa-solid fa-arrow-right-long" style="font-size: 0.8rem;"></i>
-                    </a>
                 </div>
             </div>
 
-            <div class="row g-4">
-                <?php if (empty($homeVideos)): ?>
-                    <div class="col-12 text-center py-4 bg-light rounded-4">
-                        <i class="fa-solid fa-video-slash fs-1 text-muted mb-2"></i>
-                        <p class="text-muted m-0">ยังไม่มีวิดีโอประชาสัมพันธ์ในระบบขณะนี้</p>
-                    </div>
-                <?php else: ?>
-                    <?php foreach ($homeVideos as $vid): 
-                        $yId = esc($vid['youtube_id'] ?? '');
-                        $thumbUrl = "https://img.youtube.com/vi/{$yId}/hqdefault.jpg";
-                        $vidTitle = esc($vid['title'] ?? 'วิดีโอจังหวัดพัทลุง');
-                        $vidDesc = esc($vid['desc'] ?? '');
-                        $vidCat = esc($vid['category'] ?? 'ทั่วไป');
-                        $vidViews = number_format($vid['views'] ?? 1);
-                        $vidDate = !empty($vid['date']) ? date('d/m/Y', strtotime($vid['date'])) : '-';
-                        $vidId = esc($vid['id'] ?? '');
-                    ?>
-                        <div class="col-12 col-md-6 col-lg-4">
-                            <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden transition-transform hover-scale d-flex flex-column justify-content-between position-relative" style="cursor: pointer; background: var(--card-bg, #ffffff); border: 1px solid rgba(225, 29, 72, 0.2) !important;">
-                                
-                                <?php if ($isOfficer): ?>
-                                    <!-- Quick Edit/Delete Overlay for Officer -->
-                                    <div class="position-absolute top-0 end-0 m-2.5 d-flex gap-1.5" style="z-index: 10;">
-                                        <button type="button" class="btn btn-sm btn-white bg-white shadow rounded-circle border p-0 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;" onclick="event.stopPropagation(); editHomeVideo('<?= $vidId ?>')" title="แก้ไขวิดีโอ">
-                                            <i class="fa-solid fa-pen-to-square text-primary" style="font-size: 0.8rem;"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-sm btn-white bg-white shadow rounded-circle border p-0 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;" onclick="event.stopPropagation(); deleteHomeVideo('<?= $vidId ?>', '<?= addslashes($vidTitle) ?>')" title="ลบวิดีโอ">
-                                            <i class="fa-solid fa-trash-can text-danger" style="font-size: 0.8rem;"></i>
-                                        </button>
-                                    </div>
-                                <?php endif; ?>
+            <!-- TAB 3: WEB TV & VIDEO CINEMA BLOCK -->
+            <div class="tab-pane fade" id="pane-home-videos" role="tabpanel">
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3.5">
+                    <h5 class="fw-bold mb-0 text-dark d-flex align-items-center gap-2">
+                        <span class="badge rounded-circle p-1.5 bg-danger bg-opacity-10 text-danger">
+                            <i class="fa-brands fa-youtube fs-5"></i>
+                        </span>
+                        <span>วิดีทัศน์นำเสนอและสารคดีเมืองลุง (Web TV)</span>
+                    </h5>
 
-                                <div onclick="SmartHomeCinema.play('<?= $yId ?>', '<?= addslashes($vid['title']) ?>', '<?= $vidId ?>')">
-                                    <!-- Thumbnail with Play Overlay -->
-                                    <div class="position-relative overflow-hidden bg-dark" style="padding-top: 56.25%;">
-                                        <span class="badge position-absolute top-0 start-0 m-3 px-3 py-1 rounded-pill fw-bold" style="background: rgba(15,23,42,0.85); backdrop-filter: blur(8px); color: #fb7185; z-index: 2; border: 1px solid rgba(251,113,133,0.3);">
-                                            <i class="fa-solid fa-film me-1"></i> <?= $vidCat ?>
-                                        </span>
-                                        <span class="badge position-absolute bottom-0 end-0 m-3 px-2 py-1 rounded" style="background: rgba(0,0,0,0.8); color: #fff; z-index: 2; font-size: 0.75rem;">
-                                            <i class="fa-solid fa-eye text-warning me-1"></i> <?= $vidViews ?>
-                                        </span>
-                                        <img src="<?= $thumbUrl ?>" alt="<?= $vidTitle ?>" class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover opacity-90 transition-all hover-scale" onerror="this.src='https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?auto=format&fit=crop&w=800&q=80'">
-                                        <div class="position-absolute top-50 start-50 translate-middle d-flex align-items-center justify-content-center rounded-circle text-white shadow-lg" style="width: 58px; height: 58px; background: rgba(225, 29, 72, 0.92); backdrop-filter: blur(4px); z-index: 2; transition: transform 0.2s ease;">
-                                            <i class="fa-solid fa-play ms-1 fs-4"></i>
+                    <div class="d-flex align-items-center gap-2">
+                        <?php if ($isOfficer): ?>
+                            <button type="button" onclick="openHomeVideoAddModal()" class="btn btn-xs btn-danger rounded-pill px-3 py-1.5 fw-bold shadow-sm d-flex align-items-center gap-1.5">
+                                <i class="fa-solid fa-plus"></i> เพิ่มวิดีโอใหม่
+                            </button>
+                            <a href="<?= base_url('admin/videos') ?>" class="btn btn-xs btn-outline-dark rounded-pill px-3 py-1.5 fw-bold d-flex align-items-center gap-1.5">
+                                <i class="fa-solid fa-sliders"></i> สตูดิโอหลังบ้าน
+                            </a>
+                        <?php endif; ?>
+                        <a href="<?= base_url('video') ?>" class="btn btn-sm btn-outline-danger rounded-pill px-3.5 py-1.5 fw-bold d-inline-flex align-items-center gap-1.5">
+                            <span>ดูวิดีโอทั้งหมด</span>
+                            <i class="fa-solid fa-arrow-right-long" style="font-size: 0.8rem;"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    <?php if (empty($homeVideos)): ?>
+                        <div class="col-12 text-center py-4 bg-light rounded-4">
+                            <i class="fa-solid fa-video-slash fs-1 text-muted mb-2"></i>
+                            <p class="text-muted m-0">ยังไม่มีวิดีโอประชาสัมพันธ์ในระบบขณะนี้</p>
+                        </div>
+                    <?php else: ?>
+                        <?php foreach ($homeVideos as $vid): 
+                            $yId = esc($vid['youtube_id'] ?? '');
+                            $thumbUrl = "https://img.youtube.com/vi/{$yId}/hqdefault.jpg";
+                            $vidTitle = esc($vid['title'] ?? 'วิดีโอจังหวัดพัทลุง');
+                            $vidDesc = esc($vid['desc'] ?? '');
+                            $vidCat = esc($vid['category'] ?? 'ทั่วไป');
+                            $vidViews = number_format($vid['views'] ?? 1);
+                            $vidDate = !empty($vid['date']) ? date('d/m/Y', strtotime($vid['date'])) : '-';
+                            $vidId = esc($vid['id'] ?? '');
+                        ?>
+                            <div class="col-12 col-md-6 col-lg-4">
+                                <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden transition-transform hover-scale d-flex flex-column justify-content-between position-relative" style="cursor: pointer; background: var(--card-bg, #ffffff); border: 1px solid rgba(225, 29, 72, 0.2) !important;">
+                                    
+                                    <?php if ($isOfficer): ?>
+                                        <!-- Quick Edit/Delete Overlay for Officer -->
+                                        <div class="position-absolute top-0 end-0 m-2.5 d-flex gap-1.5" style="z-index: 10;">
+                                            <button type="button" class="btn btn-sm btn-white bg-white shadow rounded-circle border p-0 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;" onclick="event.stopPropagation(); editHomeVideo('<?= $vidId ?>')" title="แก้ไขวิดีโอ">
+                                                <i class="fa-solid fa-pen-to-square text-primary" style="font-size: 0.8rem;"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-white bg-white shadow rounded-circle border p-0 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;" onclick="event.stopPropagation(); deleteHomeVideo('<?= $vidId ?>', '<?= addslashes($vidTitle) ?>')" title="ลบวิดีโอ">
+                                                <i class="fa-solid fa-trash-can text-danger" style="font-size: 0.8rem;"></i>
+                                            </button>
+                                        </div>
+                                    <?php endif; ?>
+
+                                    <div onclick="SmartHomeCinema.play('<?= $yId ?>', '<?= addslashes($vid['title']) ?>', '<?= $vidId ?>')">
+                                        <!-- Thumbnail with Play Overlay -->
+                                        <div class="position-relative overflow-hidden bg-dark" style="padding-top: 56.25%;">
+                                            <span class="badge position-absolute top-0 start-0 m-3 px-3 py-1 rounded-pill fw-bold" style="background: rgba(15,23,42,0.85); backdrop-filter: blur(8px); color: #fb7185; z-index: 2; border: 1px solid rgba(251,113,133,0.3);">
+                                                <i class="fa-solid fa-film me-1"></i> <?= $vidCat ?>
+                                            </span>
+                                            <span class="badge position-absolute bottom-0 end-0 m-3 px-2 py-1 rounded" style="background: rgba(0,0,0,0.8); color: #fff; z-index: 2; font-size: 0.75rem;">
+                                                <i class="fa-solid fa-eye text-warning me-1"></i> <?= $vidViews ?>
+                                            </span>
+                                            <img src="<?= $thumbUrl ?>" alt="<?= $vidTitle ?>" class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover opacity-90 transition-all hover-scale" onerror="this.src='https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?auto=format&fit=crop&w=800&q=80'">
+                                            <div class="position-absolute top-50 start-50 translate-middle d-flex align-items-center justify-content-center rounded-circle text-white shadow-lg" style="width: 58px; height: 58px; background: rgba(225, 29, 72, 0.92); backdrop-filter: blur(4px); z-index: 2; transition: transform 0.2s ease;">
+                                                <i class="fa-solid fa-play ms-1 fs-4"></i>
+                                            </div>
+                                        </div>
+
+                                        <div class="p-4">
+                                            <h5 class="fw-bold mb-2 text-dark" style="line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                                                <?= $vidTitle ?>
+                                            </h5>
+                                            <p class="text-muted small mb-0" style="display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.5;">
+                                                <?= $vidDesc ?>
+                                            </p>
                                         </div>
                                     </div>
 
-                                    <div class="p-4">
-                                        <h5 class="fw-bold mb-2 text-dark" style="line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
-                                            <?= $vidTitle ?>
-                                        </h5>
-                                        <p class="text-muted small mb-0" style="display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.5;">
-                                            <?= $vidDesc ?>
-                                        </p>
+                                    <div class="px-4 py-3 border-top d-flex align-items-center justify-content-between text-muted small" style="border-color: rgba(0,0,0,0.06) !important;" onclick="SmartHomeCinema.play('<?= $yId ?>', '<?= addslashes($vid['title']) ?>', '<?= $vidId ?>')">
+                                        <span><i class="fa-regular fa-calendar-days me-1 text-danger"></i> <?= $vidDate ?></span>
+                                        <span class="btn btn-sm btn-outline-danger rounded-pill px-3 py-1 fw-bold flex-shrink-0" style="font-size: 0.75rem;">
+                                            <i class="fa-solid fa-play me-1"></i> คลิกเล่นวิดีโอ
+                                        </span>
                                     </div>
-                                </div>
-
-                                <div class="px-4 py-3 border-top d-flex align-items-center justify-content-between text-muted small" style="border-color: rgba(0,0,0,0.06) !important;" onclick="SmartHomeCinema.play('<?= $yId ?>', '<?= addslashes($vid['title']) ?>', '<?= $vidId ?>')">
-                                    <span><i class="fa-regular fa-calendar-days me-1 text-danger"></i> <?= $vidDate ?></span>
-                                    <span class="btn btn-sm btn-outline-danger rounded-pill px-3 py-1 fw-bold flex-shrink-0" style="font-size: 0.75rem;">
-                                        <i class="fa-solid fa-play me-1"></i> คลิกเล่นวิดีโอ
-                                    </span>
                                 </div>
                             </div>
-                        </div>
-                    <?php endforeach; ?>
-                <?php endif; ?>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </div>
             </div>
+
         </div>
 
     </div>

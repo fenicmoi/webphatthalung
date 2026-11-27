@@ -154,21 +154,31 @@ $layoutMode = $cfg['layout_mode'] ?? 'hybrid_widescreen';
             </div>
         </div>
     </div>
+
+    <!-- Quick Jump Bar (ทางลัดข้ามหมวดสำคัญใน 1 คลิก) -->
+    <div class="d-flex flex-wrap align-items-center justify-content-center gap-2 mt-3">
+        <a href="#news-media-hub" class="btn btn-sm rounded-pill px-3 py-1.5 fw-bold shadow-xs d-inline-flex align-items-center gap-1.5" style="background: #ffffff; color: #047857; border: 1px solid rgba(4, 120, 87, 0.22);">
+            <i class="fa-solid fa-newspaper text-success"></i> ข่าวสารล่าสุด
+        </a>
+        <a href="#multimedia-gallery-section" class="btn btn-sm rounded-pill px-3 py-1.5 fw-bold shadow-xs d-inline-flex align-items-center gap-1.5" style="background: #ffffff; color: #6d28d9; border: 1px solid rgba(109, 40, 217, 0.2);">
+            <i class="fa-solid fa-photo-film text-purple" style="color: #7c3aed;"></i> กิจกรรม / ภาพ / วิดีโอ
+        </a>
+        <a href="#provincial-policy-wrap" class="btn btn-sm rounded-pill px-3 py-1.5 fw-bold shadow-xs d-inline-flex align-items-center gap-1.5" style="background: #ffffff; color: #0369a1; border: 1px solid rgba(3, 105, 161, 0.2);">
+            <i class="fa-solid fa-user-tie text-primary"></i> ผู้บริหาร &amp; แผนพัฒนาฯ
+        </a>
+        <a href="#digital-services-wrap" class="btn btn-sm rounded-pill px-3 py-1.5 fw-bold shadow-xs d-inline-flex align-items-center gap-1.5" style="background: #ffffff; color: #b45309; border: 1px solid rgba(180, 83, 9, 0.22);">
+            <i class="fa-solid fa-grid-2 text-warning"></i> ระบบสารสนเทศ e-Service
+        </a>
+        <a href="<?= base_url('budget') ?>" class="btn btn-sm rounded-pill px-3 py-1.5 fw-bold shadow-xs d-inline-flex align-items-center gap-1.5" style="background: #ffffff; color: #0f766e; border: 1px solid rgba(15, 118, 110, 0.22);">
+            <i class="fa-solid fa-coins text-success"></i> สรุปงบประมาณจังหวัด
+        </a>
+        <a href="#pr-banner-wrap" class="btn btn-sm rounded-pill px-3 py-1.5 fw-bold shadow-xs d-inline-flex align-items-center gap-1.5" style="background: #ffffff; color: #334155; border: 1px solid rgba(51, 65, 85, 0.2);">
+            <i class="fa-solid fa-bullhorn text-danger"></i> แบนเนอร์หน่วยงาน
+        </a>
+    </div>
 </section>
 
-<!-- 1.2 PROVINCIAL POLICY, ROYAL INITIATIVES & STRATEGIC HUB (แถบวิสัยทัศน์ แบนเนอร์พระราชดำริ ปกสมุดยุทธศาสตร์ และนโยบายผู้ว่าฯ) -->
-<?php 
-try {
-    echo $this->include('components/provincial_policy_hub');
-} catch (\Throwable $e) {
-    echo '<!-- provincial_policy_hub error: ' . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8') . ' in ' . htmlspecialchars($e->getFile(), ENT_QUOTES, 'UTF-8') . ':' . $e->getLine() . ' -->';
-}
-?>
-
-<!-- 1.3 PR & PARTNER BANNERS 3D SLIDER (แถบแบนเนอร์ประชาสัมพันธ์และหน่วยงานสัมพันธ์) -->
-<?= $this->include('components/pr_banner_carousel') ?>
-
-<!-- 2. NEWS & MEDIA HUB (ศูนย์รวมข่าวสารและสื่อมัลติมีเดีย) -->
+<!-- 2. NEWS & MEDIA HUB (ดันข่าวสารขึ้นมาเป็นส่วนแรกหลัง Smart Search + รวมสื่อแบบ Tab) -->
 <?php 
 try {
     echo $this->include('components/news_media_hub');
@@ -177,7 +187,19 @@ try {
 }
 ?>
 
-<!-- 3. DIGITAL SERVICES & e-GOVERNMENT HUB (ศูนย์รวมระบบสารสนเทศและการบริการดิจิทัล) -->
+<!-- 3. PROVINCIAL POLICY, ROYAL INITIATIVES & STRATEGIC HUB (คำขวัญ แบนเนอร์พระราชดำริ ปกสมุดยุทธศาสตร์ และนโยบายผู้ว่าฯ) -->
+<div id="provincial-policy-wrap">
+<?php 
+try {
+    echo $this->include('components/provincial_policy_hub');
+} catch (\Throwable $e) {
+    echo '<!-- provincial_policy_hub error: ' . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8') . ' in ' . htmlspecialchars($e->getFile(), ENT_QUOTES, 'UTF-8') . ':' . $e->getLine() . ' -->';
+}
+?>
+</div>
+
+<!-- 4. DIGITAL SERVICES & e-GOVERNMENT HUB (ศูนย์รวมระบบสารสนเทศและการบริการดิจิทัล) -->
+<div id="digital-services-wrap">
 <?php 
 try {
     echo $this->include('components/digital_services_hub');
@@ -185,6 +207,12 @@ try {
     echo '<!-- digital_services_hub error: ' . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8') . ' in ' . htmlspecialchars($e->getFile(), ENT_QUOTES, 'UTF-8') . ':' . $e->getLine() . ' -->';
 }
 ?>
+</div>
+
+<!-- 5. PR & PARTNER BANNERS 3D SLIDER (แถบแบนเนอร์ประชาสัมพันธ์และหน่วยงานสัมพันธ์) -->
+<div id="pr-banner-wrap">
+<?= $this->include('components/pr_banner_carousel') ?>
+</div>
 
 <!-- 4. GOVERNANCE & TRANSPARENCY HUB (ศูนย์ข้อมูลความโปร่งใสและจัดซื้อจัดจ้าง) -->
 <!-- ย้ายไปเข้าผ่านเมนูด้านบนแทนการแสดงผลหน้าหลัก -->
