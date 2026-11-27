@@ -15,6 +15,7 @@ $showGiahs = (!isset($bannerCfg['show_giahs']) || $bannerCfg['show_giahs'] != '0
 ?>
 
 <!-- WIDESCREEN HYBRID & KINETIC HERO BANNER COMPONENT -->
+<div class="hero-banner-stage position-relative" style="z-index: 30; overflow: visible;">
 <section id="smartCityCarousel" class="carousel slide smart-slider-box <?= $isWidescreen ? 'mode-widescreen' : 'mode-boxed' ?>" data-bs-ride="carousel" data-bs-interval="<?= $intervalMs ?>" 
          style="height: <?= $bannerHeight ?>px !important; <?= !$isWidescreen ? 'border-radius: var(--radius-lg) !important; width: 100% !important; border: 1px solid var(--glass-border) !important; margin-bottom: 2rem !important; box-shadow: 0 20px 45px rgba(0,0,0,0.25);' : 'width: 100% !important; border-radius: 0 !important; margin-bottom: 0 !important; border: none !important; border-bottom: 3px solid #6fd3c6 !important; box-shadow: 0 25px 55px rgba(0,0,0,0.35);' ?>">
     
@@ -232,3 +233,85 @@ $showGiahs = (!isset($bannerCfg['show_giahs']) || $bannerCfg['show_giahs'] != '0
         <span class="visually-hidden">Next</span>
     </button>
 </section>
+
+<!-- FLOATING GLASS SMART SEARCH OVERLAY ON SLIDE (เหนือจุด Indicator 4 ขีด) -->
+<div class="hero-search-overlay" style="position: absolute; left: 0; right: 0; bottom: 54px; z-index: 35; padding: 0 16px; pointer-events: none;">
+    <div class="floating-search-shell position-relative" style="max-width: 780px; margin: 0 auto; pointer-events: auto;">
+        <div class="floating-search-pill d-flex align-items-center gap-1.5" id="mainSearchWrapper"
+             style="background: rgba(255, 255, 255, 0.93); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); border: 1.5px solid rgba(255, 255, 255, 0.85); border-radius: 999px; padding: 6px 7px 6px 9px; box-shadow: 0 18px 42px rgba(0, 0, 0, 0.32), 0 0 0 1px rgba(16, 185, 129, 0.25);">
+            <div class="d-flex align-items-center justify-content-center rounded-circle flex-shrink-0" style="width: 40px; height: 40px; background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); color: #059669;">
+                <i class="fa-solid fa-magnifying-glass" style="font-size: 1rem;"></i>
+            </div>
+
+            <input type="text" id="globalSearchInput"
+                   placeholder="<?= site_text('search_input_placeholder', 'ค้นหาข่าว, แผนพัฒนา, จัดซื้อจัดจ้าง, ทะเลน้อย, ผู้ว่า... หรือกดไมค์พูด', 'ข้อความกล่องค้นหา', true) ?>"
+                   class="flex-grow-1 px-2.5"
+                   style="border: none; background: transparent; color: #0f172a; outline: none; font-size: 1rem; font-weight: 500; min-width: 0;"
+                   autocomplete="off"
+                   onfocus="showTrendingPopover(true)"
+                   oninput="if(this.value.trim().length > 0) showTrendingPopover(false);"
+                   onkeydown="if(event.key === 'Enter') { showTrendingPopover(false); triggerSearchSubmit(); }">
+
+            <div id="searchSpinner" class="spinner-border text-success spinner-border-sm mx-1 d-none" role="status" style="width: 1.15rem; height: 1.15rem;">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+
+            <button type="button" id="btnVoiceSearch"
+                    class="btn btn-sm rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 voice-search-btn"
+                    title="ค้นหาด้วยเสียงพูด (Voice Search)"
+                    onclick="toggleVoiceSearch()"
+                    style="width: 38px; height: 38px; border: 1px solid rgba(16, 185, 129, 0.3); background: #ecfdf5; color: #059669; transition: all 0.25s ease;">
+                <i class="fa-solid fa-microphone" id="voiceMicIcon" style="font-size: 0.95rem;"></i>
+            </button>
+
+            <button type="button"
+                    class="btn rounded-pill px-4 py-2 fw-bold text-white shadow-sm flex-shrink-0"
+                    style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border: none; white-space: nowrap; font-size: 0.94rem;"
+                    onclick="triggerSearchSubmit()">
+                <span>ค้นหา</span>
+            </button>
+        </div>
+
+        <!-- Voice Listening Status Bar -->
+        <div id="voiceListeningBar" class="d-none align-items-center justify-content-between px-3 py-2 mt-2 rounded-pill shadow-lg" style="background: rgba(6, 78, 59, 0.95); backdrop-filter: blur(10px); color: #ffffff; border: 1.5px solid #10b981; font-size: 0.86rem;">
+            <div class="d-flex align-items-center gap-2">
+                <span class="voice-wave-dot"></span>
+                <span class="voice-wave-dot" style="animation-delay: 0.2s;"></span>
+                <span class="voice-wave-dot" style="animation-delay: 0.4s;"></span>
+                <span id="voiceListeningStatusText" class="ms-1 fw-semibold text-warning">กำลังฟังเสียงของคุณ (พูดคำที่ต้องการค้นหา)...</span>
+            </div>
+            <button type="button" class="btn btn-xs btn-outline-light rounded-pill px-2.5 py-0.5" style="font-size: 0.75rem;" onclick="stopVoiceSearch()">ยกเลิก</button>
+        </div>
+
+        <!-- Search Results Dropdown (เด้งลงมาพ้นขอบสไลด์ได้อย่างอิสระ) -->
+        <div id="searchResultsDropdown" class="dropdown-menu w-100 mt-2 p-0 border-0" style="border-radius: 20px; max-height: 440px; overflow-y: auto; display: none; position: absolute; z-index: 1060; background: #ffffff; box-shadow: 0 24px 55px rgba(15, 23, 42, 0.28); border: 1.5px solid rgba(16, 185, 129, 0.35) !important;">
+        </div>
+
+        <!-- Trending Keywords Popover (แสดงเมื่อคลิกช่องค้นหา) -->
+        <?php 
+        $trendingKeywords = function_exists('get_trending_keywords') ? get_trending_keywords(6) : [];
+        if (!empty($trendingKeywords)): 
+        ?>
+            <div id="trendingSearchPopover" class="floating-trending-popover">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <span class="text-muted small fw-bold" style="font-size: 0.78rem;">
+                        <i class="fa-solid fa-fire text-warning me-1"></i> คำค้นหายอดนิยม
+                    </span>
+                    <button type="button" onclick="showTrendingPopover(false)" style="background:none;border:none;color:#94a3b8;font-size:0.9rem;cursor:pointer;line-height:1;">&times;</button>
+                </div>
+                <div class="d-flex flex-wrap gap-1.5">
+                    <?php foreach ($trendingKeywords as $item): 
+                        $kw = is_array($item) ? ($item['keyword'] ?? '') : $item;
+                        $icon = is_array($item) ? ($item['icon'] ?? '🔥') : '🔥';
+                        if (empty($kw)) continue;
+                    ?>
+                        <a href="javascript:void(0)" onclick="showTrendingPopover(false); quickSearchTag('<?= esc($kw) ?>')" class="badge rounded-pill px-2.5 py-1.5 text-decoration-none floating-trending-chip">
+                            <span><?= $icon ?></span> <?= esc($kw) ?>
+                        </a>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        <?php endif; ?>
+    </div>
+</div>
+</div>

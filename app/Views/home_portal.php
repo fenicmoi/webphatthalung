@@ -123,89 +123,8 @@ $layoutMode = $cfg['layout_mode'] ?? 'hybrid_widescreen';
 }
 </style>
 
-<!-- 1.1 FLOATING GLASS SMART SEARCH BAR (ลอยคร่อมขอบล่าง Slide Banner สไตล์นุ่มนวล) -->
-<section class="floating-search-section">
-    <div class="floating-search-shell position-relative">
-        <div class="floating-search-pill d-flex align-items-center gap-1.5" id="mainSearchWrapper">
-            <div class="d-flex align-items-center justify-content-center rounded-circle flex-shrink-0" style="width: 42px; height: 42px; background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); color: #059669;">
-                <i class="fa-solid fa-magnifying-glass" style="font-size: 1.05rem;"></i>
-            </div>
-
-            <input type="text" id="globalSearchInput"
-                   placeholder="<?= site_text('search_input_placeholder', 'ค้นหาข่าว, แผนพัฒนา, จัดซื้อจัดจ้าง, ทะเลน้อย, ผู้ว่า... หรือกดไมค์พูด', 'ข้อความกล่องค้นหา', true) ?>"
-                   class="flex-grow-1 px-2.5"
-                   style="border: none; background: transparent; color: #0f172a; outline: none; font-size: 1.02rem; font-weight: 500; min-width: 0;"
-                   autocomplete="off"
-                   onfocus="showTrendingPopover(true)"
-                   oninput="if(this.value.trim().length > 0) showTrendingPopover(false);"
-                   onkeydown="if(event.key === 'Enter') { showTrendingPopover(false); triggerSearchSubmit(); }">
-
-            <!-- Search Spinner -->
-            <div id="searchSpinner" class="spinner-border text-success spinner-border-sm mx-1 d-none" role="status" style="width: 1.2rem; height: 1.2rem;">
-                <span class="visually-hidden">Loading...</span>
-            </div>
-
-            <!-- Voice Search Button -->
-            <button type="button" id="btnVoiceSearch"
-                    class="btn btn-sm rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 voice-search-btn"
-                    title="ค้นหาด้วยเสียงพูด (Voice Search)"
-                    onclick="toggleVoiceSearch()"
-                    style="width: 40px; height: 40px; border: 1px solid rgba(16, 185, 129, 0.3); background: #ecfdf5; color: #059669; transition: all 0.25s ease;">
-                <i class="fa-solid fa-microphone" id="voiceMicIcon" style="font-size: 0.98rem;"></i>
-            </button>
-
-            <!-- Submit Button -->
-            <button type="button"
-                    class="btn rounded-pill px-4 py-2 fw-bold text-white shadow-sm flex-shrink-0"
-                    style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border: none; white-space: nowrap; font-size: 0.95rem;"
-                    onclick="triggerSearchSubmit()">
-                <span>ค้นหา</span>
-            </button>
-        </div>
-
-        <!-- Voice Listening Status Bar -->
-        <div id="voiceListeningBar" class="d-none align-items-center justify-content-between px-3 py-2 mt-2 rounded-pill shadow-lg" style="background: rgba(6, 78, 59, 0.95); backdrop-filter: blur(10px); color: #ffffff; border: 1.5px solid #10b981; font-size: 0.86rem;">
-            <div class="d-flex align-items-center gap-2">
-                <span class="voice-wave-dot"></span>
-                <span class="voice-wave-dot" style="animation-delay: 0.2s;"></span>
-                <span class="voice-wave-dot" style="animation-delay: 0.4s;"></span>
-                <span id="voiceListeningStatusText" class="ms-1 fw-semibold text-warning">กำลังฟังเสียงของคุณ (พูดคำที่ต้องการค้นหา)...</span>
-            </div>
-            <button type="button" class="btn btn-xs btn-outline-light rounded-pill px-2.5 py-0.5" style="font-size: 0.75rem;" onclick="stopVoiceSearch()">ยกเลิก</button>
-        </div>
-
-        <!-- Search Results Dropdown -->
-        <div id="searchResultsDropdown" class="dropdown-menu w-100 mt-2 p-0 border-0" style="border-radius: 20px; max-height: 450px; overflow-y: auto; display: none; position: absolute; z-index: 1050; background: #ffffff; box-shadow: 0 22px 50px rgba(15, 23, 42, 0.22); border: 1.5px solid rgba(16, 185, 129, 0.32) !important;">
-            <!-- Results will be injected here via JS -->
-        </div>
-
-        <!-- Trending Keywords Popover (แสดงเฉพาะเมื่อคลิกช่องค้นหา เพื่อให้หน้าหลักโล่งสบายตา) -->
-        <?php 
-        $trendingKeywords = function_exists('get_trending_keywords') ? get_trending_keywords(6) : [];
-        if (!empty($trendingKeywords)): 
-        ?>
-            <div id="trendingSearchPopover" class="floating-trending-popover">
-                <div class="d-flex align-items-center justify-content-between mb-2">
-                    <span class="text-muted small fw-bold" style="font-size: 0.78rem;">
-                        <i class="fa-solid fa-fire text-warning me-1"></i> คำค้นหายอดนิยม
-                    </span>
-                    <button type="button" onclick="showTrendingPopover(false)" style="background:none;border:none;color:#94a3b8;font-size:0.9rem;cursor:pointer;line-height:1;">&times;</button>
-                </div>
-                <div class="d-flex flex-wrap gap-1.5">
-                    <?php foreach ($trendingKeywords as $item): 
-                        $kw = is_array($item) ? ($item['keyword'] ?? '') : $item;
-                        $icon = is_array($item) ? ($item['icon'] ?? '🔥') : '🔥';
-                        if (empty($kw)) continue;
-                    ?>
-                        <a href="javascript:void(0)" onclick="showTrendingPopover(false); quickSearchTag('<?= esc($kw) ?>')" class="badge rounded-pill px-2.5 py-1.5 text-decoration-none floating-trending-chip">
-                            <span><?= $icon ?></span> <?= esc($kw) ?>
-                        </a>
-                    <?php endforeach; ?>
-                </div>
-            </div>
-        <?php endif; ?>
-    </div>
-
+<!-- 1.1 QUICK JUMP NAVIGATION BAR (แถบทางลัด 1 แถวบางๆ ใต้สไลด์ — แถบค้นหาย้ายขึ้นไปบนสไลด์แล้ว) -->
+<section class="mb-4 position-relative" style="z-index: 15;">
     <script>
     function showTrendingPopover(show) {
         var pop = document.getElementById('trendingSearchPopover');
@@ -226,7 +145,7 @@ $layoutMode = $cfg['layout_mode'] ?? 'hybrid_widescreen';
     </script>
 
     <!-- Quick Jump Bar (ทางลัดข้ามหมวดสำคัญใน 1 คลิก — แถวเดียวโล่งสบายตา) -->
-    <div class="d-flex flex-wrap align-items-center justify-content-center gap-2 mt-3">
+    <div class="d-flex flex-wrap align-items-center justify-content-center gap-2 mt-1">
         <a href="#news-media-hub" class="btn btn-sm rounded-pill px-3 py-1.5 fw-bold shadow-xs d-inline-flex align-items-center gap-1.5" style="background: #ffffff; color: #047857; border: 1px solid rgba(4, 120, 87, 0.22);">
             <i class="fa-solid fa-newspaper text-success"></i> ข่าวสารล่าสุด
         </a>
