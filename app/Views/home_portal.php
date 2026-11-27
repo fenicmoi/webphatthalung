@@ -167,10 +167,10 @@ $layoutMode = $cfg['layout_mode'] ?? 'hybrid_widescreen';
             <i class="fa-solid fa-user-tie text-primary"></i> ผู้บริหาร &amp; แผนพัฒนาฯ
         </a>
         <a href="#digital-services-wrap" class="btn btn-sm rounded-pill px-3 py-1.5 fw-bold shadow-xs d-inline-flex align-items-center gap-1.5" style="background: #ffffff; color: #b45309; border: 1px solid rgba(180, 83, 9, 0.22);">
-            <i class="fa-solid fa-grid-2 text-warning"></i> ระบบสารสนเทศ e-Service
+            <i class="fa-solid fa-laptop-code text-warning"></i> ระบบสารสนเทศ e-Service
         </a>
-        <a href="<?= base_url('budget') ?>" class="btn btn-sm rounded-pill px-3 py-1.5 fw-bold shadow-xs d-inline-flex align-items-center gap-1.5" style="background: #ffffff; color: #0f766e; border: 1px solid rgba(15, 118, 110, 0.22);">
-            <i class="fa-solid fa-coins text-success"></i> สรุปงบประมาณจังหวัด
+        <a href="<?= base_url('strategy') ?>" class="btn btn-sm rounded-pill px-3 py-1.5 fw-bold shadow-xs d-inline-flex align-items-center gap-1.5" style="background: #ffffff; color: #0f766e; border: 1px solid rgba(15, 118, 110, 0.22);">
+            <i class="fa-solid fa-book-open text-success"></i> แผนพัฒนาจังหวัด
         </a>
         <a href="#pr-banner-wrap" class="btn btn-sm rounded-pill px-3 py-1.5 fw-bold shadow-xs d-inline-flex align-items-center gap-1.5" style="background: #ffffff; color: #334155; border: 1px solid rgba(51, 65, 85, 0.2);">
             <i class="fa-solid fa-bullhorn text-danger"></i> แบนเนอร์หน่วยงาน
