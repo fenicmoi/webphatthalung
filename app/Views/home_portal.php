@@ -178,16 +178,7 @@ $layoutMode = $cfg['layout_mode'] ?? 'hybrid_widescreen';
     </div>
 </section>
 
-<!-- 2. NEWS & MEDIA HUB (ดันข่าวสารขึ้นมาเป็นส่วนแรกหลัง Smart Search + รวมสื่อแบบ Tab) -->
-<?php 
-try {
-    echo $this->include('components/news_media_hub');
-} catch (\Throwable $e) {
-    echo '<!-- news_media_hub error: ' . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8') . ' in ' . htmlspecialchars($e->getFile(), ENT_QUOTES, 'UTF-8') . ':' . $e->getLine() . ' -->';
-}
-?>
-
-<!-- 3. PROVINCIAL POLICY, ROYAL INITIATIVES & STRATEGIC HUB (คำขวัญ แบนเนอร์พระราชดำริ ปกสมุดยุทธศาสตร์ และนโยบายผู้ว่าฯ) -->
+<!-- 2. PROVINCIAL POLICY, ROYAL INITIATIVES & STRATEGIC HUB (คำขวัญ แบนเนอร์พระราชดำริ ปกสมุดยุทธศาสตร์ และนโยบายผู้ว่าฯ) -->
 <div id="provincial-policy-wrap">
 <?php 
 try {
@@ -197,6 +188,15 @@ try {
 }
 ?>
 </div>
+
+<!-- 3. NEWS & MEDIA HUB (ข่าวสารล่าสุด + รวมกิจกรรม/คลังภาพ/วิดีโอแบบ Tab) -->
+<?php 
+try {
+    echo $this->include('components/news_media_hub');
+} catch (\Throwable $e) {
+    echo '<!-- news_media_hub error: ' . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8') . ' in ' . htmlspecialchars($e->getFile(), ENT_QUOTES, 'UTF-8') . ':' . $e->getLine() . ' -->';
+}
+?>
 
 <!-- 4. DIGITAL SERVICES & e-GOVERNMENT HUB (ศูนย์รวมระบบสารสนเทศและการบริการดิจิทัล) -->
 <div id="digital-services-wrap">
