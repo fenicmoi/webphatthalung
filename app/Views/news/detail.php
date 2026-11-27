@@ -17,15 +17,34 @@ $hasMediaInContent = (stripos($rawContent, '<img') !== false || stripos($rawCont
 $cleanContent = trim(strip_tags($rawContent));
 $hasContentText = $hasMediaInContent || (!empty($cleanContent) && $cleanContent !== '-' && $cleanContent !== '&nbsp;');
 
-// ดึงข่าวล่าสุดสำหรับ Sticky Sidebar ด้านขวา (ตัดข่าวปัจจุบันออก)
+// ดึงข่าวที่เกี่ยวข้อง (หมวดเดียวกันก่อน แล้วเติมข่าวล่าสุดให้ครบ 5 ข่าว) สำหรับ Sticky Sidebar ด้านขวา
 $sidebarNews = [];
 if (function_exists('get_site_news')) {
-    $allLatest = get_site_news(null, 8, true);
     $curId = (string)($news['id'] ?? '');
-    foreach ($allLatest as $ln) {
-        if ((string)($ln['id'] ?? '') === $curId) continue;
-        $sidebarNews[] = $ln;
-        if (count($sidebarNews) >= 5) break;
+    $curCat = trim((string)($news['category'] ?? ''));
+    $addedIds = [$curId => true];
+
+    // 1. ดึงข่าวในหมวดหมู่เดียวกันก่อน
+    if ($curCat !== '') {
+        $sameCat = get_site_news(6, $curCat, true, false, true);
+        foreach ($sameCat as $ln) {
+            $lid = (string)($ln['id'] ?? '');
+            if (isset($addedIds[$lid])) continue;
+            $addedIds[$lid] = true;
+            $sidebarNews[] = $ln;
+            if (count($sidebarNews) >= 5) break;
+        }
+    }
+    // 2. เติมข่าวล่าสุดหมวดอื่นให้ครบ 5 ข่าว
+    if (count($sidebarNews) < 5) {
+        $allLatest = get_site_news(10, null, true, false, true);
+        foreach ($allLatest as $ln) {
+            $lid = (string)($ln['id'] ?? '');
+            if (isset($addedIds[$lid])) continue;
+            $addedIds[$lid] = true;
+            $sidebarNews[] = $ln;
+            if (count($sidebarNews) >= 5) break;
+        }
     }
 }
 ?>
