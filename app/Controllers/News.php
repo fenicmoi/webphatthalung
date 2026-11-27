@@ -102,6 +102,206 @@ class News extends BaseController
     }
 
     /**
+     * API DataTables Server-Side Processing สำหรับหน้ารวมข่าวทั้งหมด (/news/datatables)
+     */
+    public function datatables()
+    {
+        helper('settings');
+
+        $draw   = (int) ($this->request->getGet('draw') ?? 1);
+        $start  = max(0, (int) ($this->request->getGet('start') ?? 0));
+        $length = (int) ($this->request->getGet('length') ?? 15);
+        if ($length <= 0 || $length > 100) {
+            $length = 15;
+        }
+
+        $searchArr = $this->request->getGet('search');
+        $searchVal = trim((string) (is_array($searchArr) ? ($searchArr['value'] ?? '') : ($this->request->getGet('q') ?? '')));
+
+        $cat = trim((string) ($this->request->getGet('category') ?? ''));
+        $isFeaturedFilter = ($cat === 'featured' || $this->request->getGet('featured') === '1');
+        $isPrdCat = !empty($cat) && (
+            mb_stripos($cat, 'สปชส') !== false ||
+            mb_stripos($cat, 'สำนักงานประชาสัมพันธ์') !== false ||
+            mb_stripos($cat, 'กรมประชาสัมพันธ์') !== false ||
+            mb_stripos($cat, 'nnt') !== false ||
+            mb_stripos($cat, 'prd') !== false
+        );
+
+        $orderArr = $this->request->getGet('order');
+        $orderColIdx = (int) (is_array($orderArr) && isset($orderArr[0]['column']) ? $orderArr[0]['column'] : 0);
+        $orderDir    = (is_array($orderArr) && isset($orderArr[0]['dir']) && strtolower($orderArr[0]['dir']) === 'asc') ? 'ASC' : 'DESC';
+
+        // 1. กรณีหมวดข่าว สปชส.พัทลุง (PRD Live Feed)
+        if ($isPrdCat) {
+            $prdAll = \App\Libraries\PrdNewsService::getPhatthalungNews(50);
+            $recordsTotal = count($prdAll);
+            $filtered = $prdAll;
+            if ($searchVal !== '') {
+                $qLower = mb_strtolower($searchVal);
+                $filtered = array_values(array_filter($prdAll, function ($item) use ($qLower) {
+                    return mb_stripos((string)($item['title'] ?? ''), $qLower) !== false
+                        || mb_stripos((string)($item['summary'] ?? ''), $qLower) !== false;
+                }));
+            }
+            $recordsFiltered = count($filtered);
+            $slice = array_slice($filtered, $start, $length);
+            $rows = array_map(function ($item) {
+                return [
+                    'id'           => (string) ($item['id'] ?? ''),
+                    'title'        => (string) ($item['title'] ?? ''),
+                    'summary'      => (string) ($item['summary'] ?? ''),
+                    'category'     => 'ข่าวประชาสัมพันธ์ (สปชส.พัทลุง)',
+                    'date_label'   => !empty($item['created_at']) ? date('d/m/Y', strtotime($item['created_at'])) : ($item['display_date'] ?? date('d/m/Y')),
+                    'views'        => (int) ($item['views'] ?? 1),
+                    'attach_count' => 0,
+                    'is_featured'  => false,
+                    'is_prd'       => true,
+                    'cover_image'  => (string) ($item['cover_image'] ?? ''),
+                    'detail_url'   => base_url('news/detail/' . urlencode((string) ($item['id'] ?? ''))),
+                ];
+            }, $slice);
+
+            return $this->response->setJSON([
+                'draw'            => $draw,
+                'recordsTotal'    => $recordsTotal,
+                'recordsFiltered' => $recordsFiltered,
+                'data'            => $rows,
+            ]);
+        }
+
+        // 2. คิวรีตรงจาก MySQL ตาราง news แบบ Server-Side แท้ๆ (เร็วแม้มีข่าวหลักหมื่น)
+        try {
+            $db = \Config\Database::connect();
+            if ($db->tableExists('news')) {
+                $baseWhere = function ($builder) use ($cat, $isFeaturedFilter) {
+                    $builder->where('status', 'published');
+                    if ($isFeaturedFilter) {
+                        $builder->where('is_featured', 1);
+                    } elseif ($cat !== '') {
+                        $builder->where('category', $cat);
+                    }
+                };
+
+                // นับทั้งหมดในหมวด
+                $totalBuilder = $db->table('news');
+                $baseWhere($totalBuilder);
+                $recordsTotal = (int) $totalBuilder->countAllResults();
+
+                // นับหลังกรองคำค้นหา
+                $filterBuilder = $db->table('news');
+                $baseWhere($filterBuilder);
+                if ($searchVal !== '') {
+                    $filterBuilder->groupStart()
+                        ->like('title', $searchVal)
+                        ->orLike('category', $searchVal)
+                        ->orLike('content', $searchVal)
+                        ->groupEnd();
+                }
+                $recordsFiltered = (int) $filterBuilder->countAllResults();
+
+                // ดึงเฉพาะหน้าปัจจุบัน (LIMIT / OFFSET)
+                $dataBuilder = $db->table('news')
+                    ->select('id, title, category, content, thumbnail, is_featured, views_count, attachments, created_at');
+                $baseWhere($dataBuilder);
+                if ($searchVal !== '') {
+                    $dataBuilder->groupStart()
+                        ->like('title', $searchVal)
+                        ->orLike('category', $searchVal)
+                        ->orLike('content', $searchVal)
+                        ->groupEnd();
+                }
+
+                $orderCols = [
+                    0 => 'created_at',
+                    1 => 'title',
+                    2 => 'views_count',
+                ];
+                $orderField = $orderCols[$orderColIdx] ?? 'created_at';
+                $dataBuilder->orderBy($orderField, $orderDir)->orderBy('id', 'DESC');
+                $dbRows = $dataBuilder->limit($length, $start)->get()->getResultArray();
+
+                $rows = [];
+                foreach ($dbRows as $r) {
+                    $attachArr = [];
+                    if (!empty($r['attachments'])) {
+                        $dec = json_decode((string)$r['attachments'], true);
+                        if (is_array($dec)) $attachArr = $dec;
+                    }
+                    $thumb = trim((string)($r['thumbnail'] ?? ''));
+                    $coverUrl = '';
+                    if ($thumb !== '' && strpos($thumb, 'sane_muanglung.png') === false) {
+                        $coverUrl = preg_match('#^https?://#i', $thumb) ? $thumb : base_url(ltrim($thumb, '/'));
+                    }
+                    $summary = trim(mb_substr(strip_tags((string)($r['content'] ?? '')), 0, 140, 'UTF-8'));
+                    if (mb_strlen($summary, 'UTF-8') >= 138) {
+                        $summary .= '...';
+                    }
+
+                    $rows[] = [
+                        'id'           => (string) $r['id'],
+                        'title'        => (string) $r['title'],
+                        'summary'      => $summary,
+                        'category'     => (string) ($r['category'] ?: 'ข่าวประชาสัมพันธ์'),
+                        'date_label'   => !empty($r['created_at']) ? date('d/m/Y', strtotime($r['created_at'])) : '-',
+                        'views'        => (int) ($r['views_count'] ?? 0),
+                        'attach_count' => count($attachArr),
+                        'is_featured'  => !empty($r['is_featured']),
+                        'is_prd'       => false,
+                        'cover_image'  => $coverUrl,
+                        'detail_url'   => base_url('news/detail/' . $r['id']),
+                    ];
+                }
+
+                return $this->response->setJSON([
+                    'draw'            => $draw,
+                    'recordsTotal'    => $recordsTotal,
+                    'recordsFiltered' => $recordsFiltered,
+                    'data'            => $rows,
+                ]);
+            }
+        } catch (\Throwable $e) {
+            log_message('error', 'News::datatables DB error: ' . $e->getMessage());
+        }
+
+        // 3. Fallback JSON กรณีไม่มี MySQL
+        $all = get_site_news(null, ($isFeaturedFilter || $cat === '') ? null : $cat, true, $isFeaturedFilter, true);
+        $recordsTotal = count($all);
+        if ($searchVal !== '') {
+            $qLower = mb_strtolower($searchVal);
+            $all = array_values(array_filter($all, function ($item) use ($qLower) {
+                return mb_stripos((string)($item['title'] ?? ''), $qLower) !== false
+                    || mb_stripos((string)($item['category'] ?? ''), $qLower) !== false
+                    || mb_stripos((string)($item['summary'] ?? ''), $qLower) !== false;
+            }));
+        }
+        $recordsFiltered = count($all);
+        $slice = array_slice($all, $start, $length);
+        $rows = array_map(function ($item) {
+            return [
+                'id'           => (string) ($item['id'] ?? ''),
+                'title'        => (string) ($item['title'] ?? ''),
+                'summary'      => (string) ($item['summary'] ?? ''),
+                'category'     => (string) ($item['category'] ?? 'ข่าวประชาสัมพันธ์'),
+                'date_label'   => !empty($item['created_at']) ? date('d/m/Y', strtotime($item['created_at'])) : '-',
+                'views'        => (int) ($item['views'] ?? 0),
+                'attach_count' => is_array($item['attachments'] ?? null) ? count($item['attachments']) : 0,
+                'is_featured'  => !empty($item['is_featured']),
+                'is_prd'       => false,
+                'cover_image'  => '',
+                'detail_url'   => base_url('news/detail/' . urlencode((string)($item['id'] ?? ''))),
+            ];
+        }, $slice);
+
+        return $this->response->setJSON([
+            'draw'            => $draw,
+            'recordsTotal'    => $recordsTotal,
+            'recordsFiltered' => $recordsFiltered,
+            'data'            => $rows,
+        ]);
+    }
+
+    /**
      * หน้าอ่านบทความฉบับเต็ม (Article Detail & Reading Room)
      */
     public function detail($id = null)

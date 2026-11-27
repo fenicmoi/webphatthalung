@@ -7,6 +7,120 @@ use CodeIgniter\Controller;
 class Ebook extends Controller
 {
     /**
+     * หน้าห้องสมุดชั้นหนังสือ E-Book จังหวัดพัทลุง (/ebooks)
+     */
+    public function index()
+    {
+        helper(['settings']);
+        $strategy  = get_site_strategy();
+        $planBooks = $strategy['plan_books'] ?? [];
+        $docs      = $strategy['documents'] ?? [];
+
+        $books = [];
+
+        // 1. สมุดแผน 3D หลักหน้าแรก (5 ปี & 1 ปี)
+        if (!empty($planBooks['book_5yr']['url']) && preg_match('/\.pdf(\?.*)?$/i', $planBooks['book_5yr']['url'])) {
+            $b5 = $planBooks['book_5yr'];
+            $books[] = [
+                'id'         => 'book_5yr',
+                'title'      => ($b5['title'] ?? 'แผนพัฒนาจังหวัดพัทลุง') . (!empty($b5['period']) ? ' (' . $b5['period'] . ')' : ''),
+                'category'   => 'แผนพัฒนาจังหวัด 5 ปี',
+                'year'       => $b5['period'] ?? '2566-2570',
+                'pages'      => '',
+                'file_size'  => '',
+                'theme'      => 'emerald',
+                'ebook_url'  => base_url('ebook/view?book=5yr&back=' . urlencode(base_url('ebooks'))),
+                'pdf_url'    => preg_match('#^https?://#i', $b5['url']) ? $b5['url'] : base_url($b5['url']),
+                'is_featured'=> true,
+            ];
+        }
+        if (!empty($planBooks['book_1yr']['url']) && preg_match('/\.pdf(\?.*)?$/i', $planBooks['book_1yr']['url'])) {
+            $b1 = $planBooks['book_1yr'];
+            $books[] = [
+                'id'         => 'book_1yr',
+                'title'      => ($b1['title'] ?? 'แผนปฏิบัติราชการประจำปี') . (!empty($b1['period']) ? ' (' . $b1['period'] . ')' : ''),
+                'category'   => 'แผนปฏิบัติราชการประจำปี',
+                'year'       => $b1['period'] ?? '2570',
+                'pages'      => '',
+                'file_size'  => '',
+                'theme'      => 'royal',
+                'ebook_url'  => base_url('ebook/view?book=1yr&back=' . urlencode(base_url('ebooks'))),
+                'pdf_url'    => preg_match('#^https?://#i', $b1['url']) ? $b1['url'] : base_url($b1['url']),
+                'is_featured'=> true,
+            ];
+        }
+
+        // 2. เอกสารแผนพัฒนาฯ จาก /strategy (เรียงตามปีงบประมาณมากไปน้อย)
+        usort($docs, function ($a, $b) {
+            preg_match('/(\d{4})/', (string)($a['year'] ?? ''), $ma);
+            preg_match('/(\d{4})/', (string)($b['year'] ?? ''), $mb);
+            return ((int)($mb[1] ?? 0)) <=> ((int)($ma[1] ?? 0));
+        });
+
+        $themes = ['emerald', 'royal', 'amber', 'teal', 'indigo', 'rose'];
+        foreach ($docs as $idx => $d) {
+            $fileUrl = trim((string)($d['file_url'] ?? ''));
+            if ($fileUrl === '') continue;
+            $cat = $d['category'] ?? 'แผนพัฒนาจังหวัด';
+            $theme = $themes[$idx % count($themes)];
+            if (mb_stripos($cat, '5 ปี') !== false) $theme = 'emerald';
+            elseif (mb_stripos($cat, 'ประจำปี') !== false) $theme = 'royal';
+            elseif (mb_stripos($cat, 'รายงาน') !== false || mb_stripos($cat, 'M&E') !== false) $theme = 'amber';
+            elseif (mb_stripos($cat, 'คู่มือ') !== false) $theme = 'teal';
+
+            $books[] = [
+                'id'         => $d['id'] ?? ('doc_' . $idx),
+                'title'      => $d['title'] ?? 'เอกสารยุทธศาสตร์',
+                'category'   => $cat,
+                'year'       => $d['year'] ?? '',
+                'pages'      => $d['pages'] ?? '',
+                'file_size'  => $d['file_size'] ?? '',
+                'theme'      => $theme,
+                'ebook_url'  => base_url('ebook/view?doc=' . urlencode((string)($d['id'] ?? '')) . '&back=' . urlencode(base_url('ebooks'))),
+                'pdf_url'    => preg_match('#^https?://#i', $fileUrl) ? $fileUrl : base_url($fileUrl),
+                'is_featured'=> !empty($d['is_featured']),
+            ];
+        }
+
+        // 3. รายงานงบประมาณจังหวัดพัทลุงจากสำนักงบประมาณ (พ.ศ. 2570 & 2569)
+        $bbItems = [
+            ['yr' => '2570', 'short' => '70', 'label' => 'สรุปงบประมาณจังหวัดพัทลุง 5 งบรายจ่าย พ.ศ. 2570', 'path' => 'PDF/5bud/bis60rchang1007_04930000.pdf', 'theme' => 'indigo'],
+            ['yr' => '2570', 'short' => '70', 'label' => 'สรุปงบประมาณจังหวัดพัทลุง ตามแผนงาน พ.ศ. 2570', 'path' => 'PDF/plan/bis61rchang2001_04930000.pdf', 'theme' => 'amber'],
+            ['yr' => '2569', 'short' => '69', 'label' => 'สรุปงบประมาณจังหวัดพัทลุง 5 งบรายจ่าย พ.ศ. 2569', 'path' => 'PDF/5bud/bis60rchang1007_04930000.pdf', 'theme' => 'teal'],
+            ['yr' => '2569', 'short' => '69', 'label' => 'รายการจัดสรรงบประมาณรายรายการ พ.ศ. 2569', 'path' => 'PDF/item/04930000.pdf', 'theme' => 'rose'],
+        ];
+        foreach ($bbItems as $bi) {
+            $pdfUrl = "https://www.bb.go.th/web/budget/province/province_bud{$bi['short']}/{$bi['path']}";
+            $books[] = [
+                'id'         => 'bb_' . $bi['short'] . '_' . md5($bi['path']),
+                'title'      => $bi['label'],
+                'category'   => 'งบประมาณจังหวัด',
+                'year'       => $bi['yr'],
+                'pages'      => '',
+                'file_size'  => 'สำนักงบประมาณ',
+                'theme'      => $bi['theme'],
+                'ebook_url'  => base_url('ebook/view') . '?' . http_build_query([
+                    'file'  => $pdfUrl,
+                    'title' => $bi['label'],
+                    'back'  => base_url('ebooks'),
+                ]),
+                'pdf_url'    => $pdfUrl,
+                'is_featured'=> false,
+            ];
+        }
+
+        // รวบรวมหมวดหมู่ไม่ซ้ำ
+        $categories = array_values(array_unique(array_filter(array_column($books, 'category'))));
+
+        return view('ebook/bookshelf', [
+            'title'            => 'ห้องสมุด E-Book จังหวัดพัทลุง | ชั้นหนังสือดิจิทัลพลิกหน้า 3D',
+            'meta_description' => 'ชั้นหนังสืออิเล็กทรอนิกส์ (E-Book) จังหวัดพัทลุง เปิดอ่านแผนพัฒนาจังหวัด แผนปฏิบัติราชการประจำปี และรายงานงบประมาณแบบพลิกหน้า 3D',
+            'books'            => $books,
+            'categories'       => $categories,
+        ]);
+    }
+
+    /**
      * หน้าตัวอ่าน E-Book แบบพลิกหน้าได้ (Flipbook Viewer)
      * รองรับ:
      *   /ebook/view?book=5yr หรือ book=1yr (สมุดแผน 3D หน้าแรก)

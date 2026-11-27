@@ -36,6 +36,7 @@ $routes->get('page/(:any)', 'Page::view/$1');
 
 // News & PR Module Routes
 $routes->get('news', 'News::index');
+$routes->get('news/datatables', 'News::datatables');
 $routes->get('news/detail/(:any)', 'News::detail/$1');
 $routes->get('news/get-json/(:any)', 'News::getJson/$1');
 $routes->post('news/save', 'News::save');
@@ -176,6 +177,7 @@ $routes->group('api', ['namespace' => 'App\Controllers\Api'], static function($r
  * --------------------------------------------------------------------
  */
 $routes->get('news', 'News::index');
+$routes->get('news/datatables', 'News::datatables');
 $routes->get('news/detail/(:any)', 'News::detail/$1');
 $routes->get('news/get-json/(:any)', 'News::getJson/$1');
 $routes->post('news/save', 'News::save');
@@ -403,7 +405,9 @@ $routes->post('strategy/categories/delete/(:any)', 'Strategy::deleteCategory/$1'
 $routes->post('strategy/document/save-inline', 'Strategy::saveDocumentInline');
 $routes->post('strategy/document/delete-inline/(:any)', 'Strategy::deleteDocumentInline/$1');
 
-// Interactive 3D E-Book Flipbook Viewer
+// Interactive 3D E-Book Flipbook Viewer & Bookshelf
+$routes->get('ebooks', 'Ebook::index');
+$routes->get('ebook', 'Ebook::index');
 $routes->get('ebook/view', 'Ebook::view');
 $routes->get('ebook/stream', 'Ebook::stream');
 
