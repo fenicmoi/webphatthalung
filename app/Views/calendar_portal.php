@@ -11,8 +11,10 @@ $allEvents = $events ?? [];
 /* Custom Interactive Calendar Styling */
 .calendar-grid {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
+    grid-template-columns: repeat(7, minmax(0, 1fr));
     gap: 1px;
+    width: 100%;
+    table-layout: fixed;
     background: rgba(255, 255, 255, 0.08);
     border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 16px;
@@ -27,11 +29,15 @@ $allEvents = $events ?? [];
     text-align: center;
     padding: 14px 8px;
     font-size: 1.05rem;
+    min-width: 0;
+    overflow: hidden;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .calendar-cell {
     min-height: 135px;
+    min-width: 0;
+    overflow: hidden;
     background: rgba(15, 23, 42, 0.6);
     padding: 8px;
     position: relative;
@@ -72,6 +78,9 @@ $allEvents = $events ?? [];
 
 .event-badge-pill {
     display: block;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
     background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.35));
     border: 1px solid rgba(16, 185, 129, 0.5);
     color: #a7f3d0;
