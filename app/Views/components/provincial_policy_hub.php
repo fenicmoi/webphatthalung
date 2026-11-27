@@ -100,31 +100,6 @@ $book1yrUrl = !empty($rawBook1yrUrl)
 ?>
 
 <section class="provincial-policy-section mb-5">
-    
-    <!-- 0. PROVINCIAL MOTTO & CULTURAL IDENTITY BANNER (ส่วนแสดงคำขวัญและอัตลักษณ์ประจำจังหวัดพัทลุง) -->
-    <div class="provincial-motto-banner mb-3 rounded-4 overflow-hidden position-relative shadow-xs">
-        <div class="motto-background-layer">
-            <img src="<?= base_url('assets/images/banners/phatthalung_identity_bg.jpg') ?>" alt="อัตลักษณ์จังหวัดพัทลุง เขาอกทะลุ โนราห์ หนังตะลุง ทะเลน้อย" class="w-100 h-100 object-fit-cover">
-            <div class="motto-gradient-overlay"></div>
-        </div>
-        
-        <div class="motto-content-wrap position-relative z-2 text-center py-4 px-3 w-100">
-            <div class="motto-ornament mb-2">
-                <img src="<?= base_url('assets/images/phatthalung_fabric_emblem.svg') ?>" alt="ลายผ้าอัตลักษณ์ประจำจังหวัดพัทลุง" style="width: 44px; height: 52px; object-fit: contain; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.35)); transition: transform 0.3s ease;" class="hover-lift">
-            </div>
-            
-            <h5 class="motto-heading fw-bold mb-1.5">
-                <i class="fa-solid fa-feather text-success me-1 opacity-75"></i>
-                <span>คำขวัญประจำจังหวัดพัทลุง</span>
-            </h5>
-            
-            <p class="motto-text fw-bold mb-0">
-                “<?= site_text('site_slogan', ($cfg['slogan'] ?? 'เมืองหนังโนราห์ อู่นาข้าว พราวน้ำตก แหล่งนกน้ำ ทะเลสาบงาม เขาอกทะลุ น้ำพุร้อน'), 'คำขวัญประจำจังหวัด', true) ?>”
-            </p>
-        </div>
-        
-        <div class="motto-bottom-border"></div>
-    </div>
 
     <!-- 1. Top Announcement / Vision Bar (แถบประกาศวิสัยทัศน์เมืองพัทลุง) -->
     <div class="gov-vision-announcement-bar mb-3 d-flex flex-wrap align-items-center shadow-xs overflow-hidden">
