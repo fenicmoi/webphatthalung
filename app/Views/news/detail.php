@@ -16,79 +16,93 @@ $rawContent = trim((string)($news['content'] ?? ''));
 $hasMediaInContent = (stripos($rawContent, '<img') !== false || stripos($rawContent, '<iframe') !== false);
 $cleanContent = trim(strip_tags($rawContent));
 $hasContentText = $hasMediaInContent || (!empty($cleanContent) && $cleanContent !== '-' && $cleanContent !== '&nbsp;');
+
+// ดึงข่าวล่าสุดสำหรับ Sticky Sidebar ด้านขวา (ตัดข่าวปัจจุบันออก)
+$sidebarNews = [];
+if (function_exists('get_site_news')) {
+    $allLatest = get_site_news(null, 8, true);
+    $curId = (string)($news['id'] ?? '');
+    foreach ($allLatest as $ln) {
+        if ((string)($ln['id'] ?? '') === $curId) continue;
+        $sidebarNews[] = $ln;
+        if (count($sidebarNews) >= 5) break;
+    }
+}
 ?>
 
-<!-- Article Header & Content Area -->
+<!-- Article Header & Balanced 2-Column Content Area -->
 <div class="container my-4 my-md-5 pt-2">
-    <div class="row justify-content-center">
-        <div class="col-lg-10 col-xl-9">
-            
-            <!-- Breadcrumbs Navigation -->
-            <nav aria-label="breadcrumb" class="mb-3 px-1">
-                <ol class="breadcrumb m-0 d-flex align-items-center" style="font-size: 0.92rem;">
-                    <li class="breadcrumb-item">
-                        <a href="<?= base_url() ?>" class="text-decoration-none fw-semibold text-success d-inline-flex align-items-center gap-1">
-                            <i class="fa-solid fa-house" style="font-size: 0.85rem;"></i>
-                            <span>หน้าหลัก</span>
-                        </a>
-                    </li>
-                    <li class="breadcrumb-item">
-                        <a href="<?= base_url('news') ?>" class="text-decoration-none fw-semibold text-success">
-                            ข่าวสารและประกาศ
-                        </a>
-                    </li>
-                    <li class="breadcrumb-item active text-secondary text-truncate" style="max-width: 320px;" aria-current="page">
-                        <?= esc($news['title'] ?? 'รายละเอียดข่าว') ?>
-                    </li>
-                </ol>
-            </nav>
 
-            <?php // ON-PAGE FRONTEND CMS BANNER FOR LOCAL NEWS (OFFICERS) ?>
-            <?php if ($isOfficer && empty($news['is_prd'])): ?>
-                <div class="p-3.5 rounded-4 mb-4 shadow-sm d-flex flex-wrap align-items-center justify-content-between gap-3" style="background: linear-gradient(135deg, #1e293b, #0f172a); border: 2px solid #38bdf8;">
-                    <div class="d-flex align-items-center gap-3">
-                        <span class="badge bg-warning text-dark fs-6 px-3 py-2"><i class="fa-solid fa-wand-magic-sparkles me-1"></i>On-Page CMS</span>
-                        <div>
-                            <h6 class="text-white fw-bold m-0">คุณกำลังรับชมในสิทธิ์เจ้าหน้าที่ผู้ดูแลระบบ</h6>
-                            <small class="text-info">สามารถคลิกเพื่อแก้ไขเนื้อหา แนบไฟล์ หรือจัดการรูปภาพของบทความนี้ได้ทันทีโดยไม่ต้องเปลี่ยนหน้า</small>
-                        </div>
-                    </div>
-                    <div class="d-flex gap-2">
-                        <button type="button" onclick="NewsStudio.toggleFeatured('<?= $news['id'] ?>')" class="btn <?= !empty($news['is_featured']) ? 'btn-warning text-dark' : 'btn-outline-light' ?> px-3.5 py-2 rounded-pill fw-bold shadow-sm d-flex align-items-center gap-2">
-                            <i class="fa-<?= !empty($news['is_featured']) ? 'solid' : 'regular' ?> fa-star"></i>
-                            <span><?= !empty($news['is_featured']) ? 'หัวข้อเด่นหน้าหลัก' : 'ตั้งเป็นหัวข้อเด่น' ?></span>
-                        </button>
-                        <button type="button" onclick="NewsStudio.open('<?= $news['id'] ?>')" class="btn btn-warning px-4 py-2 rounded-pill fw-bold text-dark shadow-sm hover-scale" style="background: linear-gradient(135deg, #f59e0b, #fbbf24); border: none;">
-                            <i class="fa-solid fa-pen-to-square me-2"></i>แก้ไขบทความนี้ (Edit Article)
-                        </button>
-                        <button type="button" onclick="NewsStudio.deleteNews('<?= $news['id'] ?>')" class="btn btn-outline-danger px-3 py-2 rounded-pill fw-bold">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                    </div>
+    <!-- Breadcrumbs Navigation (Full Width) -->
+    <nav aria-label="breadcrumb" class="mb-3 px-1">
+        <ol class="breadcrumb m-0 d-flex align-items-center" style="font-size: 0.92rem;">
+            <li class="breadcrumb-item">
+                <a href="<?= base_url() ?>" class="text-decoration-none fw-semibold text-success d-inline-flex align-items-center gap-1">
+                    <i class="fa-solid fa-house" style="font-size: 0.85rem;"></i>
+                    <span>หน้าหลัก</span>
+                </a>
+            </li>
+            <li class="breadcrumb-item">
+                <a href="<?= base_url('news') ?>" class="text-decoration-none fw-semibold text-success">
+                    ข่าวสารและประกาศ
+                </a>
+            </li>
+            <li class="breadcrumb-item active text-secondary text-truncate" style="max-width: 480px;" aria-current="page">
+                <?= esc($news['title'] ?? 'รายละเอียดข่าว') ?>
+            </li>
+        </ol>
+    </nav>
+
+    <?php // ON-PAGE FRONTEND CMS BANNER FOR LOCAL NEWS (OFFICERS) — Full Width Row ?>
+    <?php if ($isOfficer && empty($news['is_prd'])): ?>
+        <div class="p-3.5 rounded-4 mb-4 shadow-sm d-flex flex-wrap align-items-center justify-content-between gap-3" style="background: linear-gradient(135deg, #1e293b, #0f172a); border: 2px solid #38bdf8;">
+            <div class="d-flex align-items-center gap-3">
+                <span class="badge bg-warning text-dark fs-6 px-3 py-2"><i class="fa-solid fa-wand-magic-sparkles me-1"></i>On-Page CMS</span>
+                <div>
+                    <h6 class="text-white fw-bold m-0">คุณกำลังรับชมในสิทธิ์เจ้าหน้าที่ผู้ดูแลระบบ</h6>
+                    <small class="text-info">สามารถคลิกเพื่อแก้ไขเนื้อหา แนบไฟล์ หรือจัดการรูปภาพของบทความนี้ได้ทันทีโดยไม่ต้องเปลี่ยนหน้า</small>
                 </div>
-            <?php elseif (!empty($news['is_prd'])): 
-                $sourceTitle = !empty($news['source']) ? $news['source'] : 'สำนักข่าวกรมประชาสัมพันธ์ (NNT)';
-                $btnLabel = (mb_stripos($sourceTitle, 'สปชส') !== false) ? 'เปิดอ่านต้นฉบับ สปชส.พัทลุง' : 'เปิดอ่านต้นฉบับ NNT';
-            ?>
-                <!-- Official PRD Source Alert Banner -->
-                <div class="p-3.5 px-4 rounded-4 mb-4 shadow-xs d-flex flex-wrap align-items-center justify-content-between gap-3 prd-source-banner">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="p-2.5 rounded-circle d-flex align-items-center justify-content-center text-white flex-shrink-0" style="width: 42px; height: 42px; background: #047857;">
-                            <i class="fa-solid fa-bullhorn fs-5"></i>
-                        </div>
-                        <div>
-                            <h6 class="fw-bold m-0 prd-source-title">ข่าวสารเผยแพร่จาก <?= esc($sourceTitle) ?></h6>
-                            <small class="prd-source-sub">ข้อมูลข่าวและภาพถ่ายกิจกรรมอย่างเป็นทางการของพื้นที่จังหวัดพัทลุง</small>
-                        </div>
-                    </div>
-                    <?php if (!empty($news['source_url'])): ?>
-                        <a href="<?= esc($news['source_url']) ?>" target="_blank" class="btn btn-sm btn-success rounded-pill px-4 py-2 fw-bold d-inline-flex align-items-center gap-2 shadow-xs hover-scale" style="background: #047857; border: none; font-size: 0.9rem;">
-                            <span><?= $btnLabel ?></span>
-                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                        </a>
-                    <?php endif; ?>
+            </div>
+            <div class="d-flex flex-wrap gap-2">
+                <button type="button" onclick="NewsStudio.toggleFeatured('<?= $news['id'] ?>')" class="btn <?= !empty($news['is_featured']) ? 'btn-warning text-dark' : 'btn-outline-light' ?> px-3.5 py-2 rounded-pill fw-bold shadow-sm d-flex align-items-center gap-2">
+                    <i class="fa-<?= !empty($news['is_featured']) ? 'solid' : 'regular' ?> fa-star"></i>
+                    <span><?= !empty($news['is_featured']) ? 'หัวข้อเด่นหน้าหลัก' : 'ตั้งเป็นหัวข้อเด่น' ?></span>
+                </button>
+                <button type="button" onclick="NewsStudio.open('<?= $news['id'] ?>')" class="btn btn-warning px-4 py-2 rounded-pill fw-bold text-dark shadow-sm hover-scale" style="background: linear-gradient(135deg, #f59e0b, #fbbf24); border: none;">
+                    <i class="fa-solid fa-pen-to-square me-2"></i>แก้ไขบทความนี้ (Edit Article)
+                </button>
+                <button type="button" onclick="NewsStudio.deleteNews('<?= $news['id'] ?>')" class="btn btn-outline-danger px-3 py-2 rounded-pill fw-bold">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+            </div>
+        </div>
+    <?php elseif (!empty($news['is_prd'])): 
+        $sourceTitle = !empty($news['source']) ? $news['source'] : 'สำนักข่าวกรมประชาสัมพันธ์ (NNT)';
+        $btnLabel = (mb_stripos($sourceTitle, 'สปชส') !== false) ? 'เปิดอ่านต้นฉบับ สปชส.พัทลุง' : 'เปิดอ่านต้นฉบับ NNT';
+    ?>
+        <!-- Official PRD Source Alert Banner -->
+        <div class="p-3.5 px-4 rounded-4 mb-4 shadow-xs d-flex flex-wrap align-items-center justify-content-between gap-3 prd-source-banner">
+            <div class="d-flex align-items-center gap-3">
+                <div class="p-2.5 rounded-circle d-flex align-items-center justify-content-center text-white flex-shrink-0" style="width: 42px; height: 42px; background: #047857;">
+                    <i class="fa-solid fa-bullhorn fs-5"></i>
                 </div>
+                <div>
+                    <h6 class="fw-bold m-0 prd-source-title">ข่าวสารเผยแพร่จาก <?= esc($sourceTitle) ?></h6>
+                    <small class="prd-source-sub">ข้อมูลข่าวและภาพถ่ายกิจกรรมอย่างเป็นทางการของพื้นที่จังหวัดพัทลุง</small>
+                </div>
+            </div>
+            <?php if (!empty($news['source_url'])): ?>
+                <a href="<?= esc($news['source_url']) ?>" target="_blank" class="btn btn-sm btn-success rounded-pill px-4 py-2 fw-bold d-inline-flex align-items-center gap-2 shadow-xs hover-scale" style="background: #047857; border: none; font-size: 0.9rem;">
+                    <span><?= $btnLabel ?></span>
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </a>
             <?php endif; ?>
+        </div>
+    <?php endif; ?>
+
+    <div class="row g-4 align-items-start">
+        <!-- LEFT COLUMN (8/12): Full Article Content -->
+        <div class="col-lg-8">
 
             <!-- Full Article Reading Card -->
             <article class="article-reading-card p-4 p-md-5 rounded-4 shadow-sm">
@@ -302,6 +316,83 @@ $hasContentText = $hasMediaInContent || (!empty($cleanContent) && $cleanContent 
                 </div>
             </article>
         </div>
+
+        <!-- RIGHT COLUMN (4/12): Sticky Sidebar (ข่าวล่าสุด + บริการด่วนจังหวัดพัทลุง) -->
+        <aside class="col-lg-4">
+            <div style="position: sticky; top: 92px;">
+
+                <!-- 1. Latest News Sidebar Card -->
+                <div class="card border-0 rounded-4 shadow-sm p-4 mb-4 article-reading-card">
+                    <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom" style="border-color: rgba(0,0,0,0.06) !important;">
+                        <h6 class="fw-bold m-0 d-flex align-items-center gap-2 text-dark">
+                            <span class="d-inline-flex align-items-center justify-content-center rounded-circle" style="width: 32px; height: 32px; background: #ecfdf5; color: #059669;">
+                                <i class="fa-solid fa-newspaper"></i>
+                            </span>
+                            <span>ข่าวสารล่าสุดจังหวัดพัทลุง</span>
+                        </h6>
+                        <a href="<?= base_url('news') ?>" class="small fw-bold text-success text-decoration-none">ทั้งหมด &rarr;</a>
+                    </div>
+
+                    <?php if (empty($sidebarNews)): ?>
+                        <p class="text-muted small mb-0">ยังไม่มีข่าวสารเพิ่มเติม</p>
+                    <?php else: ?>
+                        <div class="d-flex flex-column gap-3">
+                            <?php foreach ($sidebarNews as $sn):
+                                $snCover = !empty($sn['cover_image'])
+                                    ? ((strpos((string)$sn['cover_image'], 'http') === 0) ? $sn['cover_image'] : base_url($sn['cover_image']))
+                                    : base_url('assets/images/slider/sane_muanglung.png');
+                                $snDate = !empty($sn['created_at']) ? date('d/m/Y', strtotime($sn['created_at'])) : '';
+                            ?>
+                                <a href="<?= base_url('news/' . urlencode((string)$sn['id'])) ?>" class="d-flex align-items-start gap-3 text-decoration-none sidebar-news-item p-2 rounded-3">
+                                    <img src="<?= esc($snCover) ?>" alt="<?= esc($sn['title'] ?? '') ?>" class="rounded-3 flex-shrink-0" style="width: 78px; height: 60px; object-fit: cover; border: 1px solid rgba(0,0,0,0.06);" loading="lazy">
+                                    <div class="min-w-0 flex-grow-1">
+                                        <div class="fw-bold text-dark sidebar-news-title mb-1" style="font-size: 0.88rem; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                                            <?= esc($sn['title'] ?? '') ?>
+                                        </div>
+                                        <div class="text-muted" style="font-size: 0.74rem;">
+                                            <i class="fa-regular fa-calendar me-1 text-success"></i><?= esc($snDate) ?>
+                                        </div>
+                                    </div>
+                                </a>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
+                </div>
+
+                <!-- 2. Quick Citizen Services Card -->
+                <div class="card border-0 rounded-4 shadow-sm p-4 article-reading-card">
+                    <h6 class="fw-bold mb-3 pb-2 border-bottom d-flex align-items-center gap-2 text-dark" style="border-color: rgba(0,0,0,0.06) !important;">
+                        <span class="d-inline-flex align-items-center justify-content-center rounded-circle" style="width: 32px; height: 32px; background: #eff6ff; color: #2563eb;">
+                            <i class="fa-solid fa-compass"></i>
+                        </span>
+                        <span>บริการสำคัญจังหวัดพัทลุง</span>
+                    </h6>
+                    <div class="d-flex flex-column gap-2">
+                        <a href="<?= base_url('strategy') ?>" class="btn btn-light btn-sm rounded-3 text-start px-3 py-2 fw-semibold d-flex align-items-center justify-content-between sidebar-quick-link">
+                            <span><i class="fa-solid fa-book-open text-success me-2"></i>ศูนย์เอกสารแผนพัฒนาจังหวัด</span>
+                            <i class="fa-solid fa-chevron-right small text-muted"></i>
+                        </a>
+                        <a href="<?= base_url('calendar') ?>" class="btn btn-light btn-sm rounded-3 text-start px-3 py-2 fw-semibold d-flex align-items-center justify-content-between sidebar-quick-link">
+                            <span><i class="fa-solid fa-calendar-days text-primary me-2"></i>ปฏิทินกิจกรรมจังหวัด</span>
+                            <i class="fa-solid fa-chevron-right small text-muted"></i>
+                        </a>
+                        <a href="<?= base_url('budget') ?>" class="btn btn-light btn-sm rounded-3 text-start px-3 py-2 fw-semibold d-flex align-items-center justify-content-between sidebar-quick-link">
+                            <span><i class="fa-solid fa-coins text-warning me-2"></i>สรุปงบประมาณจังหวัด</span>
+                            <i class="fa-solid fa-chevron-right small text-muted"></i>
+                        </a>
+                        <a href="<?= base_url('procurement') ?>" class="btn btn-light btn-sm rounded-3 text-start px-3 py-2 fw-semibold d-flex align-items-center justify-content-between sidebar-quick-link">
+                            <span><i class="fa-solid fa-gavel text-info me-2"></i>จัดซื้อจัดจ้างภาครัฐ (e-GP)</span>
+                            <i class="fa-solid fa-chevron-right small text-muted"></i>
+                        </a>
+                        <a href="<?= base_url('damrongtham') ?>" class="btn btn-light btn-sm rounded-3 text-start px-3 py-2 fw-semibold d-flex align-items-center justify-content-between sidebar-quick-link">
+                            <span><i class="fa-solid fa-headset text-danger me-2"></i>ศูนย์ดำรงธรรม 1567</span>
+                            <i class="fa-solid fa-chevron-right small text-muted"></i>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </aside>
     </div>
 </div>
 
@@ -415,6 +506,29 @@ function openNewsGallery(idx) {
     margin-top: 1.8rem;
     margin-bottom: 1rem;
     font-weight: 700;
+}
+
+/* Sticky Sidebar Styles */
+.sidebar-news-item {
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+.sidebar-news-item:hover {
+    background: #f0fdf4;
+    transform: translateX(3px);
+}
+.sidebar-news-item:hover .sidebar-news-title {
+    color: #047857 !important;
+}
+.sidebar-quick-link {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    color: #1e293b;
+    transition: all 0.18s ease;
+}
+.sidebar-quick-link:hover {
+    background: #ecfdf5;
+    border-color: #a7f3d0;
+    color: #065f46;
 }
 
 /* Dark Mode Overrides */
