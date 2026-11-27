@@ -48,6 +48,7 @@ $protectedLiveJson = [
     'writable/service_banners.json',
     'writable/site_strategy.json',
     'writable/strategy_categories.json',
+    'writable/site_ebooks.json',
 ];
 if (!empty($statusLines)) {
     foreach ($statusLines as $line) {

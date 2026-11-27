@@ -408,6 +408,8 @@ $routes->post('strategy/document/delete-inline/(:any)', 'Strategy::deleteDocumen
 // Interactive 3D E-Book Flipbook Viewer & Bookshelf
 $routes->get('ebooks', 'Ebook::index');
 $routes->get('ebook', 'Ebook::index');
+$routes->post('ebooks/save', 'Ebook::save');
+$routes->post('ebooks/delete/(:any)', 'Ebook::delete/$1');
 $routes->get('ebook/view', 'Ebook::view');
 $routes->get('ebook/stream', 'Ebook::stream');
 

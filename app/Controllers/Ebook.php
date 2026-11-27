@@ -6,6 +6,31 @@ use CodeIgniter\Controller;
 
 class Ebook extends Controller
 {
+    private function getCustomEbooksPath(): string
+    {
+        $writableDir = defined('WRITABLE') ? rtrim(\WRITABLE, '/\\') : realpath(__DIR__ . '/../../writable');
+        if (!is_dir($writableDir)) {
+            @mkdir($writableDir, 0775, true);
+        }
+        return $writableDir . DIRECTORY_SEPARATOR . 'site_ebooks.json';
+    }
+
+    private function loadCustomEbooks(): array
+    {
+        $path = $this->getCustomEbooksPath();
+        if (!is_file($path)) {
+            return [];
+        }
+        $data = json_decode((string) @file_get_contents($path), true);
+        return is_array($data) ? $data : [];
+    }
+
+    private function saveCustomEbooks(array $list): bool
+    {
+        $path = $this->getCustomEbooksPath();
+        return @file_put_contents($path, json_encode(array_values($list), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)) !== false;
+    }
+
     /**
      * หน้าห้องสมุดชั้นหนังสือ E-Book จังหวัดพัทลุง (/ebooks)
      */
@@ -15,8 +40,44 @@ class Ebook extends Controller
         $strategy  = get_site_strategy();
         $planBooks = $strategy['plan_books'] ?? [];
         $docs      = $strategy['documents'] ?? [];
+        $custom    = $this->loadCustomEbooks();
 
         $books = [];
+
+        // 0. หนังสือ E-Book ที่เจ้าหน้าที่เพิ่มเองในชั้นหนังสือ (แสดงบนสุด + แก้ไข/ลบได้)
+        usort($custom, function ($a, $b) {
+            return strcmp((string)($b['created_at'] ?? ''), (string)($a['created_at'] ?? ''));
+        });
+        foreach ($custom as $cb) {
+            $fileUrl = trim((string)($cb['file_url'] ?? ''));
+            if ($fileUrl === '') continue;
+            $pdfUrl = preg_match('#^https?://#i', $fileUrl) ? $fileUrl : base_url(ltrim($fileUrl, '/'));
+            $coverRaw = trim((string)($cb['cover_image'] ?? ''));
+            $coverUrl = $coverRaw !== ''
+                ? (preg_match('#^https?://#i', $coverRaw) ? $coverRaw : base_url(ltrim($coverRaw, '/')))
+                : '';
+
+            $books[] = [
+                'id'          => $cb['id'] ?? '',
+                'title'       => $cb['title'] ?? 'หนังสือ E-Book',
+                'category'    => $cb['category'] ?? 'หนังสืออิเล็กทรอนิกส์',
+                'year'        => $cb['year'] ?? '',
+                'pages'       => $cb['pages'] ?? '',
+                'file_size'   => $cb['file_size'] ?? '',
+                'file_url'    => $fileUrl,
+                'theme'       => $cb['theme'] ?? 'emerald',
+                'cover_image' => $coverUrl,
+                'cover_raw'   => $coverRaw,
+                'ebook_url'   => base_url('ebook/view') . '?' . http_build_query([
+                    'file'  => $fileUrl,
+                    'title' => $cb['title'] ?? 'หนังสือ E-Book',
+                    'back'  => base_url('ebooks'),
+                ]),
+                'pdf_url'     => $pdfUrl,
+                'is_featured' => !empty($cb['is_featured']),
+                'is_custom'   => true,
+            ];
+        }
 
         // 1. สมุดแผน 3D หลักหน้าแรก (5 ปี & 1 ปี)
         if (!empty($planBooks['book_5yr']['url']) && preg_match('/\.pdf(\?.*)?$/i', $planBooks['book_5yr']['url'])) {
@@ -117,6 +178,152 @@ class Ebook extends Controller
             'meta_description' => 'ชั้นหนังสืออิเล็กทรอนิกส์ (E-Book) จังหวัดพัทลุง เปิดอ่านแผนพัฒนาจังหวัด แผนปฏิบัติราชการประจำปี และรายงานงบประมาณแบบพลิกหน้า 3D',
             'books'            => $books,
             'categories'       => $categories,
+        ]);
+    }
+
+    /**
+     * บันทึก (เพิ่ม/แก้ไข) หนังสือ E-Book พร้อมอัปโหลดไฟล์ PDF และภาพหน้าปก (ถ้าไม่มีปก ระบบจะสร้างปก 3D ให้อัตโนมัติ)
+     */
+    public function save()
+    {
+        if (!session()->get('isLoggedIn')) {
+            return $this->response->setStatusCode(401)->setJSON(['status' => 'error', 'message' => 'กรุณาเข้าสู่ระบบเจ้าหน้าที่ก่อนดำเนินการ']);
+        }
+
+        $id          = trim((string) $this->request->getPost('id'));
+        $title       = trim((string) $this->request->getPost('title'));
+        $category    = trim((string) $this->request->getPost('category')) ?: 'หนังสืออิเล็กทรอนิกส์';
+        $year        = trim((string) $this->request->getPost('year'));
+        $pages       = trim((string) $this->request->getPost('pages'));
+        $fileUrl     = trim((string) $this->request->getPost('file_url'));
+        $theme       = trim((string) $this->request->getPost('theme')) ?: 'emerald';
+        $removeCover = !empty($this->request->getPost('remove_cover'));
+
+        if ($title === '') {
+            return $this->response->setJSON(['status' => 'error', 'message' => 'กรุณาระบุชื่อหนังสือ E-Book']);
+        }
+
+        $allowedThemes = ['emerald', 'royal', 'amber', 'teal', 'indigo', 'rose'];
+        if (!in_array($theme, $allowedThemes, true)) {
+            $theme = 'emerald';
+        }
+
+        $list = $this->loadCustomEbooks();
+        $existingIdx = -1;
+        if ($id !== '') {
+            foreach ($list as $idx => $item) {
+                if (($item['id'] ?? '') === $id) {
+                    $existingIdx = $idx;
+                    break;
+                }
+            }
+        }
+
+        $fileSize   = ($existingIdx >= 0) ? ($list[$existingIdx]['file_size'] ?? '') : '';
+        $coverImage = ($existingIdx >= 0 && !$removeCover) ? ($list[$existingIdx]['cover_image'] ?? '') : '';
+
+        // 1. อัปโหลดไฟล์ PDF (ถ้ามี)
+        $pdfFile = $this->request->getFile('pdf_file');
+        if ($pdfFile && $pdfFile->isValid() && !$pdfFile->hasMoved()) {
+            $ext = strtolower($pdfFile->getClientExtension());
+            if ($ext !== 'pdf') {
+                return $this->response->setJSON(['status' => 'error', 'message' => 'รองรับเฉพาะไฟล์นามสกุล .pdf เท่านั้น']);
+            }
+            $uploadDir = FCPATH . 'uploads' . DIRECTORY_SEPARATOR . 'ebooks';
+            if (!is_dir($uploadDir)) {
+                @mkdir($uploadDir, 0775, true);
+            }
+            $newName = 'ebook_' . time() . '_' . bin2hex(random_bytes(4)) . '.pdf';
+            $bytes = $pdfFile->getSize();
+            $pdfFile->move($uploadDir, $newName);
+            $fileUrl = 'uploads/ebooks/' . $newName;
+            $fileSize = ($bytes >= 1048576) ? round($bytes / 1048576, 1) . ' MB' : round($bytes / 1024) . ' KB';
+        }
+
+        if ($fileUrl === '' && $existingIdx >= 0) {
+            $fileUrl = $list[$existingIdx]['file_url'] ?? '';
+        }
+        if ($fileUrl === '') {
+            return $this->response->setJSON(['status' => 'error', 'message' => 'กรุณาอัปโหลดไฟล์ PDF หรือระบุ URL ไฟล์ PDF']);
+        }
+
+        // 2. อัปโหลดภาพหน้าปก (ถ้ามี — ถ้าไม่มีระบบจะสร้างปก 3D ให้อัตโนมัติ)
+        $coverFile = $this->request->getFile('cover_file');
+        if ($coverFile && $coverFile->isValid() && !$coverFile->hasMoved()) {
+            $cExt = strtolower($coverFile->getClientExtension());
+            if (!in_array($cExt, ['jpg', 'jpeg', 'png', 'webp'], true)) {
+                return $this->response->setJSON(['status' => 'error', 'message' => 'ภาพหน้าปกรองรับเฉพาะไฟล์ .jpg, .png, .webp เท่านั้น']);
+            }
+            $coverDir = FCPATH . 'uploads' . DIRECTORY_SEPARATOR . 'ebooks' . DIRECTORY_SEPARATOR . 'covers';
+            if (!is_dir($coverDir)) {
+                @mkdir($coverDir, 0775, true);
+            }
+            $newCoverName = 'cover_' . time() . '_' . bin2hex(random_bytes(4)) . '.' . $cExt;
+            $coverFile->move($coverDir, $newCoverName);
+            $coverImage = 'uploads/ebooks/covers/' . $newCoverName;
+        }
+
+        $now = date('Y-m-d H:i:s');
+        $entry = [
+            'id'          => ($existingIdx >= 0) ? $id : ('eb_' . time() . '_' . mt_rand(100, 999)),
+            'title'       => $title,
+            'category'    => $category,
+            'year'        => $year,
+            'pages'       => $pages,
+            'file_url'    => $fileUrl,
+            'file_size'   => $fileSize,
+            'theme'       => $theme,
+            'cover_image' => $coverImage,
+            'created_at'  => ($existingIdx >= 0) ? ($list[$existingIdx]['created_at'] ?? $now) : $now,
+            'updated_at'  => $now,
+        ];
+
+        if ($existingIdx >= 0) {
+            $list[$existingIdx] = $entry;
+        } else {
+            array_unshift($list, $entry);
+        }
+
+        if (!$this->saveCustomEbooks($list)) {
+            return $this->response->setJSON(['status' => 'error', 'message' => 'ไม่สามารถบันทึกไฟล์ข้อมูล E-Book ได้']);
+        }
+
+        return $this->response->setJSON([
+            'status'  => 'success',
+            'message' => ($existingIdx >= 0 ? 'อัปเดตหนังสือ E-Book "' : 'เพิ่มหนังสือ E-Book "') . $title . '" เรียบร้อยแล้ว!',
+            'data'    => $entry,
+        ]);
+    }
+
+    /**
+     * ลบหนังสือ E-Book ที่เพิ่มเอง
+     */
+    public function delete($id = null)
+    {
+        if (!session()->get('isLoggedIn')) {
+            return $this->response->setStatusCode(401)->setJSON(['status' => 'error', 'message' => 'กรุณาเข้าสู่ระบบเจ้าหน้าที่ก่อนดำเนินการ']);
+        }
+        $id = trim((string) $id);
+        if ($id === '') {
+            return $this->response->setJSON(['status' => 'error', 'message' => 'ไม่พบรหัสหนังสือ']);
+        }
+
+        $list = $this->loadCustomEbooks();
+        $filtered = [];
+        $deletedTitle = '';
+        foreach ($list as $item) {
+            if (($item['id'] ?? '') === $id) {
+                $deletedTitle = $item['title'] ?? '';
+            } else {
+                $filtered[] = $item;
+            }
+        }
+
+        $this->saveCustomEbooks($filtered);
+
+        return $this->response->setJSON([
+            'status'  => 'success',
+            'message' => 'ลบหนังสือ "' . $deletedTitle . '" ออกจากชั้นหนังสือเรียบร้อยแล้ว',
         ]);
     }
 
