@@ -1,0 +1,271 @@
+/**
+ * ============================================================================
+ * Phatthalung Portal - Switchable Soft & Pastel Themes (Non-Destructive Layer)
+ * โหมดสลับธีม 3 แบบ: Classic (เดิม) | Soft Nature Mint | Soft Pastel Sky
+ * แยกไฟล์อิสระ ไม่ทับ main.css สามารถย้อนกลับเป็นแบบเดิมได้ 100% ใน 1 คลิก
+ * ============================================================================
+ */
+
+/* ==================== THEME 1: SOFT NATURE MINT (เขียวมิ้นท์ • ครีม • ทองอ่อน) ==================== */
+html[data-soft-theme="mint"] {
+    --soft-bg: linear-gradient(180deg, #f3faf6 0%, #faf9f4 55%, #f2f9f5 100%);
+    --soft-surface: #ffffff;
+    --soft-border: rgba(16, 185, 129, 0.16);
+    --soft-shadow: 0 12px 32px rgba(16, 185, 129, 0.08), 0 2px 8px rgba(15, 23, 42, 0.03);
+    --soft-shadow-hover: 0 18px 38px rgba(16, 185, 129, 0.14), 0 4px 12px rgba(15, 23, 42, 0.05);
+    --soft-accent: #10b981;
+    --soft-accent-soft: #ecfdf5;
+    --soft-radius: 26px;
+}
+
+html[data-soft-theme="mint"] body {
+    background: var(--soft-bg) !important;
+    background-attachment: fixed !important;
+    font-family: 'Prompt', 'Sarabun', sans-serif !important;
+    color: #1f332a;
+}
+
+html[data-soft-theme="mint"] .navbar,
+html[data-soft-theme="mint"] .main-navbar,
+html[data-soft-theme="mint"] header.sticky-top {
+    background: linear-gradient(135deg, rgba(16, 120, 88, 0.94) 0%, rgba(20, 145, 108, 0.94) 100%) !important;
+    backdrop-filter: blur(14px) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.22) !important;
+    box-shadow: 0 8px 28px rgba(6, 95, 70, 0.14) !important;
+}
+
+html[data-soft-theme="mint"] .card,
+html[data-soft-theme="mint"] .gov-section-card,
+html[data-soft-theme="mint"] .provincial-hub-container,
+html[data-soft-theme="mint"] .governor-vision-card {
+    border-radius: var(--soft-radius) !important;
+    border: 1px solid var(--soft-border) !important;
+    box-shadow: var(--soft-shadow) !important;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease !important;
+}
+
+html[data-soft-theme="mint"] .provincial-hub-container {
+    background: linear-gradient(145deg, #ffffff 0%, #f4fbf7 100%) !important;
+}
+
+html[data-soft-theme="mint"] .gov-news-card,
+html[data-soft-theme="mint"] .gov-visual-event-card,
+html[data-soft-theme="mint"] .budget-report-card,
+html[data-soft-theme="mint"] .doc-list-row {
+    border-radius: 22px !important;
+    transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.28s ease !important;
+}
+
+html[data-soft-theme="mint"] .gov-news-card:hover,
+html[data-soft-theme="mint"] .gov-visual-event-card:hover {
+    transform: translateY(-5px) !important;
+    box-shadow: var(--soft-shadow-hover) !important;
+}
+
+html[data-soft-theme="mint"] .btn {
+    border-radius: 999px !important;
+    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+html[data-soft-theme="mint"] .btn:hover {
+    transform: translateY(-2px);
+}
+
+html[data-soft-theme="mint"] .badge {
+    border-radius: 999px !important;
+    font-weight: 600;
+}
+
+html[data-soft-theme="mint"] footer {
+    background: linear-gradient(135deg, #0c3b2e 0%, #145340 60%, #19644e 100%) !important;
+    border-top-left-radius: 32px;
+    border-top-right-radius: 32px;
+}
+
+
+/* ==================== THEME 2: SOFT PASTEL SKY (ฟ้าพาสเทล • ขาวนวล • พีชอ่อน) ==================== */
+html[data-soft-theme="sky"] {
+    --soft-bg: linear-gradient(180deg, #f2f8ff 0%, #fff8f6 52%, #f4f7ff 100%);
+    --soft-surface: #ffffff;
+    --soft-border: rgba(56, 189, 248, 0.22);
+    --soft-shadow: 0 12px 32px rgba(56, 189, 248, 0.1), 0 2px 8px rgba(99, 102, 241, 0.04);
+    --soft-shadow-hover: 0 18px 40px rgba(56, 189, 248, 0.18), 0 4px 12px rgba(244, 114, 182, 0.08);
+    --soft-radius: 28px;
+}
+
+html[data-soft-theme="sky"] body {
+    background: var(--soft-bg) !important;
+    background-attachment: fixed !important;
+    font-family: 'Prompt', 'Sarabun', sans-serif !important;
+    color: #24324a;
+}
+
+html[data-soft-theme="sky"] .navbar,
+html[data-soft-theme="sky"] .main-navbar,
+html[data-soft-theme="sky"] header.sticky-top {
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.92) 0%, rgba(14, 165, 233, 0.92) 60%, rgba(99, 102, 241, 0.9) 100%) !important;
+    backdrop-filter: blur(16px) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.28) !important;
+    box-shadow: 0 10px 30px rgba(14, 165, 233, 0.18) !important;
+}
+
+html[data-soft-theme="sky"] .card,
+html[data-soft-theme="sky"] .gov-section-card,
+html[data-soft-theme="sky"] .provincial-hub-container,
+html[data-soft-theme="sky"] .governor-vision-card {
+    border-radius: var(--soft-radius) !important;
+    border: 1px solid var(--soft-border) !important;
+    box-shadow: var(--soft-shadow) !important;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease !important;
+}
+
+html[data-soft-theme="sky"] .provincial-hub-container {
+    background: linear-gradient(145deg, #ffffff 0%, #f5faff 55%, #fff7f5 100%) !important;
+}
+
+html[data-soft-theme="sky"] .gov-news-card,
+html[data-soft-theme="sky"] .gov-visual-event-card,
+html[data-soft-theme="sky"] .budget-report-card,
+html[data-soft-theme="sky"] .doc-list-row {
+    border-radius: 24px !important;
+    transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.28s ease !important;
+}
+
+html[data-soft-theme="sky"] .gov-news-card:hover,
+html[data-soft-theme="sky"] .gov-visual-event-card:hover {
+    transform: translateY(-5px) scale(1.008) !important;
+    box-shadow: var(--soft-shadow-hover) !important;
+}
+
+html[data-soft-theme="sky"] .btn {
+    border-radius: 999px !important;
+    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+html[data-soft-theme="sky"] .btn:hover {
+    transform: translateY(-2px);
+}
+
+html[data-soft-theme="sky"] .badge {
+    border-radius: 999px !important;
+}
+
+html[data-soft-theme="sky"] footer {
+    background: linear-gradient(135deg, #1e3a8a 0%, #0369a1 55%, #4338ca 100%) !important;
+    border-top-left-radius: 34px;
+    border-top-right-radius: 34px;
+}
+
+
+/* ==================== FLOATING SOFT THEME SWITCHER WIDGET (มุมซ้ายล่าง) ==================== */
+.soft-theme-dock {
+    position: fixed;
+    left: 18px;
+    bottom: 20px;
+    z-index: 1045;
+    font-family: 'Prompt', 'Sarabun', sans-serif;
+}
+
+.soft-theme-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 15px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    color: #0f172a;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.16);
+    transition: all 0.22s ease;
+}
+.soft-theme-toggle-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.22);
+}
+
+.soft-theme-panel {
+    position: absolute;
+    left: 0;
+    bottom: 52px;
+    width: 245px;
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(15, 23, 42, 0.1);
+    border-radius: 20px;
+    padding: 12px;
+    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.2);
+    display: none;
+    animation: softThemePop 0.2s ease-out;
+}
+.soft-theme-panel.open {
+    display: block;
+}
+@keyframes softThemePop {
+    from { opacity: 0; transform: translateY(8px) scale(0.96); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.soft-theme-panel-title {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #475569;
+    margin-bottom: 8px;
+    padding: 0 4px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.soft-theme-option {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 10px;
+    border-radius: 14px;
+    border: 1.5px solid transparent;
+    background: transparent;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    margin-bottom: 5px;
+    color: #1e293b;
+}
+.soft-theme-option:last-child { margin-bottom: 0; }
+.soft-theme-option:hover {
+    background: #f1f5f9;
+}
+.soft-theme-option.active {
+    background: #ecfdf5;
+    border-color: #10b981;
+    color: #065f46;
+}
+
+.soft-swatch {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    border: 2px solid #ffffff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+.soft-swatch-classic { background: linear-gradient(135deg, #064e3b 50%, #f8fafc 50%); }
+.soft-swatch-mint    { background: linear-gradient(135deg, #34d399 0%, #fef3c7 100%); }
+.soft-swatch-sky     { background: linear-gradient(135deg, #38bdf8 0%, #fbcfe8 100%); }
+
+@media (max-width: 768px) {
+    .soft-theme-dock {
+        left: 12px;
+        bottom: 14px;
+    }
+    .soft-theme-toggle-btn span.lbl {
+        display: none;
+    }
+    .soft-theme-toggle-btn {
+        padding: 10px 12px;
+    }
+}

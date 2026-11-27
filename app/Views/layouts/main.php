@@ -47,6 +47,18 @@
     
     <!-- Custom Modern Stylesheet (Minified & Cache Busted) -->
     <link rel="stylesheet" href="<?= function_exists('asset_min_url') ? asset_min_url('assets/css/main.css') : base_url('assets/css/main.css?v=' . time()) ?>">
+    <!-- Switchable Soft Pastel Themes (Classic / Mint / Sky) -->
+    <link rel="stylesheet" href="<?= base_url('assets/css/soft-themes.css?v=' . (@filemtime(FCPATH . 'assets/css/soft-themes.css') ?: time())) ?>">
+    <script>
+    (function(){
+        try {
+            var st = localStorage.getItem('ptl_soft_theme');
+            if (st === 'mint' || st === 'sky') {
+                document.documentElement.setAttribute('data-soft-theme', st);
+            }
+        } catch(e) {}
+    })();
+    </script>
     
     <?php 
     ob_start();
@@ -756,6 +768,82 @@
                 document.body.appendChild(modalEl);
             }
         });
+    });
+    </script>
+
+    <!-- Floating Soft Theme Switcher (ทดลองสลับธีม Classic / Soft Mint / Soft Sky) -->
+    <div class="soft-theme-dock" id="softThemeDock">
+        <div class="soft-theme-panel" id="softThemePanel">
+            <div class="soft-theme-panel-title">
+                <span><i class="fa-solid fa-palette text-success me-1"></i> เลือกสไตล์หน้าเว็บ</span>
+                <button type="button" onclick="SoftThemeSwitcher.toggle(false)" style="background:none;border:none;color:#94a3b8;cursor:pointer;font-size:1rem;line-height:1;">&times;</button>
+            </div>
+            <button type="button" class="soft-theme-option" data-mode="classic" onclick="SoftThemeSwitcher.set('classic')">
+                <span class="soft-swatch soft-swatch-classic"></span>
+                <div>
+                    <div class="fw-bold" style="font-size:0.83rem;">แบบเดิม (Classic)</div>
+                    <div style="font-size:0.7rem;color:#64748b;">ทางการ คมชัด มาตรฐานเดิม</div>
+                </div>
+            </button>
+            <button type="button" class="soft-theme-option" data-mode="mint" onclick="SoftThemeSwitcher.set('mint')">
+                <span class="soft-swatch soft-swatch-mint"></span>
+                <div>
+                    <div class="fw-bold" style="font-size:0.83rem;">นุ่มนวล มิ้นท์ (Soft Mint)</div>
+                    <div style="font-size:0.7rem;color:#64748b;">เขียวมิ้นท์-ครีม-ทองอ่อน อบอุ่น</div>
+                </div>
+            </button>
+            <button type="button" class="soft-theme-option" data-mode="sky" onclick="SoftThemeSwitcher.set('sky')">
+                <span class="soft-swatch soft-swatch-sky"></span>
+                <div>
+                    <div class="fw-bold" style="font-size:0.83rem;">น่ารัก พาสเทล (Soft Sky)</div>
+                    <div style="font-size:0.7rem;color:#64748b;">ฟ้าพาสเทล-ขาวนวล-พีช สดใส</div>
+                </div>
+            </button>
+        </div>
+        <button type="button" class="soft-theme-toggle-btn" onclick="SoftThemeSwitcher.toggle()" title="ทดลองสลับสไตล์ธีมหน้าเว็บ">
+            <i class="fa-solid fa-wand-magic-sparkles text-success"></i>
+            <span class="lbl">สลับธีม</span>
+        </button>
+    </div>
+
+    <script>
+    window.SoftThemeSwitcher = {
+        current: function() {
+            try { return localStorage.getItem('ptl_soft_theme') || 'classic'; } catch(e) { return 'classic'; }
+        },
+        syncUI: function() {
+            var cur = this.current();
+            document.querySelectorAll('#softThemePanel .soft-theme-option').forEach(function(btn) {
+                btn.classList.toggle('active', btn.getAttribute('data-mode') === cur);
+            });
+        },
+        toggle: function(forceState) {
+            var panel = document.getElementById('softThemePanel');
+            if (!panel) return;
+            var open = typeof forceState === 'boolean' ? forceState : !panel.classList.contains('open');
+            panel.classList.toggle('open', open);
+            if (open) this.syncUI();
+        },
+        set: function(mode) {
+            if (mode === 'mint' || mode === 'sky') {
+                document.documentElement.setAttribute('data-soft-theme', mode);
+            } else {
+                document.documentElement.removeAttribute('data-soft-theme');
+                mode = 'classic';
+            }
+            try { localStorage.setItem('ptl_soft_theme', mode); } catch(e) {}
+            this.syncUI();
+            this.toggle(false);
+            if (typeof App !== 'undefined' && App.toast) {
+                var names = { classic: 'แบบเดิม (Classic)', mint: 'นุ่มนวล มิ้นท์ (Soft Mint)', sky: 'น่ารัก พาสเทล (Soft Sky)' };
+                App.toast('เปลี่ยนธีมเป็น: ' + (names[mode] || mode), 'success');
+            }
+        }
+    };
+    document.addEventListener('DOMContentLoaded', function() { SoftThemeSwitcher.syncUI(); });
+    document.addEventListener('click', function(e) {
+        var dock = document.getElementById('softThemeDock');
+        if (dock && !dock.contains(e.target)) SoftThemeSwitcher.toggle(false);
     });
     </script>
 

@@ -66,6 +66,7 @@ $essentialFiles = [
     'public/index.php',
     'public/assets/css/main.css',
     'public/assets/css/main.min.css',
+    'public/assets/css/soft-themes.css',
     'public/assets/js/app.js',
     'public/assets/js/app.min.js',
     'app/Config/Routes.php',
