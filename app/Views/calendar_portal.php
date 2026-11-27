@@ -382,9 +382,12 @@ var CalendarPortal = {
         var agendaEl = document.getElementById('agendaListContent');
         if (!agendaEl) return;
 
-        // Filter events for current month (or show all upcoming if none in month)
+        // Filter events for current month (รองรับทั้ง Multi-Date ไม่ต่อเนื่อง และ Start-End ปกติ)
         var monthStrPrefix = year + '-' + String(month + 1).padStart(2, '0');
         var matchingEvents = this.events.filter(function(ev) {
+            if (Array.isArray(ev.event_dates) && ev.event_dates.length > 0) {
+                return ev.event_dates.some(function(d) { return String(d).startsWith(monthStrPrefix); });
+            }
             var s = ev.event_start_date || '';
             var e = ev.event_end_date || '';
             return s.startsWith(monthStrPrefix) || e.startsWith(monthStrPrefix) || (s <= monthStrPrefix && e >= monthStrPrefix);
@@ -406,6 +409,13 @@ var CalendarPortal = {
         var html = '';
         matchingEvents.forEach(function(ev) {
             var sDate = ev.event_start_date ? SmartEventViewer.formatThaiDate(ev.event_start_date) : 'ระบุตามประกาศ';
+            if (Array.isArray(ev.event_dates) && ev.event_dates.length > 1) {
+                var inMonth = ev.event_dates.filter(function(d) { return String(d).startsWith(monthStrPrefix); });
+                var showList = inMonth.length > 0 ? inMonth : ev.event_dates;
+                var formatted = showList.slice(0, 3).map(function(d) { return SmartEventViewer.formatThaiDate(d); }).join(', ');
+                if (showList.length > 3) formatted += ' (+' + (showList.length - 3) + ' วัน)';
+                sDate = formatted;
+            }
             var loc = ev.event_location || 'ไม่ระบุสถานที่';
             var cov = ev.cover_image && ev.cover_image !== 'assets/images/slider/sane_muanglung.png' ? (ev.cover_image.startsWith('http') ? ev.cover_image : "<?= base_url() ?>/" + ev.cover_image.replace(/^\//, '')) : null;
 
@@ -449,6 +459,10 @@ var CalendarPortal = {
 
     getEventsForDate: function(dateStr) {
         return this.events.filter(function(ev) {
+            // หากมีการระบุวันจัดแบบหลายวันไม่ต่อเนื่อง ให้แสดงเฉพาะวันที่เลือกจริงเท่านั้น
+            if (Array.isArray(ev.event_dates) && ev.event_dates.length > 0) {
+                return ev.event_dates.indexOf(dateStr) !== -1;
+            }
             var start = ev.event_start_date || '';
             var end = ev.event_end_date || start;
             if (!start) return false;

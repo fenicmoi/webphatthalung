@@ -646,19 +646,37 @@ try {
 
 <?php 
 $todayStr = date('Y-m-d');
-$filteredUpcomingEvents = array_filter($homeEvents, function($ev) use ($todayStr) {
+$filteredUpcomingEvents = [];
+foreach ($homeEvents as $ev) {
+    $multiDates = (!empty($ev['event_dates']) && is_array($ev['event_dates'])) ? array_values(array_filter($ev['event_dates'])) : [];
+    if (!empty($multiDates)) {
+        sort($multiDates);
+        $nextDate = null;
+        foreach ($multiDates as $md) {
+            if ($md >= $todayStr) {
+                $nextDate = $md;
+                break;
+            }
+        }
+        if ($nextDate !== null) {
+            $ev['_display_date'] = $nextDate;
+            $ev['_multi_count'] = count($multiDates);
+            $filteredUpcomingEvents[] = $ev;
+        }
+        continue;
+    }
+
     $endDate = !empty($ev['event_end_date']) ? substr($ev['event_end_date'], 0, 10) : '';
     $startDate = !empty($ev['event_start_date']) ? substr($ev['event_start_date'], 0, 10) : '';
-    // กิจกรรมที่ยังไม่ผ่านพ้นไป: ถ้ามีวันสิ้นสุดให้ใช้วันสิ้นสุด ถ้าไม่มีให้ใช้วันเริ่มจัดงาน
-    if (!empty($endDate)) {
-        return $endDate >= $todayStr;
+    if ((!empty($endDate) && $endDate >= $todayStr) || (!empty($startDate) && $startDate >= $todayStr)) {
+        $ev['_display_date'] = $startDate ?: $endDate;
+        $filteredUpcomingEvents[] = $ev;
     }
-    if (!empty($startDate)) {
-        return $startDate >= $todayStr;
-    }
-    return false;
+}
+usort($filteredUpcomingEvents, function($a, $b) {
+    return strcmp((string)($a['_display_date'] ?? ''), (string)($b['_display_date'] ?? ''));
 });
-$upcomingEvents = array_slice(array_values($filteredUpcomingEvents), 0, 4);
+$upcomingEvents = array_slice($filteredUpcomingEvents, 0, 4);
 ?>
 
 <?php $hasUpcomingEvents = !empty($upcomingEvents); ?>
@@ -736,7 +754,7 @@ $upcomingEvents = array_slice(array_values($filteredUpcomingEvents), 0, 4);
 
                 <div class="row g-4">
             <?php foreach ($upcomingEvents as $ev): 
-                $startDate = !empty($ev['event_start_date']) ? $ev['event_start_date'] : ($ev['created_at'] ?? date('Y-m-d'));
+                $startDate = !empty($ev['_display_date']) ? $ev['_display_date'] : (!empty($ev['event_start_date']) ? $ev['event_start_date'] : ($ev['created_at'] ?? date('Y-m-d')));
                 $time = strtotime($startDate);
                 $thaiDay = date('j', $time);
                 $thaiMonthNames = ['', 'ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];

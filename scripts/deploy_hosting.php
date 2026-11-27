@@ -122,6 +122,8 @@ $essentialFiles = [
     'app/Views/ebook/viewer.php',
     'app/Controllers/Budget.php',
     'app/Views/budget_portal.php',
+    'app/Controllers/EventCalendar.php',
+    'app/Views/calendar_portal.php',
     'app/Controllers/Procurement.php',
     'app/Libraries/EGpService.php',
     'app/Views/procurement/detail.php',

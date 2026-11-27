@@ -130,6 +130,24 @@ if (!session()->get('isLoggedIn')) {
                                             <input type="date" id="studioEventEndDate" class="form-control rounded-3 text-white fw-bold" style="background: #0f172a; border: 1px solid rgba(16, 185, 129, 0.5);">
                                         </div>
                                     </div>
+
+                                    <!-- Multi-Date Non-Consecutive Picker -->
+                                    <div class="p-3 rounded-3 mb-3" style="background: rgba(16, 185, 129, 0.08); border: 1px dashed rgba(16, 185, 129, 0.45);">
+                                        <label class="form-label fw-bold text-info small mb-2 d-flex align-items-center justify-content-between">
+                                            <span><i class="fa-solid fa-calendar-plus me-1"></i> กำหนดการหลายวันแบบไม่ต่อเนื่อง (Multi-Date)</span>
+                                            <span class="badge bg-info bg-opacity-20 text-info rounded-pill" id="studioMultiDateCount">0 วัน</span>
+                                        </label>
+                                        <div class="input-group input-group-sm mb-2">
+                                            <input type="date" id="studioMultiDateInput" class="form-control text-white fw-bold" style="background: #0f172a; border: 1px solid rgba(56, 189, 248, 0.5);">
+                                            <button type="button" class="btn btn-info fw-bold text-dark px-3" onclick="NewsStudio.addMultiEventDate()">
+                                                <i class="fa-solid fa-plus me-1"></i> เพิ่มวันที่
+                                            </button>
+                                        </div>
+                                        <div id="studioMultiDatesContainer" class="d-flex flex-wrap gap-1.5 mb-1"></div>
+                                        <small class="text-white-50 d-block" style="font-size: 0.76rem;">
+                                            <i class="fa-solid fa-circle-info text-warning me-1"></i> หากเพิ่มวันที่ในช่องนี้ (เช่น วันที่ 5, 12, 19, 26) ปฏิทินจะปักหมุด<strong>เฉพาะวันที่เลือกไว้เท่านั้น</strong> ไม่ขีดยาวคลุมวันที่ไม่ได้จัด
+                                        </small>
+                                    </div>
                                     <div class="mb-3">
                                         <label class="form-label fw-bold text-warning small"><i class="fa-solid fa-location-dot me-1"></i> สถานที่จัดกิจกรรม / อาคาร / ชุมชน</label>
                                         <input type="text" id="studioEventLocation" class="form-control rounded-3 text-white" placeholder="เช่น บริเวณหน้าศาลากลางจังหวัดพัทลุง หรือ หาดแสนสุขลำปำ..." style="background: rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.2);">
@@ -320,10 +338,62 @@ window.NewsStudio = {
         }
     },
 
+    addMultiEventDate: function() {
+        const input = document.getElementById('studioMultiDateInput');
+        if (!input || !input.value) {
+            if (typeof App !== 'undefined' && App.toast) App.toast('กรุณาเลือกวันที่ก่อนกดปุ่มเพิ่มวันที่', 'warning');
+            return;
+        }
+        const d = input.value.trim();
+        if (!Array.isArray(this.eventDates)) this.eventDates = [];
+        if (!this.eventDates.includes(d)) {
+            this.eventDates.push(d);
+            this.eventDates.sort();
+            document.getElementById('studioEventStartDate').value = this.eventDates[0];
+            document.getElementById('studioEventEndDate').value = this.eventDates[this.eventDates.length - 1];
+        }
+        input.value = '';
+        this.renderMultiEventDates();
+    },
+
+    removeMultiEventDate: function(dateStr) {
+        if (!Array.isArray(this.eventDates)) return;
+        this.eventDates = this.eventDates.filter(d => d !== dateStr);
+        if (this.eventDates.length > 0) {
+            document.getElementById('studioEventStartDate').value = this.eventDates[0];
+            document.getElementById('studioEventEndDate').value = this.eventDates[this.eventDates.length - 1];
+        }
+        this.renderMultiEventDates();
+    },
+
+    renderMultiEventDates: function() {
+        const box = document.getElementById('studioMultiDatesContainer');
+        const cnt = document.getElementById('studioMultiDateCount');
+        const list = Array.isArray(this.eventDates) ? this.eventDates : [];
+        if (cnt) cnt.textContent = list.length + ' วัน';
+        if (!box) return;
+        if (list.length === 0) {
+            box.innerHTML = '<span class="text-white-50 small fst-italic">ยังไม่ได้เลือกวันแบบไม่ต่อเนื่อง (ระบบจะใช้วันที่เริ่มต้น-สิ้นสุดด้านบนตามปกติ)</span>';
+            return;
+        }
+        const thMonths = ['', 'ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+        box.innerHTML = list.map(d => {
+            const parts = d.split('-');
+            const label = parts.length === 3
+                ? `${parseInt(parts[2], 10)} ${thMonths[parseInt(parts[1], 10)] || ''} ${parseInt(parts[0], 10) + 543}`
+                : d;
+            return `<span class="badge rounded-pill px-2.5 py-1.5 d-inline-flex align-items-center gap-1.5" style="background: #059669; color: #fff; font-size: 0.78rem;">
+                <i class="fa-regular fa-calendar"></i> ${label}
+                <button type="button" onclick="NewsStudio.removeMultiEventDate('${d}')" style="background:none;border:none;color:#fde68a;padding:0;margin-left:4px;cursor:pointer;line-height:1;" title="ลบวันที่นี้">&times;</button>
+            </span>`;
+        }).join('');
+    },
+
     open: function(newsId = null, presetCategory = null) {
         this.init();
         this.imagesGallery = [];
         this.attachments = [];
+        this.eventDates = [];
         this.currentCover = '';
         
         // ตรวจสอบสถานะฐานข้อมูลทันทีที่เปิด Modal
@@ -356,6 +426,9 @@ window.NewsStudio = {
         document.getElementById('studioEventEndDate').value = '';
         document.getElementById('studioEventLocation').value = '';
         document.getElementById('studioEventCoordinates').value = '';
+        const multiIn = document.getElementById('studioMultiDateInput');
+        if (multiIn) multiIn.value = '';
+        this.renderMultiEventDates();
         this.toggleEventPanel(false);
 
         this.renderImages();
@@ -405,6 +478,8 @@ window.NewsStudio = {
                         document.getElementById('studioEventEndDate').value = n.event_end_date || '';
                         document.getElementById('studioEventLocation').value = n.event_location || '';
                         document.getElementById('studioEventCoordinates').value = n.event_coordinates || '';
+                        this.eventDates = Array.isArray(n.event_dates) ? [...n.event_dates] : [];
+                        this.renderMultiEventDates();
                         this.toggleEventPanel(isEvent);
 
                         this.updateCoverPreview(this.currentCover);
@@ -784,6 +859,7 @@ window.NewsStudio = {
         formData.append('is_event', isEvent);
         formData.append('event_start_date', document.getElementById('studioEventStartDate')?.value || '');
         formData.append('event_end_date', document.getElementById('studioEventEndDate')?.value || '');
+        formData.append('event_dates', JSON.stringify(this.eventDates || []));
         formData.append('event_location', document.getElementById('studioEventLocation')?.value || '');
         formData.append('event_coordinates', document.getElementById('studioEventCoordinates')?.value || '');
 

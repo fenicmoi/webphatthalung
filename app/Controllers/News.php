@@ -230,6 +230,27 @@ class News extends BaseController
         $eventEndDate = trim((string)$this->request->getPost('event_end_date'));
         $eventLocation = trim((string)$this->request->getPost('event_location'));
         $eventCoordinates = trim((string)$this->request->getPost('event_coordinates'));
+
+        // รองรับวันที่จัดกิจกรรมหลายวันแบบไม่ต่อเนื่อง (Multi-Date JSON array)
+        $eventDatesRaw = $this->request->getPost('event_dates');
+        $eventDates = [];
+        if ($isEvent && !empty($eventDatesRaw)) {
+            $decodedDates = is_array($eventDatesRaw) ? $eventDatesRaw : json_decode((string)$eventDatesRaw, true);
+            if (is_array($decodedDates)) {
+                foreach ($decodedDates as $d) {
+                    $d = trim((string)$d);
+                    if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $d)) {
+                        $eventDates[] = $d;
+                    }
+                }
+                $eventDates = array_values(array_unique($eventDates));
+                sort($eventDates);
+            }
+        }
+        if ($isEvent && !empty($eventDates)) {
+            $eventStartDate = $eventDates[0];
+            $eventEndDate = $eventDates[count($eventDates) - 1];
+        }
         
         $imagesGalleryRaw = $this->request->getPost('images_gallery');
         $imagesGallery = [];
@@ -277,6 +298,7 @@ class News extends BaseController
             'is_event' => $isEvent,
             'event_start_date' => $isEvent ? ($eventStartDate ?: date('Y-m-d')) : '',
             'event_end_date' => $isEvent ? ($eventEndDate ?: ($eventStartDate ?: date('Y-m-d'))) : '',
+            'event_dates' => $isEvent ? $eventDates : [],
             'event_location' => $isEvent ? $eventLocation : '',
             'event_coordinates' => $isEvent ? $eventCoordinates : '',
             'images_gallery' => $imagesGallery,
@@ -345,6 +367,12 @@ class News extends BaseController
                         $db->query("ALTER TABLE `news` ADD COLUMN `is_featured` TINYINT(1) NOT NULL DEFAULT 0 AFTER `cover_fit`");
                     } catch (\Throwable $colErr) {}
                 }
+                // ตรวจสอบและเพิ่มคอลัมน์ event_dates (รองรับกิจกรรมหลายวันไม่ต่อเนื่อง) อัตโนมัติหากยังไม่มี
+                if (!$db->fieldExists('event_dates', 'news')) {
+                    try {
+                        $db->query("ALTER TABLE `news` ADD COLUMN `event_dates` TEXT NULL AFTER `event_end_date`");
+                    } catch (\Throwable $colErr) {}
+                }
 
                 // ตรวจสอบรายการเดิมด้วย ID (ถ้าเป็นตัวเลข) หรือค้นหาจากชื่อหัวข้อ
                 $existingDb = null;
@@ -383,6 +411,7 @@ class News extends BaseController
                     'is_event'          => $isEvent ? 1 : 0,
                     'event_start_date'  => $isEvent ? ($eventStartDate ?: date('Y-m-d')) : null,
                     'event_end_date'    => $isEvent ? ($eventEndDate ?: null) : null,
+                    'event_dates'       => ($isEvent && !empty($eventDates)) ? json_encode($eventDates, JSON_UNESCAPED_UNICODE) : null,
                     'event_location'    => $isEvent ? $eventLocation : null,
                     'event_coordinates' => $isEvent ? $eventCoordinates : null,
                     'images_gallery'    => !empty($imagesGallery) ? json_encode($imagesGallery, JSON_UNESCAPED_UNICODE) : null,

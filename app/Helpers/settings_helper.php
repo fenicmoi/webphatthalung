@@ -690,6 +690,14 @@ if (!function_exists('get_site_news')) {
                         $attachments = is_array($row['attachments']) ? $row['attachments'] : json_decode($row['attachments'], true);
                     }
 
+                    $eventDates = [];
+                    if (!empty($row['event_dates'])) {
+                        $decEd = is_array($row['event_dates']) ? $row['event_dates'] : json_decode($row['event_dates'], true);
+                        if (is_array($decEd)) {
+                            $eventDates = array_values(array_filter($decEd));
+                        }
+                    }
+
                     $newsList[] = [
                         'id'                => $row['id'],
                         'title'             => $row['title'],
@@ -703,6 +711,7 @@ if (!function_exists('get_site_news')) {
                         'is_event'          => !empty($row['is_event']),
                         'event_start_date'  => $row['event_start_date'] ?? '',
                         'event_end_date'    => $row['event_end_date'] ?? '',
+                        'event_dates'       => $eventDates,
                         'event_location'    => $row['event_location'] ?? '',
                         'event_coordinates' => $row['event_coordinates'] ?? '',
                         'images_gallery'    => is_array($imagesGallery) ? $imagesGallery : [],
@@ -964,6 +973,13 @@ if (!function_exists('get_news_by_id')) {
                     $isEvent = !empty($row['is_event']) || !empty($jsonFallback['is_event']);
                     $eventStartDate = !empty($row['event_start_date']) ? $row['event_start_date'] : ($jsonFallback['event_start_date'] ?? '');
                     $eventEndDate = !empty($row['event_end_date']) ? $row['event_end_date'] : ($jsonFallback['event_end_date'] ?? '');
+                    $eventDates = [];
+                    if (!empty($row['event_dates'])) {
+                        $decEd = is_array($row['event_dates']) ? $row['event_dates'] : json_decode($row['event_dates'], true);
+                        if (is_array($decEd)) $eventDates = array_values(array_filter($decEd));
+                    } elseif (!empty($jsonFallback['event_dates']) && is_array($jsonFallback['event_dates'])) {
+                        $eventDates = array_values(array_filter($jsonFallback['event_dates']));
+                    }
                     $eventLocation = !empty($row['event_location']) ? $row['event_location'] : ($jsonFallback['event_location'] ?? '');
                     $eventCoordinates = !empty($row['event_coordinates']) ? $row['event_coordinates'] : ($jsonFallback['event_coordinates'] ?? '');
 
@@ -980,6 +996,7 @@ if (!function_exists('get_news_by_id')) {
                         'is_event'          => $isEvent,
                         'event_start_date'  => $eventStartDate,
                         'event_end_date'    => $eventEndDate,
+                        'event_dates'       => $eventDates,
                         'event_location'    => $eventLocation,
                         'event_coordinates' => $eventCoordinates,
                         'images_gallery'    => $imagesGallery,
